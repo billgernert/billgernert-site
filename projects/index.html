@@ -43,82 +43,12 @@
     </header>
 
     <div class="skill-body">
-      <section class="block">
+      <section class="block" id="server-provisioning">
         <h2>1. Automated server provisioning</h2>
-        <p><b>The problem.</b> A server is a fact recorded in five places at once: the address in IPAM,
-          the machine on the hypervisor, the host in monitoring, the resource in infrastructure state,
-          and the entry in configuration inventory. Build one by hand and any of those can silently
-          disagree, or worse, silently agree with a machine that already exists. The failure this
-          pipeline is built against is the one everybody has seen: <b>a new host quietly reconciles a
-          live one</b> because nothing checked every system that already knew the name.</p>
-        <ol class="stages">
-          <li>Validate input</li>
-          <li><b>Reachability pre-flight</b> - refuse a target whose network path is untested</li>
-          <li><b>Name collision check</b> - ask every system that could already know the name</li>
-          <li>Allocate an address from IPAM</li>
-          <li>Select a node by live free memory</li>
-          <li>Plan, in this machine's own infrastructure-state workspace</li>
-          <li><b>Human approval</b> (60-minute timeout)</li>
-          <li>Apply - <b>the roll-forward boundary</b></li>
-          <li>Register monitoring, minting a unique per-host key into the secrets manager</li>
-          <li>Configure with Ansible (the agent is already trusted)</li>
-          <li>Register DNS</li>
-          <li>Commit the host manifest</li>
-        </ol>
-        <p>Windows runs the same backbone and diverges where it must: it mints a per-host local-admin
-          password into the secrets manager, resolves a template by tag rather than booting a cloud
-          image, and waits for WinRM to be <em>stably</em> up (six consecutive good checks) because
-          first-boot init flaps the port and a single successful probe is a lie.</p>
-        <p><b>What broke, three times, and what I did about it.</b></p>
-        <p><b>One: the gate could not see.</b> The collision check asked IPAM for devices and virtual
-          machines. But a host provisioned by this pipeline is recorded in IPAM as <em>an address with a
-          DNS name</em>, not as a device object. So the query came back empty, the API was perfectly
-          healthy, and the gate said "no collision" about a host that was already alive. Fixed by also
-          querying the address records, and by adding a deterministic scan of the configuration
-          inventory: reading a file beats guessing from a naming convention.</p>
-        <p><b>Two: the gate could see, and nobody was listening.</b> This one is my favourite. The
-          detector correctly found the collision, printed it, and exited non-zero. The pipeline
-          proceeded anyway. The stage ran the checker piped into <code>tee</code> so the report could be
-          saved, and <b>a shell pipeline exits with the status of its last command</b>. That was
-          <code>tee</code>, which always succeeds. The gate had been reading <code>tee</code>'s exit code
-          the entire time it existed. Fixed by redirecting instead of piping, and by adding a fail-safe
-          so an unset or unparseable exit code can never read as clean. The same bug was sitting in the
-          reachability pre-flight; it went in the same pass.</p>
-        <pre class="excerpt"><code>script {
-    def rc = (env.COLLISION_RC ?: '').trim()
-    if (!rc.isInteger()) {
-        // Fail-safe: an unset/unparseable exit code must NEVER read as clean. Gate-or-fail.
-        error("Name collision check produced no usable exit code (COLLISION_RC='${rc}'); refusing to proceed ungated.")
-    }
-    if (rc != '0') {
-        // 2 = confirmed collision; 3 = unverifiable (fail-loud). Both gate; wording differs.
-        def collision = rc == '2'</code></pre>
-        <p class="excerpt-cap">The fix for bug two, and the fail-safe it taught me to add.</p>
-        <p><b>Three: rejecting the plan leaked the address.</b> Reject the approval and the reserved
-          address stayed reserved. The release ran in the pipeline's <em>failure</em> handler, but a
-          rejected approval does not fail a build, it <b>aborts</b> it. Fixed by moving the release to
-          the handler that covers failed, aborted, and unstable alike, still guarded so that a machine
-          which already exists keeps its address rather than having it yanked out from under it.</p>
-        <p>Underneath all three is one rule, and it is the part worth stealing: <b>an unreachable system
-          is never "clean"</b>. If a system that could hold a conflicting name cannot be reached, that is
-          not a pass, it is an unknown, and an unknown still stops the build.</p>
-        <pre class="excerpt"><code>def evaluate(hits):
-    """Pure verdict over the gathered hits. 'collision' &gt; 'error' &gt; 'clean'."""
-    if any(h["present"] is True for h in hits):
-        return "collision"
-    if any(h["present"] is None for h in hits):
-        return "error"
-    return "clean"
-
-
-EXIT = {"clean": 0, "collision": 2, "error": 3}</code></pre>
-        <p class="excerpt-cap">Present means collision. Unknown means error. Only proven-absent is clean.</p>
-        <div class="links">
-          <a href="/skills/terraform.html">Terraform &#8594;</a>
-          <a href="/skills/netbox-ipam.html">NetBox IPAM &#8594;</a>
-          <a href="/skills/jenkins.html">Jenkins &#8594;</a>
-          <a href="/skills/ansible.html">Ansible &#8594;</a>
-        </div>
+        <p>Builds a server as one consistent fact across five systems at once, with a collision gate that
+          refuses to reconcile a live host by accident, and the three bugs that taught it to fail safe (one of
+          which had it reading the wrong command's exit code for its entire life).
+          <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></p>
       </section>
 
       <section class="block">
