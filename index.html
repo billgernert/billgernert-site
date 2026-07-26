@@ -255,6 +255,7 @@
       <a href="/security/">Security</a>
       <a href="/skills/">Skills</a>
       <a href="/ai/">AI</a>
+      <a href="/claude-code/">Claude Code</a>
       <a href="/roadmap/">Roadmap</a>
       <span class="topnav-spacer"></span>
       <a href="https://github.com/billgernert" rel="me">GitHub</a>
@@ -309,15 +310,18 @@
       <p class="tagline">Platform &amp; infrastructure automation</p>
       <div class="hero">
         <p class="lede">
-          I build the kind of automation that runs a data center: provisioning, GitOps, monitoring,
-          self-healing, identity, and secrets, wired together end to end and treated as production.
-          The proof is a lab I run and operate as if it were a real platform, across Linux and Windows.
+          Can you actually automate everything?
         </p>
         <p>
-          Fifteen-plus years of system administration and infrastructure design, applied to a greenfield
-          build I got to design the way I thought it should be built. Here's the honest part: I read and
-          edit code fluently, but I don't hold syntax in my head when writing from scratch, and I stopped
-          pretending that matters. What I'm good at is planning.
+          Server provisioning, Windows and Linux. User lifecycle from a YAML definition to Active Directory
+          and Entra. Certificate and secret rotation. Alert triage. Even the job search itself. Wired
+          together end to end, watched by a net of Grafana dashboards, and treated as production.
+        </p>
+        <p>
+          That's the question this lab exists to answer. Fifteen-plus years of system administration and
+          infrastructure design, applied to a greenfield build with open source at its core: Jenkins and
+          Ansible for execution, Vault for secrets, NetBox for inventory, git for every definition.
+          Automation is only as good as its sources of truth, so drift has nowhere to live.
         </p>
         <p>
           The scale tells the story:
@@ -325,21 +329,15 @@
                scripts/gen-roadmap-data.py --hero-page; the PR count by scripts/gen-pr-count.py (Gitea
                merged-PR API). Edits between each START/END marker are overwritten at sync; the values
                committed here are the last generated snapshot, not hand-typed literals. -->
-          <b class="hero-fact"><!--HERO:ITEMS:START-->207<!--HERO:ITEMS:END--></b> backlog items delivered
-          through <b class="hero-fact"><!--HERO:PRS:START-->1192<!--HERO:PRS:END--></b> PRs, built with four
-          parallel Claude Code sessions held to a rigid process. I reviewed and approved every one.
-          Automation is only as good as its sources of truth, so NetBox owns every IP, Vault owns every
-          secret, git owns every definition, and drift has nowhere to live. Recovery is proven, not
-          promised: Vault destroyed and restored live in 97 seconds.
+          <b class="hero-fact"><!--HERO:ITEMS:START-->208<!--HERO:ITEMS:END--></b> backlog items delivered
+          through <b class="hero-fact"><!--HERO:PRS:START-->1194<!--HERO:PRS:END--></b> PRs, every one
+          reviewed and merged by me. Recovery is proven, not promised. A pipeline verifies backups weekly,
+          and the practice is live-fire: Vault destroyed and restored in 97 seconds.
         </p>
         <p>
-          And AI isn't just how I built the lab, it's part of operations. A local LLM and the Claude API
-          work as agents inside the platform: triaging alerts each morning, analyzing incidents, and
-          reporting on the health of the lab, all cost-gated and audited like everything else.
-        </p>
-        <p class="note">
-          Click around to see what I've built, how and why it works, how I prevent drift, and how it's
-          secured and visualized.
+          And AI isn't just tooling here. A local LLM and the Claude API operate as agents inside the
+          platform, triaging alerts each morning, analyzing incidents, and reporting on lab health, all
+          cost-gated and audited like everything else.
         </p>
       </div>
     </header>
@@ -368,8 +366,6 @@
           four-eyes approval, delayed cleanup sweep) is automated, backed by an internal PKI (AD CS).
           HashiCorp Vault (AppRole) holds every secret. External access is a Cloudflare Tunnel to Traefik
           ingress with Access SSO on every app.</p>
-        <p class="note">Built with an AI-assisted workflow (Claude Code) held to the same discipline as the
-          platform: design docs before code, one PR per change, and a runbook for every pipeline.</p>
       </div>
 
     </section>
@@ -430,14 +426,14 @@
     <section>
       <h2>AI</h2>
       <p>
-        AI is both how I built the lab and part of how it runs: a multi-session Claude Code build workflow
-        held to a strict review process, and AI agents inside the platform that triage alerts, analyze
-        incidents, and report on its health. A local LLM carries the bulk; the Claude API handles the hard
-        reasoning; every call is cost-gated and audited like any other dependency, and every action is
-        advisory - it proposes, I approve.
+        AI is part of how the lab runs: agents inside the platform that triage alerts, analyze incidents,
+        and report on its health. A local LLM carries the bulk; the Claude API handles the hard reasoning;
+        every call is cost-gated and audited like any other dependency, and every action is advisory - it
+        proposes, I approve.
       </p>
       <div class="links">
         <a href="/ai/">How I use AI &#8594;</a>
+        <a href="/claude-code/">How the lab is built &#8594;</a>
       </div>
     </section>
 
