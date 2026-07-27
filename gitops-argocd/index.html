@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitOps with Argo CD - Bill Gernert</title>
+  <meta name="description" content="How the lab adopts GitOps with Argo CD: the app-of-apps pattern over the hand-applied service directories, with automatic sync deliberately turned off so drift is detected and never silently acted on. Includes the live drift demo and why the Jenkins-owned deploys are excluded on purpose.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <nav class="topnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/platform/">Platform</a>
+      <a href="/diagram/">Diagram</a>
+      <a href="/security/">Security</a>
+      <a href="/skills/">Skills</a>
+      <a href="/ai/">AI</a>
+      <a href="/roadmap/">Roadmap</a>
+      <span class="topnav-spacer"></span>
+      <a href="https://github.com/billgernert" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+    </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">GitOps with Argo CD</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">GitOps</span>
+      <h1>GitOps with Argo CD</h1>
+      <p class="descriptor">GitOps means the cluster is supposed to look exactly like what is committed in git,
+        and a controller watches for any difference. This lab runs Argo CD that way, with one deliberate
+        choice: automatic sync is turned off. Argo detects drift and reports it, and never changes anything on
+        its own. That was proven live by scaling a workload by hand, watching Argo mark it out of sync, and
+        confirming it touched nothing until a person clicked sync.</p>
+    </header>
+
+    <nav class="crumbs" aria-label="On this page">
+      <a href="#what">What GitOps is here</a>
+      <span class="sep">/</span>
+      <a href="#sync-off">Sync deliberately off</a>
+      <span class="sep">/</span>
+      <a href="#drift">Drift detection, demonstrated</a>
+      <span class="sep">/</span>
+      <a href="#jenkins">Why Jenkins is excluded</a>
+      <span class="sep">/</span>
+      <a href="#access">The webhook and single sign-on</a>
+    </nav>
+
+    <div class="skill-body">
+      <section class="block" id="what">
+        <h2>What GitOps is here</h2>
+        <p>The workloads in the cluster used to be applied by hand from runbooks: a person ran the apply command
+          for each service directory. That works until the live cluster and the committed files quietly drift
+          apart and nobody can say which is right. GitOps closes that gap. A controller, Argo CD, reads the
+          committed manifests and continuously compares them to what is actually running. The adoption uses the
+          app-of-apps pattern: one small root definition points at a set of applications, and each application
+          tracks one service directory in the repository. Onboarding a service becomes adding it to that set,
+          and the source of truth is the repository, not somebody's memory of the last apply.</p>
+      </section>
+
+      <section class="block" id="sync-off">
+        <h2>Sync deliberately off</h2>
+        <p>Argo can be told to fix drift automatically, and here it deliberately is not. Every application ships
+          with automatic sync turned off, so Argo detects and reports a difference but applies nothing until a
+          human syncs it. The reason is specific to this estate: several of the tracked directories were
+          themselves never applied yet and carry values that are meant to be resolved at apply time. Turning on
+          automatic sync would have pushed all of those to the live cluster as a side effect of merely adopting
+          GitOps, which is a far bigger and less reversible change than the adoption itself. So the safe posture
+          ships first: detection everywhere, action only on a reviewed, deliberate sync.</p>
+      </section>
+
+      <section class="block" id="drift">
+        <h2>Drift detection, demonstrated</h2>
+        <p>The point of GitOps is only real if drift is actually caught, so it was demonstrated end to end on a
+          live workload. A deployment that git declares should run one replica was scaled by hand to two.
+          Within a refresh interval Argo reported the application <b>out of sync</b> and, because automatic sync
+          is off, changed nothing: the workload stayed at two replicas. A manual sync then reverted it to the
+          one replica git declares. Reverting a committed change is the same story from the other direction: the
+          application goes out of sync until someone syncs it back.</p>
+        <p>One detail is worth stealing. The drift has to be on a field git actually owns, like the replica
+          count. A sync reconciles only the fields the committed manifest manages, so it will revert a replica
+          change but will not strip, say, a stray label that git never set. An early version of this demo
+          drifted a label and would have reported a false success; moving it to the replica count made the demo
+          honest.</p>
+      </section>
+
+      <section class="block" id="jenkins">
+        <h2>Why Jenkins is excluded, on purpose</h2>
+        <p>Not everything belongs under Argo. The build server owns a couple of deploys that it applies through
+          its own pipelines, and those are deliberately kept out of the GitOps surface so the two systems never
+          fight over ownership. The boundary is enforced three ways, and all three were checked live. No
+          application points at those build-server-owned paths. The Argo project is fenced to this one
+          repository and to a named set of destinations, so it cannot be pointed at a foreign source. And no
+          application is allowed to prune, so it cannot delete something it does not own even by accident. The
+          separation is by source path, not by namespace, because the two systems share a namespace and only
+          the path boundary actually keeps them apart.</p>
+      </section>
+
+      <section class="block" id="access">
+        <h2>The webhook and single sign-on</h2>
+        <p>A push to the repository nudges Argo to re-check, so the comparison against git is prompt rather than
+          waiting on a slow poll. The Argo web interface sits behind the same single sign-on as the rest of the
+          lab: you authenticate through the identity provider, and access maps to a role by group rather than a
+          local password. So the one place a person can trigger a sync is itself gated by the same identity and
+          the same review discipline as everything else.</p>
+      </section>
+
+      <div class="links">
+        <a href="/platform/">How the platform is built &#8594;</a>
+        <a href="/everything-as-code/">Everything as code &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>

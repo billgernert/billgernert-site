@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Everything as code - Bill Gernert</title>
+  <meta name="description" content="Every job in the lab is defined in one seed file, not clicked together in a web console. Generated files are never hand-edited. And a job's schedule is proven the moment it is created, after a bug where a seeded job had no trigger at all.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <nav class="topnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/platform/">Platform</a>
+      <a href="/diagram/">Diagram</a>
+      <a href="/security/">Security</a>
+      <a href="/skills/">Skills</a>
+      <a href="/ai/">AI</a>
+      <a href="/roadmap/">Roadmap</a>
+      <span class="topnav-spacer"></span>
+      <a href="https://github.com/billgernert" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+    </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">Everything as code</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Automation design</span>
+      <h1>Everything as code</h1>
+      <p class="descriptor">Every scheduled job in the lab is defined in one text file that lives in version
+        control, not clicked together in a web console where the settings live only in someone's memory. Files
+        that are generated from that source are never edited by hand. And a job's schedule is proven the moment
+        the job is created, after a bug where a job existed, looked correct, and had no trigger at all.</p>
+    </header>
+
+    <div class="skill-body">
+      <section class="block">
+        <h2>Why code instead of clicks</h2>
+        <p>You can build a job by clicking through a web console: name it here, set its schedule there, paste a
+          script into a box. It works, and six months later nobody can say for sure what it does or why,
+          because the settings live inside the tool and nowhere else. Defining the same job in a text file
+          fixes that. The file is reviewed before it takes effect, its history shows who changed what and when,
+          and if the tool is wiped you rebuild everything from the file. The job is not a thing someone
+          configured once. It is a thing the repository describes and the tool obeys.</p>
+      </section>
+
+      <section class="block">
+        <h2>The seed file is the source of truth</h2>
+        <p>All the jobs are declared in one place, a seed definition that lists each job with its parameters and
+          its schedule. A small tool reads that file and creates or updates the real jobs to match. If you want
+          a new job you add it to the file and let the tool build it. You do not build it by hand and then try
+          to remember to write it down. The important part is that the parameters and the trigger are declared
+          in the seed, not discovered at runtime. What the job is and when it runs are properties of the
+          written definition, readable before anything executes.</p>
+      </section>
+
+      <section class="block">
+        <h2>Generated files are never hand-edited</h2>
+        <p>Some files in the repository are produced by a generator from a source of truth. An index of all the
+          work items, for example, is built from the individual item files by a script. The rule is that you
+          never edit the generated file directly. You edit the source and rerun the generator, and a check in
+          the pipeline fails if the committed generated file does not match what the generator would produce.
+          A hand-edit to a generated file is a change that the next generator run silently erases, so the
+          pipeline treats it as an error rather than letting it rot.</p>
+      </section>
+
+      <section class="block">
+        <h2>The job that existed but never ran</h2>
+        <p>Here is the bug that shaped how triggers work now. A scheduled job was seeded correctly. It showed up
+          in the tool, its configuration read exactly right, and by every appearance it was fine. It never ran.
+          The reason took a while to see: the schedule lived in the job's own properties, and those properties
+          are only read when the job runs a build. A job that has been seeded but has never had a first build
+          has not yet read its own schedule, so it has no trigger at all. It was waiting for a run to tell it
+          when to run, which is a run that would never come. The job looked correct and was inert.</p>
+      </section>
+
+      <section class="block">
+        <h2>Emit the trigger at creation, so it is provable now</h2>
+        <p>The durable fix was to stop relying on a future build to activate the schedule. The trigger is now
+          emitted when the job is created, as part of seeding it, so the schedule is live from the moment the
+          job exists. This is the real point of the page. Before the fix, the only way to know a job had a
+          working trigger was to wait for its scheduled window and see whether it fired, which could be a day
+          later. After the fix, you can prove the trigger is present the instant the job is created, by reading
+          it, with nothing to wait for. A property you can only verify by waiting is a property you cannot
+          really verify. Moving it to creation time turned a "wait and see" into a "check it now."</p>
+      </section>
+
+      <section class="block">
+        <h2>The pattern under all three</h2>
+        <p>Declare the thing in a source file, generate the real world from that file, and make correctness
+          something you can read rather than something you discover by running and waiting. The trigger bug is
+          the sharpest example: the schedule was technically defined, but in a place that only came alive during
+          a build, so its correctness was invisible until too late. Everything as code is not about avoiding
+          the console for its own sake. It is about making the state of the system knowable from the text,
+          before it runs.</p>
+      </section>
+
+      <div class="links">
+        <a href="/platform/">How the platform is built &#8594;</a>
+        <a href="/roadmap/">Read the roadmap &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>

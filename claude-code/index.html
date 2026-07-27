@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code - Bill Gernert</title>
+  <meta name="description" content="How AutomationLab is built with Claude Code: an orchestrator plus parallel sessions, sole human merge authority, a design doc before code, one PR per change, and a runbook for every pipeline.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <nav class="topnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/platform/">Platform</a>
+      <a href="/diagram/">Diagram</a>
+      <a href="/security/">Security</a>
+      <a href="/skills/">Skills</a>
+      <a href="/ai/">AI</a>
+      <a href="/claude-code/" class="active" aria-current="page">Claude Code</a>
+      <a href="/roadmap/">Roadmap</a>
+      <span class="topnav-spacer"></span>
+      <a href="https://github.com/billgernert" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+    </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">Claude Code</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Build workflow</span>
+      <h1>Built with Claude Code</h1>
+      <p class="descriptor">This lab is built by AI, and that is the interesting part only because of the
+        discipline around it. An orchestrator directs several parallel Claude Code sessions, each in its own
+        isolated copy of the code. One human plans the work, reads every change, and performs every merge. The
+        rules the sessions follow are the same ones a careful team would follow: decide in a design doc before
+        writing code, one change per pull request, and a written runbook for anything that touches live
+        infrastructure.</p>
+    </header>
+
+    <nav class="crumbs" aria-label="On this page">
+      <a href="#sessions">Orchestrator and sessions</a>
+      <span class="sep">/</span>
+      <a href="#merge">Sole merge authority</a>
+      <span class="sep">/</span>
+      <a href="#design">Design before code</a>
+      <span class="sep">/</span>
+      <a href="#one-pr">One PR per change</a>
+      <span class="sep">/</span>
+      <a href="#runbooks">A runbook per pipeline</a>
+      <span class="sep">/</span>
+      <a href="#tests">How changes are tested</a>
+    </nav>
+
+    <div class="skill-body">
+      <section class="block" id="sessions">
+        <h2>The orchestrator and parallel sessions</h2>
+        <p>The work is split across several Claude Code sessions running at once, coordinated by an
+          orchestrator that hands each one a task a step at a time. Every session works in its own isolated
+          copy of the repository, branched from the mainline, so two sessions can never edit the same working
+          files or collide on a branch. The orchestrator keeps the sessions pointed at different parts of the
+          backlog and relays each task and result through one human. That is what makes running several AI
+          workers in parallel safe rather than chaotic: they are isolated by construction and sequenced by a
+          person.</p>
+      </section>
+
+      <section class="block" id="merge">
+        <h2>Sole merge authority</h2>
+        <p>No session merges its own work. Every change lands as a pull request that one human reads and
+          merges, against the same branch protection and automated checks any other contributor would face. A
+          machine wrote the code, which is exactly why the review gate is not relaxed: the author being fast
+          and tireless is a reason for more scrutiny at the merge, not less. The human is the single point
+          where work becomes part of the lab.</p>
+      </section>
+
+      <section class="block" id="design">
+        <h2>A design doc before code</h2>
+        <p>Decisions are written down before they are built. A design that matters gets a committed decision
+          record, reviewed on its own, and only then does code implement it. The effect is that the diff
+          implements a decision that already exists rather than deciding it in passing. It keeps the thinking
+          human-owned and legible, and it means a change can be argued with at the level of the decision, not
+          just the code.</p>
+      </section>
+
+      <section class="block" id="one-pr">
+        <h2>One PR per change</h2>
+        <p>Each change is its own small, reviewable pull request: one backlog item, one branch, one PR. Nothing
+          is bundled. That keeps review a real gate rather than a rubber stamp on a pile of unrelated edits,
+          and it keeps the history legible, so the story of why something changed can be read one step at a
+          time later.</p>
+      </section>
+
+      <section class="block" id="runbooks">
+        <h2>A runbook for every pipeline</h2>
+        <p>Anything applied to live infrastructure ships as a guided runbook: the host it runs on, the exact
+          command or the exact field to set, the output to expect, the independent check that it worked, and
+          what to do if it did not. Nothing is applied from memory. A change to a config file is not the same
+          as a running system, so the runbook is how a committed change becomes a proven one, with a human
+          driving each step.</p>
+      </section>
+
+      <section class="block" id="tests">
+        <h2>How changes are tested</h2>
+        <p>A change is not trusted because it looks right. Small, offline tests run on every pull request, a
+          runner discovers and executes them automatically, and the automated checks have to pass before a
+          human will merge. Just as important is the habit of proving the result rather than asserting it: a
+          claim that something is fixed comes with the command output that shows it, and anything that can only
+          be confirmed on live infrastructure is labelled as needing that confirmation before it counts as
+          done. The point of the whole workflow is that "the AI did it" is never the evidence; the test run,
+          the review, and the runbook are.</p>
+      </section>
+
+      <div class="links">
+        <a href="/ai/">AI in operations &#8594;</a>
+        <a href="/roadmap/">Read the roadmap &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>

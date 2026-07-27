@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Postmortems - Bill Gernert</title>
+  <meta name="description" content="Three infrastructure incidents from the lab, written up honestly: a backup datastore that corrupted itself when thin provisioning hit its cap, a one-word commit message that silently switched off all CI for a pull request, and a build-toolchain vulnerability caught and fixed in the pipeline.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <nav class="topnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/platform/">Platform</a>
+      <a href="/diagram/">Diagram</a>
+      <a href="/security/">Security</a>
+      <a href="/skills/">Skills</a>
+      <a href="/ai/">AI</a>
+      <a href="/roadmap/">Roadmap</a>
+      <span class="topnav-spacer"></span>
+      <a href="https://github.com/billgernert" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+    </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">Postmortems</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Incidents</span>
+      <h1>Postmortems</h1>
+      <p class="descriptor">Three infrastructure incidents from the lab, written up the way I would want to
+        read them: what broke, why it broke, and what changed so it cannot break the same way again. No blame,
+        no polish, just the mechanism and the fix. A lab that only publishes its wins is not telling you how it
+        actually runs.</p>
+    </header>
+
+    <nav class="crumbs" aria-label="On this page">
+      <a href="#datastore">Backup datastore corruption</a>
+      <span class="sep">/</span>
+      <a href="#skip">The commit that switched off CI</a>
+      <span class="sep">/</span>
+      <a href="#cve">A toolchain vulnerability, caught in the pipeline</a>
+    </nav>
+
+    <div class="skill-body">
+      <section class="block" id="datastore">
+        <h2>Backup datastore corruption</h2>
+        <p>A backup datastore was thin provisioned, meaning it was told it had more space than physically
+          existed, on the bet that not everything would fill up at once. The bet lost. As real usage grew, the
+          underlying pool reached its true capacity. A low-space protection then did exactly what it is
+          designed to do and blocked further writes to stop the situation getting worse. But the pool was
+          already at the edge, and the filesystem took damage in the window between filling up and being
+          frozen.</p>
+        <p>Two lessons came out of it. The first is that thin provisioning is a loan, not a gift, and a loan
+          you have to watch: the number to alert on is the real pool usage, well before the cap, not the
+          apparent free space the thin volume reports. The second is subtler. The protection that blocked I/O
+          was not the bug; it was the seatbelt. The bug was letting the pool get close enough to the cap that
+          the seatbelt had to engage at all. The fix was to watch the real usage and alert early, so the cap is
+          a line you see coming rather than one you hit.</p>
+      </section>
+
+      <section class="block" id="skip">
+        <h2>The commit that switched off CI</h2>
+        <p>A pull request went green with no failures. It went green because nothing ran. A single control
+          token in the commit message told the automation to skip scheduling its workflows, and instead of
+          skipping one noisy job it suppressed every check for that pull request. The pull request looked
+          clean because none of the checks that would have failed it had executed at all.</p>
+        <p>This is the most dangerous shape a CI failure can take, because it does not look like a failure. A
+          red build tells you something is wrong. A build that silently did not run looks identical to a build
+          that ran and passed, and it quietly invites you to merge. The fix is a guard that now refuses to
+          accept that skip token in a commit message in the first place, both as a local pre-commit check and
+          as a check in the pipeline, so the silent switch-off cannot be reintroduced by accident. The rule
+          underneath it is the one this whole lab keeps relearning: a check that did not run is not a check
+          that passed, and the system has to tell the two apart.</p>
+      </section>
+
+      <section class="block" id="cve">
+        <h2>A toolchain vulnerability, caught in the pipeline</h2>
+        <p>A vulnerability scanner runs on pull requests and reads the dependencies that go into the lab's
+          container images. It flagged a known vulnerability in one of the build toolchain's dependencies. The
+          fix was to fold the patched version into the build so the vulnerable code is no longer part of the
+          image, and the scan on the pull request then confirmed the finding was gone from the rebuilt image.
+          That is the scan doing its job: not just reporting a problem, but proving the fix.</p>
+        <p class="note">Where this stands right now, told straight. The image has been rebuilt with the fix and
+          the scan confirms the vulnerability is gone from that rebuilt image. The running workload has not yet
+          been repointed to the rebuilt image, so the fix is proven in the build but is not live in production
+          until that repoint happens. Calling it done today would be the exact kind of overclaim these
+          writeups exist to avoid, so it is recorded as built and scanned clean, repoint pending.</p>
+      </section>
+
+      <section class="block">
+        <h2>What these three share</h2>
+        <p>Each one is a variant of the same failure: a system that looked fine while something underneath was
+          not. The datastore reported free space it did not have. The pull request reported success it had not
+          earned. The image would have reported a clean build while carrying a known flaw. The fixes are all
+          the same move in different clothes, which is to make the true state visible and to refuse to treat an
+          unknown or an un-run check as a pass.</p>
+      </section>
+
+      <div class="links">
+        <a href="/security/">See the security posture &#8594;</a>
+        <a href="/dr-restore-verify/">How the backups are proven &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>

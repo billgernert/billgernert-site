@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects (https://developers.cloudflare.com/pages/configuration/redirects/).
+# Per-project pages live under /projects/<name>/ (item 417). The Projects index keeps a one-line
+# summary per project and links out to each page as it lands.
+#
+# Anchor fragments such as /projects/#server-provisioning are client-side only and never reach the
+# server, so a redirect rule cannot match them. They are preserved instead by keeping the matching
+# id (id="server-provisioning") on the index summary block, so an old fragment link still scrolls to
+# that project's summary, which links on to the full page. The entries below cover PATH-based access
+# to the migrated project pages.
+
+/projects/server-provisioning /projects/server-provisioning/ 301
