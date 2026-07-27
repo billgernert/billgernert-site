@@ -78,6 +78,13 @@
           verify, and the build record points at the same image by digest. That is the whole point of signing.
           Someone who was not there, and who trusts none of your infrastructure, can still confirm that the
           image in front of them is the one you built. That check has been run and it passes.</p>
+        <p>There is one more link in that chain, and it is the one that closed most recently. The build
+          system's worker containers are now started from that exact image by digest rather than by a moving
+          label, and the machine that starts them pulled precisely those bytes. So the image that was signed
+          and cold-verified is provably the image that runs, which is the claim signing exists to support.
+          Worth being precise about what that is and is not. Pinning by digest closes the gap where a label
+          quietly moves to different bytes. It does not check the signature at start time, and nothing here
+          does. That check is the next section, and it is still off.</p>
       </section>
 
       <section class="block">
