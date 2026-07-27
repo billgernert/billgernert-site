@@ -22,17 +22,28 @@ page deleted in the private repo is deleted here.
 |------|------------|
 | `index.html` | the landing page |
 | `_headers` | response headers (CSP + security headers) |
+| `_redirects` | the mirror redirect map (added to the gate with the new page dirs, 2026-07-27) |
 | `skills/` | the capability pages + the shared `style.css` |
 | `roadmap/` | the public roadmap (its facts block is generated) |
+| `public-roadmap/` | the born-generated milestone roadmap page |
 | `ai/` | how AI is used |
 | `projects/` | the pipeline stories |
 | `platform/` | the subsystem writeups |
 | `diagram/` | the lab architecture (a public rendition; the internal diagram is never published) |
 | `writeups/` | long-form writeups (adopted into the gate 2026-07-15; was hand-committed) |
+| the per-topic portfolio pages: `claude-code/`, `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each is scrub-gated like every other page |
 | `SANITIZATION.md` | this file, published by the gate it describes |
 
 **Do not hand-edit these here.** The next sync overwrites them, and your edit skips the scrub gate on
 the way in. Change them in the private repo's `site/` and let the pipeline publish.
+
+**Currency pass (2026-07-27):** this table was reconciled against the live `site/` page dirs and the
+`sync-public-site` mapping. The per-topic pages added since the last review (`claude-code`, `gitops-argocd`,
+`supply-chain-security`, `dr-restore-verify`, and the pack pages) were staged-but-unmapped until the
+`/claude-code/`-404 fix put them in all three gate dir lists; they are enumerated above now, so the
+authority matches the gate. `scripts/check-site-sync-mapping.py` runs clean (no list drift). All `site/`
+content is text/HTML - there are no images anywhere in `site/`, so the image-checklist gap (the class the
+`writeups/` incident below is about) does not apply to any current page.
 
 ### B. Hand-committed (a human is the ONLY gate)
 
