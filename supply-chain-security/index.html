@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Supply chain security - Bill Gernert</title>
-  <meta name="description" content="How the lab checks the code and containers it ships: scan for secrets and known bugs, sign what passes, and refuse to run what is not signed. Plus the two lessons that made the checks honest.">
+  <meta name="description" content="How the lab checks the code and containers it ships: scan for secrets and known bugs, sign the image, and prove the signature from a cold machine. Plus the two lessons that made the checks honest.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,9 +37,11 @@
       <span class="badge">Software supply chain</span>
       <h1>Checking the code and containers before they run</h1>
       <p class="descriptor">Most of what runs in the lab is built from other people's code and packaged into
-        containers. So before anything ships, it gets scanned for leaked secrets and known bugs, signed if it
-        passes, and refused at the door if it is not signed. Two of those checks looked like they worked and
-        did not. This page walks the pipeline and the two lessons that made it honest.</p>
+        containers. So that stack gets scanned for leaked secrets and known bugs, the image that ships gets
+        signed, and the signature is proven from a cold machine that trusts none of the lab's infrastructure.
+        Refusing to start an unsigned image is the next piece: written and committed, not yet turned on. Two of
+        these checks looked like they worked and did not. This page walks the pipeline and the two lessons that
+        made it honest.</p>
     </header>
 
     <div class="skill-body">
@@ -53,53 +55,70 @@
       </section>
 
       <section class="block">
-        <h2>Scan: secrets and known bugs, on every change</h2>
-        <p>Two scans run before code can merge. The first looks for secrets, an API key or password accidentally
-          committed, and blocks the merge if it finds one. It runs as a pre-commit check and again in the
-          pipeline, so a developer who skips the local hook still gets caught. The second scan reads the code,
-          the infrastructure definitions, and the built container image, and reports known vulnerabilities in
-          any library or base image they pull in. Both run on every pull request, not on a schedule, so a
-          problem is caught while the change is small and fresh in someone's head.</p>
+        <h2>Scan: secrets and known bugs</h2>
+        <p>Two scans stand between a change and a merge, and they run on different clocks, which is worth being
+          precise about. The first looks for secrets, an API key or password accidentally committed, and blocks
+          the merge if it finds one. That one really does run on every push and every pull request, as a
+          pre-commit check and again in the pipeline, so a developer who skips the local hook still gets caught.
+          The second reads the code, the infrastructure definitions, and the built container image, and reports
+          known vulnerabilities in any library or base image they pull in. It fires on pull requests that touch
+          a container definition, and on a weekly sweep besides. So a change that can pull in a new library is
+          checked while it is small and fresh in someone's head, and everything else is caught on the sweep.</p>
       </section>
 
       <section class="block">
         <h2>Sign: prove this exact build passed</h2>
-        <p>A build that passes the scans gets signed. The signature is a small cryptographic stamp that says
-          "this specific image, byte for byte, is the one that passed." Alongside it the pipeline records a
-          list of everything that went into the image, a kind of ingredients label for software. That label is
-          itself signed and attached to the image, so later you can ask "what libraries were in the thing we
-          shipped in March" and get a real answer instead of a guess. The signing key never sits in the CI
-          system. It lives in the secrets server and the pipeline borrows it for the moment it signs, then
-          gives it back.</p>
+        <p>The image that ships gets signed. The signature is a small cryptographic stamp that says "this
+          specific image, byte for byte, is the one that passed." Today that signing is a deliberate step an
+          operator runs against a specific build, not something that fires automatically on every green one.
+          The signing key never sits in the CI system: it lives in the secrets server, and the signing step
+          reads it from there when it runs.</p>
+        <p>The part that makes any of this mean something is checking it from somewhere else. On a cold machine,
+          trusting nothing but the published public key, both the signature and the attached build record
+          verify, and the build record points at the same image by digest. That is the whole point of signing.
+          Someone who was not there, and who trusts none of your infrastructure, can still confirm that the
+          image in front of them is the one you built. That check has been run and it passes.</p>
       </section>
 
       <section class="block">
-        <h2>Verify: refuse to run what is not signed</h2>
-        <p>Signing is only worth something if something checks the signature. When the cluster is asked to run
-          an image, a policy checks that the image carries a valid signature from the lab's own key before it
-          is allowed to start. No signature, or a signature from the wrong key, and the image does not run. The
-          check fails closed: if the verification service cannot make a decision, the answer is no, not "let it
-          through and hope." That policy starts in audit mode, where it records what it would have blocked
-          without blocking it yet, so you can see the real impact before you turn on enforcement and lock
-          yourself out of your own cluster.</p>
+        <h2>Verify at the door: written, not yet turned on</h2>
+        <p>The intended end state is that the cluster refuses to start an image that does not carry a valid
+          signature from the lab's own key, and that the check fails closed: if the verification service cannot
+          make a decision, the answer is no, not "let it through and hope." The policy is written and committed,
+          set to audit mode first so it records what it would have blocked before it blocks anything, because
+          the alternative is locking yourself out of your own cluster on the first bad match.</p>
+        <p>None of that is running. This is the part of the page most worth stating flatly, because "we sign our
+          images" is exactly the kind of claim that implies more than it delivers. The admission controller that
+          would do the checking is not installed, so nothing is being blocked and nothing is being audited
+          either. And the policy could not pass yet even if it were applied: only one image in the lab has a
+          signing path so far, so an audit run today would correctly report the others as unsigned. The
+          unsigned images are the real prerequisite, not the soak. What is proven is the chain for that one
+          image, end to end and cold-verified. Enforcement is the next piece of work.</p>
       </section>
 
       <section class="block">
         <h2>Provenance: where did this come from</h2>
-        <p>Provenance is the paper trail: which pipeline built this image, from which commit, at what time. The
-          signed ingredients label plus the build record let you trace a running container all the way back to
-          the line of code and the pull request that produced it. That is the difference between "we think this
-          is fine" and "here is exactly what it is and here is how it got here."</p>
+        <p>Provenance is the paper trail: which pipeline built this image, from which commit, at what time. That
+          record is attached to the image itself as a signed attestation rather than left in a build log
+          somewhere, so it travels with the image, and it is the half of the chain that already cold-verifies.
+          It is what lets you trace a running container back to the line of code and the pull request that
+          produced it. That is the difference between "we think this is fine" and "here is exactly what it is
+          and here is how it got here."</p>
       </section>
 
       <section class="block">
-        <h2>The weekly scan that hid fresh problems</h2>
+        <h2>The weekly scan that was pointed at the wrong thing</h2>
         <p>The registry, where built images are stored, was scanned once a week. That felt thorough and it was
-          quietly wrong. A build that happened on Wednesday would not be scanned until the next weekly sweep, so
-          a serious vulnerability introduced mid-week was invisible for days even though the tools could see it
-          the moment the image was built. The scan and the build were running on two different clocks. The fix
-          was to scan at build time, when the image is created, so a fresh critical is caught immediately
-          instead of waiting for a calendar to come around. A scan is only as current as its slowest clock.</p>
+          quietly wrong, in a way that took a while to see. The scan read the image already sitting on the
+          shelf. But the risk that moves without anyone touching the repo lives in the base image underneath: a
+          vulnerability gets published against a package the base pulls in, nobody in the lab changes a line, so
+          nothing triggers a scan, and the stored image scans clean next week because it is byte for byte the
+          same image it was. A build run that same day would pull a newer base and see something different.</p>
+        <p>The fix was to build fresh on a schedule and scan that, instead of only re-reading what was already
+          stored, plus a scan on any pull request that changes a container definition. Worth being honest about
+          the shape of that fix: it is still a weekly clock. What changed is which artifact gets scanned, not
+          how often. The lesson was not "scan more often." It was that a scan can be perfectly on schedule and
+          still be measuring the wrong object.</p>
       </section>
 
       <section class="block">
@@ -114,11 +133,13 @@
 
       <section class="block">
         <h2>What this adds up to</h2>
-        <p>Scan on every change so problems are caught small. Sign what passes so the tested thing and the
-          running thing are provably the same. Verify at startup so unsigned images never run. Keep the signing
-          key in the secrets server, not in CI. And treat both the scan schedule and the accept list as places
-          where a check can quietly stop checking, because those are exactly where the last two real gaps
-          were.</p>
+        <p>Scan so problems are caught small. Sign what ships so the tested thing and the running thing are
+          provably the same, and verify that signature from a machine that trusts none of your infrastructure,
+          because a signature nobody checks from the outside is just decoration. Keep the signing key in the
+          secrets server, not in CI. Refusing unsigned images at the door is written, committed, and not yet
+          turned on, and it is worth saying so in those words rather than letting the rest of the page imply
+          otherwise. And treat both the scan schedule and the accept list as places where a check can quietly
+          stop checking, because those are exactly where the last two real gaps were.</p>
       </section>
 
       <div class="links">
