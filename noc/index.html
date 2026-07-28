@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The NOC hub - Bill Gernert</title>
+  <meta name="description" content="One dashboard the whole estate reports into: nine domain tiles coloured by worst severity, a facts row that answers is-the-estate-ok without opening anything, and a rule that no-data never reads as green. Generated from the backlog and self-policing.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+  <style>
+    /* Wider column for this page only: a 1600px dashboard capture is unreadable at the 760px body width. */
+    main.page-wide { max-width: 1100px; }
+    figure.shot { margin: 1.5rem 0; }
+    figure.shot img { width: 100%; height: auto; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; display: block; }
+    figure.shot figcaption { font-size: 0.85rem; opacity: 0.75; margin-top: 0.4rem; }
+  </style>
+</head>
+<body>
+  <main class="page-narrow page-wide">
+    <nav class="topnav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/projects/">Projects</a>
+      <a href="/platform/">Platform</a>
+      <a href="/diagram/">Diagram</a>
+      <a href="/security/">Security</a>
+      <a href="/skills/">Skills</a>
+      <a href="/ai/">AI</a>
+      <a href="/noc/" class="active" aria-current="page">NOC</a>
+      <a href="/roadmap/">Roadmap</a>
+      <span class="topnav-spacer"></span>
+      <a href="https://github.com/billgernert" rel="me">GitHub</a>
+      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+    </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">NOC</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Monitoring</span>
+      <h1>The NOC hub</h1>
+      <p class="descriptor">A network operations centre is one screen you can glance at and know whether the
+        estate is healthy. This lab has one: a single dashboard that every domain reports into, with nine
+        tiles coloured by their worst problem and a row of facts that answer the whole question without
+        opening anything. Two rules make it trustworthy: a tile with no data is never green, and the whole
+        thing is generated from the backlog rather than arranged by hand.</p>
+    </header>
+
+    <nav class="crumbs" aria-label="On this page">
+      <a href="#hub">One screen to start from</a>
+      <span class="sep">/</span>
+      <a href="#tiles">The tiles, and what grey means</a>
+      <span class="sep">/</span>
+      <a href="#facts">The facts row</a>
+      <span class="sep">/</span>
+      <a href="#click">Click through to a domain</a>
+      <span class="sep">/</span>
+      <a href="#budget">The AI budget board</a>
+      <span class="sep">/</span>
+      <a href="#generated">Generated, and it polices itself</a>
+    </nav>
+
+    <div class="skill-body">
+      <section class="block" id="hub">
+        <h2>One screen to start from</h2>
+        <p>The pattern is simple and it is the whole point: instead of a wall of dashboards you have to know
+          your way around, there is one hub. Each domain of the estate gets a tile, the tile shows that
+          domain's worst current state, and clicking it takes you to that domain's own dashboard. The morning
+          question, "is anything on fire," is answered by looking at one page.</p>
+        <figure class="shot">
+          <img src="img/noc-hub-full.png" alt="The NOC overview dashboard: nine domain tiles above a row of four summary facts.">
+          <figcaption>The NOC overview hub: nine domain tiles and the facts row. Captured 2026-07-27.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="tiles">
+        <h2>The tiles, and what grey means</h2>
+        <p>Nine tiles, one per domain, each coloured by the worst severity in that domain: green is healthy,
+          amber and red escalate, and grey means no data. Grey is the honest one. Some domains are not fully
+          wired yet, so their tiles are grey today, and the page says that plainly rather than hiding it. That
+          matters because of a rule the hub enforces: a tile with no data must never render green. A green
+          tile is a promise that the domain is healthy, and a domain you are not actually measuring cannot
+          make that promise. So it stays grey until real data backs it, which is exactly the bug this rule
+          exists to prevent: a monitoring screen that looks reassuring while measuring nothing.</p>
+        <figure class="shot">
+          <img src="img/noc-tiles.png" alt="A close crop of the nine domain tiles, some coloured and some grey for no-data.">
+          <figcaption>The nine domain tiles, worst-severity coloured; grey is no-data, not healthy. Captured 2026-07-27.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="facts">
+        <h2>The facts row</h2>
+        <p>Under the tiles sit four supporting facts, the numbers you would otherwise open four dashboards to
+          find: how many alerts are firing, how many days until the soonest certificate expires, whether the
+          secrets server is sealed, and how long since the last backup completed. They live on the hub because
+          together they answer "is the estate OK" at a glance, before any tile is clicked.</p>
+        <figure class="shot">
+          <img src="img/noc-facts.png" alt="The four summary facts: firing alerts, days to cert expiry, secrets-server sealed state, hours since last backup.">
+          <figcaption>The facts row: four numbers that answer the health question without opening anything. Captured 2026-07-27.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="click">
+        <h2>Click through to a domain</h2>
+        <p>A tile is a door, not just a light. Clicking a domain's tile opens that domain's own overview
+          dashboard, so the hub is the starting point and the detail is one click away. The picture shows the
+          virtualization tile leading to the cluster overview, where the per-host detail lives.</p>
+        <figure class="shot">
+          <img src="img/pve-cluster.png" alt="A cluster overview dashboard reached by clicking a domain tile, showing aggregate cluster figures.">
+          <figcaption>A domain tile opens its own dashboard: the cluster overview. Captured 2026-07-27.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="budget">
+        <h2>The AI budget board</h2>
+        <p>One tile leads somewhere worth its own mention: the AI spend board. It ties straight to the cost
+          gating described on the AI page, layered budgets where the most restrictive limit wins, so the
+          money side of running models is visible on the same wall as everything else. Spend figures are the
+          owner's own; the number you see is a dated snapshot, not a live claim.</p>
+        <figure class="shot">
+          <img src="img/litellm-budget.png" alt="The AI gateway budget and spend dashboard: layered budget panels by consumer.">
+          <figcaption>The AI gateway budget board: layered budgets, most-restrictive-wins. Captured 2026-07-27.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="generated">
+        <h2>Generated, and it polices itself</h2>
+        <p>The part a screenshot cannot show is the part that matters most: the hub is not arranged by hand, it
+          is generated from the backlog, and the generator is the enforcement point. It fails the build if a
+          domain is missing its tag or if a domain has no single primary dashboard to link to, a drift check
+          in CI catches a hub that has fallen out of step, and a nightly job reconciles it against what Grafana
+          is actually serving. That is what keeps the no-data-never-green rule and the one-tile-per-domain
+          shape true over time, rather than true on the day it was built. A hand-maintained wall drifts; a
+          generated one that fails its own checks does not.</p>
+      </section>
+
+      <div class="links">
+        <a href="/skills/grafana.html">Grafana &#8594;</a>
+        <a href="/skills/prometheus.html">Prometheus &#8594;</a>
+        <a href="/skills/zabbix.html">Zabbix &#8594;</a>
+        <a href="/projects/">The pipelines behind it &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>
