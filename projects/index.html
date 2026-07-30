@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projects - Bill Gernert</title>
-  <meta name="description" content="Six pipelines from AutomationLab, told as stories: automated server provisioning, a Windows template factory, a job reporting pipeline, self-healing monitoring, VM decommission with safety gates, and AIOps morning triage. Each with the problem, the stages, what broke, and the code that fixed it.">
+  <meta name="description" content="Pipelines from AutomationLab: automated server provisioning, certificate and secret renewal, a Windows template factory, a job reporting pipeline, self-healing monitoring, VM decommission with safety gates, and AIOps morning triage. Each with the problem, the stages, what broke, and the code that fixed it.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,21 +14,30 @@
 </head>
 <body>
   <main class="page-narrow">
-    <nav class="topnav" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/projects/" class="active" aria-current="page">Projects</a>
-      <a href="/platform/">Platform</a>
-      <a href="/diagram/">Diagram</a>
-      <a href="/security/">Security</a>
-      <a href="/skills/">Skills</a>
-      <a href="/ai/">AI</a>
-      <a href="/claude-code/">Claude Code</a>
-      <a href="/noc/">NOC</a>
-      <a href="/roadmap/">Roadmap</a>
-      <span class="topnav-spacer"></span>
-      <a href="https://github.com/billgernert" rel="me">GitHub</a>
-      <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
-    </nav>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="parsec-lab.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/projects/" class="active" aria-current="page">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/diagram/">Diagram</a>
+        <a href="/security/">Security</a>
+        <a href="/skills/">Skills</a>
+        <a href="/ai/">AI</a>
+        <a href="/claude-code/">Claude Code</a>
+        <a href="/noc/">NOC</a>
+        <a href="/roadmap/">Roadmap</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">parsec-lab.com</a>
       <span class="sep">/</span>
@@ -38,279 +47,29 @@
     <header class="skill-head">
       <span class="badge">Pipelines</span>
       <h1>Projects</h1>
-      <p class="descriptor">Six pipelines I built and run. Each one gets the same treatment: the problem
+      <p class="descriptor">Pipelines I built and run. Each one gets the same treatment: the problem
         it exists to solve, the stages it actually runs, <b>what broke and what I did about it</b>, and
         the code that fixed it. The bugs are the interesting part, so they are not skipped. For the
         subsystems these run on, see <a href="/platform/">Platform</a>.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block" id="server-provisioning">
-        <h2>1. Automated server provisioning</h2>
-        <p>Builds a server as one consistent fact across five systems at once, with a collision gate that
-          refuses to reconcile a live host by accident, and the three bugs that taught it to fail safe (one of
-          which had it reading the wrong command's exit code for its entire life).
-          <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></p>
-      </section>
-
-      <section class="block">
-        <h2>2. The template factory</h2>
-        <p><b>The problem.</b> Hand-built golden images rot. They accumulate cruft you cannot see and
-          cannot clean: activation timers that cannot be re-armed again, locked packages, drifted
-          certificates. And you cannot really <em>patch</em> a golden image, you can only add to it. The
-          fix is to stop treating the image as an artifact you maintain and start treating it as an
-          output you regenerate: <b>patching a template means rebuilding it</b>, and the build is code.</p>
-        <ol class="stages">
-          <li>Stage - pick the idle half of a live/alternate template pair</li>
-          <li>Build - Packer, from a custom answer-file ISO</li>
-          <li><b>Verify</b> - confirm the thing built is genuinely a template</li>
-          <li><b>Promote</b> - tag-swap the new one live, demote the old one</li>
-          <li>Cleanup on failure - destroy the staging machine, leave the live tag untouched</li>
-          <li>Email the result</li>
-        </ol>
-        <p>It runs weekly, unattended. Two details carry it. First, <b>the build verifies itself</b>
-          rather than trusting an exit code: it re-reads the machine's config and checks it really is a
-          template, because a stale template left by a previous run must never be misread as this run's
-          success. Second, provisioning never names a template by ID, only by tag, which is what makes
-          the swap invisible to it.</p>
-        <p><b>The promote order is the whole trick.</b> Promote the new one to live <em>first</em>, then
-          demote the old one. Do it the other way and a failure between the two steps leaves zero live
-          templates and provisioning is down. This way the worst case is two templates both tagged live,
-          the resolver picks one, and everything keeps working.</p>
-        <pre class="excerpt"><code>def cmd_promote(osname, staging):
-    p = PAIRS[osname]; tag = p["tag"]; staging = int(staging)
-    if not _is_template(staging):
-        sys.stderr.write(f"refusing: staging {staging} is not a template\n"); sys.exit(1)
-    old_live = _find_by_tag(tag)
-    # Promote staging to live FIRST. If anything fails after this, we have two live
-    # templates (resolver picks one - still works) rather than zero (provisioning down).
-    node = _node_of(staging)
-    _api(f"/nodes/{node}/qemu/{staging}/config", "PUT",
-         {"tags": f"win-template;{tag}"})</code></pre>
-        <p class="excerpt-cap">Fail toward two live templates, never toward none.</p>
-        <p><b>What broke: it was finished, and it was not there.</b> This subsystem worked. It had been
-          built, it had run, and the roadmap said "completed". It was also sitting on a branch, more than
-          a hundred and fifty commits behind, <b>entirely absent from the main line</b>, for months.
-          Nobody noticed because everything that consumed it kept working off the old templates. A branch
-          audit found it, and it merged across almost verbatim, needing only four modernizations to meet
-          the standards the main line had since grown. Then a live build ran green from the merged code
-          and the branch was deleted. The lesson was not about Packer: <b>work that is not merged is not
-          done, no matter what the board says.</b></p>
-        <div class="links">
-          <a href="/skills/pipelines.html">Pipelines &#8594;</a>
-          <a href="/skills/proxmox.html">Proxmox &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>3. The job reporting pipeline</h2>
-        <p><b>The problem</b>, in the words I wrote when I filed it: job searching is manual,
-          unstructured, and produces no data. Postings get found ad hoc, fit is judged subjectively,
-          market signal is invisible, and there is no record of which version of a resume went where. So
-          I built the thing I would have built at work: ingest, enrich, score, report, and measure
-          whether the scoring was any good.</p>
-        <ol class="stages">
-          <li>Collect (daily) - job boards, aggregators, and a forwarding mailbox, deduped on a URL hash</li>
-          <li>Enrich (daily) - a <b>local</b> model extracts skills and a 0-10 relevance score</li>
-          <li><b>Prefilter</b> - anything scoring low is dropped <em>before</em> a single paid call</li>
-          <li>Parse salary and deadline deterministically (regex, not a model)</li>
-          <li>Fit-score the survivors with a paid model, behind a fail-closed budget gate</li>
-          <li>A human decides - a state machine; choosing "want" triggers resume tailoring</li>
-          <li>Digest (daily) - quiet by default</li>
-          <li>Calibrate (weekly) - pure SQL, no model</li>
-        </ol>
-        <p>The routing rule is cheapest-first and it is not a slogan: the free local model reads
-          <em>every</em> posting, the paid model only ever sees what survived it. The digest is quiet by
-          default, which makes its arrival the heartbeat: nothing to report means no email, so an empty
-          inbox is a signal rather than a silence.</p>
-        <p>The most interesting code in this pipeline is not code. Tailoring a resume with a model is
-          exactly where a system starts lying on your behalf, so the constraint is written as the
-          hardest thing in the prompt:</p>
-        <pre class="excerpt"><code>HARD CONSTRAINT - truthfulness (non-negotiable):
-- You MAY reframe wording, reorder sections and bullets, and OMIT anything in the master
-  resume that is irrelevant to this posting.
-- You MUST NOT add, invent, or imply any employer, job title, employment date, degree,
-  certification, metric, or skill that is not already present in the master resume. If the
-  posting asks for something the resume does not already evidence, leave it out; do not
-  fabricate it. When in doubt, omit rather than invent.
-- The KNOWN GAPS listed in the user message are context for what to de-emphasize. They are
-  NOT a license to add missing qualifications. Never write experience to fill a gap.</code></pre>
-        <p class="excerpt-cap">Reframe freely. Never invent. The gaps are not a licence to fill them.</p>
-        <p><b>What broke.</b> Three good ones. <b>A hundred and forty files, one database row:</b> the
-          dedupe hash normalized each URL by stripping its query string, which is right for tracking
-          parameters and catastrophically wrong for a source whose posting identity <em>is</em> the query
-          string. Every posting from it collapsed onto a single row, and every run cheerfully re-queued
-          the same work. Fixed with a per-source flag rather than by weakening the rule for everyone.
-          <b>A parser that ate the first letter of every path:</b> the status output was trimmed as a
-          whole, which swallowed the leading column space on the first line only, and then each line was
-          cut at a fixed offset, so the first path lost its first character and the job went looking for
-          a directory one letter short of the real one. <b>A retry with no cap:</b> a posting that
-          consistently failed to score was caught, logged, skipped, and retried again the next run, and
-          the next, forever, burning a budget check each time and hiding the real bug behind a tidy log
-          line. It now counts its attempts, gives up after three, and says so.</p>
-        <p class="note">Honest about the ending: the calibration machinery is built and tested, but it
-          has not yet had enough real outcomes to judge whether the scores predict anything. It measures
-          nothing until it does, and it will not pretend otherwise. The pipeline also never applies to
-          anything on my behalf: it prepares, a human sends.</p>
-        <div class="links">
-          <a href="/skills/job-search-platform.html">The job search platform &#8594;</a>
-          <a href="/skills/python-tooling.html">Python tooling &#8594;</a>
-          <a href="/ai/">How I use AI &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>4. Self-healing monitoring</h2>
-        <p><b>The problem.</b> Monitoring that wakes you up to perform the same restart is not
-          monitoring, it is a pager with extra steps. But a system that repairs things unattended is a
-          system that can break things unattended, at machine speed, across a fleet. So the question is
-          not "can it fix this", it is <b>"what is it allowed to do without me"</b>.</p>
-        <ol class="stages">
-          <li>Detect - classify every broken host. Changes nothing</li>
-          <li>Email the <b>full plan</b></li>
-          <li><b>Human approval</b> (30-minute timeout; unapproved means zero hosts touched)</li>
-          <li>Heal Linux</li>
-          <li>Heal Windows</li>
-        </ol>
-        <p>The engine splits the work by what it can safely own. Drift it can correct at the server (an
-          address that moved, a key that went stale) it fixes directly. Anything needing a touch on the
-          host itself is queued as a plan for a human to approve. Dispatch is OS-aware, and it runs
-          <em>only</em> the roles that repair monitoring, never the provisioning roles that would be
-          destructive on a machine that is already live and serving.</p>
-        <p><b>The vocabulary is the honesty.</b> Every run records an outcome per host, and the words it
-          is allowed to use are exactly the words it can prove:</p>
-        <pre class="excerpt"><code>result vocabulary for this engine (Level 1, classify/dispatch only):
-  applied    - server-side fix made here (ip-fix / psk-sync)
-  dispatched - agent-side heal queued to Ansible (outcome verified later)
-  escalated  - no automation path (unknown OS), needs a human
-green_within_n / failed are NOT recordable here: this engine does not
-re-check the host after healing. That belongs to the post-heal verification
-slice (re-query Zabbix availability after the Ansible stages).</code></pre>
-        <p class="excerpt-cap">It cannot say the heal worked, because it does not look. So it does not say it.</p>
-        <p><b>What broke.</b> Per-host monitoring keys live in the secrets manager under two different
-          schemas, for historical reasons. An earlier version of the engine read only one of them. Every
-          host stored under the other schema was silently skipped: not errored, not warned, skipped. And
-          because nothing had failed, <b>the pipeline reported success while those hosts stayed
-          red</b>. That is the worst possible outcome for a self-healing system, worse than not running
-          at all, because a green run is a claim that the fleet is fine. It reads both schemas now.</p>
-        <div class="links">
-          <a href="/skills/zabbix.html">Zabbix &#8594;</a>
-          <a href="/skills/ansible.html">Ansible &#8594;</a>
-          <a href="/platform/">The platform &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>5. Decommission, with the gate that says no</h2>
-        <p><b>The problem.</b> Destroying is the one operation you cannot walk back. The machine's name
-          doubles as the selector for its infrastructure-state workspace, which means a typo is not a
-          typo, it is a target. A name matching nothing fails safely and loudly. But a name that happens
-          to match an <em>existing</em> workspace that is empty or wrong does not fail at all, and that
-          is the gap.</p>
-        <ol class="stages">
-          <li>Validate input</li>
-          <li>Plan the destroy</li>
-          <li><b>Assert the plan actually destroys something</b></li>
-          <li>Human approval (30-minute timeout)</li>
-          <li>Destroy</li>
-          <li>Release the address - <b>after</b> the destroy, never before</li>
-          <li>Deregister monitoring</li>
-          <li>Deregister DNS</li>
-          <li>Remove the host manifest, delete the workspace</li>
-        </ol>
-        <p><b>What broke, and it is the one that bothers me most.</b> A destroy plan that destroys
-          nothing is not an error. It plans zero changes and exits zero. The apply then applies zero
-          changes and exits zero. The pipeline emails <em>"VM Decommissioned"</em>. Nothing anywhere had
-          ever asserted that the plan would delete a single thing, because why would a destroy not
-          destroy?</p>
-        <p>That alone is a lie in an email. What makes it dangerous is the next two stages: deregistering
-          monitoring and DNS keys off <em>the name</em>, not off a confirmed destroy. So a name that
-          matched some abandoned workspace could tear a live host out of monitoring and DNS while
-          destroying nothing and reporting success. And there were more than a dozen junk workspaces
-          lying around from ad-hoc runs, which is exactly what makes an accidental match plausible rather
-          than theoretical.</p>
-        <p><b>The fix asserts the plan's contents, not its exit code.</b> It reads the planned changes
-          and looks for an actual delete. Nothing to destroy is exit 2. An unreadable plan is exit 3, and
-          also fails, because a plan you cannot read is not a plan you may act on. It deliberately does
-          not use the tool's own "detailed exit code" flag, which has a documented history of reporting
-          changes when there is nothing to destroy. Best of all it runs <b>before</b> the approval, so a
-          plan that would do nothing never reaches a human to rubber-stamp.</p>
-        <pre class="excerpt"><code>if not deleted:
-    print("DESTROY PLAN IS EMPTY: it would destroy 0 resources.", file=sys.stderr)
-    print("", file=sys.stderr)
-    print("A decommission that destroys nothing is a FALSE NEGATIVE, not a success (item 130).",
-          file=sys.stderr)
-    print("The plan was built against a workspace whose state has nothing to destroy. Likely:",
-          file=sys.stderr)
-    print("  - the VM was already destroyed (this decommission has nothing to do), or",
-          file=sys.stderr)
-    print("  - the wrong workspace was selected, or its state is empty/lost.", file=sys.stderr)
-    return EXIT_NOTHING_TO_DESTROY</code></pre>
-        <p class="excerpt-cap">An empty destroy plan is a false negative, not a success.</p>
-        <p class="note">Honest about the state of it: this gate is committed and proven against synthetic
-          plans covering every exit path, but it has not yet been re-run live against the two real
-          false negatives that prompted it, so I am not calling it verified. It currently guards the
-          Linux pipeline; the Windows one still carries the older pattern and is next.</p>
-        <div class="links">
-          <a href="/skills/terraform.html">Terraform &#8594;</a>
-          <a href="/skills/jenkins.html">Jenkins &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>6. AIOps morning triage</h2>
-        <p><b>The problem.</b> Overnight, the estate produces alerts, CI results, and backup outcomes.
-          By morning that is a pile. The pile is not the problem; the problem is that reading it is a
-          job, and the day already has one. So: collect it, have something read it, and put a short
-          honest summary in front of me before I sit down.</p>
-        <ol class="stages">
-          <li>Collect from alerting, monitoring, CI, and backups (each writes a <b>heartbeat</b>)</li>
-          <li>Correlate - deterministically, in code, not asked of a model</li>
-          <li>Triage - a <b>local</b> model classifies each finding</li>
-          <li><b>Escalate the hard cases only</b> - a paid model, twice-braked</li>
-          <li>Digest - with a health banner</li>
-        </ol>
-        <p>It runs daily at 06:00, after the backups and before me. The heartbeat matters more than it
-          sounds: without it, a collector that never ran and a night with nothing wrong produce the same
-          empty page. A quiet night has to be provably quiet.</p>
-        <p><b>Cost gating is two independent brakes</b>, because one is a single point of failure. A
-          fail-closed budget gate that denies when the budget is <em>missing or unreadable</em>, not just
-          when it is exceeded, so a broken secret closes the tap instead of opening it. And a per-run
-          escalation cap on top, which the code calls belt-and-suspenders over the money gate, in as many
-          words:</p>
-        <pre class="excerpt"><code>def should_escalate(local, finding, gate_allowed, escalations_left,
-                    conf_threshold=ESCALATE_CONFIDENCE):
-    """Decide whether to send this finding to Claude. Returns (escalate: bool, reason: str).
-
-    Never escalates unless the credit gate allows AND a per-run cap remains (belt-and-suspenders
-    over the money gate). Given that, escalate a HARD case:
-      - local is None (the local model produced unusable output), or
-      - local confidence is below threshold (or missing), or
-      - high-stakes: severity critical AND locally classified actionable (warrants a 2nd opinion).
-    """
-    if not gate_allowed or escalations_left &lt;= 0:
-        return False, "gate-blocked" if not gate_allowed else "per-run cap reached"
-    if local is None:
-        return True, "local output invalid"
-    _cls, _rat, conf = local
-    if conf is None or conf &lt; conf_threshold:
-        return True, f"low local confidence ({conf})"</code></pre>
-        <p class="excerpt-cap">The paid model is for hard cases: bad local output, low confidence, or high stakes.</p>
-        <p><b>The one stage allowed to fail the build is the digest.</b> Collectors and triage soft-fail
-          and let the chain continue, because a broken collector should not cost me the whole report. But
-          if the digest cannot send, the build fails loudly, because a report that silently stops
-          arriving looks exactly like a quiet morning. The absence of news has to be news.</p>
-        <div class="links">
-          <a href="/ai/">How I use AI &#8594;</a>
-          <a href="/skills/grafana.html">Grafana &#8594;</a>
-          <a href="/platform/">The platform &#8594;</a>
-        </div>
-      </section>
+      <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
+      <ol class="project-list">
+        <li id="server-provisioning"><b>Automated server provisioning.</b> Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident. <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></li>
+        <li id="cert-secret-renewal"><b>Automated certificate and secret renewal.</b> Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill. <span class="coming-soon">coming soon</span></li>
+        <li id="template-factory"><b>The template factory.</b> Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live. <span class="coming-soon">coming soon</span></li>
+        <li id="job-reporting"><b>The job reporting pipeline.</b> Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt. <span class="coming-soon">coming soon</span></li>
+        <li id="self-healing-monitoring"><b>Self-healing monitoring.</b> Classifies every broken host, emails the full remediation plan, and heals only what a human has approved. <span class="coming-soon">coming soon</span></li>
+        <li id="decommission-gate"><b>Decommission, with the gate that says no.</b> Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown. <span class="coming-soon">coming soon</span></li>
+        <li id="aiops-triage"><b>AIOps morning triage.</b> Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model. <span class="coming-soon">coming soon</span></li>
+      </ol>
+      <!-- END generated: projects-index -->
 
       <section class="block">
         <h2>Code on GitHub</h2>
-        <p>The excerpts above are the real thing, lifted verbatim. What you will not find is a repository
-          link next to each pipeline, and the honest reason is better than a broken link: <b>the
+        <p>Each project's own page carries its real code, lifted verbatim. What you will not find is a
+          repository link next to each one, and the honest reason is better than a broken link: <b>the
           AutomationLab repository is private and stays private</b>. It is the live configuration of a
           running estate, and publishing it would mean publishing the shape of the network it runs.
           Anything that reaches the public side crosses a fail-closed scrub gate first, which is why this

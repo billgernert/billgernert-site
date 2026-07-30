@@ -62,7 +62,44 @@ a:hover { text-decoration: underline; }
 .crumbs .sep { color: rgba(74, 96, 128, 0.5); }
 .crumbs .here { color: var(--fg); }
 
-/* ---- site-wide top navigation (item 136) ---- */
+/* ---- sticky site header: brand mark + name + nav, pinned while scrolling (item 448) ---- */
+/* scroll-padding-top keeps an anchor jump (#id) landing with its heading visible BELOW the sticky
+   header, instead of right at the very top of the viewport where the header would cover it. The value
+   is a generous upper bound for the header's height including a two-line wrap on a narrow phone width,
+   not an exact measurement - there is no JS on this site to measure it, and a few extra px of gap below
+   the header is harmless where actually covering the heading would not be. */
+html { scroll-padding-top: 130px; }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+  background: var(--bg);
+  padding: 14px 0 12px;
+  margin: 0 0 22px;
+  border-bottom: 1px solid var(--border);
+}
+.site-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  color: var(--fg);
+  text-decoration: none;
+}
+.site-header .brand:hover { color: var(--cyan); text-decoration: none; }
+.site-header .brand-mark { width: 26px; height: 26px; flex: none; }
+.site-header .brand-name {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+/* ---- site-wide top navigation (item 136), nested inside .site-header ---- */
 .topnav {
   display: flex;
   flex-wrap: wrap;
@@ -72,15 +109,18 @@ a:hover { text-decoration: underline; }
   font-size: 0.72rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin: 0 0 22px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .topnav a { color: var(--muted); }
 .topnav a:hover { color: var(--cyan); text-decoration: none; }
 .topnav a.active { color: var(--fg); }
 .topnav .topnav-spacer { flex: 1 1 auto; }
 @media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
+@media (max-width: 640px) {
+  .site-header { gap: 6px 14px; }
+  .site-header .brand-name { display: none; }   /* keep the mark visible; drop the wordmark to save width */
+}
 
 /* ---- shared eyebrow + headings ---- */
 .eyebrow {
@@ -163,6 +203,36 @@ pre.excerpt code {
 .stages li::marker { color: var(--cyan); }
 .stages b { color: var(--green); font-weight: 600; }
 
+/* ---- Projects index: numbered one-line entries (item 449) ---- */
+/* A native <ol>, not a CSS counter: the number is real list semantics, so it survives with CSS off and
+   is announced correctly by assistive tech, exactly like .stages above. */
+.project-list {
+  margin: 18px 0;
+  padding-left: 26px;
+}
+.project-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-weight: 300;
+}
+.project-list li:first-child { padding-top: 0; }
+.project-list li:last-child { border-bottom: none; }
+.project-list li::marker { color: var(--cyan); font-family: var(--mono); }
+.project-list b { color: #fff; font-weight: 600; }
+.project-list a { white-space: nowrap; }
+.coming-soon {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
 /* ==========================================================================
    DIAGRAM PAGE (item 136 PR5)
    Pure HTML/CSS, no scripts: the site's CSP is default-src 'none', so a click
@@ -244,6 +314,33 @@ a.dnode:hover, a.dnode:focus-visible {
   margin-bottom: 2px;
 }
 .region-card p { margin: 8px 0 0; font-size: 0.95rem; }
+
+/* ---- diagram page: topology section (item 450) ----
+   The operator's approved SVG layout, re-skinned onto this page's own shared palette (var(--bg),
+   var(--cyan), etc.) instead of the standalone draft's own :root variables, so there is one theme for
+   the whole site rather than a per-section one. Classes are prefixed topo- so nothing here can collide
+   with an unrelated rule elsewhere in this file. */
+.topology-diagram { display: block; width: 100%; height: auto; margin-top: 14px; }
+.topology-diagram a { text-decoration: none; }
+.topo-node rect {
+  fill: var(--card);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  rx: 6;
+}
+.topo-node:hover rect { stroke: var(--cyan); cursor: pointer; }
+.topo-chev-path { stroke: var(--border-strong); }
+.topo-t { font-family: var(--mono); font-size: 13px; fill: var(--cyan); }
+.topo-s { font-family: var(--sans); font-size: 11.5px; fill: var(--muted); }
+.topo-zone { fill: none; stroke: var(--border); stroke-dasharray: 4 4; rx: 10; }
+.topo-zone-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  fill: var(--muted);
+}
+.topo-wire { stroke: var(--border-strong); stroke-width: 1; fill: none; }
+.topo-wire-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; fill: var(--muted); }
 
 /* ==========================================================================
    INDEX PAGE
