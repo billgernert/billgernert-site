@@ -117,6 +117,15 @@ html { scroll-padding-top: 130px; }
 .topnav a.active { color: var(--fg); }
 .topnav .topnav-spacer { flex: 1 1 auto; }
 @media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
+/* Nav group labels (item 467): plain text, not links, marking the Work / Platform / Engineering
+   clusters the flat ten-link row was grouped into. Inherits the mono/uppercase/letter-spacing from
+   .topnav; only color/opacity and a divider differ from a link. */
+.topnav-group {
+  color: var(--muted);
+  opacity: 0.6;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
 @media (max-width: 640px) {
   .site-header { gap: 6px 14px; }
   .site-header .brand-name { display: none; }   /* keep the mark visible; drop the wordmark to save width */

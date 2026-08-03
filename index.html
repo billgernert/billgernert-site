@@ -192,6 +192,16 @@
     .topnav a.active { color: var(--fg); }
     .topnav .topnav-spacer { flex: 1 1 auto; }
     @media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
+    /* Nav group labels (item 467): plain text, not links, marking the Work / Platform / Engineering
+       clusters the flat ten-link row was grouped into. Inherits the mono/uppercase/letter-spacing
+       from .topnav; only color/opacity and a divider differ from a link. This page carries its own
+       copy of the rule (see site/skills/style.css for the shared copy every other page loads). */
+    .topnav-group {
+      color: var(--muted);
+      opacity: 0.6;
+      padding-left: 10px;
+      border-left: 1px solid var(--border);
+    }
     @media (max-width: 640px) {
       .site-header { gap: 6px 14px; }
       .site-header .brand-name { display: none; }
@@ -296,15 +306,21 @@
       </a>
       <nav class="topnav" aria-label="Primary">
         <a href="/" class="active" aria-current="page">Home</a>
+        <span class="topnav-group">Work</span>
         <a href="/projects/">Projects</a>
+        <a href="/skills/">Skills</a>
+        <a href="/roadmap/">Roadmap</a>
+        <span class="topnav-group">Platform</span>
         <a href="/platform/">Platform</a>
+        <a href="/vault/">Vault</a>
+        <a href="/mail/">Mail</a>
+        <span class="topnav-group">Engineering</span>
         <a href="/diagram/">Diagram</a>
         <a href="/security/">Security</a>
-        <a href="/skills/">Skills</a>
         <a href="/ai/">AI</a>
         <a href="/claude-code/">Claude Code</a>
         <a href="/noc/">NOC</a>
-        <a href="/roadmap/">Roadmap</a>
+        <a href="/dead-man-monitoring/">Watchdog</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
@@ -378,8 +394,8 @@
                scripts/gen-roadmap-data.py --hero-page; the PR count by scripts/gen-pr-count.py (Gitea
                merged-PR API). Edits between each START/END marker are overwritten at sync; the values
                committed here are the last generated snapshot, not hand-typed literals. -->
-          <b class="hero-fact"><!--HERO:ITEMS:START-->204<!--HERO:ITEMS:END--></b> backlog items delivered
-          through <b class="hero-fact"><!--HERO:PRS:START-->1747<!--HERO:PRS:END--></b> PRs, every one
+          <b class="hero-fact"><!--HERO:ITEMS:START-->205<!--HERO:ITEMS:END--></b> backlog items delivered
+          through <b class="hero-fact"><!--HERO:PRS:START-->1749<!--HERO:PRS:END--></b> PRs, every one
           reviewed and merged by me. Recovery is proven, not promised. A pipeline verifies backups weekly,
           and the practice is live-fire: Vault destroyed and restored in 97 seconds.
         </p>
