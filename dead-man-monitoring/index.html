@@ -98,14 +98,15 @@
           triage, and a summary from the job-search platform. They are the kind of thing that is easy to
           stop noticing, which makes them exactly the kind of thing that can stop arriving without anyone
           reacting.</p>
-        <p>Each digest pipeline pushes a heartbeat as its last step, after the mail is actually sent rather
-          than when the job starts. That ordering is the whole design. A heartbeat sent at the start of a
-          job proves the scheduler fired, which is not the question anyone cares about. Sent at the end, it
-          proves the work completed and the mail went out.</p>
-        <p>Each digest has its own alarm, set to fire when no heartbeat has arrived for two hours. Separate
-          alarms rather than one shared alarm, because the failure that matters most is one digest going
-          quiet while the others keep arriving. A single combined check would stay green through exactly
-          that.</p>
+        <p>Each digest pipeline is built to push a heartbeat as its last step, after the mail is actually
+          sent rather than when the job starts. That ordering is the whole design. A heartbeat sent at the
+          start of a job proves the scheduler fired, which is not the question anyone cares about. Sent at
+          the end, it proves the work completed and the mail went out.</p>
+        <p>Each digest is meant to get its own alarm, set to fire when no heartbeat has arrived for two
+          hours. Separate alarms rather than one shared alarm, because the failure that matters most is one
+          digest going quiet while the others keep arriving. A single combined check would stay green
+          through exactly that. The heartbeat pushes and the alarm definitions are written and committed;
+          wiring them into the monitoring system so the alarms actually fire is not done yet.</p>
       </section>
 
       <section class="block" id="reconciler">
