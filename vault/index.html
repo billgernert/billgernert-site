@@ -111,10 +111,12 @@
           door, you have a lock that does not lock. If you do not automate it, every reboot needs a human
           with the key, at whatever hour the reboot happens.</p>
         <p>The way out is to have something else hold the key. A second, much smaller Vault runs on its own
-          machine and does one job: it holds an encryption key and will encrypt or decrypt small pieces of
-          data for callers it trusts. The cluster stores its own unseal material in a form only that second
-          server can decrypt. On boot, each node asks it to decrypt, gets what it needs, and unseals itself.
-          Nobody types anything, and no readable key sits on any of the three nodes.</p>
+          machine, running only Vault's Transit secrets engine: it holds an encryption key and will encrypt
+          or decrypt small pieces of data for callers it trusts, never storing them itself. This is Vault's
+          own transit auto-unseal pattern. The cluster stores its own unseal material in a form only that
+          second server's Transit engine can decrypt. On boot, each node asks it to decrypt, gets what it
+          needs, and unseals itself. Nobody types anything, and no readable key sits on any of the three
+          nodes.</p>
         <p>This is a real improvement and it is not free, so here is the honest version of the trade. The
           cluster now depends on that small server being up. If it is down when a node boots, that node
           comes up sealed and stays sealed, and getting it open is a manual recovery using the operator key
@@ -130,9 +132,11 @@
         <h2>One address that follows the healthy node</h2>
         <p>Three nodes is not much use if everything in the lab has to know which of the three to talk to
           today. So the cluster answers on a single address that is not permanently tied to any node. The
-          nodes run a small daemon that gossips among themselves about who currently owns that address, and
-          if the owner goes quiet the others hold an election and one of them takes it over. To the rest of
-          the lab, nothing changed: the same address still answers.</p>
+          nodes run keepalived, using VRRP (virtual router id 51) to decide among themselves who currently
+          owns that address. Each node carries a different priority, one at 150 and the other two at 140 and
+          130, so ties always resolve the same way. If the owner goes quiet the others hold an election and
+          the highest remaining priority takes it over. To the rest of the lab, nothing changed: the same
+          address still answers.</p>
         <p>The interesting failure is not a node that dies. It is a node that stays perfectly alive and
           stops being useful. A machine whose Vault process has sealed itself is still pingable, still
           answering on the network, still winning the election, and serving nothing. Every host-level health
@@ -148,29 +152,32 @@
 
       <section class="block" id="tls">
         <h2>Certificates from the lab's own authority</h2>
-        <p>Every endpoint in the cluster is served over TLS with a certificate issued by the lab's internal
-          certificate authority, not a self-signed certificate generated on the box.</p>
+        <p>Every endpoint in the cluster is served over TLS with a certificate issued by AD CS, Active
+          Directory Certificate Services, the lab's own internal certificate authority, not a self-signed
+          certificate generated on the box.</p>
         <p>The difference is who decides to trust it. A self-signed certificate has to be trusted one
           machine at a time, which in practice means someone eventually passes the flag that turns
-          verification off, and from then on nothing is being verified anywhere. With an internal authority,
-          machines are told once to trust that authority, and every certificate it issues is trusted
+          verification off, and from then on nothing is being verified anywhere. With AD CS as a shared
+          authority, machines are told once to trust it, and every certificate it issues is trusted
           automatically. Rotating a certificate stops being a fleet-wide errand.</p>
         <p>These certificates are issued by hand and expire after a year, which is a quiet trap: nothing
-          fails until the day it does, and then everything that verifies fails at once. So each endpoint is
-          watched by a probe that reads the certificate the server is actually presenting and raises a
-          warning a month before it expires, and a louder one a week out. The watch reads what is on the
-          wire rather than what a config file claims, because those two can disagree.</p>
+          fails until the day it does, and then everything that verifies fails at once. So every endpoint,
+          the shared address, all three nodes, and the small Transit server, is watched by the blackbox
+          exporter, which reads the certificate each server is actually presenting rather than trusting a
+          config file. Prometheus turns that into two alarms: a warning at 30 days from expiry and a louder
+          one at 7. A fifth alarm watches that all five endpoints are still reporting at all, so the watcher
+          itself going quiet does not read as a clean bill of health.</p>
       </section>
 
       <section class="block" id="backups">
         <h2>Backups and failure domains</h2>
-        <p>The small server that holds the unseal key is backed up somewhere different from everything else,
-          on a separate storage box outside the main backup system.</p>
-        <p>That looks like an odd exception until you write down the failure you are protecting against. If
-          the unseal-key server and the cluster it unseals are backed up by the same system to the same
-          storage, then one bad day for that storage takes both. You would be restoring a cluster you cannot
-          open using a key server you also cannot restore. Keeping them in separate failure domains costs
-          one extra backup job and removes an entire category of very bad afternoon.</p>
+        <p>PBS, Proxmox Backup Server, takes a nightly backup of every VM in the lab, the secrets cluster and
+          the small Transit server included. That is the ordinary path, and it means no single machine's own
+          disk is where the fleet's protection actually lives.</p>
+        <p>The backup store itself is not the last line either. It gets mirrored every night onto a second,
+          separate Synology, so a bad day for the primary backup store does not also take out its own
+          backups. That mirror covers the whole fleet, not one server carved out for special treatment; the
+          failure it closes is a shared backup store and the thing it backs up going down together.</p>
         <p>Separately, the weekly restore test that already existed for the old single server still runs.
           A backup nobody has restored is a hope, not a backup.</p>
       </section>
