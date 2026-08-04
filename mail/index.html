@@ -146,8 +146,10 @@
 
       <section class="block" id="pieces">
         <h2>The pieces</h2>
-        <p>The mail server runs as a set of containers, which keeps the parts that have to work together
-          pinned to versions known to work together.</p>
+        <p>The mail server itself is docker-mailserver, a maintained bundle that packages Postfix, Dovecot
+          and Amavis together as one unit, sized to 4 GB of memory and 2 vCPUs in this lab. Running it as
+          one maintained bundle rather than three separately patched services is what keeps the parts that
+          have to work together pinned to versions known to work together.</p>
         <p>Postfix moves mail. It is the part that talks to other mail servers, accepts
           messages for the domain, and hands them onward. If a message is going somewhere, Postfix is
           moving it.</p>
@@ -159,12 +161,18 @@
 
       <section class="block" id="identity">
         <h2>One identity everywhere</h2>
-        <p>Mailboxes do not have their own passwords. Authentication goes against the lab's directory over
-          an encrypted connection, so a mailbox uses the same account as everything else in the lab and
-          there is no second list of users to keep in step.</p>
-        <p>Webmail sits behind the same single sign-on as the rest of the lab's web applications, so
-          reaching mail in a browser uses the same login and the same multi-factor prompt as any other
-          internal service.</p>
+        <p>Mailboxes do not have their own passwords. Authentication goes against Active Directory over
+          LDAPS, the encrypted form of the directory protocol, using a service account scoped only to
+          directory lookups. Active Directory will not hand back a password hash for a lookup like that, so
+          the check works by attempting to bind as the user with the password they typed rather than by
+          comparing hashes, and the bind either succeeds or it does not. A mailbox uses the same account as
+          everything else in the lab this way, and there is no second list of users to keep in step.</p>
+        <p>Webmail is Roundcube, running behind a dedicated proxy with its own database, and it sits behind
+          the same single sign-on as the rest of the lab's web applications: Cloudflare Access, with a
+          policy backed by Entra ID. Reaching mail in a browser uses the same login and the same
+          multi-factor prompt as any other internal service. The certificate the directory presents for that
+          encrypted connection is issued by the lab's own AD CS root, the same authority the secrets cluster
+          uses.</p>
       </section>
 
       <section class="block" id="spf">
