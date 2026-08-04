@@ -75,38 +75,45 @@
 
       <section class="block" id="how">
         <h2>How a dead-man switch works</h2>
-        <p>Three small pieces, none of them clever on its own.</p>
-        <p>The first is an item that only holds what something pushes into it. Most monitoring items work by
-          going out and asking a machine a question every minute. This kind does the opposite: it sits
-          empty until a job reaches in and drops a value, so it is a mailbox rather than a question.</p>
-        <p>The second is a trigger that fires on nothing arriving. Instead of "alert when this value is too
-          high", it says "alert when nothing has arrived here for longer than it should have". That is the
-          switch. The job is not reporting a problem, it is reporting that it is alive, and going quiet is
-          the problem.</p>
-        <p>The third is a host that does not exist. Monitoring systems organise everything under hosts, but
+        <p>Three small pieces, none of them clever on its own, and all three are built out of Zabbix, the
+          monitoring system this lab runs.</p>
+        <p>The first is a Zabbix trapper item, which only holds what something pushes into it. Most Zabbix
+          items work by going out and asking a machine a question every minute. A trapper item does the
+          opposite: it sits empty until a job reaches in and drops a value, so it is a mailbox rather than a
+          question.</p>
+        <p>The second is a Zabbix nodata trigger, using the built-in <code>nodata()</code> trigger function,
+          which fires on nothing arriving. Instead of "alert when this value is too high", it says "alert
+          when nothing has arrived here for longer than it should have". That is the switch. The job is not
+          reporting a problem, it is reporting that it is alive, and going quiet is the problem.</p>
+        <p>The third is a Zabbix host that does not exist. Zabbix organises everything under hosts, but
           nothing says a host has to be a real machine. A named bucket with no agent and no address behind
           it is enough to hang these items on, and it keeps them together and obvious instead of scattered
           across whichever real machine happened to run the job.</p>
-        <p>Put together: the job finishes, pushes a timestamp, and the clock resets. If the job dies, stops
+        <p>Put together: the job finishes, pushes a value, and the clock resets. If the job dies, stops
           being scheduled, or gets stuck halfway, nothing pushes, the clock runs out, and an alarm fires
           naming the job that went quiet.</p>
       </section>
 
       <section class="block" id="digests">
         <h2>The one that runs today</h2>
-        <p>The lab sends several daily digests: a backup summary, an operations summary from the automated
-          triage, and a summary from the job-search platform. They are the kind of thing that is easy to
-          stop noticing, which makes them exactly the kind of thing that can stop arriving without anyone
-          reacting.</p>
-        <p>Each digest pipeline is built to push a heartbeat as its last step, after the mail is actually
-          sent rather than when the job starts. That ordering is the whole design. A heartbeat sent at the
-          start of a job proves the scheduler fired, which is not the question anyone cares about. Sent at
-          the end, it proves the work completed and the mail went out.</p>
-        <p>Each digest is meant to get its own alarm, set to fire when no heartbeat has arrived for two
-          hours. Separate alarms rather than one shared alarm, because the failure that matters most is one
-          digest going quiet while the others keep arriving. A single combined check would stay green
-          through exactly that. The heartbeat pushes and the alarm definitions are written and committed;
-          wiring them into the monitoring system so the alarms actually fire is not done yet.</p>
+        <p>Jenkins runs three separate daily digests in this lab: a backup summary, an operations summary
+          from the automated triage, and a summary from the job-search platform. Each has its own schedule,
+          the earliest waking up around six in the morning and the last around one in the afternoon. They
+          are the kind of thing that is easy to stop noticing, which makes them exactly the kind of thing
+          that can stop arriving without anyone reacting.</p>
+        <p>Rather than have each digest push its own heartbeat, a separate Jenkins job checks in on all
+          three roughly every fifteen minutes. It looks at how long it has been since each digest last
+          completed and pushes that age into its own Zabbix trapper item, one per digest. That indirection
+          is deliberate: it means the heartbeat mechanism itself can be watched for going quiet, not only
+          the digests it is watching.</p>
+        <p>Each digest's item carries two nodata triggers, not one. A short one, around two hours, fires if
+          the fifteen-minute checker itself stops pushing, which is the heartbeat mechanism going silent. A
+          longer one, at thirty hours, fires if the age it is reporting gets too large, which is the digest
+          itself actually missing a day. Splitting them this way means a stuck checker and an actually
+          missed digest read as two different alarms instead of one ambiguous one.</p>
+        <p>The checker job and both trigger definitions are written and committed. Wiring them into the
+          monitoring system so the alarms fire on their own is not done yet, the same as the checker further
+          down this page.</p>
       </section>
 
       <section class="block" id="reconciler">
@@ -116,20 +123,23 @@
           dashboard like that has a specific way of going wrong: it stays up, it stays green, and it
           gradually stops describing reality. Somebody edits a panel by hand, or a system it claims to watch
           is retired, and the board keeps looking authoritative while quietly becoming fiction.</p>
-        <p>So a job compares the published board against the definition it is supposed to be built from, and
-          reports the differences. It names the panel and the field that moved rather than just announcing
-          that something moved, because "there is drift somewhere" is not something anyone can act on at
-          eight in the morning.</p>
-        <p>It has already earned its place. Run against the live board during development, it found four
-          real differences between what the board claimed and what it was supposed to say. That is the
-          proof the idea works, and it was found by the checker rather than by a person eventually noticing.</p>
-        <p>The part that makes it a dead-man switch rather than just a check is the third alarm. Two watch
-          for drift being found. The third watches for the checker itself going quiet, because a drift
-          detector that stops running reports no drift, which reads exactly like a board that is perfectly
-          accurate. A checker that is itself checked.</p>
-        <p>Being straight about the state of this one: the checking job is built, tested and has caught real
-          drift when run. Wiring it into the monitoring system so those three alarms fire on their own is
-          the step that has not been done yet. It is on the list rather than on the wall.</p>
+        <p>The checker is a tool called noc-reconcile. Jenkins runs it once a night, around four in the
+          morning. It rebuilds the dashboard's definition from the same tagged source files the dashboard is
+          supposed to be generated from, then compares that rebuild against the live board field by field:
+          every tile, every query, every link, every threshold and color step, the banner text, even
+          dashboard-level settings like which variables are editable. It names the panel and the field that
+          moved rather than just announcing that something moved, because "there is drift somewhere" is not
+          something anyone can act on at eight in the morning.</p>
+        <p>Whatever it finds also gets pushed into its own Zabbix item, the same heartbeat shape as the
+          digests above: a flag that goes up when there is drift, with a short summary of the first few
+          differences attached, and a clean signal when the board matches. Two alarms watch that flag for
+          drift being found. A third, set to fire after a bit over a day of silence, watches for the checker
+          itself going quiet, because a drift detector that stops running reports no drift, which reads
+          exactly like a board that is perfectly accurate. A checker that is itself checked.</p>
+        <p>Being straight about the state of this one: the checking job is built, tested, and has found real
+          differences between what the board claimed and what it was supposed to say when run against the
+          live board during development. Wiring it into the monitoring system so those three alarms fire on
+          their own is the step that has not been done yet. It is on the list rather than on the wall.</p>
       </section>
 
       <section class="block" id="dr">
