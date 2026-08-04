@@ -117,15 +117,10 @@ html { scroll-padding-top: 130px; }
 .topnav a.active { color: var(--fg); }
 .topnav .topnav-spacer { flex: 1 1 auto; }
 @media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
-/* Nav group labels (item 467): plain text, not links, marking the Work / Platform / Engineering
-   clusters the flat ten-link row was grouped into. Inherits the mono/uppercase/letter-spacing from
-   .topnav; only color/opacity and a divider differ from a link. */
-.topnav-group {
-  color: var(--muted);
-  opacity: 0.6;
-  padding-left: 10px;
-  border-left: 1px solid var(--border);
-}
+/* Nav group labels used to be a plain, unclickable `.topnav-group` span (item 467's first build) - the
+   row grew instead of collapsing, because a label with no link and the flat list beside it is a divider,
+   not a group. Corrected (item 467 correction, entry 48/49): each group label is now a real `<a>` in the
+   primary row (styled by the plain `.topnav a` rule above), pointing at that group's hub page. */
 @media (max-width: 640px) {
   .site-header { gap: 6px 14px; }
   .site-header .brand-name { display: none; }   /* keep the mark visible; drop the wordmark to save width */
@@ -677,6 +672,23 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
   line-height: 1.6;
   color: var(--muted);
 }
+
+/* ---- footer site map (item 467 correction) ----
+   The primary nav row dropped from 12+ links to 3 group hubs, so this carries the complete flat list
+   estate-wide - it is what makes cutting the row safe. Same mono/uppercase footer voice, one row per
+   group rather than per link, so it reads as a map rather than a second nav. */
+.sitemap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 16px;
+}
+.sitemap-group { line-height: 1.8; }
+.sitemap-label {
+  color: var(--fg);
+  margin-right: 10px;
+}
+.sitemap a { margin-right: 4px; }
 
 @media (max-width: 480px) {
   h1 { font-size: 1.9rem; }

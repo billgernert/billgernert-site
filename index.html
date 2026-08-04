@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="skills/style.css">
   <style>
     :root {
       --bg: #0a0e1a;
@@ -138,74 +139,10 @@
       box-shadow: 0 0 14px rgba(0, 212, 255, 0.25);
     }
 
-    /* sticky site header: brand mark + name + nav, pinned while scrolling (item 448). This page uses
-       inline styles, so it carries its own copy of the rule (see site/skills/style.css for the shared
-       copy every other page loads). scroll-padding-top keeps an anchor jump landing with its heading
-       visible below the sticky header; the value is a generous upper bound, not a measurement - there
-       is no JS on this site to measure the header's real height. */
-    html { scroll-padding-top: 130px; }
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px 22px;
-      background: var(--bg);
-      padding: 14px 0 12px;
-      margin: 0 0 26px;
-      border-bottom: 1px solid var(--border);
-    }
-    .site-header .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-      color: var(--fg);
-      text-decoration: none;
-    }
-    .site-header .brand:hover { color: var(--cyan); text-decoration: none; }
-    .site-header .brand-mark { width: 26px; height: 26px; flex: none; }
-    .site-header .brand-name {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      letter-spacing: 1.5px;
-      white-space: nowrap;
-    }
-
-    /* site-wide top navigation (item 136), nested inside .site-header */
-    .topnav {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px 18px;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-    .topnav a { color: var(--muted); }
-    .topnav a:hover { color: var(--cyan); text-decoration: none; }
-    .topnav a.active { color: var(--fg); }
-    .topnav .topnav-spacer { flex: 1 1 auto; }
-    @media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
-    /* Nav group labels (item 467): plain text, not links, marking the Work / Platform / Engineering
-       clusters the flat ten-link row was grouped into. Inherits the mono/uppercase/letter-spacing
-       from .topnav; only color/opacity and a divider differ from a link. This page carries its own
-       copy of the rule (see site/skills/style.css for the shared copy every other page loads). */
-    .topnav-group {
-      color: var(--muted);
-      opacity: 0.6;
-      padding-left: 10px;
-      border-left: 1px solid var(--border);
-    }
-    @media (max-width: 640px) {
-      .site-header { gap: 6px 14px; }
-      .site-header .brand-name { display: none; }
-    }
+    /* sticky site header (brand mark + name + nav) and the topnav itself are no longer duplicated here
+       (item 467 correction, entry 48: "two sources for one component"): this page now links the shared
+       site/skills/style.css, which is the ONE source for .site-header/.topnav/.sitemap, the
+       same file every other page already used. scroll-padding-top there covers this page too. */
 
     footer {
       margin-top: 52px;
@@ -305,22 +242,9 @@
         <span class="brand-name">Bill Gernert</span>
       </a>
       <nav class="topnav" aria-label="Primary">
-        <a href="/" class="active" aria-current="page">Home</a>
-        <span class="topnav-group">Work</span>
-        <a href="/projects/">Projects</a>
-        <a href="/skills/">Skills</a>
-        <a href="/roadmap/">Roadmap</a>
-        <span class="topnav-group">Platform</span>
+        <a href="/projects/">Work</a>
         <a href="/platform/">Platform</a>
-        <a href="/vault/">Vault</a>
-        <a href="/mail/">Mail</a>
-        <span class="topnav-group">Engineering</span>
-        <a href="/diagram/">Diagram</a>
-        <a href="/security/">Security</a>
-        <a href="/ai/">AI</a>
-        <a href="/claude-code/">Claude Code</a>
-        <a href="/noc/">NOC</a>
-        <a href="/dead-man-monitoring/">Watchdog</a>
+        <a href="/diagram/">Engineering</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
@@ -395,7 +319,7 @@
                merged-PR API). Edits between each START/END marker are overwritten at sync; the values
                committed here are the last generated snapshot, not hand-typed literals. -->
           <b class="hero-fact"><!--HERO:ITEMS:START-->205<!--HERO:ITEMS:END--></b> backlog items delivered
-          through <b class="hero-fact"><!--HERO:PRS:START-->1809<!--HERO:PRS:END--></b> PRs, every one
+          through <b class="hero-fact"><!--HERO:PRS:START-->1839<!--HERO:PRS:END--></b> PRs, every one
           reviewed and merged by me. Recovery is proven, not promised. A pipeline verifies backups weekly,
           and the practice is live-fire: Vault destroyed and restored in 97 seconds.
         </p>
@@ -534,7 +458,14 @@
       </div>
     </section>
 
-    <footer>parsec-lab.com &#183; built and operated by Bill Gernert<span class="saber" aria-hidden="true"></span>
+    <footer>
+<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Work</span> <a href="/projects/">Projects</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+      </nav>
+      <!-- END generated: sitemap -->parsec-lab.com &#183; built and operated by Bill Gernert<span class="saber" aria-hidden="true"></span>
       <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
     </footer>
   </main>
