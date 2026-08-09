@@ -4,16 +4,58 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Claude Code - Bill Gernert</title>
-  <meta name="description" content="How AutomationLab is built with Claude Code: an orchestrator plus parallel sessions, sole human merge authority, a design doc before code, one PR per change, and a runbook for every pipeline.">
+  <meta name="description" content="How AutomationLab builds itself: two AI agents from rival vendors, one building and one reviewing, driven by a four-hour timer, with every message a file in git, an append-only run ledger, a kill switch that is one empty file, and an outage that proved the fleet refuses to act on what it cannot verify.">
+  <meta name="robots" content="noindex">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <style>
+    /* Wider column for this page only: the fleet diagrams are drawn on a 900-unit canvas and go
+       unreadable squeezed into the 760px body width. */
+    main.page-wide { max-width: 1040px; }
+    /* Inline SVG diagrams. The shared stylesheet has no svg rule (the other pages that carry one use
+       their own scoped block, see the NOC page), so the frame, the scaling and the caption live here. */
+    figure.fleet-fig { margin: 20px 0 10px; }
+    figure.fleet-fig svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(0, 212, 255, 0.02);
+    }
+    figure.fleet-fig figcaption {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    /* The per-diagram key. Every figure repeats it, so a reader who lands on any diagram can decode the
+       colours and the shapes without scrolling back up to a single key at the top of the page. Sits
+       directly under its own diagram, above that diagram's caption, and is deliberately quieter than
+       the caption so it reads as a key rather than as a second sentence. */
+    figure.fleet-fig p.fig-key {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.5px;
+      line-height: 1.7;
+      color: #4a6080;
+      margin: 8px 0 0;
+    }
+    figure.fleet-fig p.fig-key b { color: var(--muted); font-weight: 400; }
+    /* Sub-headings inside a block. The shared stylesheet styles h1 and section.block > h2 only. */
+    h3.eyebrow { font-size: 0.78rem; margin: 34px 0 8px; }
+  </style>
 </head>
+<!-- STAGED (drop entry 76): this rewrite lands at the page's existing real URL, carries noindex, and
+     stays out of the nav, the hubs and the footer site map until the operator has eyeballed the render
+     and flips it. Every publish-time gate applies unchanged: staged means unlisted, never private. -->
 <body>
-  <main class="page-narrow">
+  <main class="page-narrow page-wide">
     <header class="site-header">
       <a class="brand" href="/" aria-label="parsec-lab.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -32,96 +74,694 @@
       </nav>
     </header>
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">parsec-lab.com</a>
+      <a href="/">billgernert.com</a>
       <span class="sep">/</span>
       <span class="here">Claude Code</span>
     </nav>
 
     <header class="skill-head">
       <span class="badge">Build workflow</span>
-      <h1>Built with Claude Code</h1>
-      <p class="descriptor">This lab is built by AI, and that is the interesting part only because of the
-        discipline around it. An orchestrator directs several parallel Claude Code sessions, each in its own
-        isolated copy of the code. One human plans the work, reads every change, and performs every merge. The
-        rules the sessions follow are the same ones a careful team would follow: decide in a design doc before
-        writing code, one change per pull request, and a written runbook for anything that touches live
-        infrastructure.</p>
+      <h1>The platform builds itself, and here is exactly how</h1>
+      <p class="descriptor">AutomationLab is built by two AI agents from rival vendors. Claude Code writes
+        the code, OpenAI's Codex reviews it, and neither ever grades its own homework. A timer wakes them
+        every four hours, every message between them is a file in git, and a file named PAUSE stops the
+        whole thing. This page explains the machinery plainly, says which parts are running today and which
+        are still designs, and shows the loop working on a real security defect. It starts with why any of
+        it is possible, which is the written record the platform keeps rather than the models it rents.</p>
     </header>
 
     <nav class="crumbs" aria-label="On this page">
-      <a href="#sessions">Orchestrator and sessions</a>
+      <a href="#thesis">Why it works: the data</a>
       <span class="sep">/</span>
-      <a href="#merge">Sole merge authority</a>
+      <a href="#two-agents">Two agents, two vendors</a>
       <span class="sep">/</span>
-      <a href="#design">Design before code</a>
+      <a href="#files">Work is files in git</a>
       <span class="sep">/</span>
-      <a href="#one-pr">One PR per change</a>
+      <a href="#cycles">The four-hour cycle</a>
       <span class="sep">/</span>
-      <a href="#runbooks">A runbook per pipeline</a>
+      <a href="#liveness">Is a worker alive, dead, or slow</a>
       <span class="sep">/</span>
-      <a href="#tests">How changes are tested</a>
+      <a href="#review">The reviewer and its ledger</a>
+      <span class="sep">/</span>
+      <a href="#review-loop">The loop, working</a>
+      <span class="sep">/</span>
+      <a href="#outage">The week it refused to act</a>
+      <span class="sep">/</span>
+      <a href="#merges">Who merges</a>
+      <span class="sep">/</span>
+      <a href="#appendix">Appendix: the cycle in detail</a>
     </nav>
 
     <div class="skill-body">
-      <section class="block" id="sessions">
-        <h2>The orchestrator and parallel sessions</h2>
-        <p>The work is split across several Claude Code sessions running at once, coordinated by an
-          orchestrator that hands each one a task a step at a time. Every session works in its own isolated
-          copy of the repository, branched from the mainline, so two sessions can never edit the same working
-          files or collide on a branch. The orchestrator keeps the sessions pointed at different parts of the
-          backlog and relays each task and result through one human. That is what makes running several AI
-          workers in parallel safe rather than chaotic: they are isolated by construction and sequenced by a
-          person.</p>
+      <!-- THESIS HOME: the three-tier block below (the data is the asset, the AI-written postmortem is
+           the proof, live triage and emergency work and design review are the designed frontier) is
+           meant to end up on /ai/ as the canonical statement, with this page and the postmortem
+           pointing at it rather than restating it. /ai/ is live, indexed, and still carries pre-drop-106
+           merge-authority wording, so correcting it is its own change on its own branch; this staged
+           branch keeps the thesis here. Move it, and leave a one-line pointer, when /ai/ is next worked. -->
+      <!-- STAGED-LINK HOLD: "the outage postmortem" below becomes a link to
+           /writeups/postmortem-2026-08-04/ when that page is flipped from staged to linked. This page is
+           in the primary nav, so it must not be the thing that surfaces an unlisted page. -->
+      <section class="block" id="thesis">
+        <h2>Why any of this works: the data comes first</h2>
+        <p>An agent is only as good as what it can read, so the interesting part of this page is not the
+          models. It is that the platform writes everything down in places a program can open. Git holds
+          the code, the pipelines and the runbooks. An append-only run ledger holds one line per agent run
+          and is never edited. NetBox holds the hosts, addresses and services as structured inventory.
+          Design decisions are dated files rather than recollections, and every review verdict below is a
+          file too. None of that was built for AI. It was built because an operator forgets. It turns out
+          to be what an agent needs.</p>
+        <p>What that already buys, and you can check all four. The outage postmortem on this site was
+          written by the fleet from the run ledger and the surviving logs rather than from my memory, and it
+          marks the two sections the evidence cannot support yet. The cross-vendor review chain described
+          below runs on the same material, and one fact-checking pass through it caught fourteen wrong
+          claims across three drafts before a word of them published. The controls the fleet works under
+          were drafted the same way: the merge contract, the operator queue and the session charter were
+          written by agents reading those same files, and every one of them was reviewed by me before it
+          took effect. And this page is its own example, because the week it describes ran while the lab
+          was down and I was working from a phone: 29 work branches and three fact-gated drafts, produced
+          from the repository rather than from a running estate. Those are artifacts, not adjectives.</p>
+        <p>What the same foundation is designed to buy next, and does not yet: an agent triaging a live
+          incident while it is still happening, an agent working an emergency alongside me, and an agent
+          reviewing an architecture proposal before it gets built. None of the three exists. The proven
+          behaviour today is the opposite one, and it is further down this page: through the whole outage
+          the fleet did not troubleshoot anything, because it could not verify what it would be acting on,
+          so it stopped. Turning that refusal into safe live analysis is roadmap, and nothing here claims
+          it works.</p>
       </section>
 
-      <section class="block" id="merge">
-        <h2>Sole merge authority</h2>
-        <p>No session merges its own work. Every change lands as a pull request that one human reads and
-          merges, against the same branch protection and automated checks any other contributor would face. A
-          machine wrote the code, which is exactly why the review gate is not relaxed: the author being fast
-          and tireless is a reason for more scrutiny at the merge, not less. The human is the single point
-          where work becomes part of the lab.</p>
+      <section class="block" id="two-agents">
+        <h2>Two agents, two vendors, one repository</h2>
+        <p>An AI agent fleet sounds exotic and is not. The parts have names you already know. Claude runs in
+          a browser tab. Claude Code is the same model as a command-line program. Codex is OpenAI's
+          equivalent command-line agent. A timer runs on a schedule the way any scheduled job does, and a
+          git repository holds plain text files. That is the whole inventory.</p>
+        <p>Start with the browser tab, because the trick is easier to see there. Claude in a browser is a
+          chat. Give that chat a file tool pointed at the platform's repository and it can write a dated
+          text file into the repo when I say "record that decision". Now take the same model as a
+          command-line program. Like any command-line program, you can feed it text on standard input
+          instead of typing at it. Write the assignment in a file, pipe the file in, and the same
+          intelligence does the work with no window and nobody watching, then exits. That is all a
+          <b>headless agent</b> is: the chat, minus the chat.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A person typing in a browser and a timer piping in a written brief both reach the same model, which reads and writes files in the repository.">
+            <defs><marker id="fsA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="40" y="35" width="180" height="60" rx="10" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="130" y="60" fill="#fff" font-size="13" text-anchor="middle">ME, TYPING</text>
+            <text x="130" y="80" fill="#8fa8c8" font-size="10" text-anchor="middle">Claude, in a browser</text>
+            <rect x="40" y="160" width="180" height="60" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="130" y="185" fill="#fff" font-size="13" text-anchor="middle">A TIMER</text>
+            <text x="130" y="205" fill="#8fa8c8" font-size="10" text-anchor="middle">pipes in a written brief</text>
+            <rect x="360" y="95" width="190" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="455" y="122" fill="#fff" font-size="13" text-anchor="middle">THE SAME MODEL</text>
+            <text x="455" y="142" fill="#8fa8c8" font-size="10" text-anchor="middle">window optional</text>
+            <rect x="680" y="95" width="180" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="770" y="122" fill="#fff" font-size="13" text-anchor="middle">THE REPO</text>
+            <text x="770" y="142" fill="#8fa8c8" font-size="10" text-anchor="middle">everything is a file</text>
+            <line x1="220" y1="70" x2="358" y2="115" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <line x1="220" y1="190" x2="358" y2="145" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <line x1="550" y1="130" x2="678" y2="130" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <text x="614" y="118" fill="#8fa8c8" font-size="10" text-anchor="middle">reads and writes files</text>
+            <text x="450" y="240" fill="#4a6080" font-size="11" text-anchor="middle">the chat and the fleet are the same machine; only the typist changes</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The chat and the fleet are the same model. Only the typist changes: me in a browser,
+            or a timer piping in a written brief.</figcaption>
+        </figure>
+        <p>Feeding an agent looks like this, and it is real rather than pseudocode:</p>
+        <pre class="excerpt"><code>cat brief.md | claude -p         # "here is your assignment, go"
+codex exec "review this branch"  # the rival vendor's agent, same idea</code></pre>
+        <p class="excerpt-cap">Two vendors is the point, not a hedge. Claude Code builds. Codex reviews,
+          fact-checks and red-teams. A model reviewing its own output shares its own blind spots, so the
+          reviewer is deliberately a different company's model. One fact-checking pass during the outage
+          week caught fourteen wrong claims across three drafts of these very pages before a word of them
+          published.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 445" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="One cycle dispatches several Claude workers, each on its own branch in its own worktree, plus Codex reviewer and fact-checker lanes; all of them write reports and verdicts, and only the operator queue needs a person.">
+            <defs>
+              <marker id="fsB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker>
+              <marker id="fsBa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker>
+            </defs>
+            <rect x="25" y="150" width="175" height="80" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="112" y="183" fill="#fff" font-size="13" text-anchor="middle">ONE CYCLE</text>
+            <text x="112" y="203" fill="#8fa8c8" font-size="10" text-anchor="middle">dispatches every</text>
+            <text x="112" y="217" fill="#8fa8c8" font-size="10" text-anchor="middle">runnable brief</text>
+            <rect x="270" y="22" width="360" height="52" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="44" fill="#fff" font-size="12" text-anchor="middle">CLAUDE WORKER</text>
+            <text x="450" y="62" fill="#8fa8c8" font-size="10" text-anchor="middle">own worktree &#183; branch: fix/cert-sync-bounds</text>
+            <rect x="270" y="94" width="360" height="52" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="116" fill="#fff" font-size="12" text-anchor="middle">CLAUDE WORKER</text>
+            <text x="450" y="134" fill="#8fa8c8" font-size="10" text-anchor="middle">own worktree &#183; branch: feature/og-image-generator</text>
+            <rect x="270" y="166" width="360" height="52" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="188" fill="#fff" font-size="12" text-anchor="middle">CLAUDE WORKER</text>
+            <text x="450" y="206" fill="#8fa8c8" font-size="10" text-anchor="middle">own worktree &#183; branch: perf/selfheal-bulk-itemget</text>
+            <polygon points="282,238 618,238 642,264 618,290 282,290 258,264" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="260" fill="#fff" font-size="12" text-anchor="middle">CODEX REVIEWER</text>
+            <text x="450" y="278" fill="#8fa8c8" font-size="10" text-anchor="middle">verdicts on the finished branches, LAND or FIX</text>
+            <polygon points="282,310 618,310 642,336 618,362 282,362 258,336" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="332" fill="#fff" font-size="12" text-anchor="middle">CODEX FACT-CHECKER</text>
+            <text x="450" y="350" fill="#8fa8c8" font-size="10" text-anchor="middle">every draft claim checked against the repo</text>
+            <rect x="700" y="150" width="175" height="80" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="787" y="183" fill="#fff" font-size="13" text-anchor="middle">reports + verdicts</text>
+            <text x="787" y="203" fill="#8fa8c8" font-size="10" text-anchor="middle">next cycle reads</text>
+            <text x="787" y="217" fill="#8fa8c8" font-size="10" text-anchor="middle">them all</text>
+            <rect x="700" y="330" width="175" height="70" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="787" y="358" fill="#fff" font-size="13" text-anchor="middle">OPERATOR QUEUE</text>
+            <text x="787" y="378" fill="#8fa8c8" font-size="10" text-anchor="middle">what waits on me</text>
+            <line x1="200" y1="170" x2="268" y2="48" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="200" y1="180" x2="268" y2="120" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="200" y1="190" x2="268" y2="192" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="200" y1="200" x2="256" y2="264" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="200" y1="210" x2="256" y2="336" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="630" y1="48" x2="698" y2="168" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="630" y1="120" x2="698" y2="178" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="630" y1="192" x2="698" y2="190" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="646" y1="264" x2="698" y2="202" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="646" y1="336" x2="698" y2="212" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+            <line x1="787" y1="230" x2="787" y2="328" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsBa)"/>
+            <text x="770" y="285" fill="#ffb84d" font-size="10" text-anchor="end">the amber exit: only</text>
+            <text x="770" y="300" fill="#ffb84d" font-size="10" text-anchor="end">what needs my hands</text>
+            <text x="450" y="432" fill="#4a6080" font-size="11" text-anchor="middle">everything except the amber box runs unattended</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>One cycle, several workers. Each worker gets its own git worktree, which is a private
+            checkout of the same repository, so parallel workers can never collide on the same working
+            files.</figcaption>
+        </figure>
+        <p>The stations are offset in time, and that is worth being precise about because it is the part
+          people assume is magic. The cycle is a dispatcher, not a waiter. It acts only on work that is
+          already finished and sitting in files, never on anything in flight. So a branch built this cycle
+          gets its review dispatched the next cycle, and its merge decision the cycle after that. One
+          station per cycle, every lane busy, each lane working a different generation, like any assembly
+          line. A worker finishing is itself a signal, and the cheap half-hour tick that notices signals
+          summons the next full cycle early, so "next cycle" usually means within the half hour rather than
+          four hours later.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 235" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Three branches staggered across three cycles: branch A builds in cycle one, is reviewed in cycle two and lands or holds in cycle three, while branches B and C are one and two cycles behind it.">
+            <defs><marker id="fsC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4a6080"/></marker></defs>
+            <text x="305" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">CYCLE 1</text>
+            <text x="530" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">CYCLE 2</text>
+            <text x="755" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">CYCLE 3</text>
+            <text x="185" y="73" fill="#4a6080" font-size="11" text-anchor="end">branch A</text>
+            <text x="185" y="128" fill="#4a6080" font-size="11" text-anchor="end">branch B</text>
+            <text x="185" y="183" fill="#4a6080" font-size="11" text-anchor="end">branch C</text>
+            <rect x="210" y="50" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="305" y="73" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <polygon points="449,50 611,50 631,68 611,86 449,86 429,68" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="530" y="73" fill="#fff" font-size="11" text-anchor="middle">REVIEW</text>
+            <rect x="660" y="50" width="190" height="36" rx="7" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="755" y="73" fill="#fff" font-size="11" text-anchor="middle">LANDS or HOLDS</text>
+            <rect x="435" y="105" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="530" y="128" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <polygon points="674,105 836,105 856,123 836,141 674,141 654,123" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="755" y="128" fill="#fff" font-size="11" text-anchor="middle">REVIEW</text>
+            <rect x="660" y="160" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="755" y="183" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <line x1="400" y1="68" x2="426" y2="68" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+            <line x1="633" y1="68" x2="657" y2="68" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+            <line x1="625" y1="123" x2="651" y2="123" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+            <text x="450" y="222" fill="#4a6080" font-size="11" text-anchor="middle">handoffs are files, so a crash between stations loses nothing; the next cycle re-reads reality and continues</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>Why the handoff is a file and not a live call: a session that dies mid-flight is simply
+            re-observed from disk next cycle, so every stage is auditable and crash-safe.</figcaption>
+        </figure>
       </section>
 
-      <section class="block" id="design">
-        <h2>A design doc before code</h2>
-        <p>Decisions are written down before they are built. A design that matters gets a committed decision
-          record, reviewed on its own, and only then does code implement it. The effect is that the diff
-          implements a decision that already exists rather than deciding it in passing. It keeps the thinking
-          human-owned and legible, and it means a change can be argued with at the level of the decision, not
-          just the code.</p>
+      <section class="block" id="files">
+        <h2>Work is files in git</h2>
+        <p>The agents never talk to each other live, and I never talk to them live either. Everything is a
+          memo in the repository. Work to do sits in a taskings folder, one file per assignment. Results
+          come back as files in a reports folder. My own notes land in a drop folder and get picked up on
+          the next cycle. Git is the postal service and the filing cabinet at the same time: every memo is
+          stamped, ordered and kept.</p>
+        <p>This started as a workaround and became the design. Chat as a transport failed for a boring
+          reason: a conversation is not addressable. You cannot diff it, you cannot replay it, and you
+          cannot prove afterwards what an agent was told. A file can do all three. An office that runs
+          entirely on memos never has a meeting, and it never forgets one either.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A drop folder of operator notes and a taskings folder of assignments feed the agents, which write back to a reports folder and an append-only logbook.">
+            <defs><marker id="fsD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="30" y="40" width="185" height="56" rx="9" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="122" y="63" fill="#fff" font-size="12" text-anchor="middle">drop/</text>
+            <text x="122" y="82" fill="#8fa8c8" font-size="10" text-anchor="middle">my notes, from anywhere</text>
+            <rect x="30" y="120" width="185" height="56" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="122" y="143" fill="#fff" font-size="12" text-anchor="middle">taskings/</text>
+            <text x="122" y="162" fill="#8fa8c8" font-size="10" text-anchor="middle">assignments, one per file</text>
+            <rect x="360" y="78" width="185" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="452" y="103" fill="#fff" font-size="12" text-anchor="middle">AGENTS</text>
+            <text x="452" y="122" fill="#8fa8c8" font-size="10" text-anchor="middle">read mail, do work</text>
+            <rect x="690" y="40" width="185" height="56" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="782" y="63" fill="#fff" font-size="12" text-anchor="middle">reports/</text>
+            <text x="782" y="82" fill="#8fa8c8" font-size="10" text-anchor="middle">what happened, in writing</text>
+            <rect x="690" y="120" width="185" height="56" rx="9" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="782" y="143" fill="#fff" font-size="12" text-anchor="middle">RUN LEDGER</text>
+            <text x="782" y="162" fill="#8fa8c8" font-size="10" text-anchor="middle">one line per run, forever</text>
+            <line x1="215" y1="68" x2="358" y2="98" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="215" y1="148" x2="358" y2="118" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="545" y1="98" x2="688" y2="68" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="545" y1="118" x2="688" y2="148" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <text x="450" y="198" fill="#4a6080" font-size="11" text-anchor="middle">no live connections anywhere; git carries every message and remembers all of them</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The four folders that are the entire messaging system between me, the builders and
+            the reviewer.</figcaption>
+        </figure>
       </section>
 
-      <section class="block" id="one-pr">
-        <h2>One PR per change</h2>
-        <p>Each change is its own small, reviewable pull request: one backlog item, one branch, one PR. Nothing
-          is bundled. That keeps review a real gate rather than a rubber stamp on a pile of unrelated edits,
-          and it keeps the history legible, so the story of why something changed can be read one step at a
-          time later.</p>
+      <section class="block" id="cycles">
+        <h2>The four-hour cycle, the ledger, and the off switch</h2>
+        <p>Jenkins runs jobs on a schedule, and so does this. Every four hours a scheduled task runs a short
+          script. The script checks for a stop file, pulls the repository, pipes the standing brief into
+          Claude Code, and writes one line in a logbook. People imagine the orchestrator as a large system.
+          It is a timer and a short script, and the intelligence it wakes is rented by the minute.</p>
+        <p>The <b>run ledger</b> is one text file. Every run appends exactly one line: the time, what it
+          did, and why it stopped. Append-only, like a paper logbook filled in with a pen. Nothing is ever
+          erased or rewritten, which is what makes it evidence rather than a status display. The ledger is
+          also watched from outside: if its newest line gets too old, that silence raises an alarm on its
+          own, because a fleet that has stopped writing might not be resting.</p>
+        <p>The off switch matches the rest of the design. It is a file. A file named <code>PAUSE</code> in
+          the repository is the first thing every run checks, and if it exists, nothing runs. Stopping the
+          entire fleet from anywhere in the world means creating one empty file.</p>
+        <div class="callout">
+          <span class="tag">Why a file and not a flag</span>
+          A stop switch has to work when the thing it stops is broken. A file in the repository needs no
+          service to be up, no API to answer, and no credential to still be valid. It is checked before
+          anything else happens, by the dumbest part of the system.
+        </div>
       </section>
 
-      <section class="block" id="runbooks">
-        <h2>A runbook for every pipeline</h2>
-        <p>Anything applied to live infrastructure ships as a guided runbook: the host it runs on, the exact
-          command or the exact field to set, the output to expect, the independent check that it worked, and
-          what to do if it did not. Nothing is applied from memory. A change to a config file is not the same
-          as a running system, so the runbook is how a committed change becomes a proven one, with a human
-          driving each step.</p>
+      <section class="block" id="liveness">
+        <h2>Is a worker alive, dead, or slow</h2>
+        <p>A parallel fleet needs to answer one question every cycle: what happened to the workers I
+          dispatched last time. The first version of that check got it wrong in both directions on the same
+          day, which is how the real shape of the problem surfaced. One signal cannot separate three
+          states, and there are three: <b>never spawned</b>, <b>spawned and dead</b>, and <b>spawned and
+          slow</b>. Treating a slow worker as dead means respawning work that is already running. Treating
+          a never-spawned lane as slow means waiting forever for something that never started.</p>
+        <p>The fix is a spawn record written at spawn time, plus a liveness checker that reads it. A lane
+          with no spawn record was never started, so acting on it is a first attempt rather than a
+          recovery. A lane with a spawn record and no report is either dead or slow, and the deadline in
+          the record is what separates those two. The general lesson is the one this platform keeps
+          relearning in different clothes: a check that cannot distinguish "did not run" from "ran and
+          passed" is not a check.</p>
       </section>
 
-      <section class="block" id="tests">
-        <h2>How changes are tested</h2>
-        <p>A change is not trusted because it looks right. Small, offline tests run on every pull request, a
-          runner discovers and executes them automatically, and the automated checks have to pass before a
-          human will merge. Just as important is the habit of proving the result rather than asserting it: a
-          claim that something is fixed comes with the command output that shows it, and anything that can only
-          be confirmed on live infrastructure is labelled as needing that confirmation before it counts as
-          done. The point of the whole workflow is that "the AI did it" is never the evidence; the test run,
-          the review, and the runbook are.</p>
+      <section class="block" id="review">
+        <h2>The reviewer, and the ledger that stops it repeating itself</h2>
+        <p>Codex runs against the repository under a written, read-only advisory contract. It reads, it
+          reasons, and it reports. It does not write code, it does not merge, and it does not touch
+          anything live. Its output is a verdict per branch, either LAND or FIX, with the reasons attached
+          and the specific commit it judged named in the verdict, so a verdict cannot silently drift onto a
+          different revision.</p>
+        <p>Every finding it produces goes into a <b>findings ledger</b>, which is the advisory channel's
+          memory. Each finding gets one of three dispositions: <b>CONFIRMED</b> when I agree it is real,
+          <b>REJECTED</b> with the reason recorded so it is not re-argued, or <b>FILED</b> when it became a
+          tracked work item. The reviewer reads this ledger before every run and may not re-report anything
+          already recorded. A rejected finding can be challenged once more, with new evidence, and then it
+          stops.</p>
+        <p>Two details make the ledger honest rather than decorative. It records misses and partial hits,
+          not only confirmations, because a ledger of nothing but hits teaches nobody how much to trust the
+          channel. And a deferred finding is written as confirmed and deprioritised, never quietly moved to
+          rejected, so the list of things I know about and have not done stays visible.</p>
       </section>
 
+      <section class="block" id="review-loop">
+        <h2>The loop, working: a real security defect, start to finish</h2>
+        <p>Here is the whole review loop on one actual defect from the outage week, because the mechanism
+          is only worth anything if it catches something.</p>
+        <p>Before any file gets written by an agent, a pre-write hook scans the content with the gitleaks
+          rule set and blocks anything that looks like a secret. Like gitleaks itself, it reads an
+          allowlist from a <code>.gitleaks.toml</code> file for the handful of strings that only look like
+          secrets, a public signing key being the usual example. The allowlist is what stops the guard
+          being so noisy that someone switches it off.</p>
+        <ol class="project-list">
+          <li><b>Claude finds a gap.</b> An evaluation suite written to attack the platform's own guards
+            flags the allowlist loader as suspect.</li>
+          <li><b>Codex confirms it, and it is worse than the flag.</b> The loader pulled its allowlist out
+            of the config with a non-greedy pattern that stopped at the first closing bracket inside a
+            regular expression. Three of the eight suppressions were loading. The other five were silently
+            absent, so the guard's behaviour did not match its own written configuration.</li>
+          <li><b>Claude fixes it.</b> Parse the configuration with a real TOML parser instead of a pattern
+            match, and compile the allowlist from the parsed array.</li>
+          <li><b>Codex catches a defect in the fix.</b> The new parser did not handle every way the config
+            file could be malformed, and some of those paths could have widened what the guard let
+            through.</li>
+          <li><b>Claude fixes that, and Codex returns LAND.</b> Absent, unreadable, garbled and
+            wrong-typed configuration all now yield an empty allowlist, individual malformed entries are
+            skipped without discarding their valid siblings, and the exception for private keys holds even
+            for allowlisted paths.</li>
+        </ol>
+        <p>Five alternating steps across two vendors, with no stage where a model graded its own work, all
+          against a repository that was frozen because the platform was down. The verdict that closed it
+          also recorded one thing it did not do: an unreadable-configuration path is implemented but not
+          directly exercised by a test. That is written down as a coverage gap rather than rounded up to
+          done, which is the habit this whole page is really about.</p>
+      </section>
+
+      <section class="block" id="outage">
+        <h2>The week it refused to act</h2>
+        <p>On 2026-08-04 the platform went dark, and the fleet's most important behaviour is what it did
+          next, which was nothing. The scheduled cycle that ran at 18:35:15 that evening completed normally
+          and dispatched four workers. Forty minutes later the platform was gone. What caused that is still
+          unknown and the write-up says so.</p>
+        <p>Every scheduled cycle after that woke up on time, tried to pull the repository, failed to
+          resolve the git server, checked public DNS and found it healthy, concluded that the internet was
+          fine and the lab was not, and declined to dispatch anything against a repository state it could
+          not confirm. Each one wrote its reason into the ledger and exited. That repeated for the entire
+          outage with zero blind dispatches, and the ledger is where you can read it, one dated line per
+          refusal.</p>
+        <div class="callout">
+          <span class="tag">What this does and does not prove</span>
+          It proves the dispatch discipline: an estate that stops cleanly when it cannot see. It does not
+          prove that every guard around that discipline was sound. The same week's reviews found commit
+          hooks that failed open rather than closed, and a ledger that could not push its own lines. Both
+          became fixes, and they are named here rather than left out.
+        </div>
+        <p>The outage also produced the most productive build window this platform has had, for an
+          unglamorous reason: a frozen repository is a stable one. Nothing merged under anyone's feet for
+          days, so branches could be built and reviewed against a tree that did not move.</p>
+        <!-- STAGED-LINK HOLD: "a separate write-up" below becomes a link to
+             /writeups/postmortem-2026-08-04/ when that page is flipped from staged to linked. This page
+             is in the primary nav, so linking an unlisted page from here would defeat the staging. -->
+        <p>The full account of the outage, including the two sections that cannot be written until the
+          hardware is back, is a separate write-up.</p>
+      </section>
+
+      <section class="block" id="merges">
+        <h2>Who merges, told straight</h2>
+        <p>The fair challenge to any page like this is simple: so the fleet is merging its own work? Yes.
+          Hundreds of pull requests so far, and saying that plainly matters more than the number, because
+          the repository's own history would tell you anyway.</p>
+        <p>The line that keeps it honest is the difference between authority and execution. Merge
+          <b>authority</b> is mine. Merge <b>execution</b> is delegated for a narrow, written class of
+          routine change. A change lands on its own only when all of these hold at once: it is inside the
+          written routine contract, continuous integration is green, the rival vendor returned a clean LAND
+          verdict, the two vendors do not disagree, and no hook tripped. Anything consequential waits for
+          me, and so does anything at all that raises a question. The test is not how big the change is. It
+          is whether there is a doubt anywhere in the chain.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 185" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A branch becomes a pull request, which gets a Codex review, and then either the fleet merges it as routine or it is held for the operator.">
+            <defs><marker id="fsF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="30" y="55" width="170" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="115" y="80" fill="#fff" font-size="12" text-anchor="middle">BRANCH</text>
+            <text x="115" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">a private copy</text>
+            <rect x="255" y="55" width="170" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="340" y="80" fill="#fff" font-size="12" text-anchor="middle">PULL REQUEST</text>
+            <text x="340" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">a written proposal</text>
+            <polygon points="492,55 648,55 672,85 648,115 492,115 468,85" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="570" y="80" fill="#fff" font-size="12" text-anchor="middle">CODEX REVIEW</text>
+            <text x="570" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">the rival vendor's verdict</text>
+            <rect x="715" y="12" width="155" height="56" rx="9" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="2"/>
+            <text x="792" y="36" fill="#fff" font-size="12" text-anchor="middle">FLEET MERGES</text>
+            <text x="792" y="54" fill="#8fa8c8" font-size="10" text-anchor="middle">routine, contracted, clean</text>
+            <rect x="715" y="102" width="155" height="56" rx="9" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="792" y="126" fill="#fff" font-size="12" text-anchor="middle">HELD FOR ME</text>
+            <text x="792" y="144" fill="#8fa8c8" font-size="10" text-anchor="middle">joins the operator queue</text>
+            <line x1="200" y1="85" x2="253" y2="85" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="425" y1="85" x2="464" y2="85" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="674" y1="78" x2="713" y2="45" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="674" y1="92" x2="713" y2="126" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <text x="450" y="177" fill="#4a6080" font-size="11" text-anchor="middle">routine means: in the written contract, CI green, a clean LAND verdict; one doubt anywhere and it holds</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The merge decision splits on one question: is there a question?</figcaption>
+        </figure>
+        <p>Today that boundary is written policy plus commit hooks, and the outage week's reviews found
+          that some of those hooks failed open rather than closed. So the fence is discipline, and the work
+          that turns it into architecture is in flight: a separate machine identity for the agents, a
+          contract file that names the routine class, and branch protection that enforces the line instead
+          of trusting behaviour. The contract file is itself out of contract, so the fleet can never widen
+          its own permissions. One number here is still an estimate rather than a measurement: "hundreds"
+          is my own figure, and the split between my merges and the fleet's is recoverable from the git
+          history and gets counted before it is quoted as a count. The accepted risk register carries the
+          same row, dated.</p>
+        <!-- STAGED-LINK HOLD: "accepted risk register" above becomes a link to
+             /operations/accepted-risk/ when that page is flipped from staged to linked. -->
+
+        <p>Everything that needs my hands ends up in one place, the <b>operator queue</b>. Today that
+          queue is kept by hand, and the hand-kept version earns its keep: it ran through the outage week
+          and the count of items waiting on me was driven to zero before recovery day. The generated
+          version, a file rebuilt from the repository's own state every cycle, is designed and not built.
+          The design holds four kinds of thing: merges held for my decision, rulings the fleet needs
+          before it can proceed, hands-only work like hardware and credential ceremonies, and timed
+          obligations like certificate renewals, with every item carrying its age, its source, and what it
+          unblocks.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Four kinds of item flow into one operator queue file, which is read from a remote browser; items clear when the next cycle observes evidence rather than by being checked off.">
+            <defs><marker id="fsE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker></defs>
+            <rect x="30" y="20" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="39" fill="#fff" font-size="11" text-anchor="middle">MERGES HELD</text>
+            <text x="130" y="55" fill="#8fa8c8" font-size="9" text-anchor="middle">consequential PRs, with verdicts</text>
+            <rect x="30" y="78" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="97" fill="#fff" font-size="11" text-anchor="middle">RULINGS PENDING</text>
+            <text x="130" y="113" fill="#8fa8c8" font-size="9" text-anchor="middle">question + options + recommendation</text>
+            <rect x="30" y="136" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="155" fill="#fff" font-size="11" text-anchor="middle">HANDS-ONLY WORK</text>
+            <text x="130" y="171" fill="#8fa8c8" font-size="9" text-anchor="middle">hardware, credential ceremonies</text>
+            <rect x="30" y="194" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="213" fill="#fff" font-size="11" text-anchor="middle">TIMED OBLIGATIONS</text>
+            <text x="130" y="229" fill="#8fa8c8" font-size="9" text-anchor="middle">cert clocks, drills, exercises</text>
+            <rect x="330" y="85" width="240" height="90" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="450" y="115" fill="#fff" font-size="13" text-anchor="middle">OPERATOR QUEUE</text>
+            <text x="450" y="135" fill="#8fa8c8" font-size="10" text-anchor="middle">one file, rebuilt every cycle</text>
+            <text x="450" y="152" fill="#8fa8c8" font-size="10" text-anchor="middle">age &#183; source &#183; what it unblocks</text>
+            <rect x="680" y="85" width="190" height="90" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="775" y="115" fill="#fff" font-size="13" text-anchor="middle">REMOTE BROWSER</text>
+            <text x="775" y="135" fill="#8fa8c8" font-size="10" text-anchor="middle">the side channel, from anywhere;</text>
+            <text x="775" y="152" fill="#8fa8c8" font-size="10" text-anchor="middle">aging items push an alert</text>
+            <line x1="230" y1="42" x2="328" y2="105" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="100" x2="328" y2="120" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="158" x2="328" y2="140" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="216" x2="328" y2="155" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="570" y1="130" x2="678" y2="130" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <text x="560" y="205" fill="#00ff96" font-size="11" text-anchor="middle">cleared by evidence, never by checkbox: the next cycle sees the merged PR,</text>
+            <text x="560" y="222" fill="#00ff96" font-size="11" text-anchor="middle">the answered ruling, the new cert date, and drops the item on its own</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The designed rebuild, not a running one. The queue is kept by hand today. This is the
+            shape the generated version has to hold: claims clear nothing, evidence clears
+            everything.</figcaption>
+        </figure>
+        <p>Two rules are what will make the generated queue trustworthy, and neither of them runs yet.
+          Nothing will be checked off by hand: an item is to clear only when the next cycle observes the
+          evidence, whether that is a pull request showing merged, an answer sitting in the drop folder,
+          or a certificate date that changed. And it will not be allowed to rot in silence: an item that
+          ages past its threshold is to push an alert out through the outside channel, which is itself a
+          design. The prototype settled the idea. What is left to build is the clerk.</p>
+      </section>
+
+      <section class="block" id="appendix">
+        <h2>Appendix: the cycle in detail</h2>
+        <p>The panels above are the public telling. These four are the engineer's version of the same
+          machine: what drives it, what one cycle does step by step, how I reach it from anywhere, and what
+          watches each layer. The same key sits under every panel, and the same honesty rule applies, so
+          the closing panel separates what runs today from what is still a design.</p>
+
+        <h3 class="eyebrow">1. The drive train: a cheap tick, an expensive beat</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A timeline of frequent cheap gate ticks with a full cycle every four hours; a tick that finds a signal summons the next full cycle early.">
+            <defs><marker id="apG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <line x1="60" y1="120" x2="860" y2="120" stroke="rgba(0,212,255,0.3)" stroke-width="2"/>
+            <g fill="#4a6080">
+              <rect x="90" y="112" width="4" height="16"/><rect x="150" y="112" width="4" height="16"/>
+              <rect x="210" y="112" width="4" height="16"/><rect x="330" y="112" width="4" height="16"/>
+              <rect x="390" y="112" width="4" height="16"/><rect x="450" y="112" width="4" height="16"/>
+              <rect x="570" y="112" width="4" height="16"/><rect x="630" y="112" width="4" height="16"/>
+              <rect x="690" y="112" width="4" height="16"/><rect x="810" y="112" width="4" height="16"/>
+            </g>
+            <circle cx="270" cy="120" r="14" fill="none" stroke="#00d4ff" stroke-width="3"/>
+            <circle cx="510" cy="120" r="14" fill="none" stroke="#00d4ff" stroke-width="3"/>
+            <circle cx="750" cy="120" r="14" fill="none" stroke="#00d4ff" stroke-width="3"/>
+            <text x="270" y="160" fill="#00d4ff" font-size="12" text-anchor="middle">FULL CYCLE</text>
+            <text x="510" y="160" fill="#00d4ff" font-size="12" text-anchor="middle">FULL CYCLE</text>
+            <text x="750" y="160" fill="#00d4ff" font-size="12" text-anchor="middle">FULL CYCLE</text>
+            <text x="150" y="100" fill="#4a6080" font-size="11" text-anchor="middle">30-min gate ticks (no AI, pennies)</text>
+            <path d="M 392 108 C 420 70, 480 70, 505 104" fill="none" stroke="#00ff96" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#apG)"/>
+            <text x="452" y="62" fill="#00ff96" font-size="11" text-anchor="middle">a tick that finds a SIGNAL summons the full cycle early</text>
+            <text x="450" y="200" fill="#8fa8c8" font-size="12" text-anchor="middle">signals: new instructions in the drop &#183; new commits &#183; a finished or dead worker &#183; the kill switch &#183; a stale ledger</text>
+            <text x="450" y="222" fill="#4a6080" font-size="11" text-anchor="middle">four hours is the heartbeat floor; nothing waits four hours if something actually happened</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The half-hour tick is a plain script with no AI in it. Only a real signal spends
+            tokens, so the platform stays responsive without paying for idle intelligence.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">2. One full cycle, top to bottom</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="One cycle in order: check the kill switch, confirm the world, roll call the workers, read the mail, collect the verdicts, then either merge the routine or hold the consequential, dispatch by the drain order, and write the ledger line.">
+            <defs><marker id="apH" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="330" y="20" width="240" height="44" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="47" fill="#fff" font-size="13" text-anchor="middle">kill switch present? then STOP</text>
+            <rect x="330" y="84" width="240" height="44" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="104" fill="#fff" font-size="13" text-anchor="middle">confirm the world</text>
+            <text x="450" y="120" fill="#8fa8c8" font-size="10" text-anchor="middle">pull the repo; cannot verify = do NOTHING (proven in the outage)</text>
+            <rect x="330" y="148" width="240" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="168" fill="#fff" font-size="13" text-anchor="middle">roll call</text>
+            <text x="450" y="184" fill="#8fa8c8" font-size="10" text-anchor="middle">every worker: alive, slow, dead, or never started (spawn records)</text>
+            <rect x="330" y="212" width="240" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="232" fill="#fff" font-size="13" text-anchor="middle">read the mail</text>
+            <text x="450" y="248" fill="#8fa8c8" font-size="10" text-anchor="middle">my instructions from the drop + every worker's report</text>
+            <polygon points="342,276 558,276 582,298 558,320 342,320 318,298" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="296" fill="#fff" font-size="13" text-anchor="middle">collect the verdicts</text>
+            <text x="450" y="312" fill="#8fa8c8" font-size="10" text-anchor="middle">every finished branch already carries its cross-vendor review</text>
+            <rect x="200" y="340" width="230" height="52" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="315" y="362" fill="#fff" font-size="13" text-anchor="middle">merge the routine</text>
+            <text x="315" y="378" fill="#8fa8c8" font-size="10" text-anchor="middle">in-contract + green + clean verdict</text>
+            <rect x="470" y="340" width="230" height="52" rx="8" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="585" y="362" fill="#fff" font-size="13" text-anchor="middle">hold the consequential</text>
+            <text x="585" y="378" fill="#8fa8c8" font-size="10" text-anchor="middle">live systems, security, spend: MINE</text>
+            <rect x="330" y="412" width="240" height="52" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="432" fill="#fff" font-size="13" text-anchor="middle">dispatch by the drain order</text>
+            <text x="450" y="448" fill="#8fa8c8" font-size="10" text-anchor="middle">re-verify first, then backlog, routed by measured pass rates</text>
+            <rect x="330" y="484" width="240" height="40" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="509" fill="#fff" font-size="13" text-anchor="middle">write the ledger line, exit</text>
+            <line x1="450" y1="64" x2="450" y2="82" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="128" x2="450" y2="146" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="192" x2="450" y2="210" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="256" x2="450" y2="274" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="410" y1="320" x2="340" y2="340" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="490" y1="320" x2="560" y2="340" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="315" y1="392" x2="420" y2="414" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="585" y1="392" x2="480" y2="414" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="464" x2="450" y2="482" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The two green boxes are the character of the thing: it checks whether it is allowed to
+            exist, then whether it can see, before it does anything at all.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">3. Me, from anywhere: the side channel</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="From a remote browser, a sentence becomes a dated file in the drop folder, the next tick ingests it, the fleet acts, and reports travel back the same way.">
+            <defs><marker id="apI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker></defs>
+            <rect x="30" y="60" width="150" height="70" rx="10" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="105" y="90" fill="#fff" font-size="12" text-anchor="middle">REMOTE BROWSER</text>
+            <text x="105" y="110" fill="#8fa8c8" font-size="10" text-anchor="middle">from anywhere</text>
+            <rect x="240" y="60" width="170" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="325" y="85" fill="#fff" font-size="13" text-anchor="middle">SIDE CHANNEL</text>
+            <text x="325" y="103" fill="#8fa8c8" font-size="10" text-anchor="middle">rulings become files,</text>
+            <text x="325" y="117" fill="#8fa8c8" font-size="10" text-anchor="middle">drafts get fact-checked</text>
+            <rect x="470" y="60" width="150" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="545" y="90" fill="#fff" font-size="14" text-anchor="middle">THE DROP</text>
+            <text x="545" y="110" fill="#8fa8c8" font-size="10" text-anchor="middle">files in the repo</text>
+            <rect x="680" y="60" width="190" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="775" y="85" fill="#fff" font-size="13" text-anchor="middle">NEXT TICK INGESTS</text>
+            <text x="775" y="103" fill="#8fa8c8" font-size="10" text-anchor="middle">fleet acts; reports flow</text>
+            <text x="775" y="117" fill="#8fa8c8" font-size="10" text-anchor="middle">back the same road</text>
+            <line x1="180" y1="95" x2="238" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <line x1="410" y1="95" x2="468" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <line x1="620" y1="95" x2="678" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <path d="M 775 132 C 700 190, 200 190, 108 134" fill="none" stroke="#4a6080" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#apI)"/>
+            <text x="450" y="186" fill="#4a6080" font-size="11" text-anchor="middle">reports, verdicts, and questions come back the same way</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>Because the transport is files in git, operating the platform from anywhere means
+            saying a sentence. It becomes a dated entry, the next tick finds it, and the answer rides back.
+            This page was commissioned that way, hundreds of miles from the hardware.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">4. Who watches the watchers</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Workers are watched by the roll call, the cycle by the ledger, the ledger by a staleness alarm, and all of it by an outside dead-man switch that shares no fate with the lab.">
+            <defs><marker id="apJ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/></marker></defs>
+            <rect x="30" y="60" width="140" height="60" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="100" y="86" fill="#fff" font-size="12" text-anchor="middle">WORKERS</text>
+            <text x="100" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">watched by roll call</text>
+            <rect x="220" y="60" width="150" height="60" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="295" y="86" fill="#fff" font-size="12" text-anchor="middle">THE CYCLE</text>
+            <text x="295" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">watched by the ledger</text>
+            <rect x="420" y="60" width="170" height="60" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="505" y="86" fill="#fff" font-size="12" text-anchor="middle">LEDGER STALENESS</text>
+            <text x="505" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">silence past 9h = alarm</text>
+            <rect x="640" y="60" width="230" height="60" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="755" y="80" fill="#fff" font-size="12" text-anchor="middle">OUTSIDE DEAD-MAN</text>
+            <text x="755" y="97" fill="#8fa8c8" font-size="10" text-anchor="middle">shares no fate with the lab;</text>
+            <text x="755" y="111" fill="#8fa8c8" font-size="10" text-anchor="middle">lab goes silent = an alert reaches me</text>
+            <line x1="170" y1="90" x2="218" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+            <line x1="370" y1="90" x2="418" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+            <line x1="590" y1="90" x2="638" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+            <text x="450" y="162" fill="#4a6080" font-size="11" text-anchor="middle">every layer is watched by a layer that does not depend on it; the last one lives outside the building</text>
+            <text x="450" y="182" fill="#4a6080" font-size="11" text-anchor="middle">the 2026-08-04 outage is why the last box exists: the lab could not report its own death</text>
+          </svg>
+          <p class="fig-key"><b>Key.</b> Colour carries the meaning: cyan is automated, green is a safety
+            control, amber is me. Shape: pointed marks a Codex review step, and those are drawn
+            green because a second vendor checking the work is a safety control. Rounded is
+            everything else, including timers, stores and states.</p>
+          <figcaption>The rightmost box is a design, not a running control. The outage is the reason it
+            exists as a design at all.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">The automatic review loop is designed and gated</h3>
+        <p>In the picture above, the review step happens because I run it. Making it automatic, so a cycle
+          dispatches the reviewer itself with no paste in the middle, is <b>designed and gated</b>, in those
+          words. The gate is a credential durability test. The reviewer's subscription credential is a file,
+          and the command-line agent will accept one on standard input, which means it can reach a
+          short-lived runner the same way every other secret in this platform does. What is not yet measured
+          is whether that credential survives a refresh when the runner has nowhere to write the refreshed
+          copy back to. Until that test returns, nothing is built.</p>
+        <p>The reason the gate exists at all is spend. The credential path keeps the reviewer on a flat
+          subscription instead of metered per-token billing. If the durability test says the credential
+          cannot survive in a short-lived runner, the honest options are a longer-lived host or metered
+          billing, and that is a decision rather than an implementation detail. Building the loop first and
+          discovering the cost afterwards is exactly the mistake this gate exists to prevent.</p>
+      </section>
+
+      <section class="block" id="honesty">
+        <h2>What is real today, and what is not</h2>
+        <p>The rule this whole site runs on is that a design which has not run is a plan, and the page says
+          so in those words. Applied here:</p>
+        <ul>
+          <li><b>Running today:</b> the timer-driven cycle, the file transport, the drop folder, the
+            append-only run ledger, the PAUSE kill switch, the spawn-record roll call, the cross-vendor
+            review with its findings ledger, the fleet's routine merging, incident analysis written by the
+            fleet from primary sources rather than from my memory, and the refusal to act when it cannot
+            verify. The outage proved the last one.</li>
+          <li><b>Run by hand today:</b> dispatching the reviewer, the wave dispatch, and the operator queue
+            itself.</li>
+          <li><b>Designed and not built:</b> the written routine contract as a file, the separate machine
+            identity, branch protection, the generated operator queue, the half-hour tick as a live
+            trigger, the automatic review loop described above, the outside dead-man switch, and the three
+            in the opening section: live incident triage, emergency work alongside me, and review of an
+            architecture proposal before it is built.</li>
+        </ul>
+        <p>One sentence for the whole page: the timer is dumb, the agents are careful, the files are the
+          truth, and nothing that raises a question lands without me.</p>
+      </section>
+
+      <!-- STAGED-LINK HOLD: the outage postmortem (/writeups/postmortem-2026-08-04/) and the accepted
+           risk register (/operations/accepted-risk/) join this row when they are flipped from staged to
+           linked. This page sits in the primary nav, so it must not be the thing that surfaces them. -->
       <div class="links">
         <a href="/ai/">AI in operations &#8594;</a>
+        <a href="/security/">The security posture &#8594;</a>
         <a href="/roadmap/">Read the roadmap &#8594;</a>
       </div>
     </div>
@@ -135,7 +775,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
-      <p class="disclaimer">Automation lab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
     </footer>
   </main>
 </body>
