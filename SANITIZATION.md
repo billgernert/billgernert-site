@@ -31,6 +31,7 @@ page deleted in the private repo is deleted here.
 | `platform/` | the subsystem writeups |
 | `diagram/` | the lab architecture (a public rendition; the internal diagram is never published) |
 | `writeups/` | long-form writeups (adopted into the gate 2026-07-15; was hand-committed) |
+| `operations/` | the operations section; its first page is the accepted risk register |
 | the per-topic portfolio pages: `claude-code/`, `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each is scrub-gated like every other page |
 | `SANITIZATION.md` | this file, published by the gate it describes |
 
