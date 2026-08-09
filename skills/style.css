@@ -689,6 +689,21 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
   margin-right: 10px;
 }
 .sitemap a { margin-right: 4px; }
+/* Nav v3 (inbox entry 65): Claude Code sits UNDER AI rather than beside it. The site map renders a
+   group on one line for width, so the subordination has to be visible; order alone does not carry it. */
+.sitemap a.sitemap-sub { opacity: 0.85; }
+.sitemap a.sitemap-sub::before {
+  content: "\21B3";
+  margin-right: 3px;
+  color: var(--muted);
+}
+/* The same relationship on a group hub page, where there is room to indent properly. */
+.nav-sub {
+  margin: 4px 0 0 0;
+  padding-left: 20px;
+  list-style: none;
+}
+.nav-sub > li { font-size: 0.95em; }
 
 @media (max-width: 480px) {
   h1 { font-size: 1.9rem; }

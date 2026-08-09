@@ -23,7 +23,7 @@
         <span class="brand-name">Bill Gernert</span>
       </a>
       <nav class="topnav" aria-label="Primary">
-        <a href="/projects/">Work</a>
+        <a href="/projects/">Projects</a>
         <a href="/platform/">Platform</a>
         <a href="/diagram/" class="active" aria-current="page">Engineering</a>
         <span class="topnav-spacer"></span>
@@ -51,8 +51,8 @@
       <p class="note">Also in <b>Engineering</b>:</p>
       <ol class="project-list">
         <li><b>Security.</b> How the lab is secured: one secrets authority, fail-closed defaults, and controls that get audited. <a href="/security/">Read more &#8594;</a></li>
-        <li><b>AI.</b> How AI is used in the lab: the build workflow, operational agents, and a local model paired with the Claude API. <a href="/ai/">Read more &#8594;</a></li>
-        <li><b>Claude Code.</b> How the lab is built with Claude Code: parallel sessions, one human merge authority, and a runbook per pipeline. <a href="/claude-code/">Read more &#8594;</a></li>
+        <li><b>AI.</b> How AI is used in the lab: the build workflow, operational agents, and a local model paired with the Claude API. <a href="/ai/">Read more &#8594;</a>
+          <ul class="nav-sub"><li><b>Claude Code.</b> How the lab is built with Claude Code: parallel sessions, one human merge authority, and a runbook per pipeline. <a href="/claude-code/">Read more &#8594;</a></li></ul></li>
         <li><b>NOC.</b> One dashboard the estate reports into, with a rule that no-data never reads as green. <a href="/noc/">Read more &#8594;</a></li>
         <li><b>Watchdog.</b> Monitoring for the monitoring itself: catching the case where the alerting path goes quiet. <a href="/dead-man-monitoring/">Read more &#8594;</a></li>
       </ol>
@@ -428,9 +428,9 @@
     <footer>
 <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
       <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group"><span class="sitemap-label">Work</span> <a href="/projects/">Projects</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
       </nav>
       <!-- END generated: sitemap -->
       <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
