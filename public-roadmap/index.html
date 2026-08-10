@@ -88,11 +88,20 @@
 
       <section class="block" id="legend">
         <h2>What the states mean</h2>
-        <ul>
-          <li><b>Designed</b> - the work is specified and filed, not yet started.</li>
-          <li><b>Building</b> - it is in progress: code or config committed, moving toward done.</li>
-          <li><b>Done</b> - the deliverable is committed and verified; anything that can only be confirmed on
-            live infrastructure is confirmed by an operator before it is called done.</li>
+        <ul class="legend-swatches" aria-label="Roadmap state legend">
+          <li>
+            <span class="legend-swatch" data-swatch="designed" aria-hidden="true"></span>
+            <span><b>Designed</b> - the work is specified and filed, not yet started.</span>
+          </li>
+          <li>
+            <span class="legend-swatch" data-swatch="building" aria-hidden="true"></span>
+            <span><b>Building</b> - it is in progress: code or config committed, moving toward done.</span>
+          </li>
+          <li>
+            <span class="legend-swatch" data-swatch="done" aria-hidden="true"></span>
+            <span><b>Done</b> - the deliverable is committed and verified; anything that can only be confirmed on
+              live infrastructure is confirmed by an operator before it is called done.</span>
+          </li>
         </ul>
       </section>
 

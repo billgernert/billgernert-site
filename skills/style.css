@@ -509,6 +509,43 @@ section.block ul { margin: 14px 0; padding-left: 20px; }
 section.block li { margin: 8px 0; font-weight: 300; }
 section.block li::marker { color: var(--cyan); }
 
+section.block ul.legend-swatches {
+  list-style: none;
+  margin: 18px 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+section.block ul.legend-swatches li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  margin: 0;
+}
+section.block ul.legend-swatches li::marker { content: ""; }
+.legend-swatch {
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-top: 0.35rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+  background: var(--card);
+  box-shadow: 0 0 0 1px rgba(10, 14, 26, 0.6) inset;
+}
+.legend-swatch[data-swatch="designed"] {
+  background: rgba(74, 96, 128, 0.28);
+  border-color: rgba(74, 96, 128, 0.9);
+}
+.legend-swatch[data-swatch="building"] {
+  background: rgba(0, 212, 255, 0.18);
+  border-color: rgba(0, 212, 255, 0.55);
+}
+.legend-swatch[data-swatch="done"] {
+  background: rgba(0, 255, 150, 0.18);
+  border-color: rgba(0, 255, 150, 0.55);
+}
+
 /* "Writeup coming" placeholder for unwritten sections */
 .coming {
   border: 1px dashed var(--border);
