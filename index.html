@@ -298,40 +298,50 @@
       <h1 class="tagline">Senior Platform &amp; Infrastructure Engineer</h1>
       <div class="hero">
         <p class="lede">
-          Can you actually automate everything?
+          Can you automate everything?
         </p>
         <p>
-          Server provisioning, Windows and Linux. User lifecycle from a YAML definition to Active Directory
-          and Entra. Certificate and secret rotation. Alert triage. Even the job search itself. Wired
-          together end to end, watched by a net of Grafana dashboards, and treated as production.
+          Sure. Badly. Automation nobody watches decays into the thing it replaced. The harder question is
+          the one this lab exists to answer: can one person keep everything right?
         </p>
         <p>
-          That's the question this lab exists to answer. Fifteen-plus years of system administration and
-          infrastructure design, applied to a greenfield build with open source at its core: Jenkins and
-          Ansible for execution, Vault for secrets, NetBox for inventory, git for every definition.
-          Automation is only as good as its sources of truth, so drift has nowhere to live.
+          Declared state for every system, in git. Secrets that rotate on schedule. Backups proven by a
+          live weekly restore, 97 seconds for Vault. And <a href="/claude-code/">an AI agent fleet that
+          triages alerts, maintains the backlog, and runs its own four-hour maintenance cycles
+          headless</a>, budget-capped, with a dead-man switch on its own heartbeat.
         </p>
         <p>
-          The scale tells the story:
-          <!-- Generated facts (item 136 / item 94). The item count is injected by
-               scripts/gen-roadmap-data.py --hero-page; the PR count by scripts/gen-pr-count.py (Gitea
-               merged-PR API). Edits between each START/END marker are overwritten at sync; the values
-               committed here are the last generated snapshot, not hand-typed literals. -->
-          <b class="hero-fact"><!--HERO:ITEMS:START-->205<!--HERO:ITEMS:END--></b> backlog items delivered
-          through <b class="hero-fact"><!--HERO:PRS:START-->1951<!--HERO:PRS:END--></b> PRs, every one
-          reviewed and merged by me. Recovery is proven, not promised. A pipeline verifies backups weekly,
-          and the practice is live-fire: Vault destroyed and restored in 97 seconds.
+          <!-- Generated facts (item 136 / item 94, plus the days count approved in inbox entry 73). The
+               item count is injected by scripts/gen-roadmap-data.py --hero-page; the PR count by
+               scripts/gen-pr-count.py (Gitea merged-PR API); the days-since-first-commit count by
+               scripts/gen-hero-days.py. Edits between each START/END marker are overwritten on the staged
+               copy at sync; the values committed here are the last generated snapshot, not hand-typed
+               literals. -->
+          The pace is the proof: <b class="hero-fact"><!--HERO:ITEMS:START-->205<!--HERO:ITEMS:END--></b>
+          backlog items through <b class="hero-fact"><!--HERO:PRS:START-->1952<!--HERO:PRS:END--></b> pull
+          requests in <b class="hero-fact"><!--HERO:DAYS:START-->54<!--HERO:DAYS:END--></b> days, every
+          merge reviewed by me. You cannot move that fast on a foundation that is wrong. Everything below
+          shows the receipts.
         </p>
-        <p>
-          And AI isn't just tooling here. A local LLM and the Claude API operate as agents inside the
-          platform, triaging alerts each morning, analyzing incidents, and reporting on lab health, all
-          cost-gated and audited like everything else.
-        </p>
+        <div class="links">
+          <a href="/projects/">View featured work &#8594;</a>
+        </div>
       </div>
     </header>
 
     <section>
       <h2>AutomationLab</h2>
+      <p>
+        Server provisioning, Windows and Linux. User lifecycle from a YAML definition to Active Directory
+        and Entra. Certificate and secret rotation. Alert triage. Even the job search itself. Wired
+        together end to end, watched by a net of Grafana dashboards, and treated as production.
+      </p>
+      <p>
+        Fifteen-plus years of system administration and infrastructure design, applied to a greenfield
+        build with open source at its core: Jenkins and Ansible for execution, Vault for secrets, NetBox
+        for inventory, git for every definition. Automation is only as good as its sources of truth, so
+        drift has nowhere to live.
+      </p>
       <div class="card">
         <p>
           AutomationLab is a self-hosted platform on a <b>five-node Proxmox HA cluster</b>, automated
@@ -463,6 +473,7 @@
         <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
         <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
         <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
       </nav>
       <!-- END generated: sitemap -->parsec-lab.com &#183; built and operated by Bill Gernert<span class="saber" aria-hidden="true"></span>
       <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>

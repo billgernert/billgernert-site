@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About and experience - Bill Gernert</title>
+  <meta name="description" content="Fifteen years as a system administrator and infrastructure engineer, the roles and the numbers behind them, what AutomationLab is, and how I work. Written for anyone who found the lab first and wants to know who built it.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="parsec-lab.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="/projects/">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/diagram/">Engineering</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">About</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">About</span>
+      <h1>About me</h1>
+      <p class="descriptor">I am Bill Gernert, an infrastructure engineer in the Denver area with fifteen
+        years of system administration behind me. This page is my working history, the short version of
+        what AutomationLab is, and how I work. Every number on it comes from a job I held or from a page
+        on this site that shows the evidence.</p>
+    </header>
+
+    <div class="skill-body">
+      <div class="links">
+        <a href="#experience">Experience &#8594;</a>
+        <a href="#automationlab">What AutomationLab is &#8594;</a>
+        <a href="#how-i-work">How I work &#8594;</a>
+        <a href="#resume">Resume and contact &#8594;</a>
+      </div>
+
+      <section class="block" id="experience">
+        <h2>Fifteen years of running other people&#8217;s infrastructure</h2>
+        <p>I have spent fifteen years as a system administrator and infrastructure engineer, mostly in
+          higher education and county government. The pattern across all of it is the same. I find the
+          work people do by hand every week, turn it into something that runs on its own, and make it
+          report when it fails.</p>
+
+        <h3>Senior systems administrator, Jefferson County Business Innovation and Technology, 2021 to 2026</h3>
+        <p>Grew a Jenkins automation platform from 20 scripts to 135 Python and PowerShell jobs, so
+          routine requests ran self-service around the clock instead of arriving as tickets. After-hours
+          support tickets fell by roughly 40 percent. I replaced a third party VDI monitoring product,
+          which cost 30,000 dollars a year, with a PowerShell service that watched 350 virtual desktops,
+          patched their images, and fixed the common failures without a human. I removed 200 unused
+          service accounts, moved the rest to group managed service accounts, and automated their
+          credential rotation. Day to day I ran Active Directory, Entra ID, Exchange Online, Intune and
+          SCCM for 2,000 users, and wired nine separate platforms together through their APIs so identity
+          and certificate work stopped being manual.</p>
+
+        <h3>Systems administrator, University of Colorado Denver, 2018 to 2021</h3>
+        <p>Built a billing and reporting system that found compute nobody was being charged for across a
+          1,000 VM VMware estate, which recovered 10,000 dollars a month. Ran patching and configuration
+          for 400 Windows servers and 15,000 workstations through SCCM and brought patch compliance lag
+          down from weeks to 72 hours. Operated VMware Horizon VDI for 5,000 concurrent users, ran
+          enterprise DNS in Infoblox across internal, external and affiliate zones, and built capacity
+          forecasts that caught three resource shortfalls before they landed.</p>
+
+        <h3>Manager of computer labs and classrooms, University of Colorado Denver, 2015 to 2018</h3>
+        <p>Ran IT for 3 labs and 14 classrooms serving 2,000 students, and supervised 15 student
+          employees. Writing down the procedures they followed cut helpdesk escalations by about 30
+          percent, which is the first time I learned that a documented process is itself a piece of
+          infrastructure.</p>
+
+        <h3>Colorado Army National Guard, 2014 to 2019</h3>
+        <p>Executive officer, first for a 90 soldier aviation company and then for a space company of six
+          teams and 44 soldiers. The aviation job included moving 100 pieces of equipment, helicopters
+          included, across five states and onward to Kuwait and Iraq. Planning something that cannot be
+          retried is a different discipline from planning something that can, and it is where the habit
+          of writing the rollback before the change comes from.</p>
+
+        <h3>Education</h3>
+        <p>B.S. in Information Systems and M.S. in Finance, both from the University of Colorado Denver.</p>
+      </section>
+
+      <section class="block" id="automationlab">
+        <h2>What AutomationLab is</h2>
+        <p>AutomationLab is a self-hosted platform I built and operate on a five-node Proxmox HA cluster,
+          where every machine, secret, certificate and user account is defined in git and applied by a
+          pipeline rather than by hand. It exists because a resume line that says &#8220;automated
+          provisioning&#8221; is not checkable, and a pipeline that builds a server in front of you is.
+          Everything else on this site is a piece of that lab, written up with the measured numbers and
+          with the parts that broke left in.</p>
+        <div class="links">
+          <a href="/projects/">Read the pipeline stories &#8594;</a>
+          <a href="/platform/">How the platform works &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="how-i-work">
+        <h2>How I work</h2>
+        <p>Every change in the lab is a branch and a pull request that I review and merge myself, with
+          yamllint, ansible-lint, shellcheck and gitleaks running as required checks before anything can
+          land. Every failure becomes a backlog item carrying its evidence and a definition of done, so
+          the same thing does not get fixed twice and forgotten twice.</p>
+        <p>Gates fail closed. Where a control cannot tell whether an action is safe, it stops instead of
+          guessing. The decommission pipeline refuses to run when its plan would destroy nothing, because
+          an empty plan succeeding looks exactly like a successful teardown.</p>
+        <p>And where something has been written but never actually run, the page describing it says so in
+          those words. <b>That rule costs the most and is the reason the rest is worth reading.</b> A
+          procedure nobody has walked is a plan, and calling it anything else is how you find out during
+          the outage.</p>
+      </section>
+
+      <section class="block" id="resume">
+        <h2>Resume and contact</h2>
+        <p>My full work history is on LinkedIn and the code is on GitHub. A downloadable resume is not
+          published on this site yet, so the LinkedIn profile is the complete version until it is.</p>
+        <!-- OPERATOR-SUPPLY: the resume file does not exist anywhere in the tree, so this page carries
+             the resume link as a disabled placeholder rather than a live href. When the operator
+             supplies the file (a PDF committed at site/about/bill-gernert-resume.pdf, which the
+             site/about/ publish mapping already carries), drop the "not published yet" clause above and
+             uncomment the anchor below. It is left commented rather than pointed at a placeholder path
+             because a link to a file that does not exist publishes as a 404 the moment this page is live.
+        <a href="/about/bill-gernert-resume.pdf">Download my resume (PDF) &#8594;</a>
+        -->
+        <div class="links">
+          <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+          <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>
