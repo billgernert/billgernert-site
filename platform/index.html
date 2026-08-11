@@ -287,19 +287,13 @@
       <section class="block" id="legend">
         <h2>Reading the diagram</h2>
         <p>Colour carries meaning in every diagram on this site, and it means the same thing here.</p>
-        <ul>
-          <li><b>Cyan</b> is Jenkins and the systems it drives directly: the triggers, the engine, and
-            the tools a job calls out to.</li>
-          <li><b>Green</b> is evidence and guarantees: the rules a job cannot get around, the credential
-            path, and the numbered explanation markers.</li>
-          <li><b>Blue</b> is the declarative half of the platform, Argo CD and the cluster it reconciles.
-            Blue never starts a job.</li>
-          <li><b>The dashed green line</b> is the boundary where Jenkins hands off. Above it, work is a
-            job that finishes. Below it, work is a loop that never does.</li>
-          <li><b>A box with an arrow in its title</b> is a link to the page that tells that system's
-            story. Boxes without one do not have a page written yet, so they are plain text rather than a
-            link that would go nowhere.</li>
+        <ul class="legend-swatches" aria-label="Platform diagram legend">
+          <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>Jenkins and job-driven work</span></li>
+          <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>rules, proofs, and markers</span></li>
+          <li><span class="legend-swatch" data-swatch="blue" aria-hidden="true"></span><span>Argo CD and continuous reconciliation</span></li>
+          <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>dashed line: handoff at the commit</span></li>
         </ul>
+        <p class="legend-note">Arrow in a title means that box links to its page.</p>
       </section>
 
       <section class="block" id="pattern">

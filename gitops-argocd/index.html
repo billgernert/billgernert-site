@@ -172,8 +172,11 @@
               <path d="M 380 704 L 380 724"></path>
             </g>
           </svg>
-          <figcaption>Legend: a cyan box happens on its own once the step above it lands. A green box is a
-            person acting. Three of the eleven steps are mine, and the last of the three, the sync, is the
+          <ul class="legend-swatches" aria-label="GitOps diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automatic after the step above lands</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <figcaption>Three of the eleven steps are mine, and the last of the three, the sync, is the
             gate this lab keeps on purpose. Argo CD owns only the last four boxes; everything above them is
             build and review.</figcaption>
         </figure>
