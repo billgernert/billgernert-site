@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A dependency bot that is not allowed to merge - Bill Gernert</title>
+  <meta name="description" content="Renovate runs weekly against this lab and opens grouped, gated update pull requests. A risk classifier tags each one, and the automerge decision is committed but switched off behind two guards. This page covers what it tracks, why it stays in observe mode, and what it cannot do on this git server.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="/projects/">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/diagram/">Engineering</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">Dependency updates</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Supply chain</span>
+      <h1>A dependency bot that is not allowed to merge</h1>
+      <p class="descriptor">Everything in this lab is pinned to an exact version, which is good for
+        reproducibility and bad for staying current, because a pin only moves when a human remembers it
+        exists. Renovate now does the remembering. It runs weekly, finds what has moved, and opens
+        grouped pull requests that go through the same gates as any human change. What it deliberately
+        cannot do is merge. The risk classifier that would eventually let it merge low-risk updates is
+        written and switched off behind two separate guards, and this page explains why it is staying
+        that way for now.</p>
+    </header>
+
+    <div class="skill-body">
+      <nav class="anchors" aria-label="On this page">
+        <a href="#pins">The cost of pinning everything</a>
+        <a href="#how">How it runs</a>
+        <a href="#tracks">What it watches</a>
+        <a href="#gates">Every update is an ordinary pull request</a>
+        <a href="#observe">Observe mode, and the two guards</a>
+        <a href="#limits">What it cannot do here</a>
+      </nav>
+
+      <section class="block" id="pins">
+        <h2>The cost of pinning everything</h2>
+        <p>This lab pins aggressively. Container images are referenced by digest rather than tag, so the
+          bytes that ran yesterday are the bytes that run today. Command-line tools used by the build
+          pipelines are pinned to an exact release. Linting hooks, workflow actions and controller
+          plugins all carry explicit versions.</p>
+        <p>That buys reproducibility, and it buys a specific, well-known problem in exchange. A pin never
+          moves on its own, so the lab drifts steadily further behind upstream, silently, and the gap is
+          invisible until something forces an upgrade. The usual outcome is that nothing gets updated for
+          months and then everything gets updated at once in a single miserable session where nobody can
+          tell which of forty changes broke the build.</p>
+        <p>The honest alternative to a bot here was a recurring calendar reminder to go and check each
+          pinned surface by hand once a month. That is written down as the fallback, and it is genuinely
+          the better option if the bot proves unreliable, because a monthly sweep that actually happens
+          beats an automated one that everybody has learned to ignore.</p>
+      </section>
+
+      <section class="block" id="how">
+        <h2>How it runs</h2>
+        <p>Renovate is the dependency bot, self-hosted. It runs as a Kubernetes CronJob, once a week,
+          Monday at 03:00. It is not a plugin on the build server, which was a deliberate choice: this
+          lab has a standing rule against adding plugins to the build controller, because every plugin is
+          another thing with access to the build system and another supply chain to trust. A scheduled
+          container that talks to the git server over its API needs none of that.</p>
+        <p>The bot's own image is pinned by digest as well, which is the sort of thing that is easy to
+          skip on the assumption that the tool doing the pinning does not need pinning. It runs as its
+          own restricted service identity on the git server, scoped to write to exactly one repository
+          and nothing else, with its token read from the lab's secrets server rather than stored on
+          disk.</p>
+        <p>Its configuration is split in two on purpose. The global half (where the git server is, who
+          the bot is, which repositories it looks at) lives with the deployment. The half that decides
+          how updates are grouped and what gets tracked lives in a config file in the repository itself,
+          so changing the update policy is a reviewed pull request against the repo it affects rather
+          than a change to a running cluster object.</p>
+      </section>
+
+      <section class="block" id="tracks">
+        <h2>What it watches</h2>
+        <p>Some of this is free. Renovate natively understands container base images in Dockerfiles,
+          Python requirements files, Helm charts and their values, the version pins in the pre-commit
+          config, and the pinned actions in the CI workflow files. Those needed no configuration at
+          all.</p>
+        <p>The interesting part is the surfaces it does not understand, because they are conventions this
+          lab invented rather than a standard file format. There are three, and each is now tracked by a
+          custom matcher paired with a <code>#&nbsp;renovate:</code> comment sitting directly above the
+          pinned line, telling the bot where the version lives and which upstream to check:</p>
+        <p>The command-line tools the pipelines install (the secret scanner, the vulnerability scanner,
+          the manifest validator, and the signing tool) each pin a release in a shell variable. The image
+          digest pins used to promote a build from one environment to the next, so a digest change
+          arrives as a reviewable diff instead of a silent repoint. And the build controller's own plugin
+          list, including the lines that are commented out awaiting an operator, so a pin does not go
+          stale in the window before it is switched on.</p>
+        <p>The failure mode for a custom matcher is that it silently matches nothing. A typo in the
+          annotation or the file pattern does not produce an error, it produces a bot that quietly skips
+          that file forever and a repo that looks fully covered. Two offline tests guard against it: one
+          checks the configuration parses, the other checks every annotated pin is still tracked by a
+          matcher. Beyond that, the check is to read the bot's own inventory after a run and confirm each
+          pinned surface actually appears in it.</p>
+        <p>Two things remain untracked and are written down as such: tool versions passed as build
+          arguments inside container builds, and Helm chart versions pinned inside the upgrade
+          pipelines.</p>
+      </section>
+
+      <section class="block" id="gates">
+        <h2>Every update is an ordinary pull request</h2>
+        <p>Non-major updates arrive grouped into a single pull request. Each major version bump gets its
+          own, because a major is where the breakage is and it deserves to be reviewable and revertable
+          on its own.</p>
+        <p>Those pull requests are not special. They run the same checks as a change written by hand:
+          secret scanning, linting, and vulnerability scanning of the resulting images. This lab has a
+          separate, narrow lane where automated commits skip CI, used only for machine-written status
+          records that nothing is built from. Dependency updates are explicitly excluded from it, and the
+          bot's commit prefix is chosen so it cannot accidentally trip that lane. A dependency update that
+          skipped the gates would be the one change class you least want unchecked.</p>
+      </section>
+
+      <section class="block" id="observe">
+        <h2>Observe mode, and the two guards</h2>
+        <p>Reviewing a grouped update every week is still work, and most of that work is deciding that a
+          patch bump to a linting tool is boring. So there is a classifier that reads a proposed update
+          and tags it low, medium or high risk, and a decision module that would let low-risk ones merge
+          themselves once the required checks are green.</p>
+        <p>That module is committed and it has never merged anything. It decides and it explains its
+          decision, and something else entirely would have to do the merging. Two independent guards keep
+          it off. The first is a plain feature flag, off by default. The second is more interesting: the
+          decision reads the mode of the evaluation suite that scores this kind of automated judgment,
+          and refuses while that suite is still in observe mode rather than acting as a required check.
+          Its committed state is observe, so flipping the feature flag alone changes nothing.</p>
+        <p>Tying the second guard to the evaluation suite's own configuration rather than to a second
+          switch is the part worth copying. It means automerge cannot go live before the thing that
+          measures whether its judgment is any good has finished measuring, and that ordering is enforced
+          by construction rather than by remembering. The classifier also fails safe: an answer it cannot
+          parse is treated as high risk, never low.</p>
+        <p>Major version bumps are excluded from automerge permanently, not just for now.</p>
+        <p>To be exact about the current state: the bot is running and opening pull requests, and the
+          automerge path has never merged anything and cannot until a deliberate, ordered set of steps is
+          taken. Nothing on this page describes a robot with commit access.</p>
+      </section>
+
+      <section class="block" id="limits">
+        <h2>What it cannot do here</h2>
+        <p>The core loop works: it authenticates, detects updates, pushes a branch, and opens the grouped
+          pull request. Two smaller things do not work against this git server, and they are documented
+          rather than worked around, because the pull requests are the product and the rest is
+          convenience.</p>
+        <p>It cannot create its dependency dashboard, the summary issue listing everything it can see and
+          everything pending. This was initially assumed to be a token permission problem, the bot's
+          access was widened to cover it, and it kept failing, which was useful: it ruled out the obvious
+          cause and pointed at the git server instead, either at the issue tracker being disabled on that
+          repository or at a version older than the bot expects for that part of its API. It does not
+          block anything.</p>
+        <p>And its pull requests carry no release notes. Renovate fetches changelogs from GitHub, and
+          this is a self-hosted, internal-only deployment with no GitHub credential configured, so it
+          cannot pull them. The version change and the diff are still there. It is a cosmetic gap with a
+          known fix that has not been judged worth the extra credential.</p>
+        <p>If it turns out to be flaky in practice, the plan is not to fight it. Suspend the schedule and
+          fall back to the monthly manual sweep. That fallback being written down before it was needed is
+          the reason adopting the bot was a low-risk decision rather than a bet.</p>
+      </section>
+
+      <div class="links">
+        <a href="/supply-chain-security/">See the wider supply chain controls &#8594;</a>
+        <a href="/security/">See the wider security posture &#8594;</a>
+        <a href="/platform/">See the wider platform &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Systems</span> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>

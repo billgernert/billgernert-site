@@ -574,6 +574,14 @@ section.block ul.legend-swatches li::marker { content: ""; }
   line-height: 1.5;
   color: var(--muted);
 }
+.roadmap-milestones .state-designed,
+.roadmap-milestones .state-building,
+.roadmap-milestones .state-done {
+  font-weight: 600;
+}
+.roadmap-milestones .state-designed { color: var(--muted); }
+.roadmap-milestones .state-building { color: var(--cyan); }
+.roadmap-milestones .state-done { color: var(--green); }
 
 /* "Writeup coming" placeholder for unwritten sections */
 .coming {

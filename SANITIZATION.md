@@ -32,19 +32,26 @@ page deleted in the private repo is deleted here.
 | `diagram/` | the lab architecture (a public rendition; the internal diagram is never published) |
 | `writeups/` | long-form writeups (adopted into the gate 2026-07-15; was hand-committed) |
 | `operations/` | the operations section; its first page is the accepted risk register |
-| the per-topic portfolio pages: `claude-code/`, `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each is scrub-gated like every other page |
+| `noc/` | the NOC/Grafana showcase page; it currently carries five committed PNG captures under `noc/img/` |
+| `vault/` | the Vault subsystem page |
+| `mail/` | the self-hosted mail page |
+| `dead-man-monitoring/` | the watchdog page about monitoring the monitoring path |
+| `about/` | the about/experience page |
+| the per-topic portfolio pages: `claude-code/`, `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each listed page is scrub-gated like every other page |
+| the system showcase pages: `litellm/`, `renovate/` | each a standalone sync-managed page; added to the gate's three dir lists by the 2026-08-10 showcase-pages change, so each listed page is scrub-gated like every other page |
 | `SANITIZATION.md` | this file, published by the gate it describes |
 
 **Do not hand-edit these here.** The next sync overwrites them, and your edit skips the scrub gate on
 the way in. Change them in the private repo's `site/` and let the pipeline publish.
 
-**Currency pass (2026-07-27):** this table was reconciled against the live `site/` page dirs and the
-`sync-public-site` mapping. The per-topic pages added since the last review (`claude-code`, `gitops-argocd`,
-`supply-chain-security`, `dr-restore-verify`, and the pack pages) were staged-but-unmapped until the
-`/claude-code/`-404 fix put them in all three gate dir lists; they are enumerated above now, so the
-authority matches the gate. `scripts/check-site-sync-mapping.py` runs clean (no list drift). All `site/`
-content is text/HTML - there are no images anywhere in `site/`, so the image-checklist gap (the class the
-`writeups/` incident below is about) does not apply to any current page.
+**Currency pass (2026-08-11):** this table was reconciled against the committed `site/` publish directories,
+the path-mapping list in `docs/pipelines/sync-public-site.md`, and the stage, mirror, and `git add -A`
+directory lists in `jenkins/Jenkinsfile-sync-public-site`. `scripts/check-site-sync-mapping.py` still checks
+only those three machine lists and runs clean; it does not read this table. The repo now contains five
+committed PNG captures under `site/noc/img/`: `litellm-budget.png`, `noc-facts.png`, `noc-hub-full.png`,
+`noc-tiles.png`, and `pve-cluster.png`. They were committed as sanitized captures and this note is not
+evidence of a leak, but the image checklist below does apply to them and to any future image. An operator
+should eyeball those five captures before the next publish or reuse.
 
 ### B. Hand-committed (a human is the ONLY gate)
 
@@ -61,9 +68,9 @@ is committed. There is no second net.
 
 ## Images
 
-Images are allowed **only** inside a sync-managed page directory (`skills/`, `ai/`, `projects/`,
-`platform/`, `roadmap/`), so that they travel with the pages that reference them and are mirrored with
-deletion like everything else.
+Images are allowed **only** inside a sync-managed page directory that is in the publish mapping, so that
+they travel with the pages that reference them and are mirrored with deletion like everything else. The
+current committed examples are the five `site/noc/img/*.png` captures named in the currency pass above.
 
 **But understand what the gate does and does not do for them.** The scrub gate greps the publish set
 as **text**. It cannot read pixels. A screenshot showing an internal hostname, an IP address, a VM
