@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Engineering - Bill Gernert</title>
+  <meta name="description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, the AI and Claude Code pages, and the observability surfaces that show what is measured.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary">
+        <a href="/projects/">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/diagram/">Engineering</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">parsec-lab.com</a>
+      <span class="sep">/</span>
+      <span class="here">Engineering</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Engineering</span>
+      <h1>The system view of AutomationLab</h1>
+      <p class="descriptor">Engineering is the part of this site that explains the shape of the lab, how
+        it is secured, how AI is used to build and run it, and how the public-facing observability pages
+        stay honest about what they can and cannot prove. Start here, then follow the pages below for the
+        detail.</p>
+      <div class="links">
+        <a href="#architecture">Architecture</a>
+        <a href="#security">Security</a>
+        <a href="#ai">AI</a>
+        <a href="#claude-code">Claude Code</a>
+        <a href="#observability">Observability</a>
+      </div>
+    </header>
+
+    <div class="skill-body">
+      <section class="block" id="architecture">
+        <h2>Architecture</h2>
+        <p>The diagram page is the map. It shows the edge, the segmented network, the five-node compute
+          layer, Kubernetes, the systems that hold the truth, and the identity and backup layers
+          underneath them. Every clickable region on that page fans out to the page that explains the
+          subsystem it names, so it is the fastest way to get the whole lab onto one screen.</p>
+        <p class="note">The public diagram keeps out addresses, segment numbers, and machine names on
+          purpose. The internal copy carries that detail; this one keeps the shape and the boundaries.</p>
+        <div class="links">
+          <a href="/diagram/">Diagram &#8594;</a>
+          <a href="/platform/">Platform &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="security">
+        <h2>Security</h2>
+        <p>The security story here is two layers at once. The security page covers one secrets authority,
+          fail-closed gates, zero trust at the edge, least privilege, and the practice of auditing a
+          control by trying to break it. The Windows identity page covers the directory, the certificate
+          authority, MFA on remote desktop, and a live investigation that stays visible as an honest
+          in-progress branch rather than being cleaned up after the fact.</p>
+        <div class="links">
+          <a href="/security/">Security &#8594;</a>
+          <a href="/windows-identity/">Windows identity &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="ai">
+        <h2>AI</h2>
+        <p>The AI page is the broad view: where models are used in build and operations, why a local
+          model and a paid API are split by purpose, and how spend is bounded by layered budgets. The
+          point is not that AI is present. It is that it is treated like any other dependency, with
+          written limits, logs, and human review.</p>
+        <div class="links">
+          <a href="/ai/">AI &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="claude-code">
+        <h2>Claude Code</h2>
+        <p>The Claude Code page narrows from AI in general to the build workflow itself: the
+          cross-vendor build and review loop, the four-hour cycle, the fact that work is stored as files
+          in git rather than chat memory, and the outage week that forced the current source-of-truth
+          posture. It is the process page in this section: how the engineering work gets produced, reviewed,
+          and stopped when the evidence is not good enough.</p>
+        <div class="links">
+          <a href="/claude-code/">Claude Code &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="observability">
+        <h2>Observability</h2>
+        <p>Observability is split between what you can see at a glance and what catches silence. The NOC
+          page is the public overview, built around one screen and the rule that no-data never reads as
+          green. The watchdog page explains the dead-man switches that alert when a job, digest, or
+          checker stops reporting at all, which is exactly the failure ordinary dashboards miss.</p>
+        <div class="links">
+          <a href="/noc/">NOC &#8594;</a>
+          <a href="/dead-man-monitoring/">Monitoring the monitoring &#8594;</a>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Systems</span> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
+      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+    </footer>
+  </main>
+</body>
+</html>
