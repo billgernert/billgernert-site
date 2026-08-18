@@ -9,3 +9,11 @@
 # to the migrated project pages.
 
 /projects/server-provisioning /projects/server-provisioning/ 301
+/projects/certificate-secret-renewal /projects/certificate-secret-renewal/ 301
+/projects/template-factory /projects/template-factory/ 301
+/projects/self-healing-monitoring /projects/self-healing-monitoring/ 301
+/projects/decommission /projects/decommission/ 301
+/projects/aiops-triage /projects/aiops-triage/ 301
+/projects/job-reporting /projects/job-reporting/ 301
+/fleet /claude-code/ 301
+/fleet/ /claude-code/ 301

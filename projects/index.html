@@ -25,11 +25,12 @@
         </svg>
         <span class="brand-name">Bill Gernert</span>
       </a>
-      <nav class="topnav" aria-label="Primary">
+      <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/" class="active" aria-current="page">Projects</a>
         <a href="/platform/">Platform</a>
-        <a href="/engineering/">Engineering</a>
+        <a href="/fleet/">Unattended fleet</a>
         <a href="/live/">Live</a>
+        <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
@@ -52,16 +53,26 @@
 
     <div class="skill-body">
       <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
+      <p class="note">Also in <b>Projects</b>:</p>
+      <ol class="project-list">
+        <li><b>Server provisioning.</b> One request becomes one pipeline run across provisioning, addressing, monitoring, and configuration. <a href="/projects/server-provisioning/">Read more &#8594;</a></li>
+        <li><b>Certificate lifecycle.</b> Certificate and secret rotation that happens before expiry instead of on a fire drill. <a href="/projects/certificate-secret-renewal/">Read more &#8594;</a></li>
+        <li><b>Template factory.</b> Windows golden images rebuilt from code, with the tag moving only after the new image is verified. <a href="/projects/template-factory/">Read more &#8594;</a></li>
+        <li><b>Self-healing monitoring.</b> Monitoring that classifies failures, fixes the safe drift, and stops at an operator gate for the rest. <a href="/projects/self-healing-monitoring/">Read more &#8594;</a></li>
+        <li><b>Safe decommission.</b> A teardown path that refuses to report success when its destroy plan would touch nothing. <a href="/projects/decommission/">Read more &#8594;</a></li>
+        <li><b>AIOps triage.</b> Collectors, deterministic correlation, and a local-first triage loop that fails closed. <a href="/projects/aiops-triage/">Read more &#8594;</a></li>
+        <li><b>Job reporting.</b> A scheduled collect, enrich, score, and report path with the truthfulness boundary called out. <a href="/projects/job-reporting/">Read more &#8594;</a></li>
+      </ol>
       <!-- END generated: group-hub -->
       <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
       <ol class="project-list">
         <li id="server-provisioning"><b>Automated server provisioning.</b> Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident. <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></li>
-        <li id="cert-secret-renewal"><b>Automated certificate and secret renewal.</b> Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill. <span class="coming-soon">coming soon</span></li>
-        <li id="template-factory"><b>The template factory.</b> Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live. <span class="coming-soon">coming soon</span></li>
-        <li id="job-reporting"><b>The job reporting pipeline.</b> Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt. <span class="coming-soon">coming soon</span></li>
-        <li id="self-healing-monitoring"><b>Self-healing monitoring.</b> Classifies every broken host, emails the full remediation plan, and heals only what a human has approved. <span class="coming-soon">coming soon</span></li>
-        <li id="decommission-gate"><b>Decommission, with the gate that says no.</b> Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown. <span class="coming-soon">coming soon</span></li>
-        <li id="aiops-triage"><b>AIOps morning triage.</b> Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model. <span class="coming-soon">coming soon</span></li>
+        <li id="certificate-secret-renewal"><b>Automated certificate and secret renewal.</b> Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill. <a href="/projects/certificate-secret-renewal/">Read the full write-up &#8594;</a></li>
+        <li id="template-factory"><b>The template factory.</b> Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live. <a href="/projects/template-factory/">Read the full write-up &#8594;</a></li>
+        <li id="job-reporting"><b>The job reporting pipeline.</b> Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt. <a href="/projects/job-reporting/">Read the full write-up &#8594;</a></li>
+        <li id="self-healing-monitoring"><b>Self-healing monitoring.</b> Classifies every broken host, emails the full remediation plan, and heals only what the operator has approved. <a href="/projects/self-healing-monitoring/">Read the full write-up &#8594;</a></li>
+        <li id="decommission"><b>Decommission, with the gate that says no.</b> Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown. <a href="/projects/decommission/">Read the full write-up &#8594;</a></li>
+        <li id="aiops-triage"><b>AIOps morning triage.</b> Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model. <a href="/projects/aiops-triage/">Read the full write-up &#8594;</a></li>
       </ol>
       <!-- END generated: projects-index -->
 
@@ -94,18 +105,16 @@
     </div>
 
     <footer>
-<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
       <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Live</span> <a href="/live/">Live</a> <a href="/diagram/">Diagram</a> <a href="/noc/">NOC</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Systems</span> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
       </nav>
       <!-- END generated: sitemap -->
-      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
-      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
 </body>

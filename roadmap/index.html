@@ -25,11 +25,12 @@
         </svg>
         <span class="brand-name">Bill Gernert</span>
       </a>
-      <nav class="topnav" aria-label="Primary">
+      <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/" class="active" aria-current="page">Platform</a>
-        <a href="/engineering/">Engineering</a>
+        <a href="/fleet/">Unattended fleet</a>
         <a href="/live/">Live</a>
+        <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
@@ -113,7 +114,7 @@
           <ul>
             <li><b>Provisioning as a pipeline, not a checklist.</b> A request flows through
               address allocation, infrastructure-as-code, monitoring registration, configuration,
-              a human approval gate, and enrollment - rolling forward on partial failure and
+              an operator approval gate, and enrollment - rolling forward on partial failure and
               reversing cleanly on decommission.</li>
             <li><b>Config-as-code, reviewed like code.</b> The cluster and the automation
               controller are declared in git and reconciled continuously; nothing reaches the
@@ -159,7 +160,7 @@
               history, its noise suppressed against the loop's own memory of what it has already
               seen, and given a proposed next step. Inference runs local-first, escalating to a
               stronger model only for the hard cases behind a cost gate; nothing acts on its own -
-              every fix is a proposal a human approves, fail-closed throughout.</li>
+              every fix is a proposal an operator approves, fail-closed throughout.</li>
             <li><b>Reporting and digest pipelines</b> and a single-pane reports portal, so the
               platform's state is legible at a glance.</li>
             <li><b>Recovery and trust as tested operations</b> - restore-and-reconcile pipelines, and
@@ -206,7 +207,7 @@
             decoration.</p>
           <div class="callout">
             <span class="tag">Detect, then approve</span>
-            Automation observes and proposes; a human gate stands before anything destructive or
+            Automation observes and proposes; an operator gate stands before anything destructive or
             irreversible. The machine does the tedious detection; the person makes the call.
           </div>
           <div class="callout">
@@ -236,7 +237,7 @@
             local-first inference (escalating to a stronger model only for the hard cases, behind a
             cost gate), and surface a proposed next step - never an automatic action. It composes
             detect-then-approve, earned autonomy, and fail-closed into one loop that reads, reasons,
-            and proposes, but only ever acts through a human gate.
+            and proposes, but only ever acts through an operator gate.
           </div>
         </div>
       </div>
@@ -286,16 +287,16 @@
     </section>
 
     <footer>
-<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
       <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/diagram/">Diagram</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/noc/">NOC</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
       </nav>
       <!-- END generated: sitemap -->
-      <a href="/">&#8592; parsec-lab.com</a> &#183; <a href="/skills/">skills portfolio</a> &#183; the roadmap is curated and refreshed periodically &#183; built and operated by Bill Gernert
-      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+      <p class="footer-line"><a href="/">Home</a> &#183; <a href="/skills/">Skills</a> &#183; the roadmap is curated and refreshed periodically &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
 </body>

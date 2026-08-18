@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Template factory - Bill Gernert</title>
+  <meta name="description" content="How the Windows template factory works in AutomationLab: weekly rebuilt golden images, tag-based promotion, and a stable replacement for the old patch-and-sysprep loop.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../skills/style.css">
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/projects/template-factory/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="/projects/" class="active" aria-current="page">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/fleet/">Unattended fleet</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">billgernert.com</a>
+      <span class="sep">/</span>
+      <a href="/projects/">Projects</a>
+      <span class="sep">/</span>
+      <span class="here">Template factory</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Project story</span>
+      <h1>The template factory</h1>
+      <p class="descriptor">Windows builds in this lab start from a golden image, so the image path had
+        to become its own project. The stable version is not "patch the template and hope." It is a
+        rebuild path that promotes a new image only after it has already proved itself.</p>
+    </header>
+
+    <div class="skill-body">
+      <section class="block">
+        <h2>The old loop failed for predictable reasons</h2>
+        <p>The first design was the obvious one. Boot the template, patch it, run sysprep, shut it
+          down, and repeat next month. It broke in the way stateful Windows image maintenance tends to
+          break. Sysprep rearm limits became a recurring problem, repeated runs made recovery ugly, and
+          a single bad patch cycle could leave the provisioning path waiting on the template it needed.</p>
+        <p>That was the useful failure. It made the real requirement obvious: patching the next image
+          could not make the current good image unavailable.</p>
+      </section>
+
+      <section class="block">
+        <h2>The current path is rebuild, verify, then move the tag</h2>
+        <p>The replacement design builds several custom Windows images as code on a weekly schedule and
+          lets them patch forward under automation. The provisioning pipeline does not look up a fixed VM
+          ID. It resolves the current image by tag, which means a known-good template stays in place
+          until the next image exists and has already been checked.</p>
+        <p>That tag move is the real promotion step. If the new image fails its own build or verify
+          path, the old image is still the one the provisioning story sees. There is no renumbering, no
+          scramble to roll back a broken template in place, and no downtime for the server builds that
+          depend on it.</p>
+      </section>
+
+      <section class="block">
+        <h2>What this changed</h2>
+        <p>The public provisioning write-up calls this out directly because it was the hardest part of
+          the whole server-build story. Tag-based lookup let the provisioning pipeline treat the template
+          as one stable input even while the image project kept evolving behind it. That is what turned
+          template maintenance from a recurring outage risk into a background factory.</p>
+        <p>The honest scope is narrower than "all server builds." Windows uses this path. Linux does not
+          need it, because Linux boots a shared cloud image and avoids the golden-template dependency
+          entirely.</p>
+      </section>
+
+      <div class="links">
+        <a href="/projects/server-provisioning/">Server provisioning &#8594;</a>
+        <a href="/skills/proxmox.html">Proxmox &#8594;</a>
+        <a href="/platform/">Platform &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </main>
+</body>
+</html>

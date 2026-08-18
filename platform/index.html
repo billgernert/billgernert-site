@@ -25,11 +25,12 @@
         </svg>
         <span class="brand-name">Bill Gernert</span>
       </a>
-      <nav class="topnav" aria-label="Primary">
+      <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/" class="active" aria-current="page">Platform</a>
-        <a href="/engineering/">Engineering</a>
+        <a href="/fleet/">Unattended fleet</a>
         <a href="/live/">Live</a>
+        <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
@@ -66,10 +67,12 @@
       <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Platform</b>:</p>
       <ol class="project-list">
-        <li><b>Skills.</b> A capability portfolio, each one linked to a hands-on writeup of how it is used. <a href="/skills/">Read more &#8594;</a></li>
-        <li><b>Roadmap.</b> How the platform is planned and prioritized, with the trade-offs written down. <a href="/roadmap/">Read more &#8594;</a></li>
-        <li><b>Vault.</b> Rebuilding the secrets server into a three-node cluster that survives losing one node. <a href="/vault/">Read more &#8594;</a></li>
-        <li><b>Mail.</b> Running a self-hosted mail server: the delivery path and the DNS records that keep it out of spam folders. <a href="/mail/">Read more &#8594;</a></li>
+        <li><b>Skills.</b> The skills and subsystem pages this platform is built from. <a href="/skills/">Read more &#8594;</a></li>
+        <li><b>Roadmap.</b> What is already live, what is still being built, and where the next trade-offs sit. <a href="/roadmap/">Read more &#8594;</a></li>
+        <li><b>Vault.</b> The secrets system, its measured recovery, and the limits that are still named plainly. <a href="/vault/">Read more &#8594;</a></li>
+        <li><b>Windows identity.</b> Directory, certificate authority, MFA, and the identity failure that is still shown as an active investigation. <a href="/windows-identity/">Read more &#8594;</a></li>
+        <li><b>Mail.</b> Self-hosted mail with the delivery path, DNS records, and operational limits explained. <a href="/mail/">Read more &#8594;</a></li>
+        <li><b>Recovery test.</b> The restore check that destroys a VM on purpose and times the recovery path. <a href="/dr-restore-verify/">Read more &#8594;</a></li>
       </ol>
       <!-- END generated: group-hub -->
 
@@ -83,7 +86,7 @@
           operator who triggered it, and an exit code. It also means the pipeline definitions are the
           real documentation of how this lab works, because there is no second, undocumented path.</p>
         <!-- BEGIN generated: platform-counts (generate-site-pages.py) -->
-      <p class="descriptor">Counted from the repository every time this page is built: <b>56</b> pipeline definitions, <b>6</b> of them wired into the seed script as code today, and <b>203</b> helper scripts the pipelines call. These three numbers are generated, never typed, so the page cannot quietly drift away from the tree it describes.</p>
+      <p class="descriptor">Counted from the repository every time this page is built: <b>56</b> pipeline definitions, <b>6</b> of them wired into the seed script as code today, and <b>204</b> helper scripts the pipelines call. These three numbers are generated, never typed, so the page cannot quietly drift away from the tree it describes.</p>
       <!-- END generated: platform-counts -->
         <p>The gap between those first two numbers is deliberate and worth explaining, because it is the
           honest version of "jobs as code". Every job's definition lives in git, in a Job DSL seed script
@@ -498,18 +501,16 @@
     </div>
 
     <footer>
-<!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
       <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">AI</a> <a class="sitemap-sub" href="/claude-code/">Claude Code</a> <a href="/dead-man-monitoring/">Watchdog</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Live</span> <a href="/live/">Live</a> <a href="/diagram/">Diagram</a> <a href="/noc/">NOC</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">About</span> <a href="/about/">About</a></div>
-        <div class="sitemap-group"><span class="sitemap-label">Systems</span> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
       </nav>
       <!-- END generated: sitemap -->
-      <a href="/">&#8592; Home</a> &#183; built and operated by Bill Gernert
-      <p class="disclaimer">AutomationLab is a portfolio site. All content is provided as-is, without warranty of any kind, and does not constitute professional advice. Views are my own and do not represent any employer. Unauthorized use of this site or its content is prohibited. Product names and trademarks are the property of their respective owners. Copyright 2026 Bill Gernert. All rights reserved.</p>
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
 </body>

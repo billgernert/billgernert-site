@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Certificate lifecycle - Bill Gernert</title>
+  <meta name="description" content="How certificate and secret rotation is handled in AutomationLab: public certs renewed automatically, internal trust anchored on AD CS, and the remaining manual expiry path watched explicitly.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../skills/style.css">
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/projects/certificate-secret-renewal/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="/projects/" class="active" aria-current="page">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/fleet/">Unattended fleet</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">billgernert.com</a>
+      <span class="sep">/</span>
+      <a href="/projects/">Projects</a>
+      <span class="sep">/</span>
+      <span class="here">Certificate lifecycle</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Project story</span>
+      <h1>Automated certificate and secret renewal</h1>
+      <p class="descriptor">This is the rotation path that keeps public certificates, internal trust,
+        and the secret material around them from turning into calendar work. The point is not one
+        certificate at a time. The point is keeping expiry from becoming an outage class at all.</p>
+    </header>
+
+    <div class="skill-body">
+      <section class="block">
+        <h2>Why this pipeline exists</h2>
+        <p>Certificate work becomes fragile the moment it depends on memory. A public hostname expires,
+          an internal service presents the wrong trust chain, or a credential used to fetch the next
+          secret is sitting in a file it should never have touched. The renewal path exists so those
+          cases are a scheduled maintenance story instead of a midnight fire drill.</p>
+        <p>The site has both halves of the problem. Public hostnames terminate at the edge and need a
+          public certificate path. Internal services use the lab's own certificate authority, because a
+          public CA should never vouch for names that do not exist on the public internet.</p>
+      </section>
+
+      <section class="block">
+        <h2>What the run actually changes</h2>
+        <p>For public names, cert-manager drives DNS-01 issuance so the certificate renews before it is
+          close enough to matter. For internal services, the trust anchor is Active Directory
+          Certificate Services, and the useful property is that every domain-joined machine is told to
+          trust it once. Rotating an internal certificate then becomes a normal maintenance event
+          instead of a fleet-wide exception list.</p>
+        <p>The secret side is handled the same way the rest of the lab is handled. Connection details
+          and credentials come from Vault at run time. They are not committed, and they do not sit on
+          disk waiting for the next rotation to inherit them by accident.</p>
+      </section>
+
+      <section class="block">
+        <h2>Evidence and the limit that still matters</h2>
+        <p>The Vault cluster page shows the internal side of this clearly. Each endpoint presents a
+          certificate issued by AD CS rather than a self-signed fallback, and the expiry path is watched
+          by a check that reads the certificate the service is actually presenting. That closes the
+          easy lie where the source file looked current but the live endpoint was serving something
+          older.</p>
+        <p>The remaining limit is named here because it matters: not every internal certificate is on a
+          full zero-touch renewal path yet. Some yearly certificates are still issued by hand and
+          watched explicitly for expiry, which is an honest improvement over forgetting them but not the
+          same thing as saying the whole estate is already hands-off.</p>
+      </section>
+
+      <div class="links">
+        <a href="/skills/cloudflare.html">Cloudflare Tunnel and Access &#8594;</a>
+        <a href="/windows-identity/">Windows identity &#8594;</a>
+        <a href="/vault/">Vault &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </main>
+</body>
+</html>

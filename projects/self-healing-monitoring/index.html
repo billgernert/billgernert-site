@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Self-healing monitoring - Bill Gernert</title>
+  <meta name="description" content="How self-healing monitoring works in AutomationLab: classify the failure, fix the safe drift, queue the rest as a full plan, and keep the audit trail honest about what the engine can actually prove.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../skills/style.css">
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/projects/self-healing-monitoring/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <main class="page-narrow">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="/projects/" class="active" aria-current="page">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/fleet/">Unattended fleet</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">billgernert.com</a>
+      <span class="sep">/</span>
+      <a href="/projects/">Projects</a>
+      <span class="sep">/</span>
+      <span class="here">Self-healing monitoring</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Project story</span>
+      <h1>Self-healing monitoring</h1>
+      <p class="descriptor">The monitoring path in this lab does more than alert. It decides whether the
+        failure is safe to repair directly, whether it needs an operator-held plan, or whether it should
+        stop and escalate with context instead of pretending a guess counts as recovery.</p>
+    </header>
+
+    <div class="skill-body">
+      <section class="block">
+        <h2>Classify first, then split the work</h2>
+        <p>A broken host does not get one generic "self-heal" action. The engine reads the failure and
+          separates the safe drift from the risky drift. If the issue is something like a moved address
+          or a stale monitoring key, the fix can be applied at the server side directly. If the repair
+          needs a touch on the host itself, the engine writes the full plan and sends it for approval
+          before anything runs.</p>
+        <p>That split is OS-aware. Linux and Windows do not get the same remediation path, and the
+          roles that run here are the monitoring repair roles only. The provisioning roles are kept out
+          of this path on purpose, because "self-heal" is not permission to rebuild a live machine.</p>
+      </section>
+
+      <section class="block">
+        <h2>The approval boundary is load-bearing</h2>
+        <p>The full remediation plan is emailed before any host-level change happens, and it waits at an
+          operator gate. If nobody approves it, the plan times out untouched. That makes the automation
+          useful without letting it quietly cross from proposing into doing.</p>
+        <p>One narrow path is fully automatic today: restarting a single stateless service. It is fenced
+          by a maintenance-window guard, a hard two-attempt cap so it cannot loop forever, and an
+          allowlist on the host that permits exactly one command and nothing else.</p>
+      </section>
+
+      <section class="block">
+        <h2>The record says only what the engine can prove</h2>
+        <p>The audit trail does not claim a magical green end state. Each run records whether the engine
+          applied a direct fix, dispatched a host plan, or escalated. It does not claim the host is
+          healthy afterwards, because that verification loop is not in place yet and inventing that
+          verdict would make the log worse than useless.</p>
+        <p>That is the useful limit to name. The platform can explain what it attempted and why. It is
+          honest about the fact that "attempted" and "confirmed healthy afterwards" are still different
+          statements.</p>
+      </section>
+
+      <div class="links">
+        <a href="/skills/zabbix.html">Zabbix &#8594;</a>
+        <a href="/ai-guardrails/">AI guardrails &#8594;</a>
+        <a href="/platform/#self-healing">Platform overview &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a class="sitemap-sub" href="/claude-code/">Fleet detail</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </main>
+</body>
+</html>

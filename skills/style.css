@@ -5,14 +5,17 @@
 
 :root {
   --bg: #0a0e1a;
+  --bg-raised: #0e1526;
   --fg: #e0e8ff;
-  --muted: #4a6080;
+  --muted: #8fa8c8;
+  --quiet: #5f7799;
   --cyan: #00d4ff;
   --blue: #0066ff;
   --green: #00ff96;
-  --border: rgba(0, 212, 255, 0.2);
+  --border: rgba(0, 212, 255, 0.22);
+  --border-quiet: rgba(143, 168, 200, 0.18);
   --border-strong: rgba(0, 212, 255, 0.45);
-  --card: rgba(0, 212, 255, 0.03);
+  --card: rgba(0, 212, 255, 0.035);
   --card-hover: rgba(0, 212, 255, 0.07);
   --green-wash: rgba(0, 255, 150, 0.06);
   --mono: "Share Tech Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -27,18 +30,22 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--sans);
+  font-size: 17px;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.68;
   min-height: 100vh;
-  padding: 40px 20px 80px;
   background-image:
-    radial-gradient(ellipse at 20% 12%, rgba(0, 100, 255, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 88%, rgba(0, 200, 150, 0.07) 0%, transparent 55%);
+    radial-gradient(ellipse at 16% 8%, rgba(0, 102, 255, 0.12) 0%, transparent 42%),
+    radial-gradient(ellipse at 88% 74%, rgba(0, 255, 150, 0.07) 0%, transparent 42%);
   background-attachment: fixed;
 }
 
-main { max-width: 880px; margin: 0 auto; }
-.page-narrow { max-width: 760px; }
+main {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 0 0 72px;
+}
+.page-narrow { max-width: 860px; }
 
 a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -50,16 +57,16 @@ a:hover { text-decoration: underline; }
   font-size: 0.75rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 30px;
+  color: var(--quiet);
+  margin: 22px 0 34px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
-.crumbs a { color: var(--muted); }
+.crumbs a { color: var(--quiet); }
 .crumbs a:hover { color: var(--cyan); text-decoration: none; }
-.crumbs .sep { color: rgba(74, 96, 128, 0.5); }
+.crumbs .sep { color: rgba(95, 119, 153, 0.5); }
 .crumbs .here { color: var(--fg); }
 
 /* ---- sticky site header: brand mark + name + nav, pinned while scrolling (item 448) ---- */
@@ -76,80 +83,90 @@ html { scroll-padding-top: 130px; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 22px;
-  background: var(--bg);
-  padding: 14px 0 12px;
-  margin: 0 0 22px;
-  border-bottom: 1px solid var(--border);
+  gap: 12px 28px;
+  min-height: 82px;
+  background: rgba(10, 14, 26, 0.94);
+  backdrop-filter: blur(10px);
+  padding: 18px 0;
+  margin: 0;
+  border-bottom: 1px solid var(--border-quiet);
 }
 .site-header .brand {
   display: flex;
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
-  color: var(--fg);
+  color: #fff;
   text-decoration: none;
+  font-family: var(--mono);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
 }
 .site-header .brand:hover { color: var(--cyan); text-decoration: none; }
-.site-header .brand-mark { width: 26px; height: 26px; flex: none; }
+.site-header .brand-mark { width: 30px; height: 30px; flex: none; }
 .site-header .brand-name {
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  letter-spacing: 1.5px;
+  font-size: 0.84rem;
   white-space: nowrap;
 }
 
 /* ---- site-wide top navigation (item 136), nested inside .site-header ---- */
 .topnav {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 18px;
+  gap: 7px 18px;
   font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 2px;
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   flex: 1 1 auto;
   min-width: 0;
 }
 .topnav a { color: var(--muted); }
 .topnav a:hover { color: var(--cyan); text-decoration: none; }
-.topnav a.active { color: var(--fg); }
+.topnav a.active { color: #fff; }
 .topnav .topnav-spacer { flex: 1 1 auto; }
-@media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
+@media (max-width: 720px) { .topnav a[rel="me"] { display: none; } }
 /* Nav group labels used to be a plain, unclickable `.topnav-group` span (item 467's first build) - the
    row grew instead of collapsing, because a label with no link and the flat list beside it is a divider,
    not a group. Corrected (item 467 correction, entry 48/49): each group label is now a real `<a>` in the
    primary row (styled by the plain `.topnav a` rule above), pointing at that group's hub page. */
-@media (max-width: 640px) {
-  .site-header { gap: 6px 14px; }
-  .site-header .brand-name { display: none; }   /* keep the mark visible; drop the wordmark to save width */
+@media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
+@media (max-width: 720px) {
+  .site-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 0;
+  }
+  .topnav { gap: 7px 14px; }
 }
 
 /* ---- shared eyebrow + headings ---- */
 .eyebrow {
   font-family: var(--mono);
-  font-size: 0.82rem;
-  letter-spacing: 3px;
+  font-size: 0.78rem;
+  letter-spacing: 2.4px;
   text-transform: uppercase;
   color: var(--cyan);
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 h1 {
   font-family: var(--sans);
   font-weight: 700;
-  font-size: 2.4rem;
-  line-height: 1.1;
-  letter-spacing: 0.5px;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  line-height: 1.16;
+  letter-spacing: -1px;
   color: #fff;
   text-wrap: balance;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 
-.lede { font-size: 1.12rem; color: var(--fg); font-weight: 300; text-wrap: pretty; }
+.lede { font-size: 1.12rem; color: #fff; font-weight: 300; text-wrap: pretty; }
 
-p { margin: 14px 0; color: var(--fg); font-weight: 300; }
+p { margin: 0 0 18px; color: var(--fg); font-weight: 300; }
 p b, li b { color: #fff; font-weight: 600; }
 
 code {
@@ -467,7 +484,7 @@ a.dnode:hover, a.dnode:focus-visible {
    SKILL PAGE
    ========================================================================== */
 
-.skill-head { margin-bottom: 10px; }
+.skill-head { margin-bottom: 12px; padding-top: 30px; }
 
 .badge {
   display: inline-block;
@@ -484,25 +501,27 @@ a.dnode:hover, a.dnode:focus-visible {
 .badge[data-accent="green"] { color: var(--green); border-color: rgba(0, 255, 150, 0.45); }
 
 .descriptor {
-  font-size: 1.12rem;
+  font-size: clamp(1.08rem, 2vw, 1.24rem);
   font-weight: 300;
   color: var(--fg);
   text-wrap: pretty;
   max-width: 64ch;
+  margin-bottom: 22px;
 }
 
 .skill-body { margin-top: 8px; }
 
-section.block { margin-top: 46px; }
+section.block { margin-top: 52px; }
 section.block > h2 {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--cyan);
-  border-left: 3px solid var(--cyan);
-  padding-left: 10px;
-  margin-bottom: 14px;
+  font-family: var(--sans);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-transform: none;
+  color: #fff;
+  border-left: 0;
+  padding-left: 0;
+  margin-bottom: 18px;
 }
 
 section.block ul { margin: 14px 0; padding-left: 20px; }
@@ -696,7 +715,7 @@ section.block ul.legend-swatches li::marker { content: ""; }
 .links a {
   font-family: var(--mono);
   font-size: 0.8rem;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: var(--fg);
   background: var(--card);
@@ -720,26 +739,31 @@ section.block ul.legend-swatches li::marker { content: ""; }
 /* ---- footer ---- */
 footer {
   margin-top: 56px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 2px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-quiet);
   color: var(--muted);
-  text-transform: uppercase;
 }
 footer a { color: var(--muted); }
 footer a:hover { color: var(--cyan); text-decoration: none; }
+
+.footer-line {
+  margin: 0;
+  color: var(--quiet);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
 
 /* Site-wide legal disclaimer. The text is real markup (a <p class="disclaimer"> inside every
    page's <footer>) so it is selectable, in the DOM, and reliably read by assistive tech; this rule
    only styles it. The wording is byte-identical on every page and enforced by
    scripts/check-site-disclaimer.py (CI gate), so it cannot drift. */
 .disclaimer {
-  margin: 14px 0 0;
-  max-width: 760px;
+  margin: 16px 0 0;
+  max-width: 62ch;
   font-family: var(--sans);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 300;
   letter-spacing: normal;
   text-transform: none;
@@ -752,17 +776,29 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
    estate-wide - it is what makes cutting the row safe. Same mono/uppercase footer voice, one row per
    group rather than per link, so it reads as a map rather than a second nav. */
 .sitemap {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 24px;
+  margin: 0 0 18px;
+}
+.sitemap-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 4px 0 16px;
+  gap: 4px;
+  line-height: 1.6;
 }
-.sitemap-group { line-height: 1.8; }
 .sitemap-label {
-  color: var(--fg);
-  margin-right: 10px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-right: 0;
 }
-.sitemap a { margin-right: 4px; }
+.sitemap a {
+  margin-right: 0;
+  font-size: 0.92rem;
+}
 /* Nav v3 (inbox entry 65): Claude Code sits UNDER AI rather than beside it. The site map renders a
    group on one line for width, so the subordination has to be visible; order alone does not carry it. */
 .sitemap a.sitemap-sub { opacity: 0.85; }
@@ -781,6 +817,11 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
 
 @media (max-width: 480px) {
   h1 { font-size: 1.9rem; }
-  body { padding-top: 28px; }
   .skill-grid { grid-template-columns: 1fr; }
+  main { width: min(1080px, calc(100% - 24px)); }
+  .sitemap { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  .sitemap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
