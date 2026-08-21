@@ -17,7 +17,11 @@
     figure.shot { margin: 1.5rem 0; }
     figure.shot img { width: 100%; height: auto; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; display: block; }
     figure.shot figcaption { font-size: 0.85rem; opacity: 0.75; margin-top: 0.4rem; }
+    .live-status { font-family: "Share Tech Mono", monospace; color: #8fa8c8; }
+    .live-frame { width: 100%; min-height: 720px; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; background: #0a0e1a; }
+    .live-fallback[hidden], .live-frame[hidden] { display: none; }
   </style>
+  <script src="live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/noc/">
   <!-- END generated: canonical -->
@@ -60,6 +64,8 @@
     </header>
 
     <nav class="crumbs" aria-label="On this page">
+      <a href="#live">Live staging board</a>
+      <span class="sep">/</span>
       <a href="#hub">One screen to start from</a>
       <span class="sep">/</span>
       <a href="#tiles">The tiles, and what grey means</a>
@@ -74,6 +80,23 @@
     </nav>
 
     <div class="skill-body">
+      <section class="block" id="live" data-public-noc>
+        <h2>Live staging board</h2>
+        <p>Grafana serves this board from the running lab. This first public stage contains no queries,
+          data sources, links, or internal names. Every tile reads <code>DATA DISCONNECTED</code>. That
+          proves the public route and the website embed before any changing measurement is approved.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
+        <iframe class="live-frame" data-live-frame data-src="https://status.billgernert.com/"
+          title="Public NOC staging dashboard" loading="eager" referrerpolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin" hidden></iframe>
+        <figure class="shot live-fallback" data-live-fallback>
+          <img src="img/noc-hub-full.png" alt="The latest public-safe NOC capture: nine domain tiles above four summary facts.">
+          <figcaption>Fallback capture from 2026-07-27. The website is independent of the lab, so this
+            dated image remains available when the live route is offline.</figcaption>
+        </figure>
+        <noscript><p>The live check needs JavaScript. The dated capture is shown instead.</p></noscript>
+      </section>
+
       <section class="block" id="hub">
         <h2>One screen to start from</h2>
         <p>The pattern is simple and it is the whole point: instead of a wall of dashboards you have to know

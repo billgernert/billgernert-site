@@ -186,7 +186,14 @@
           no delay and a link to the postmortem that follows. Most operations pages hide this. A portfolio
           about operating honestly cannot. The compensating control is the one the last outage tested: the
           site never depends on the lab, so the page reporting the outage stays up through it.</p>
-        <p class="risk-status">Accepted 2026-08-05 &#183; the live view is designed and not yet built</p>
+        <p class="risk-status">Accepted 2026-08-05 &#183; staging embed built 2026-08-21, live aggregate pending</p>
+
+        <h3 class="eyebrow">One public NOC route bypasses sign-in</h3>
+        <p>One route is approved to bypass sign-in. The dedicated status hostname may expose only one
+          curated Grafana shared dashboard without Cloudflare Access. The rest of Grafana stays behind
+          Access. The public route is rate-limited at the edge, restricted to the committed dashboard,
+          and contains no internal names or drill-down links.</p>
+        <p class="risk-status">Accepted 2026-08-21 &#183; active only while the public route is enabled</p>
 
         <h3 class="eyebrow">The live views can die while the site stays healthy</h3>
         <p>Anything live on this site depends on the lab, even though the pages do not. When the lab is
