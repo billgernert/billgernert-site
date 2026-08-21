@@ -64,7 +64,7 @@
     </header>
 
     <nav class="crumbs" aria-label="On this page">
-      <a href="#live">Live staging board</a>
+      <a href="#live">Live status board</a>
       <span class="sep">/</span>
       <a href="#hub">One screen to start from</a>
       <span class="sep">/</span>
@@ -81,14 +81,15 @@
 
     <div class="skill-body">
       <section class="block" id="live" data-public-noc>
-        <h2>Live staging board</h2>
-        <p>Grafana serves this board from the running lab. This first public stage contains no queries,
-          data sources, links, or internal names. Every tile reads <code>DATA DISCONNECTED</code>. That
-          proves the public route and the website embed before any changing measurement is approved.</p>
+        <h2>Live status board</h2>
+        <p>Grafana serves this board from the running lab. Each panel is reduced to one of four states
+          before it leaves the monitoring system: <code>HEALTHY</code>, <code>DEGRADED</code>,
+          <code>CRITICAL</code>, or <code>NO SIGNAL</code>. The public board contains no counts,
+          internal names, addresses, alert text, timestamps, links, or adjustable queries.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
         <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
-          title="Public NOC staging dashboard" referrerpolicy="no-referrer" hidden></iframe>
+          title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <figure class="shot live-fallback" data-live-fallback>
           <img src="img/noc-hub-full.png" alt="The latest public-safe NOC capture: nine domain tiles above four summary facts.">
           <figcaption>Fallback capture from 2026-07-27. The website is independent of the lab, so this
