@@ -84,6 +84,24 @@ def _redirect_route(value, line_number, field, errors):
     return decoded
 
 
+def _redirect_target(value, line_number, errors):
+    """Accept a safe site-root route or an HTTPS terminal redirect target."""
+    if not value.startswith("https://"):
+        return _redirect_route(value, line_number, "target", errors)
+    label = f"_redirects:{line_number}: target"
+    parsed = urllib.parse.urlsplit(value)
+    if (parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password
+            or parsed.fragment or "\\" in value
+            or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+        errors.append(f"{label} is not a safe HTTPS URL: '{value}'")
+        return None
+    return value
+
+
+def _is_external_redirect(value):
+    return value.startswith("https://")
+
+
 def _redirect_target_file(root, route):
     """Resolve a validated site-root route to a file without escaping root."""
     candidate = os.path.abspath(os.path.join(root, route.lstrip("/")))
@@ -98,7 +116,8 @@ def _redirect_target_file(root, route):
     if not inside_root:
         return None, f"path escapes the selected site root: '{route}'"
     if not os.path.isfile(candidate_real):
-        return None, f"no committed file {os.path.relpath(candidate, root)}"
+        relative = os.path.relpath(candidate, root).replace(os.sep, "/")
+        return None, f"no committed file {relative}"
     return candidate_real, None
 
 
@@ -140,7 +159,7 @@ def load_redirects(root):
                 continue
             source_raw, target_raw, status = fields
             source = _redirect_route(source_raw, line_number, "source", errors)
-            target = _redirect_route(target_raw, line_number, "target", errors)
+            target = _redirect_target(target_raw, line_number, errors)
             if status not in REDIRECT_STATUSES:
                 errors.append(f"_redirects:{line_number}: unsupported redirect status '{status}'")
             if source is None or target is None or status not in REDIRECT_STATUSES:
@@ -160,6 +179,8 @@ def load_redirects(root):
         final_route, chain_error = _follow_redirect(source, redirects)
         if chain_error:
             errors.append(f"_redirects:{redirects[source][2]}: {chain_error}")
+            continue
+        if _is_external_redirect(final_route):
             continue
         _, file_error = _redirect_target_file(root, final_route)
         if file_error:
@@ -229,7 +250,9 @@ def main():
                 redirect_source = target_path if target_path.startswith("/") else None
                 if redirect_source in redirects:
                     final_route, chain_error = _follow_redirect(redirect_source, redirects)
-                    if not chain_error:
+                    if not chain_error and _is_external_redirect(final_route):
+                        abs_target, file_error = None, None
+                    elif not chain_error:
                         abs_target, file_error = _redirect_target_file(root, final_route)
                     else:
                         file_error = chain_error
