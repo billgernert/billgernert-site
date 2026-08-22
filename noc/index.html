@@ -84,8 +84,11 @@
         <h2>Live status board</h2>
         <p>Grafana serves this board from the running lab. Each panel is reduced to one of four states
           before it leaves the monitoring system: <code>HEALTHY</code>, <code>DEGRADED</code>,
-          <code>CRITICAL</code>, or <code>NO SIGNAL</code>. The public board contains no counts,
-          internal names, addresses, alert text, timestamps, links, or adjustable queries.</p>
+          <code>CRITICAL</code>, or <code>NO SIGNAL</code>. Each tile also opens a public drill-down.
+          The Infrastructure view shows the Proxmox virtual machines under descriptive service names.
+          The Kubernetes view shows running components and their CPU and memory use. Recording rules
+          replace source identifiers before Grafana can query them. Addresses, numeric IDs, hypervisor
+          placement, pod names, namespaces, management URLs, alert text, and adjustable queries stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
         <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
