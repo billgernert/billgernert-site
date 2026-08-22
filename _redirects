@@ -17,3 +17,14 @@
 /projects/job-reporting /projects/job-reporting/ 301
 /fleet /claude-code/ 301
 /fleet/ /claude-code/ 301
+
+# Public NOC drill-downs cross this site-owned redirect so Grafana performs a fresh document load
+# inside the existing iframe instead of reusing query results from the previous public dashboard.
+/noc/open/overview https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7 302
+/noc/open/infrastructure https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66 302
+/noc/open/kubernetes https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126 302
+/noc/open/delivery https://status.billgernert.com/public-dashboards/95dabf6aa1884d4981c4a38ee9c7f910 302
+/noc/open/certificates-secrets https://status.billgernert.com/public-dashboards/f8c8dadad49f4b02a18a60a2e9e2af46 302
+/noc/open/backups https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328 302
+/noc/open/core-services https://status.billgernert.com/public-dashboards/a6ebccc923204a76a8ac713b595f0b2f 302
+/noc/open/aiops-alerts https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f 302
