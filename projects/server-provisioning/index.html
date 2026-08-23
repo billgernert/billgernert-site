@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Automated server provisioning - Bill Gernert</title>
-  <meta name="description" content="A pipeline that builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident. Includes the three bugs that taught it to fail safe, one of which had it reading the wrong command's exit code for its entire life.">
+  <meta name="description" content="A pipeline that builds a server as one consistent fact across five systems at once, now with two front doors: a Backstage portal form that opens a pull request, and Jenkins for scheduled work. Merge the request and a configured, monitored, DNS-registered VM exists five minutes later. Includes the three bugs that taught it to fail safe.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,11 +49,15 @@
       <h1>Automated server provisioning</h1>
       <p class="descriptor">A server is one fact recorded in five systems at once, and building it by hand lets
         any of them silently disagree. This pipeline builds all five together and refuses to proceed if a name
-        is already taken anywhere. The best bug it taught me: for its entire life, its safety gate had been
-        reading the exit code of the wrong command, so it caught collisions, printed them, and continued anyway.</p>
+        is already taken anywhere. It now has two front doors: a form in a Backstage portal that turns the
+        request into a pull request, and Jenkins for scheduled and operational work. Same scripts, same gates,
+        two engines. The last portal-driven build went from merged request to a configured, monitored,
+        DNS-registered VM in 5 minutes 21 seconds.</p>
     </header>
 
     <nav class="crumbs" aria-label="On this page">
+      <a href="#portal">Through the portal</a>
+      <span class="sep">/</span>
       <a href="#what">What it does</a>
       <span class="sep">/</span>
       <a href="#windows">The Windows path</a>
@@ -64,6 +68,58 @@
     </nav>
 
     <div class="skill-body">
+      <section class="block" id="portal">
+        <h2>Through the portal</h2>
+        <p>The original front door was a Jenkins parameter form. It works, and Jenkins still owns every
+          scheduled job in the lab, but a parameter form has no review step and no paper trail a reader can
+          follow. So the request itself became a file in git, and the front door became a Backstage portal
+          running inside the lab. The form renders a small request file, opens a pull request with it, and
+          stops. Nothing has been built yet. That is the point.</p>
+        <figure class="shot">
+          <img src="img/portal-templates.png" alt="The portal's template gallery with a Provision a new server card and a New Python service card.">
+          <figcaption>The portal's self-service gallery. The provisioning template is the front door to the pipeline. Captured 2026-08-23.</figcaption>
+        </figure>
+        <p>The form asks only for what the pipeline actually needs: operating system, a hostname, a role, an
+          owner, and sizes. The role decides which network the address comes from, so the requester never
+          types an address and never gets one wrong.</p>
+        <figure class="shot">
+          <img src="img/portal-form.png" alt="The provisioning form filled in with an example Linux request: hostname, role, and sizing fields.">
+          <figcaption>The request form, filled with an example. Captured 2026-08-23.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="img/portal-review.png" alt="The review step summarising the example request before it opens a pull request.">
+          <figcaption>The review step. Submitting opens a pull request; it does not build anything. Captured 2026-08-23.</figcaption>
+        </figure>
+        <p>The pull request is the approval boundary, and it is not a rubber stamp. CI runs the same collision
+          gate the pipeline uses (ask every system that could already know the name) plus a full
+          infrastructure-state plan, on the request itself, before any human decides. A reviewer sees the
+          exact machine the request would create. Merging is the approval. A workflow picks up the merged
+          request and runs the same provisioning scripts Jenkins runs: allocate the address, pick a node by
+          live free memory, apply, register monitoring, configure with the agent, register DNS, write the
+          host manifest back to git.</p>
+        <figure class="shot">
+          <img src="img/apply-run.png" alt="The apply workflow run with every step green: identify request, install toolchain, provision, commit manifest.">
+          <figcaption>The apply run after the merge. Provisioning the machine took 4 minutes 27 seconds of the
+            5 minute 21 second total. Captured 2026-08-23.</figcaption>
+        </figure>
+        <p>The part I care about: this path never touches Jenkins, and it changed no pipeline logic. The
+          request file, the collision gate, the plan, the apply, the registrations are all the same code the
+          Jenkins door uses. One pipeline, two engines. If either door is down, the other still builds
+          servers.</p>
+        <p>The Jenkins door is still there, and it is still how scheduled and operational work runs. The VM
+          view carries the whole machine lifecycle: template factory, provision, decommission. Its provision
+          form asks the same questions the portal form asks, because both render the same request for the
+          same pipeline.</p>
+        <figure class="shot">
+          <img src="img/jenkins-vm-jobs.png" alt="The Jenkins VM view listing template build, provision, and decommission pipelines with their last runs.">
+          <figcaption>The Jenkins VM view: the machine lifecycle as five pipelines. Captured 2026-08-23.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="img/jenkins-form.png" alt="The Jenkins parameter form for the Linux provisioning pipeline, filled with the same example request.">
+          <figcaption>The original front door: the same example request in the Jenkins parameter form. Captured 2026-08-23.</figcaption>
+        </figure>
+      </section>
+
       <section class="block" id="what">
         <h2>What it does</h2>
         <p>A server is a fact recorded in five places at once: the address in address management, the machine on
@@ -79,7 +135,7 @@
           <li>Allocate an address from address management</li>
           <li>Select a node by live free memory</li>
           <li>Plan, in this machine's own infrastructure-state workspace</li>
-          <li><b>Operator approval</b> (60-minute timeout)</li>
+          <li><b>Operator approval</b> - a 60-minute gate on the Jenkins door, the merge itself on the portal door</li>
           <li>Apply - <b>the roll-forward boundary</b></li>
           <li>Register monitoring, minting a unique per-host key into the secrets manager</li>
           <li>Configure with the agent (already trusted)</li>
@@ -95,6 +151,16 @@
           remote management to be <em>stably</em> up (six consecutive good checks) because first-boot init flaps
           the port and a single successful probe is a lie. Same spine, different limbs, one place where the
           difference lives instead of a second pipeline to keep in sync.</p>
+        <p>The Windows form is where the extra surface shows. On top of the shared questions it offers the
+          Windows Server version (resolved to a template by tag, never a hardcoded id), shared or node-local
+          disk, an optional second data disk, a tool list from a Chocolatey allow-list, a roles-and-features
+          list mapped to canonical names, nested virtualization with its live-migration tradeoff spelled out
+          in the help text, and an opt-in published DNS record. Every option carries its constraint next to
+          it, so the form teaches the pipeline's rules while you fill it in.</p>
+        <figure class="shot">
+          <img src="img/jenkins-windows-form.png" alt="The full Windows provisioning parameter form: version, sizing, storage class, data disk, tools, Windows features, nested virtualization, and published DNS options.">
+          <figcaption>The whole Windows form, top to bottom, with the same example request. Captured 2026-08-23.</figcaption>
+        </figure>
       </section>
 
       <section class="block" id="broke">
