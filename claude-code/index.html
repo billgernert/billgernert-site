@@ -77,10 +77,15 @@
     .status-chip.designed { color: #8fa8c8; border-color: rgba(143, 168, 200, 0.4); background: rgba(143, 168, 200, 0.08); }
     .status-chip.blocked { color: #ff8080; border-color: rgba(255, 128, 128, 0.4); background: rgba(255, 128, 128, 0.08); }
     .status-chip.retired { color: #9aa6b8; border-color: rgba(154, 166, 184, 0.35); background: rgba(154, 166, 184, 0.08); }
+    .live-status { font-family: var(--mono); color: var(--muted); }
+    .live-frame { width: 100%; min-height: 900px; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; background: #0a0e1a; }
+    .live-fallback { border: 1px solid rgba(255, 184, 77, 0.35); border-radius: 6px; padding: 16px; color: var(--muted); }
+    .live-fallback[hidden], .live-frame[hidden] { display: none; }
     @media (max-width: 820px) {
       .status-table-wrap { margin-right: -6px; }
     }
   </style>
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/claude-code/">
   <!-- END generated: canonical -->
@@ -122,6 +127,8 @@
       <a href="#thesis">Why it works</a>
       <span class="sep">/</span>
       <a href="#workers">Headless workers</a>
+      <span class="sep">/</span>
+      <a href="#usage">Usage monitoring</a>
       <span class="sep">/</span>
       <a href="#review">Cross-vendor review</a>
       <span class="sep">/</span>
@@ -251,6 +258,28 @@ codex exec "$(cat tasking.md)"</code></pre>
           <figcaption>The fleet does not have one master loop. It has launch ticks, a pickup guard, and a deeper periodic review of what the board still needs.</figcaption>
         </figure>
         <p class="diagram-note">The two spawners are intentionally dumb: they start an eligible worker or they exit. The detailed guard list belongs in prose because the semantics matter more than the drawing. `PAUSE` is a dispatch stop, not a process-kill claim. The committed checks stop new launches and merge execution; they do not claim to terminate already-running workers.</p>
+      </section>
+
+      <section class="block" id="usage" data-public-noc>
+        <h2>Usage is monitored like any other finite fleet resource</h2>
+        <p>The fleet depends on two subscription-backed model providers, so remaining quota is operating
+          capacity. An hourly collector reads each provider's aggregate five-hour and weekly limits using
+          the same runtime identity the workers already use. It exports percentages and reset times to
+          Prometheus, retains the last successful reading if a provider call fails, and alerts privately
+          when collection goes blind.</p>
+        <p>The public boundary is deliberately smaller. Two recording rules remove every source label except
+          <code>provider</code> and <code>window</code> before this dashboard can query the data. Account identifiers, credentials, exporter health, pod and host identity, annotations, variables,
+          internal links, and free-form queries remain private. The dashboard below is a separate read-only
+          model whose exact panels and query strings are enforced in CI.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live usage dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
+          title="Public ChatGPT and Claude subscription usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          The live usage dashboard is unavailable. The portfolio page remains online independently of the lab;
+          no stale quota value is presented as current.
+        </div>
+        <noscript><p>The live usage dashboard requires JavaScript.</p></noscript>
       </section>
 
       <section class="block" id="review">

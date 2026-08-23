@@ -28,3 +28,6 @@
 /noc/open/backups https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328 302
 /noc/open/core-services https://status.billgernert.com/public-dashboards/a6ebccc923204a76a8ac713b595f0b2f 302
 /noc/open/aiops-alerts https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f 302
+
+# Public fleet usage uses the same site-owned hard reload boundary as the NOC drill-downs.
+/fleet/open/usage https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d 302
