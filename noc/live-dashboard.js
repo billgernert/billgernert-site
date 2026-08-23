@@ -16,6 +16,7 @@
   var frame = root.querySelector("[data-live-frame]");
   var fallback = root.querySelector("[data-live-fallback]");
   var status = root.querySelector("[data-live-status]");
+  var home = root.querySelector("[data-live-home]");
   var controller = new AbortController();
   var timeout = window.setTimeout(function () {
     controller.abort();
@@ -26,6 +27,16 @@
     frame.removeAttribute("src");
     fallback.hidden = false;
     status.textContent = "Live dashboard unavailable. Showing the dated capture.";
+  }
+
+  if (home) {
+    home.addEventListener("click", function (event) {
+      event.preventDefault();
+      frame.hidden = false;
+      frame.src = frame.getAttribute("data-src");
+      fallback.hidden = true;
+      status.textContent = "Returning to the NOC overview.";
+    });
   }
 
   fetch("https://status.billgernert.com/healthz", {

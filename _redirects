@@ -29,6 +29,12 @@
 /noc/open/backups https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328 302
 /noc/open/core-services https://status.billgernert.com/public-dashboards/a6ebccc923204a76a8ac713b595f0b2f 302
 /noc/open/aiops-alerts https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f 302
+/noc/open/mail https://status.billgernert.com/public-dashboards/e816c9f4610d45409a81d795219ee19b 302
+/noc/open/alerts https://status.billgernert.com/public-dashboards/6bb0747444d3425fa238a4627b928439 302
+/noc/open/web-consoles https://status.billgernert.com/public-dashboards/29cca28d8cf243f2b22d84d3bc51611b 302
 
 # Public fleet usage uses the same site-owned hard reload boundary as the NOC drill-downs.
 /fleet/open/usage https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d 302
+
+# The roadmap page embeds only the aggregate public roadmap dashboard.
+/roadmap/open/live https://status.billgernert.com/public-dashboards/10459ea138af4a3e86510f848f8be38b 302

@@ -11,6 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <style>
+    .live-frame { width: 100%; min-height: 760px; border: 1px solid rgba(0, 212, 255, .35); border-radius: 10px; background: #0a0e1a; }
+    .live-fallback[hidden], .live-frame[hidden] { display: none; }
+  </style>
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/roadmap/">
   <!-- END generated: canonical -->
@@ -60,6 +65,23 @@
         <a href="/skills/">See the skills portfolio &#8594;</a>
       </div>
     </header>
+
+    <section class="category" data-accent="cyan" data-public-noc>
+      <h2>Live roadmap</h2>
+      <div class="skill-body">
+        <div class="block">
+          <p class="descriptor">A public-safe view of overall and per-tier completion. It contains aggregate counts only; issue titles, repository identities, and internal links remain private.</p>
+          <p class="live-status" data-live-status aria-live="polite">Checking the live roadmap.</p>
+          <iframe class="live-frame" data-live-frame
+            data-src="https://status.billgernert.com/public-dashboards/10459ea138af4a3e86510f848f8be38b"
+            title="Public AutomationLab roadmap dashboard" referrerpolicy="no-referrer" hidden></iframe>
+          <div class="live-fallback" data-live-fallback>
+            <p class="descriptor">The live roadmap is unavailable. The generated delivery snapshot below remains available.</p>
+          </div>
+          <noscript><p>The live roadmap check needs JavaScript. The generated delivery snapshot below remains available.</p></noscript>
+        </div>
+      </div>
+    </section>
 
     <section class="category" data-accent="cyan">
       <h2>Delivery snapshot</h2>

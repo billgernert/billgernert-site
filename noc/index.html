@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The NOC hub - Bill Gernert</title>
-  <meta name="description" content="One dashboard the whole estate reports into: nine domain tiles coloured by worst severity, a facts row that answers is-the-estate-ok without opening anything, and a rule that no-data never reads as green. Generated from the backlog and self-policing.">
+  <meta name="description" content="One dashboard the whole estate reports into: nine domain tiles coloured by worst severity, actionable alert, web-console, and backup signals, and a rule that no-data never reads as green. Generated from the backlog and self-policing.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -90,6 +90,7 @@
           replace source identifiers before Grafana can query them. Addresses, numeric IDs, hypervisor
           placement, pod names, namespaces, management URLs, alert text, and adjustable queries stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
+        <p class="links"><a href="/noc/" data-live-home>&larr; Back to NOC overview</a></p>
         <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
           title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
@@ -130,10 +131,10 @@
 
       <section class="block" id="facts">
         <h2>The facts row</h2>
-        <p>Under the tiles sit four supporting facts, the numbers you would otherwise open four dashboards to
-          find: how many alerts are firing, how many days until the soonest certificate expires, whether the
-          secrets server is sealed, and how long since the last backup completed. They live on the hub because
-          together they answer "is the estate OK" at a glance, before any tile is clicked.</p>
+        <p>Under the tiles sit three supporting signals: current alert state, public web-console health, and
+          backup freshness. Each is clickable, and each is backed by a real public-safe data projection rather
+          than a placeholder. Certificate horizon and secrets-service state are combined into the Certificates
+          &amp; PKI tile above, where they can be investigated together.</p>
         <figure class="shot">
           <img src="img/noc-facts.png" alt="The four summary facts: firing alerts, days to cert expiry, secrets-server sealed state, hours since last backup.">
           <figcaption>The facts row: four numbers that answer the health question without opening anything. Captured 2026-07-27.</figcaption>
@@ -152,11 +153,10 @@
       </section>
 
       <section class="block" id="budget">
-        <h2>The AI budget board</h2>
-        <p>One tile leads somewhere worth its own mention: the AI spend board. It ties straight to the cost
-          gating described on the AI page, layered budgets where the most restrictive limit wins, so the
-          money side of running models is visible on the same wall as everything else. Spend figures are the
-          owner's own; the number you see is a dated snapshot, not a live claim.</p>
+        <h2>The AI usage board</h2>
+        <p>The ChatGPT and Claude tile compares weekly remaining subscription capacity with the ideal pace to
+          the next reset. It opens the provider-neutral usage board, where both services show actual remaining
+          capacity and the time-based ideal line without exposing account identifiers.</p>
         <figure class="shot">
           <img src="img/litellm-budget.png" alt="The AI gateway budget and spend dashboard: layered budget panels by consumer.">
           <figcaption>The AI gateway budget board: layered budgets, most-restrictive-wins. Captured 2026-07-27.</figcaption>
