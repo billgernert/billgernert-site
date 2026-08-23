@@ -111,6 +111,10 @@
           completed and pushes that age into its own Zabbix trapper item, one per digest. That indirection
           is deliberate: it means the heartbeat mechanism itself can be watched for going quiet, not only
           the digests it is watching.</p>
+        <figure class="shot">
+          <img src="img/jenkins-monitoring.png" alt="The Jenkins monitoring view: the dead-man switch heartbeat job with a build count in the thousands, beside the overview reconciler and facts collector.">
+          <figcaption>The heartbeat checker in the monitoring view. The build number is the point: it has to run constantly to mean anything. Captured 2026-08-23.</figcaption>
+        </figure>
         <p>Each digest's item carries two nodata triggers, not one. A short one, around two hours, fires if
           the fifteen-minute checker itself stops pushing, which is the heartbeat mechanism going silent. A
           longer one, at thirty hours, fires if the age it is reporting gets too large, which is the digest
