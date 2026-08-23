@@ -15,8 +15,9 @@
 /projects/decommission /projects/decommission/ 301
 /projects/aiops-triage /projects/aiops-triage/ 301
 /projects/job-reporting /projects/job-reporting/ 301
-/fleet /claude-code/ 301
-/fleet/ /claude-code/ 301
+/fleet /fleet/ 301
+/claude-code /fleet/ 301
+/claude-code/ /fleet/ 301
 
 # Public NOC drill-downs cross this site-owned redirect so Grafana performs a fresh document load
 # inside the existing iframe instead of reusing query results from the previous public dashboard.
