@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unattended Multi-Vendor Agent Fleet - Bill Gernert</title>
+  <meta name="description" content="How the unattended agent fleet works today: written taskings, isolated git worktrees, cross-vendor review, 10-minute spawners, a 45-minute pickup guard, a four-hour deep cycle, PID locks, Gitea pull-request state, PAUSE, and deterministic merge gates.">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../skills/style.css">
+  <style>
+    main.page-wide { max-width: 1040px; }
+    figure.fleet-fig { margin: 20px 0 10px; }
+    figure.fleet-fig svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(0, 212, 255, 0.02);
+    }
+    figure.fleet-fig figcaption {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    figure.fleet-fig ul.legend-swatches { margin-top: 8px; }
+    figure.fleet-fig .legend-note { margin-top: 6px; }
+    h3.eyebrow { font-size: 0.78rem; margin: 34px 0 8px; }
+    .diagram-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .status-table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    table.status-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      font-size: 0.96rem;
+    }
+    .status-table th,
+    .status-table td {
+      border-bottom: 1px solid rgba(0, 212, 255, 0.14);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .status-table th {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .status-chip {
+      display: inline-block;
+      min-width: 78px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      text-align: center;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+    .status-chip.running { color: #00ff96; border-color: rgba(0, 255, 150, 0.35); background: rgba(0, 255, 150, 0.08); }
+    .status-chip.manual { color: #ffb84d; border-color: rgba(255, 184, 77, 0.4); background: rgba(255, 184, 77, 0.08); }
+    .status-chip.designed { color: #8fa8c8; border-color: rgba(143, 168, 200, 0.4); background: rgba(143, 168, 200, 0.08); }
+    .status-chip.blocked { color: #ff8080; border-color: rgba(255, 128, 128, 0.4); background: rgba(255, 128, 128, 0.08); }
+    .status-chip.retired { color: #9aa6b8; border-color: rgba(154, 166, 184, 0.35); background: rgba(154, 166, 184, 0.08); }
+    .live-status { font-family: var(--mono); color: var(--muted); }
+    .live-frame { width: 100%; min-height: 900px; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; background: #0a0e1a; }
+    .live-fallback { border: 1px solid rgba(255, 184, 77, 0.35); border-radius: 6px; padding: 16px; color: var(--muted); }
+    .live-fallback[hidden], .live-frame[hidden] { display: none; }
+    @media (max-width: 820px) {
+      .status-table-wrap { margin-right: -6px; }
+    }
+  </style>
+  <script src="../noc/live-dashboard.js" defer></script>
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/fleet/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <main class="page-narrow page-wide">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="billgernert.com home">
+        <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polygon points="60,10 104,35 104,85 60,110 16,85 16,35" fill="none" stroke="#00d4ff" stroke-width="6"/>
+          <circle cx="60" cy="60" r="10" fill="#00ff96"/>
+        </svg>
+        <span class="brand-name">Bill Gernert</span>
+      </a>
+      <nav class="topnav" aria-label="Primary navigation">
+        <a href="/projects/">Projects</a>
+        <a href="/platform/">Platform</a>
+        <a href="/fleet/">Unattended fleet</a>
+        <a href="/live/">Live</a>
+        <a href="/about/">About</a>
+        <span class="topnav-spacer"></span>
+        <a href="https://github.com/billgernert" rel="me">GitHub</a>
+        <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
+      </nav>
+    </header>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">billgernert.com</a>
+      <span class="sep">/</span>
+      <span class="here">Agent Fleet</span>
+    </nav>
+
+    <header class="skill-head">
+      <span class="badge">Agent orchestration</span>
+      <h1>How the unattended multi-vendor agent fleet works</h1>
+      <p class="descriptor">This repository is worked by written taskings, isolated git worktrees, cross-vendor review, and small scripts that decide when a worker may start. Today the live build path is Codex-authored work reviewed by Claude lanes, Codex reviewer lanes cover Claude-authored work, and every stage is bounded by Gitea pull-request state, PID locks, `PAUSE`, daily caps, and operator authority. The page below separates what is running, what is manual, what is blocked, and what is still design work.</p>
+    </header>
+
+    <nav class="crumbs" aria-label="On this page">
+      <a href="#thesis">Why it works</a>
+      <span class="sep">/</span>
+      <a href="#workers">Headless workers</a>
+      <span class="sep">/</span>
+      <a href="#usage">Usage monitoring</a>
+      <span class="sep">/</span>
+      <a href="#review">Cross-vendor review</a>
+      <span class="sep">/</span>
+      <a href="#files">Files and Gitea</a>
+      <span class="sep">/</span>
+      <a href="#timing">Three clocks</a>
+      <span class="sep">/</span>
+      <a href="#merge">Merge path</a>
+      <span class="sep">/</span>
+      <a href="#example">Security example</a>
+      <span class="sep">/</span>
+      <a href="#lessons">Failure lessons</a>
+      <span class="sep">/</span>
+      <a href="#status">What is real today</a>
+      <span class="sep">/</span>
+      <a href="#appendix">Appendix</a>
+    </nav>
+
+    <div class="skill-body">
+      <section class="block" id="thesis">
+        <h2>Why any of this works: the durable record comes first</h2>
+        <p>The interesting part of this page is not that two model vendors are involved. It is that the repository already stores the facts an unattended worker can safely read: taskings, policies, backlog state, generated pages, review verdicts, merge rules, and dated operator rulings. Git preserves the durable record. Gitea adds live pull-request facts that cannot safely wait for merge timing. PID locks and ledgers supply local state for the launchers. The fleet works because the control surface is inspectable rather than conversational.</p>
+        <p>That distinction matters during disagreement and during failure. A worker can diff a file, re-read a PR, or refuse a merge when a gate is unclear. It does not need to remember a chat, infer a missing rule, or trust that a prior run already told the truth. The scripts stay simple, the models stay scoped, and the operator can audit the boundary between them.</p>
+      </section>
+
+      <section class="block" id="workers">
+        <h2>Headless workers are just command-line agents with one written assignment</h2>
+        <p>A browser chat and a headless worker use the same underlying model. The difference is only the transport. In a browser, a person types. In a headless lane, a scheduler pipes one tasking file into the CLI, the process does one round of work in its own git worktree, opens its pull request, and exits.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A person typing in a browser and a timer piping in a written tasking both reach the same model, which reads and writes repository files.">
+            <defs><marker id="fsA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="40" y="35" width="180" height="60" rx="10" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="130" y="60" fill="#fff" font-size="13" text-anchor="middle">ME, TYPING</text>
+            <text x="130" y="80" fill="#8fa8c8" font-size="10" text-anchor="middle">browser chat</text>
+            <rect x="40" y="160" width="180" height="60" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="130" y="185" fill="#fff" font-size="13" text-anchor="middle">A SCHEDULER</text>
+            <text x="130" y="205" fill="#8fa8c8" font-size="10" text-anchor="middle">pipes one tasking file</text>
+            <rect x="360" y="95" width="190" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="455" y="122" fill="#fff" font-size="13" text-anchor="middle">THE SAME MODEL</text>
+            <text x="455" y="142" fill="#8fa8c8" font-size="10" text-anchor="middle">window optional</text>
+            <rect x="680" y="95" width="180" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="770" y="122" fill="#fff" font-size="13" text-anchor="middle">THE REPO</text>
+            <text x="770" y="142" fill="#8fa8c8" font-size="10" text-anchor="middle">taskings, code, PR bodies</text>
+            <line x1="220" y1="70" x2="358" y2="115" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <line x1="220" y1="190" x2="358" y2="145" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <line x1="550" y1="130" x2="678" y2="130" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsA)"/>
+            <text x="614" y="118" fill="#8fa8c8" font-size="10" text-anchor="middle">reads and writes durable state</text>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The browser and the unattended lane use the same model. Only the input path changes.</figcaption>
+        </figure>
+
+        <p>The commands are ordinary CLI invocations, not pseudocode:</p>
+        <pre class="excerpt"><code>Get-Content tasking.md | claude -p
+codex exec "$(cat tasking.md)"</code></pre>
+        <p class="excerpt-cap">Each worker receives one written tasking, starts noninteractively, works in its own git worktree and branch, opens a pull request, writes its result in the PR body or review body, and exits. The important point is not a perfect CLI symmetry between vendors. It is that both tools accept noninteractive input and can be launched by plain schedulers.</p>
+
+        <h3 class="eyebrow">How the fleet wakes up: two spawners, three clocks</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 960 430" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Two 10-minute spawners launch worker lanes after shared checks, while a 45-minute pickup guard and a four-hour deep cycle handle tasking attention. Gitea pull-request existence is the consumption signal.">
+            <defs>
+              <marker id="wakeA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker>
+              <marker id="wakeB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/></marker>
+            </defs>
+
+            <rect x="26" y="36" width="250" height="110" rx="12" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="151" y="62" fill="#fff" font-size="12" text-anchor="middle">WINDOWS SIDE</text>
+            <rect x="44" y="78" width="90" height="46" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="89" y="97" fill="#fff" font-size="10" text-anchor="middle">SCHEDULED TASK</text>
+            <text x="89" y="112" fill="#8fa8c8" font-size="9" text-anchor="middle">every 10 min</text>
+            <rect x="164" y="78" width="94" height="46" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="211" y="97" fill="#fff" font-size="10" text-anchor="middle">SPAWNER</text>
+            <text x="211" y="112" fill="#8fa8c8" font-size="9" text-anchor="middle">Claude lanes</text>
+            <line x1="134" y1="101" x2="162" y2="101" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#wakeA)"/>
+
+            <rect x="684" y="36" width="250" height="110" rx="12" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="809" y="62" fill="#fff" font-size="12" text-anchor="middle">LINUX SIDE</text>
+            <rect x="702" y="78" width="90" height="46" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="747" y="97" fill="#fff" font-size="10" text-anchor="middle">SYSTEMD TIMER</text>
+            <text x="747" y="112" fill="#8fa8c8" font-size="9" text-anchor="middle">every 10 min</text>
+            <rect x="822" y="78" width="94" height="46" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="869" y="97" fill="#fff" font-size="10" text-anchor="middle">SPAWNER</text>
+            <text x="869" y="112" fill="#8fa8c8" font-size="9" text-anchor="middle">Codex lanes</text>
+            <line x1="792" y1="101" x2="820" y2="101" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#wakeA)"/>
+
+            <rect x="320" y="22" width="320" height="190" rx="12" fill="rgba(0,255,150,0.04)" stroke="#00ff96" stroke-width="2"/>
+            <text x="480" y="46" fill="#fff" font-size="12" text-anchor="middle">SHARED TASKING CONTROLS</text>
+            <rect x="344" y="64" width="272" height="24" rx="6" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1"/>
+            <text x="480" y="80" fill="#8fa8c8" font-size="10" text-anchor="middle">1. PAUSE   2. daily cap   3. newest tasking per lane</text>
+            <rect x="344" y="96" width="272" height="24" rx="6" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1"/>
+            <text x="480" y="112" fill="#8fa8c8" font-size="10" text-anchor="middle">4. live PID lock   5. one spawn per tasking</text>
+            <rect x="344" y="128" width="272" height="24" rx="6" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1"/>
+            <text x="480" y="144" fill="#8fa8c8" font-size="10" text-anchor="middle">6. free lane slot   7. start worker in its own worktree</text>
+            <rect x="344" y="166" width="272" height="28" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="480" y="184" fill="#fff" font-size="10" text-anchor="middle">GITEA PR EXISTS = TASKING CONSUMED</text>
+            <line x1="258" y1="101" x2="318" y2="101" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#wakeA)"/>
+            <line x1="642" y1="101" x2="682" y2="101" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#wakeA)"/>
+
+            <rect x="88" y="250" width="254" height="74" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="215" y="278" fill="#fff" font-size="12" text-anchor="middle">PICKUP GUARD</text>
+            <text x="215" y="296" fill="#8fa8c8" font-size="10" text-anchor="middle">watches new signals</text>
+            <text x="215" y="312" fill="#8fa8c8" font-size="10" text-anchor="middle">45-minute cooldown before a tasking cycle</text>
+
+            <rect x="618" y="250" width="254" height="74" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+            <text x="745" y="278" fill="#fff" font-size="12" text-anchor="middle">DEEP CYCLE</text>
+            <text x="745" y="296" fill="#8fa8c8" font-size="10" text-anchor="middle">tasking review backstop</text>
+            <text x="745" y="312" fill="#8fa8c8" font-size="10" text-anchor="middle">every 4 hours</text>
+
+            <rect x="360" y="338" width="240" height="58" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="480" y="363" fill="#fff" font-size="12" text-anchor="middle">TASKING AGENT</text>
+            <text x="480" y="381" fill="#8fa8c8" font-size="10" text-anchor="middle">writes build and review taskings</text>
+
+            <line x1="215" y1="324" x2="418" y2="338" stroke="#00ff96" stroke-width="1.5" marker-end="url(#wakeB)"/>
+            <line x1="745" y1="324" x2="542" y2="338" stroke="#00ff96" stroke-width="1.5" marker-end="url(#wakeB)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The fleet does not have one master loop. It has launch ticks, a pickup guard, and a deeper periodic review of what the board still needs.</figcaption>
+        </figure>
+        <p class="diagram-note">The two spawners are intentionally dumb: they start an eligible worker or they exit. The detailed guard list belongs in prose because the semantics matter more than the drawing. `PAUSE` is a dispatch stop, not a process-kill claim. The committed checks stop new launches and merge execution; they do not claim to terminate already-running workers.</p>
+      </section>
+
+      <section class="block" id="usage" data-public-noc>
+        <h2>Usage is monitored like any other finite fleet resource</h2>
+        <p>The fleet depends on two subscription-backed model providers, so remaining quota is operating
+          capacity. An hourly collector reads each provider's aggregate five-hour and weekly limits using
+          the same runtime identity the workers already use. It exports percentages and reset times to
+          Prometheus, retains the last successful reading if a provider call fails, and alerts privately
+          when collection goes blind.</p>
+        <p>The public boundary is deliberately smaller. Two recording rules remove every source label except
+          <code>provider</code> and <code>window</code> before this dashboard can query the data. Account identifiers, credentials, exporter health, pod and host identity, annotations, variables,
+          internal links, and free-form queries remain private. The dashboard below is a separate read-only
+          model whose exact panels and query strings are enforced in CI.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live usage dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
+          title="Public ChatGPT and Claude subscription usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          The live usage dashboard is unavailable. The portfolio page remains online independently of the lab;
+          no stale quota value is presented as current.
+        </div>
+        <noscript><p>The live usage dashboard requires JavaScript.</p></noscript>
+      </section>
+
+      <section class="block" id="review">
+        <h2>Cross-vendor review is the safety boundary, even though the live build path is asymmetric</h2>
+        <p>The current live fleet is not "Claude builds and Codex reviews" anymore. Codex build lanes open work pull requests. Claude reviewer lanes review those Codex-authored branches and execute merges when the gates are satisfied. Codex reviewer lanes are the other half of the same cross-vendor rule: they review Claude-authored pull requests and leave one verdict comment, but Claude build lanes are retired today, so that side of the pattern mostly applies to holdovers and future narrow exceptions rather than to the normal build path.</p>
+        <p>That is still a multi-vendor fleet. Both vendors participate in judgment. What changed is who authors new work today, not the rule that a vendor should not review its own branch.</p>
+
+        <figure class="fleet-fig">
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Preserved cross-vendor review diagram: parallel work slots on both vendor sides feed reviewers across the boundary so the other vendor judges each branch.">
+    <defs>
+      <marker id="fsB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker>
+      <marker id="fsBa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker>
+    </defs>
+
+    <rect x="200" y="8" width="480" height="212" rx="12" fill="none" stroke="#3a5f8f" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <text x="216" y="26" fill="#5a86bf" font-size="11" letter-spacing="2">ANTHROPIC &#183; CLAUDE</text>
+    <rect x="200" y="340" width="480" height="212" rx="12" fill="none" stroke="#3a5f8f" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <text x="216" y="358" fill="#5a86bf" font-size="11" letter-spacing="2">OPENAI &#183; CODEX</text>
+
+    <rect x="15" y="240" width="150" height="80" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="90" y="273" fill="#fff" font-size="13" text-anchor="middle">TASKING CYCLE</text>
+    <text x="90" y="293" fill="#8fa8c8" font-size="10" text-anchor="middle">writes build and</text>
+    <text x="90" y="307" fill="#8fa8c8" font-size="10" text-anchor="middle">review taskings</text>
+
+    <rect x="222" y="38"  width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="58"  fill="#fff" font-size="11" text-anchor="middle">CLAUDE WORK SLOT</text>
+    <text x="317" y="74"  fill="#8fa8c8" font-size="9" text-anchor="middle">retired for new builds today</text>
+    <rect x="222" y="100" width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="120" fill="#fff" font-size="11" text-anchor="middle">CLAUDE WORK SLOT</text>
+    <text x="317" y="136" fill="#8fa8c8" font-size="9" text-anchor="middle">preserved layout, not a live count</text>
+    <rect x="222" y="162" width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="182" fill="#fff" font-size="11" text-anchor="middle">CLAUDE WORK SLOT</text>
+    <text x="317" y="198" fill="#8fa8c8" font-size="9" text-anchor="middle">cross-vendor target when present</text>
+
+    <polygon points="482,38 642,38 660,61 642,84 482,84 464,61" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="58" fill="#fff" font-size="11" text-anchor="middle">CLAUDE REVIEWER</text>
+    <text x="562" y="74" fill="#8fa8c8" font-size="9" text-anchor="middle">reviews Codex PRs, merges green branches</text>
+    <polygon points="482,100 642,100 660,123 642,146 482,146 464,123" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="120" fill="#fff" font-size="11" text-anchor="middle">CLAUDE REVIEWER</text>
+    <text x="562" y="136" fill="#8fa8c8" font-size="9" text-anchor="middle">R1 and R2 are the live lanes today</text>
+    <polygon points="482,162 642,162 660,185 642,208 482,208 464,185" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="182" fill="#fff" font-size="11" text-anchor="middle">CLAUDE REVIEWER</text>
+    <text x="562" y="198" fill="#8fa8c8" font-size="9" text-anchor="middle">same vendor never reviews its own build</text>
+
+    <rect x="222" y="370" width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="390" fill="#fff" font-size="11" text-anchor="middle">CODEX BUILDER</text>
+    <text x="317" y="406" fill="#8fa8c8" font-size="9" text-anchor="middle">own worktree &#183; own branch</text>
+    <rect x="222" y="432" width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="452" fill="#fff" font-size="11" text-anchor="middle">CODEX BUILDER</text>
+    <text x="317" y="468" fill="#8fa8c8" font-size="9" text-anchor="middle">C lanes open work PRs and stop</text>
+    <rect x="222" y="494" width="190" height="46" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="317" y="514" fill="#fff" font-size="11" text-anchor="middle">CODEX BUILDER</text>
+    <text x="317" y="530" fill="#8fa8c8" font-size="9" text-anchor="middle">staffed count is outside this figure</text>
+
+    <polygon points="482,370 642,370 660,393 642,416 482,416 464,393" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="390" fill="#fff" font-size="11" text-anchor="middle">CODEX REVIEWER</text>
+    <text x="562" y="406" fill="#8fa8c8" font-size="9" text-anchor="middle">verdicts on Claude-authored PRs</text>
+    <polygon points="482,432 642,432 660,455 642,478 482,478 464,455" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="452" fill="#fff" font-size="11" text-anchor="middle">CODEX REVIEWER</text>
+    <text x="562" y="468" fill="#8fa8c8" font-size="9" text-anchor="middle">one comment-state verdict per PR</text>
+    <polygon points="482,494 642,494 660,517 642,540 482,540 464,517" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="562" y="514" fill="#fff" font-size="11" text-anchor="middle">CODEX REVIEWER</text>
+    <text x="562" y="530" fill="#8fa8c8" font-size="9" text-anchor="middle">cannot merge</text>
+
+    <line x1="165" y1="252" x2="220" y2="64"  stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="165" y1="260" x2="220" y2="124" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="165" y1="268" x2="220" y2="184" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="165" y1="292" x2="220" y2="392" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="165" y1="300" x2="220" y2="454" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="165" y1="308" x2="220" y2="516" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+
+    <line x1="412" y1="61"  x2="462" y2="391" stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <line x1="412" y1="123" x2="462" y2="453" stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <line x1="412" y1="185" x2="462" y2="515" stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <line x1="412" y1="393" x2="462" y2="63"  stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <line x1="412" y1="455" x2="462" y2="125" stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <line x1="412" y1="517" x2="462" y2="187" stroke="#00d4ff" stroke-width="1.3" marker-end="url(#fsB)"/>
+    <text x="437" y="285" fill="#8fa8c8" font-size="10" text-anchor="middle">every branch is</text>
+    <text x="437" y="299" fill="#8fa8c8" font-size="10" text-anchor="middle">reviewed by the</text>
+    <text x="437" y="313" fill="#8fa8c8" font-size="10" text-anchor="middle">other vendor</text>
+
+    <rect x="720" y="200" width="165" height="80" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="802" y="233" fill="#fff" font-size="13" text-anchor="middle">PR state + verdicts</text>
+    <text x="802" y="253" fill="#8fa8c8" font-size="10" text-anchor="middle">Gitea facts read</text>
+    <text x="802" y="267" fill="#8fa8c8" font-size="10" text-anchor="middle">on the next pass</text>
+
+    <line x1="662" y1="61"  x2="718" y2="212" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="662" y1="123" x2="718" y2="224" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="662" y1="185" x2="718" y2="236" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="662" y1="393" x2="718" y2="248" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="662" y1="455" x2="718" y2="258" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+    <line x1="662" y1="517" x2="718" y2="268" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsB)"/>
+
+    <rect x="720" y="430" width="165" height="70" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+    <text x="802" y="458" fill="#fff" font-size="13" text-anchor="middle">OPERATOR QUEUE</text>
+    <text x="802" y="478" fill="#8fa8c8" font-size="10" text-anchor="middle">what still needs Bill</text>
+    <line x1="802" y1="280" x2="802" y2="428" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsBa)"/>
+  </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores. Dashed boxes group a vendor.</p>
+          <figcaption>This preserved v4 layout still shows the important rule: the other vendor judges the branch. The surrounding prose carries the live staffing details so the figure does not overclaim a current lane count.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">Designed next state, not the current merge path</h3>
+        <p>Two improvements already have committed design or code, but they are not both running. Webhook reviewer dispatch is still design work. The deterministic merge executor script ships in the tree, but the hard cross-account reviewer gate is default-off because the dedicated reviewer identities are provisioned yet still blocked from the lane AppRole that needs to fetch them. The page therefore labels this whole picture as the next state, not as the current path.</p>
+        <figure class="fleet-fig">
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Designed next state: PR-opened webhooks dispatch the other vendor's reviewer and a deterministic script executes eligible merges.">
+    <defs>
+      <marker id="tmB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker>
+      <marker id="tmBa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker>
+    </defs>
+
+    <rect x="180" y="8" width="380" height="250" rx="12" fill="none" stroke="#3a5f8f" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <text x="196" y="26" fill="#5a86bf" font-size="11" letter-spacing="2">ANTHROPIC &#183; CLAUDE</text>
+    <rect x="180" y="342" width="380" height="250" rx="12" fill="none" stroke="#3a5f8f" stroke-width="1.2" stroke-dasharray="6 5"/>
+    <text x="196" y="360" fill="#5a86bf" font-size="11" letter-spacing="2">OPENAI &#183; CODEX</text>
+
+    <rect x="10" y="260" width="145" height="80" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="82" y="291" fill="#fff" font-size="12" text-anchor="middle">TASKING CYCLE</text>
+    <text x="82" y="309" fill="#8fa8c8" font-size="9" text-anchor="middle">build dispatch and</text>
+    <text x="82" y="322" fill="#8fa8c8" font-size="9" text-anchor="middle">rulings only</text>
+
+    <rect x="200" y="42" width="160" height="88" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="280" y="72" fill="#fff" font-size="11" text-anchor="middle">CLAUDE REVIEW</text>
+    <text x="280" y="90" fill="#8fa8c8" font-size="9" text-anchor="middle">reacts to Codex PRs</text>
+    <text x="280" y="104" fill="#8fa8c8" font-size="9" text-anchor="middle">not cycle polling</text>
+    <polygon points="390,42 530,42 548,86 530,130 390,130 372,86" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="460" y="76" fill="#fff" font-size="11" text-anchor="middle">CLAUDE MERGE PATH</text>
+    <text x="460" y="94" fill="#8fa8c8" font-size="9" text-anchor="middle">only after green</text>
+    <text x="460" y="108" fill="#8fa8c8" font-size="9" text-anchor="middle">cross-vendor approval</text>
+
+    <rect x="200" y="470" width="160" height="88" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+    <text x="280" y="500" fill="#fff" font-size="11" text-anchor="middle">CODEX BUILDERS</text>
+    <text x="280" y="518" fill="#8fa8c8" font-size="9" text-anchor="middle">own worktree each</text>
+    <text x="280" y="532" fill="#8fa8c8" font-size="9" text-anchor="middle">PR opens the review path</text>
+    <polygon points="390,470 530,470 548,514 530,558 390,558 372,514" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+    <text x="460" y="504" fill="#fff" font-size="11" text-anchor="middle">CODEX REVIEWERS</text>
+    <text x="460" y="522" fill="#8fa8c8" font-size="9" text-anchor="middle">same pattern for</text>
+    <text x="460" y="536" fill="#8fa8c8" font-size="9" text-anchor="middle">Claude-authored PRs</text>
+
+    <rect x="290" y="255" width="180" height="90" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="380" y="285" fill="#fff" font-size="12" text-anchor="middle">GITEA</text>
+    <text x="380" y="303" fill="#8fa8c8" font-size="9" text-anchor="middle">PR-opened webhook</text>
+    <text x="380" y="317" fill="#8fa8c8" font-size="9" text-anchor="middle">targets the other</text>
+    <text x="380" y="331" fill="#8fa8c8" font-size="9" text-anchor="middle">vendor's reviewer</text>
+
+    <rect x="640" y="255" width="170" height="90" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="725" y="283" fill="#fff" font-size="12" text-anchor="middle">MERGE SCRIPT</text>
+    <text x="725" y="301" fill="#8fa8c8" font-size="9" text-anchor="middle">CI green, mergeable,</text>
+    <text x="725" y="315" fill="#8fa8c8" font-size="9" text-anchor="middle">no HOLD, no PAUSE,</text>
+    <text x="725" y="329" fill="#8fa8c8" font-size="9" text-anchor="middle">cross-account approval</text>
+
+    <rect x="850" y="265" width="100" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="2"/>
+    <text x="900" y="295" fill="#fff" font-size="12" text-anchor="middle">MAIN</text>
+    <text x="900" y="313" fill="#8fa8c8" font-size="9" text-anchor="middle">protected</text>
+
+    <rect x="640" y="470" width="170" height="70" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+    <text x="725" y="498" fill="#fff" font-size="12" text-anchor="middle">OPERATOR QUEUE</text>
+    <text x="725" y="518" fill="#8fa8c8" font-size="10" text-anchor="middle">holds and edge cases</text>
+
+    <line x1="155" y1="320" x2="205" y2="468" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#tmB)"/>
+    <line x1="322" y1="470" x2="360" y2="347" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#tmB)"/>
+    <line x1="420" y1="347" x2="448" y2="132" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#tmB)"/>
+    <line x1="548" y1="100" x2="655" y2="255" stroke="#00ff96" stroke-width="1.5" marker-end="url(#tmB)"/>
+    <line x1="810" y1="300" x2="848" y2="300" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#tmB)"/>
+    <line x1="725" y1="468" x2="725" y2="347" stroke="#ffb84d" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#tmBa)"/>
+    <text x="740" y="420" fill="#ffb84d" font-size="9">HOLD stops the script</text>
+  </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores. Dashed arrows are event-driven, not cycle-driven.</p>
+          <figcaption>Designed next state. The webhook dispatcher and the fully enforced cross-account approval gate are both real design artifacts, but they are not both live.</figcaption>
+        </figure>
+
+        <p>Review verdicts today are comment-state reviews on <code>/pulls/&lt;N&gt;/reviews</code>, with a <code>VERDICT: APPROVE</code> or <code>VERDICT: BOUNCE</code> line in the body and the judged commit SHA attached to the review object. That is not the same thing as a formal Gitea APPROVED review object from a dedicated reviewer identity. The dedicated reviewer accounts exist, but the lane AppRole still cannot fetch their PATs, so the formal cross-account approval path is blocked and the merge-executor script keeps that gate default-off.</p>
+
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 235" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Three branches staggered across three review generations: build, review, then lands or holds.">
+            <defs><marker id="fsC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#4a6080"/></marker></defs>
+            <text x="305" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">GENERATION 1</text>
+            <text x="530" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">GENERATION 2</text>
+            <text x="755" y="32" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">GENERATION 3</text>
+            <text x="185" y="73" fill="#4a6080" font-size="11" text-anchor="end">branch A</text>
+            <text x="185" y="128" fill="#4a6080" font-size="11" text-anchor="end">branch B</text>
+            <text x="185" y="183" fill="#4a6080" font-size="11" text-anchor="end">branch C</text>
+            <rect x="210" y="50" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="305" y="73" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <polygon points="449,50 611,50 631,68 611,86 449,86 429,68" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="530" y="73" fill="#fff" font-size="11" text-anchor="middle">REVIEW</text>
+            <rect x="660" y="50" width="190" height="36" rx="7" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="755" y="73" fill="#fff" font-size="11" text-anchor="middle">LANDS or HOLDS</text>
+            <rect x="435" y="105" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="530" y="128" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <polygon points="674,105 836,105 856,123 836,141 674,141 654,123" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="755" y="128" fill="#fff" font-size="11" text-anchor="middle">REVIEW</text>
+            <rect x="660" y="160" width="190" height="36" rx="7" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="755" y="183" fill="#fff" font-size="11" text-anchor="middle">BUILD</text>
+            <line x1="400" y1="68" x2="426" y2="68" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+            <line x1="633" y1="68" x2="657" y2="68" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+            <line x1="625" y1="123" x2="651" y2="123" stroke="#4a6080" stroke-width="1.2" marker-end="url(#fsC)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>Work is staggered rather than live-chained. Because the handoff is a file or a pull-request fact, a crash between stations is a reread, not a lost conversation.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="files">
+        <h2>Files are the primary transport, and Gitea supplies the live facts</h2>
+        <p>The system no longer claims that everything is a file, because that would be wrong today. Files are still the primary transport for taskings, rulings, prompts, policy, and generated state. Git preserves that durable record. Gitea pull-request state supplies the facts that cannot safely depend on merge timing: whether a tasking has been consumed, what the current head SHA is, what verdicts are attached to that head, and whether the branch is mergeable.</p>
+        <p>That is why consumption moved away from tasking footers. A footer on an unmerged branch is invisible to a spawner that only reads main. A pull request existing in Gitea is not. The design point survived the change: the fleet still does not need a live agent-to-agent message bus.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Inbox files and tasking files feed agents, which create pull requests and update ledgers and local locks.">
+            <defs><marker id="fsD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="30" y="40" width="185" height="56" rx="9" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="122" y="63" fill="#fff" font-size="12" text-anchor="middle">inbox/</text>
+            <text x="122" y="82" fill="#8fa8c8" font-size="10" text-anchor="middle">operator rulings and notes</text>
+            <rect x="30" y="120" width="185" height="56" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="122" y="143" fill="#fff" font-size="12" text-anchor="middle">taskings/</text>
+            <text x="122" y="162" fill="#8fa8c8" font-size="10" text-anchor="middle">assignments, one per file</text>
+            <rect x="360" y="78" width="185" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="452" y="103" fill="#fff" font-size="12" text-anchor="middle">AGENTS</text>
+            <text x="452" y="122" fill="#8fa8c8" font-size="10" text-anchor="middle">read durable state, write PRs</text>
+            <rect x="690" y="40" width="185" height="56" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="782" y="63" fill="#fff" font-size="12" text-anchor="middle">GITEA PRs</text>
+            <text x="782" y="82" fill="#8fa8c8" font-size="10" text-anchor="middle">results and consumption facts</text>
+            <rect x="690" y="120" width="185" height="56" rx="9" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="782" y="143" fill="#fff" font-size="12" text-anchor="middle">LOCKS + LEDGERS</text>
+            <text x="782" y="162" fill="#8fa8c8" font-size="10" text-anchor="middle">PID, spawn, merge, cycle</text>
+            <line x1="215" y1="68" x2="358" y2="98" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="215" y1="148" x2="358" y2="118" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="545" y1="98" x2="688" y2="68" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+            <line x1="545" y1="118" x2="688" y2="148" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsD)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>Files remain the main transport. Gitea adds the live pull-request facts the fleet should not guess from merge timing alone.</figcaption>
+        </figure>
+
+        <p>Different ledgers also do different jobs. The merge executor has its own ledger. The tasking cycle has its own run ledger. The spawners write only meaningful actions such as <code>SPAWNED</code>, <code>CAPPED</code>, or <code>DAILYCAP</code>; an idle tick is meant to be silent. Review verdicts are not ledger lines at all. They live on the pull request they judged.</p>
+      </section>
+
+      <section class="block" id="timing">
+        <h2>The timing story is three clocks, not one cycle</h2>
+        <p>The old page over-centered one four-hour loop and one stale half-hour helper. The current model is three distinct clocks with three distinct jobs. First, the 10-minute spawner ticks on the Windows and Linux worker hosts start eligible workers or exit without invoking a model. Second, the pickup guard is meant to notice new signals and summon the tasking agent only after a 45-minute cooldown. Third, the deep cycle runs the tasking agent unconditionally every four hours as the quiet-period backstop.</p>
+        <p>Those clocks do not all have the same maturity. The spawner ticks and the four-hour deep cycle are real running machinery. The pickup-guard script and its cooldown are committed, but that path is mid-change: its watched signals still refer to the retired report-file transport, so this page treats the guard as a blocked transition rather than silently calling it fully current.</p>
+
+        <h3 class="eyebrow">What a spawner checks before starting a worker</h3>
+        <ol class="project-list">
+          <li><b>`PAUSE`.</b> If the fleet pause file is present, new launches stop.</li>
+          <li><b>Daily spawn cap.</b> The public write-up and committed references describe a hard daily wall before any more launches are attempted.</li>
+          <li><b>Newest tasking per lane.</b> A spawner should consider the newest eligible tasking for that lane rather than replaying older files.</li>
+          <li><b>Live PID lock.</b> A live process means the lane is occupied.</li>
+          <li><b>One spawn per tasking record.</b> A tasking that already launched once is not re-used.</li>
+          <li><b>Concurrency availability.</b> If no lane slot is free, do not start another worker.</li>
+          <li><b>Launch.</b> Start the worker in its own git worktree.</li>
+        </ol>
+        <p>The page is careful about scope. The exact 80-spawn cap is named in the source material, but the live spawner scripts themselves are operator-managed outside this repository, so this page does not freeze a broader claim about fleet-wide versus per-host scope that the tree here cannot prove.</p>
+
+        <p>The one-spawn rule exists because the old design made duplicate pull requests inevitable. A worker used to mark consumption by appending a footer to its tasking file on its own branch. Review latency hid that footer from the spawner, so the same tasking could be launched again after the work was already done. The fix is the pair now named in the contracts: one spawn per tasking, ever, and Gitea pull-request existence as the consumption signal. A dead lane gets a fresh tasking, not a retry in place.</p>
+
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 235" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Three clocks: 10-minute spawner ticks, a 45-minute pickup guard, and a four-hour deep cycle.">
+            <defs><marker id="apG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/></marker></defs>
+            <text x="150" y="45" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">SPAWNER TICKS</text>
+            <text x="450" y="45" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">PICKUP GUARD</text>
+            <text x="750" y="45" fill="#4a6080" font-size="11" text-anchor="middle" letter-spacing="2">DEEP CYCLE</text>
+
+            <rect x="60" y="85" width="180" height="56" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="150" y="109" fill="#fff" font-size="12" text-anchor="middle">EVERY 10 MINUTES</text>
+            <text x="150" y="127" fill="#8fa8c8" font-size="10" text-anchor="middle">start an eligible worker or exit</text>
+
+            <rect x="360" y="85" width="180" height="56" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="109" fill="#fff" font-size="12" text-anchor="middle">AFTER 45 MINUTES</text>
+            <text x="450" y="127" fill="#8fa8c8" font-size="10" text-anchor="middle">new signal may summon tasking work</text>
+
+            <rect x="660" y="85" width="180" height="56" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="750" y="109" fill="#fff" font-size="12" text-anchor="middle">EVERY 4 HOURS</text>
+            <text x="750" y="127" fill="#8fa8c8" font-size="10" text-anchor="middle">board review backstop</text>
+
+            <text x="150" y="188" fill="#4a6080" font-size="11" text-anchor="middle">cheap launch guard</text>
+            <path d="M 392 152 C 420 116, 480 116, 505 150" fill="none" stroke="#00ff96" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#apG)"/>
+            <text x="450" y="168" fill="#00ff96" font-size="11" text-anchor="middle">new signal after cooldown</text>
+            <text x="750" y="188" fill="#4a6080" font-size="11" text-anchor="middle">quiet-period guarantee</text>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The three clocks solve different problems: launch, pickup, and board review. Treating them as one cycle hides where the real guardrails sit.</figcaption>
+        </figure>
+
+        <p>Liveness is now described in PID-lock terms rather than deadline guesses. A spawner writes the worker PID when it launches. The next tick checks the process table. A live PID keeps the lane occupied. A dead PID means the lock is stale and may be cleared. The retry rule is not "run the same tasking again on the next tick." It is "issue a fresh tasking after the failure is understood."</p>
+      </section>
+
+      <section class="block" id="merge">
+        <h2>The merge path separates policy, review, and execution</h2>
+        <p>Operator authority and mechanical merge execution are different things. Bill sets policy, holds consequential work, and remains the authority for anything that raises a real question. Claude review lanes execute routine merges today when the written gates are satisfied. The deterministic merge script is the attempt to take the last mechanical button press out of the model path, but it is not yet the live enforced path.</p>
+        <p>The merge executor in the repository already reads verdicts from <code>/pulls/&lt;N&gt;/reviews</code>, checks the current head SHA, checks CI, checks <code>mergeable</code>, checks <code>HOLD</code>, checks <code>PAUSE</code>, and defaults to dry-run. What stops the page from calling it live is the identity transition: the cross-account reviewer logins are provisioned, yet the lane AppRole still cannot fetch those reviewer PATs, so the formal reviewer-login gate stays blocked and the live merge timer remains a designed cutover rather than a running one.</p>
+
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 185" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A branch becomes a pull request, receives cross-vendor review, and then either merges through the routine path or is held for the operator.">
+            <defs><marker id="fsF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="30" y="55" width="170" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="115" y="80" fill="#fff" font-size="12" text-anchor="middle">BRANCH</text>
+            <text x="115" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">one worktree's result</text>
+            <rect x="255" y="55" width="170" height="60" rx="9" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="340" y="80" fill="#fff" font-size="12" text-anchor="middle">PULL REQUEST</text>
+            <text x="340" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">Gitea is the durable proposal</text>
+            <polygon points="492,55 648,55 672,85 648,115 492,115 468,85" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="570" y="80" fill="#fff" font-size="12" text-anchor="middle">CROSS-VENDOR REVIEW</text>
+            <text x="570" y="99" fill="#8fa8c8" font-size="10" text-anchor="middle">verdict tied to a head SHA</text>
+            <rect x="715" y="12" width="155" height="56" rx="9" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="2"/>
+            <text x="792" y="36" fill="#fff" font-size="12" text-anchor="middle">ROUTINE PATH</text>
+            <text x="792" y="54" fill="#8fa8c8" font-size="10" text-anchor="middle">green and in bounds</text>
+            <rect x="715" y="102" width="155" height="56" rx="9" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="792" y="126" fill="#fff" font-size="12" text-anchor="middle">HELD FOR BILL</text>
+            <text x="792" y="144" fill="#8fa8c8" font-size="10" text-anchor="middle">questions, live changes, risk</text>
+            <line x1="200" y1="85" x2="253" y2="85" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="425" y1="85" x2="464" y2="85" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="674" y1="78" x2="713" y2="45" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+            <line x1="674" y1="92" x2="713" y2="126" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#fsF)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The merge boundary is not "small change versus large change." It is "mechanically in bounds versus something that still needs Bill."</figcaption>
+        </figure>
+
+        <p>The operator queue itself is a running control, not a future mock-up. It is a committed file that the tasking path maintains as the durable list of what still needs Bill. What is not running is a separate queue application, a live webhook-fed control plane, or a claim that evidence-clearing happens without a repository update.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Different classes of operator work feed one durable operator queue file.">
+            <defs><marker id="fsE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker></defs>
+            <rect x="30" y="20" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="39" fill="#fff" font-size="11" text-anchor="middle">MERGES HELD</text>
+            <text x="130" y="55" fill="#8fa8c8" font-size="9" text-anchor="middle">consequential PRs, with verdicts</text>
+            <rect x="30" y="78" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="97" fill="#fff" font-size="11" text-anchor="middle">RULINGS PENDING</text>
+            <text x="130" y="113" fill="#8fa8c8" font-size="9" text-anchor="middle">question + options + recommendation</text>
+            <rect x="30" y="136" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="155" fill="#fff" font-size="11" text-anchor="middle">HANDS-ONLY WORK</text>
+            <text x="130" y="171" fill="#8fa8c8" font-size="9" text-anchor="middle">hardware, credentials, live apply</text>
+            <rect x="30" y="194" width="200" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="130" y="213" fill="#fff" font-size="11" text-anchor="middle">TIMED OBLIGATIONS</text>
+            <text x="130" y="229" fill="#8fa8c8" font-size="9" text-anchor="middle">expiries, drills, staged cutovers</text>
+            <rect x="330" y="85" width="240" height="90" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="450" y="115" fill="#fff" font-size="13" text-anchor="middle">OPERATOR QUEUE</text>
+            <text x="450" y="135" fill="#8fa8c8" font-size="10" text-anchor="middle">authoritative repo file</text>
+            <text x="450" y="152" fill="#8fa8c8" font-size="10" text-anchor="middle">age &#183; source &#183; what it unblocks</text>
+            <rect x="680" y="85" width="190" height="90" rx="10" fill="rgba(255,184,77,0.08)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="775" y="115" fill="#fff" font-size="13" text-anchor="middle">REMOTE BROWSER</text>
+            <text x="775" y="135" fill="#8fa8c8" font-size="10" text-anchor="middle">read and answer from anywhere</text>
+            <text x="775" y="152" fill="#8fa8c8" font-size="10" text-anchor="middle">but still through the repo path</text>
+            <line x1="230" y1="42" x2="328" y2="105" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="100" x2="328" y2="120" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="158" x2="328" y2="140" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="230" y1="216" x2="328" y2="155" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+            <line x1="570" y1="130" x2="678" y2="130" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#fsE)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The operator queue is the amber exit. It is live as a repository file, not as a separate control-plane application.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="example">
+        <h2>The loop working on a real defect</h2>
+        <p>The mechanism is only interesting if it catches something. One outage-week defect did exactly that. A pre-write hook that scans for secret-shaped strings loaded its allowlist from <code>.gitleaks.toml</code> with a fragile pattern match. The file contained eight suppressions. Only three were being read correctly.</p>
+        <ol class="project-list">
+          <li><b>Claude flagged the loader.</b> The first build pass found the pattern-match assumption suspicious.</li>
+          <li><b>Codex confirmed the defect.</b> The non-greedy match stopped at the first closing bracket inside a regular expression, so five suppressions were silently missing.</li>
+          <li><b>Claude replaced the parser.</b> The allowlist started reading from a real TOML parse rather than from a regex.</li>
+          <li><b>Codex found a second defect in the fix.</b> Malformed configuration paths were not all handled safely yet.</li>
+          <li><b>Claude fixed that and the review returned approve.</b> Absent, unreadable, garbled, and wrong-typed configuration now fail closed to an empty allowlist, while valid entries still survive beside invalid ones.</li>
+        </ol>
+        <p>The example is one direction of the larger system: Claude produced the fix and Codex reviewed it. Other assignments run in the opposite direction when there is Claude-authored work to judge. The lesson is not that one vendor is intrinsically the builder and the other the reviewer. The lesson is that a model should not grade its own branch.</p>
+      </section>
+
+      <section class="block" id="lessons">
+        <h2>Failure lessons that changed the fleet</h2>
+        <p>The duplicate-pull-request incident is why the page talks so carefully about consumption. Review latency once hid the old footer-based consumption marker, so a finished tasking could look idle and launch again. The current rule pair, one spawn per tasking and Gitea PR existence as the consumption signal, was written directly out of that failure.</p>
+        <p>The dispatch-layer outage on August 12, 2026 is why this page does not overclaim about spawner robustness. A future-stamped tasking cycle sorted ahead of the real newest taskings, so both spawners repeatedly selected an already-consumed file, hit their one-spawn cap, and silently skipped the lane. Recovery came only when a later cycle's timestamp finally sorted above the poison value. The fallback-to-next-unconsumed selection and loud starvation signal are filed work, not running safeguards, so this page marks that robustness as blocked rather than pretending the current spawners self-heal.</p>
+        <p>The August 4, 2026 outage is why this page keeps the dispatch rule separate from the rest of the fleet story. Every scheduled cycle after the outage woke on time, tried to pull the repository, failed to resolve the git server, checked public DNS, concluded the internet was healthy and the lab was not, and declined to dispatch against a repository state it could not confirm. Each run wrote its reason to the ledger and exited cleanly. That ledger is the dated evidence that the fleet stopped rather than guessing.</p>
+      </section>
+
+      <section class="block" id="status">
+        <h2>What is real today, and what is not</h2>
+        <p>Each row below carries one status only. The point is not optimism. It is to separate the running fleet from the blocked identity transition and from the designs that already have code or documents waiting behind them.</p>
+        <div class="status-table-wrap">
+          <table class="status-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Status</th>
+                <th>What the tree supports</th>
+                <th>Practical meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Codex unattended building</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>C lanes open work PRs and stop.</td>
+                <td>The live build path is Codex-authored work from isolated worktrees.</td>
+              </tr>
+              <tr>
+                <td>Claude unattended building</td>
+                <td><span class="status-chip retired">Retired</span></td>
+                <td>Claude build lanes are retired; the roster and cycle prompt say Claude builds nothing.</td>
+                <td>The page does not describe a current Claude build pipeline.</td>
+              </tr>
+              <tr>
+                <td>Claude reviewing Codex work</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>R1 and R2 review Codex-authored PRs and execute merges.</td>
+                <td>The normal cross-vendor review path is live in this direction.</td>
+              </tr>
+              <tr>
+                <td>Codex reviewing Claude work</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>CR1 and CR2 leave one verdict comment on Claude-authored PRs.</td>
+                <td>This direction exists and is real, even though Claude build lanes are retired today.</td>
+              </tr>
+              <tr>
+                <td>10-minute spawner ticks</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>Both vendor launch paths are documented as 10-minute scheduler or timer ticks with no model in the guard.</td>
+                <td>An idle tick exits without invoking a worker.</td>
+              </tr>
+              <tr>
+                <td>45-minute pickup cooldown</td>
+                <td><span class="status-chip blocked">Blocked</span></td>
+                <td>The committed guard script and cooldown exist, but its watched signals still include the retired report-file transport.</td>
+                <td>The three-clock model is the right explanation, but this guard is mid-transition rather than fully current.</td>
+              </tr>
+              <tr>
+                <td>Four-hour deep cycle</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>The headless tasking cycle is documented as the four-hour backstop.</td>
+                <td>Quiet periods still get a full board review.</td>
+              </tr>
+              <tr>
+                <td>PID-lock liveness</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>The current launch model describes PID locks and process-table checks.</td>
+                <td>A lane is occupied because a process is alive, not because a timer guessed it should be.</td>
+              </tr>
+              <tr>
+                <td>One spawn per tasking</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>The current contracts and write-up treat respawn onto the same tasking as retired behavior.</td>
+                <td>A dead lane should get a fresh tasking, not a replay of the old file.</td>
+              </tr>
+              <tr>
+                <td>Gitea PR consumption check</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>The current worker contracts define Gitea pull-request existence as the consumption signal, replacing the old footer-on-branch approach.</td>
+                <td>Merge timing no longer decides whether a tasking looks consumed.</td>
+              </tr>
+              <tr>
+                <td><code>PAUSE</code></td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>Committed checks stop new launches and the merge executor path when the pause file exists.</td>
+                <td>It is a dispatch stop and merge stop, not a claim that running workers are killed.</td>
+              </tr>
+              <tr>
+                <td>Daily spawn cap</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>The public write-up and current references describe the cap as a live spawner guard.</td>
+                <td>The page names the guard without overclaiming its wider scope beyond what the tree here proves.</td>
+              </tr>
+              <tr>
+                <td>Routine merge execution</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td>Claude review lanes execute routine merges today.</td>
+                <td>Routine merges do not all wait for a manual click.</td>
+              </tr>
+              <tr>
+                <td>Operator queue</td>
+                <td><span class="status-chip running">Running</span></td>
+                <td><code>OPERATOR-QUEUE.md</code> is the authoritative durable list for Bill.</td>
+                <td>The live queue is a repository file, not only a concept sketch.</td>
+              </tr>
+              <tr>
+                <td>Formal reviewer identities</td>
+                <td><span class="status-chip blocked">Blocked</span></td>
+                <td>The dedicated reviewer accounts and PATs exist, but the lane AppRole still cannot fetch them.</td>
+                <td>Formal cross-account approval objects cannot be the live gate yet.</td>
+              </tr>
+              <tr>
+                <td>Webhook review dispatch</td>
+                <td><span class="status-chip designed">Designed</span></td>
+                <td>The design document exists; no live listener or registration is claimed here.</td>
+                <td>PR-opened review is the intended next trigger, not the current one.</td>
+              </tr>
+              <tr>
+                <td>Deterministic merge script</td>
+                <td><span class="status-chip designed">Designed</span></td>
+                <td>The script and runbook ship in the tree, dry-run by default, with the live cross-account gate default-off.</td>
+                <td>The mechanical merge path exists as code but is not the live enforced default.</td>
+              </tr>
+              <tr>
+                <td>Spawner fallback after a bad newest stamp</td>
+                <td><span class="status-chip blocked">Blocked</span></td>
+                <td>The August 12 starvation incident proved the missing fallback and missing loud-starvation signal.</td>
+                <td>The page does not call the current spawners self-healing.</td>
+              </tr>
+              <tr>
+                <td>External dead-man monitoring</td>
+                <td><span class="status-chip designed">Designed</span></td>
+                <td>The preserved diagram still marks the outside watcher as design work.</td>
+                <td>The fleet is not claiming an external watchdog it has not yet wired.</td>
+              </tr>
+              <tr>
+                <td>Live incident work</td>
+                <td><span class="status-chip designed">Designed</span></td>
+                <td>The page can point to design intent, not to a proved live-incident capability.</td>
+                <td>The fleet already writes from evidence. It does not yet operate on a live incident without a new design and apply path.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="block" id="appendix">
+        <h2>Appendix: the rest of the preserved control-plane diagrams</h2>
+
+        <h3 class="eyebrow">One tasking cycle, top to bottom</h3>
+        <p>The deep cycle is the backstop, not the whole system. It still does the durable work a launcher cannot do on its own: read inbox material, read board state, write taskings, update the operator queue, and stop.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="One tasking cycle in order: pause, verify reality, read state, update the queue, write taskings, and exit.">
+            <defs><marker id="apH" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker></defs>
+            <rect x="330" y="20" width="240" height="44" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="47" fill="#fff" font-size="13" text-anchor="middle">PAUSE present? then STOP</text>
+            <rect x="330" y="84" width="240" height="44" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="104" fill="#fff" font-size="13" text-anchor="middle">verify repo and board state</text>
+            <text x="450" y="120" fill="#8fa8c8" font-size="10" text-anchor="middle">cannot verify = do nothing</text>
+            <rect x="330" y="148" width="240" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="168" fill="#fff" font-size="13" text-anchor="middle">read inbox, taskings, PRs</text>
+            <text x="450" y="184" fill="#8fa8c8" font-size="10" text-anchor="middle">written inputs, never memory</text>
+            <rect x="330" y="212" width="240" height="44" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="232" fill="#fff" font-size="13" text-anchor="middle">classify holds and blockers</text>
+            <text x="450" y="248" fill="#8fa8c8" font-size="10" text-anchor="middle">operator queue stays explicit</text>
+            <polygon points="342,276 558,276 582,298 558,320 342,320 318,298" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="296" fill="#fff" font-size="13" text-anchor="middle">route cross-vendor review</text>
+            <text x="450" y="312" fill="#8fa8c8" font-size="10" text-anchor="middle">today by tasking, not webhook</text>
+            <rect x="200" y="340" width="230" height="52" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="315" y="362" fill="#fff" font-size="13" text-anchor="middle">write work taskings</text>
+            <text x="315" y="378" fill="#8fa8c8" font-size="10" text-anchor="middle">fresh files only</text>
+            <rect x="470" y="340" width="230" height="52" rx="8" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="1.5"/>
+            <text x="585" y="362" fill="#fff" font-size="13" text-anchor="middle">surface operator work</text>
+            <text x="585" y="378" fill="#8fa8c8" font-size="10" text-anchor="middle">no silent ambiguity</text>
+            <rect x="330" y="412" width="240" height="52" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="450" y="432" fill="#fff" font-size="13" text-anchor="middle">land the coordination result</text>
+            <text x="450" y="448" fill="#8fa8c8" font-size="10" text-anchor="middle">one coordination PR</text>
+            <rect x="330" y="484" width="240" height="40" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="450" y="509" fill="#fff" font-size="13" text-anchor="middle">write the run line, exit</text>
+            <line x1="450" y1="64" x2="450" y2="82" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="128" x2="450" y2="146" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="192" x2="450" y2="210" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="256" x2="450" y2="274" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="410" y1="320" x2="340" y2="340" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="490" y1="320" x2="560" y2="340" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="315" y1="392" x2="420" y2="414" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="585" y1="392" x2="480" y2="414" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+            <line x1="450" y1="464" x2="450" y2="482" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#apH)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The green character checks still come first: may the cycle run, and can it verify what it is about to act on.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">Me, from anywhere: the side channel</h3>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="A remote browser writes a durable note, the next pickup path sees it, and the answer comes back through the same repository transport.">
+            <defs><marker id="apI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker></defs>
+            <rect x="30" y="60" width="150" height="70" rx="10" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="2"/>
+            <text x="105" y="90" fill="#fff" font-size="12" text-anchor="middle">REMOTE BROWSER</text>
+            <text x="105" y="110" fill="#8fa8c8" font-size="10" text-anchor="middle">from anywhere</text>
+            <rect x="240" y="60" width="170" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="325" y="85" fill="#fff" font-size="13" text-anchor="middle">SIDE CHANNEL</text>
+            <text x="325" y="103" fill="#8fa8c8" font-size="10" text-anchor="middle">questions become durable notes</text>
+            <text x="325" y="117" fill="#8fa8c8" font-size="10" text-anchor="middle">drafts come back for checking</text>
+            <rect x="470" y="60" width="150" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="545" y="90" fill="#fff" font-size="14" text-anchor="middle">THE REPO</text>
+            <text x="545" y="110" fill="#8fa8c8" font-size="10" text-anchor="middle">files and PR state</text>
+            <rect x="680" y="60" width="190" height="70" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="775" y="85" fill="#fff" font-size="13" text-anchor="middle">NEXT PICKUP PATH</text>
+            <text x="775" y="103" fill="#8fa8c8" font-size="10" text-anchor="middle">cycle or guard sees it</text>
+            <text x="775" y="117" fill="#8fa8c8" font-size="10" text-anchor="middle">answer returns by PR or note</text>
+            <line x1="180" y1="95" x2="238" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <line x1="410" y1="95" x2="468" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <line x1="620" y1="95" x2="678" y2="95" stroke="#ffb84d" stroke-width="1.5" marker-end="url(#apI)"/>
+            <path d="M 775 132 C 700 190, 200 190, 108 134" fill="none" stroke="#4a6080" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#apI)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The side channel is not a live chat with a running worker. It is a way to deposit durable written input and retrieve durable written output from anywhere.</figcaption>
+        </figure>
+
+        <h3 class="eyebrow">Who watches the watchers</h3>
+        <p>The rightmost box in the last preserved diagram is still designed, not running. That is important enough to say twice. The fleet has internal ledgers and liveness checks. It does not yet claim an external dead-man monitor that is already wired and proven.</p>
+        <figure class="fleet-fig">
+          <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono',monospace" role="img" aria-label="Workers are watched by lock checks, cycles by ledgers, and an external dead-man remains a design rather than a running safeguard.">
+            <defs><marker id="apJ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/></marker></defs>
+            <rect x="30" y="60" width="140" height="60" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="100" y="86" fill="#fff" font-size="12" text-anchor="middle">WORKERS</text>
+            <text x="100" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">watched by PID locks</text>
+            <rect x="220" y="60" width="150" height="60" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+            <text x="295" y="86" fill="#fff" font-size="12" text-anchor="middle">THE CYCLES</text>
+            <text x="295" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">watched by ledgers</text>
+            <rect x="420" y="60" width="170" height="60" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="505" y="86" fill="#fff" font-size="12" text-anchor="middle">LEDGER STALENESS</text>
+            <text x="505" y="104" fill="#8fa8c8" font-size="10" text-anchor="middle">silence should be visible</text>
+            <rect x="640" y="60" width="230" height="60" rx="8" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="1.5"/>
+            <text x="755" y="80" fill="#fff" font-size="12" text-anchor="middle">OUTSIDE WATCHER</text>
+            <text x="755" y="97" fill="#8fa8c8" font-size="10" text-anchor="middle">preserved as design only</text>
+            <text x="755" y="111" fill="#8fa8c8" font-size="10" text-anchor="middle">not claimed as running here</text>
+            <line x1="170" y1="90" x2="218" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+            <line x1="370" y1="90" x2="418" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+            <line x1="590" y1="90" x2="638" y2="90" stroke="#00ff96" stroke-width="1.5" marker-end="url(#apJ)"/>
+          </svg>
+          <ul class="legend-swatches" aria-label="Agent Fleet diagram legend">
+            <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automated step</span></li>
+            <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>safety gate or review</span></li>
+            <li><span class="legend-swatch" data-swatch="amber" aria-hidden="true"></span><span>my step</span></li>
+          </ul>
+          <p class="legend-note">Pointed boxes are reviews. Rounded boxes are flow, timers, and stores.</p>
+          <figcaption>The public claim stops at the internal controls the tree can support. The external dead-man remains a design target.</figcaption>
+        </figure>
+      </section>
+
+      <div class="links">
+        <a href="/ai/">AI in operations &#8594;</a>
+        <a href="/security/">The security posture &#8594;</a>
+        <a href="/roadmap/">Read the roadmap &#8594;</a>
+      </div>
+    </div>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group"><span class="sitemap-label">Projects</span> <a href="/projects/">Projects</a> <a href="/projects/server-provisioning/">Server provisioning</a> <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a> <a href="/projects/template-factory/">Template factory</a> <a href="/projects/self-healing-monitoring/">Self-healing monitoring</a> <a href="/projects/decommission/">Safe decommission</a> <a href="/projects/aiops-triage/">AIOps triage</a> <a href="/projects/job-reporting/">Job reporting</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Platform</span> <a href="/platform/">Platform</a> <a href="/skills/">Skills</a> <a href="/roadmap/">Roadmap</a> <a href="/vault/">Vault</a> <a href="/mail/">Mail</a> <a href="/windows-identity/">Windows identity</a> <a href="/dr-restore-verify/">Recovery test</a> <a href="/everything-as-code/">Everything as code</a> <a href="/gitops-argocd/">GitOps</a> <a href="/litellm/">AI budgets</a> <a href="/renovate/">Dependencies</a> <a href="/lab-mcp-server/">Lab MCP server</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Engineering</span> <a href="/fleet/">Unattended fleet</a> <a href="/engineering/">Engineering</a> <a href="/security/">Security</a> <a href="/ai/">Applied AI</a> <a href="/ai-guardrails/">AI guardrails</a> <a href="/supply-chain-security/">Supply chain security</a> <a href="/dead-man-monitoring/">Watchdog</a> <a href="/operations/accepted-risk/">Accepted risk</a></div>
+        <div class="sitemap-group"><span class="sitemap-label">Live and about</span> <a href="/live/">Live</a> <a href="/diagram/">Architecture diagram</a> <a href="/noc/">NOC</a> <a href="/postmortems-index/">Postmortems</a> <a href="/writeups/postmortem-2026-08-04/">2026-08-04 postmortem</a> <a href="/about/">About</a></div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line"><a href="/">Home</a> &#183; billgernert.com &#183; built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </main>
+</body>
+</html>

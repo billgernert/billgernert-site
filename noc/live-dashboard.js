@@ -4,7 +4,7 @@
   // `/fleet/` used to be a permanent redirect to `/claude-code/`. Browsers that cached that old
   // redirect must return through the concrete file once; replaceState then exposes the canonical
   // provider-neutral URL without requesting the cached `/fleet/` route again.
-  if (window.location.pathname === "/fleet/index.html") {
+  if (window.location.pathname === "/fleet/legacy.html") {
     window.history.replaceState(null, "", "/fleet/" + window.location.search + window.location.hash);
   }
 
