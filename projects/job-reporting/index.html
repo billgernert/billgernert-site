@@ -216,12 +216,31 @@
           constrained to describe what it found in the source data rather than to bluff past missing
           evidence. That makes the report less flattering than an unconstrained summary and much more
           useful when I need to decide whether the output is worth acting on.</p>
-        <p>That same discipline is why this page points at the application capability page instead of
-          pretending the full UI is already published here. The report and the migration lesson are the
-          safe, public part of the story today.</p>
+        <p>The scoring and resume paths now use the same hourly subscription-usage router as AIOps.
+          Codex or Claude is selected from measured headroom, with a reserve held back for interactive
+          work. This removes per-call model API billing from the scheduled pipeline while keeping the
+          subscriptions themselves in the cost story.</p>
+      </section>
+
+      <section class="block" id="public-dashboard">
+        <h2>A public version of the dashboard</h2>
+        <p>The private dashboard includes posting titles, companies, links, application history, and
+          resume-specific scoring evidence. This public view keeps the operating contract and strips the
+          records that would turn a portfolio page into a copy of my job search.</p>
+        <div class="stats" aria-label="Public job reporting dashboard">
+          <div class="stat"><div class="num">50</div><div class="label">new postings processed per normal day</div></div>
+          <div class="stat"><div class="num">60+</div><div class="label">high-fit review threshold</div></div>
+          <div class="stat"><div class="num">1 hour</div><div class="label">subscription usage observation</div></div>
+          <div class="stat"><div class="num">2</div><div class="label">eligible headless providers</div></div>
+        </div>
+        <p>Collection combines job-board feeds with mailbox alerts. Enrichment stays queued and bounded,
+          high-fit review starts at 60, and model routing fails closed when neither subscription has safe
+          capacity. No title, company, posting URL, contact, application state, or resume text is exposed
+          here.</p>
       </section>
 
       <div class="links">
+        <a href="/projects/api-to-usage/">API to usage-based pipelines &#8594;</a>
         <a href="/skills/job-search-platform.html">Job-search platform &#8594;</a>
         <a href="/ai/">Applied AI &#8594;</a>
         <a href="/platform/">Platform &#8594;</a>

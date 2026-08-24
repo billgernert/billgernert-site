@@ -139,16 +139,16 @@
   <!-- END generated: motion -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects - Bill Gernert</title>
-  <meta name="description" content="Pipelines from AutomationLab: automated server provisioning, certificate and secret renewal, a Windows template factory, a job reporting pipeline, self-healing monitoring, VM decommission with safety gates, and AIOps morning triage. Each with the problem, the stages, what broke, and the code that fixed it.">
+  <title>API to usage-based AI pipelines - Bill Gernert</title>
+  <meta name="description" content="How scheduled job scoring and AIOps triage moved from metered model APIs to usage-aware headless Codex and Claude agents.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="../../skills/style.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/projects/">
+  <link rel="canonical" href="https://billgernert.com/projects/api-to-usage/">
   <!-- END generated: canonical -->
 </head>
 <body>
@@ -173,61 +173,68 @@
       </nav>
     </header>
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">billgernert.com</a>
-      <span class="sep">/</span>
-      <span class="here">Projects</span>
+      <a href="/">billgernert.com</a><span class="sep">/</span>
+      <a href="/projects/">Projects</a><span class="sep">/</span>
+      <span class="here">API to usage-based pipelines</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Pipelines</span>
-      <h1>Projects</h1>
-      <p class="descriptor">Pipelines I built and run. Each one gets the same treatment: the problem
-        it exists to solve, the stages it actually runs, <b>what broke and what I did about it</b>, and
-        the code that fixed it. The bugs are the interesting part, so they are not skipped. For the
-        subsystems these run on, see <a href="/platform/">Platform</a>.</p>
+      <span class="badge">Project story</span>
+      <h1>From API calls to usage-aware pipelines</h1>
+      <p class="descriptor">Two scheduled AI workloads were paying an incremental token charge while
+        subscription capacity was already available. I replaced the API path with a small router that
+        measures headroom, protects a reserve, and launches a headless Codex or Claude agent.</p>
     </header>
 
     <div class="skill-body">
-      <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
-      <!-- END generated: group-hub -->
-      <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
-      <ol class="project-list">
-        <li id="server-provisioning"><b>Automated server provisioning.</b> Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident. <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></li>
-        <li id="certificate-secret-renewal"><b>Automated certificate and secret renewal.</b> Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill. <a href="/projects/certificate-secret-renewal/">Read the full write-up &#8594;</a></li>
-        <li id="template-factory"><b>The template factory.</b> Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live. <a href="/projects/template-factory/">Read the full write-up &#8594;</a></li>
-        <li id="job-reporting"><b>The job reporting pipeline.</b> Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt. <a href="/projects/job-reporting/">Read the full write-up &#8594;</a></li>
-        <li id="api-to-usage"><b>API to usage-based AI pipelines.</b> Routes unattended AI work through existing subscription headroom, with hourly provider selection, reserve thresholds, and a fail-closed path when neither provider is safe. <a href="/projects/api-to-usage/">Read the full write-up &#8594;</a></li>
-        <li id="self-healing-monitoring"><b>Self-healing monitoring.</b> Classifies every broken host, emails the full remediation plan, and heals only what the operator has approved. <a href="/projects/self-healing-monitoring/">Read the full write-up &#8594;</a></li>
-        <li id="decommission"><b>Decommission, with the gate that says no.</b> Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown. <a href="/projects/decommission/">Read the full write-up &#8594;</a></li>
-        <li id="aiops-triage"><b>AIOps morning triage.</b> Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model. <a href="/projects/aiops-triage/">Read the full write-up &#8594;</a></li>
-      </ol>
-      <!-- END generated: projects-index -->
+      <section class="block">
+        <h2>The cost problem was architectural</h2>
+        <p>The first version of both pipelines used the familiar server pattern: keep an API key in the
+          secrets system, call a model, record tokens, and stop at a monthly budget. That was defensible,
+          but it meant unattended work created a second bill beside subscriptions I already used for
+          engineering work.</p>
+        <p>The AIOps ledger showed ten metered calls totaling about $0.11 as of August 24, 2026. That is
+          not a dramatic invoice. It is useful evidence of a repeated cost path. Job scoring used the same
+          pattern at higher volume, so I fixed the routing boundary instead of tuning another budget cap.</p>
+      </section>
 
       <section class="block">
-        <h2>Code on GitHub</h2>
-        <p>Each project's own page carries its real code, lifted verbatim. What you will not find is a
-          repository link next to each one, and the honest reason is better than a broken link: <b>the
-          AutomationLab repository is private and stays private</b>. It is the live configuration of a
-          running estate, and publishing it would mean publishing the shape of the network it runs.
-          Anything that reaches the public side crosses a fail-closed scrub gate first, which is why this
-          site exists and the ops repo does not. These three repositories are real, and they are all of
-          them:</p>
-        <div class="links">
-          <a href="https://github.com/billgernert" rel="me">Profile &#8594;</a>
-          <a href="https://github.com/billgernert/parsec-lab">parsec-lab &#8594;</a>
-          <a href="https://github.com/billgernert/production-automation">production-automation &#8594;</a>
-        </div>
-        <p class="note"><b>parsec-lab</b> is this site's source: the static pages you are reading,
-          mirrored out of the private repo through that scrub gate. <b>production-automation</b> is
-          de-identified professional work predating the lab, each script documented with its story, its
-          failsafes, and its setup: a Horizon VDI monitor, a three-phase Horizon patching run with a
-          powered-on-image failsafe, and a rolling zero-downtime deployment across an IIS farm.</p>
+        <h2>One hourly observation decides the provider</h2>
+        <p>An exporter samples the remaining short and weekly allowance for both subscriptions once an
+          hour. Before a headless call, the router rejects failed, incomplete, or stale observations. It
+          also holds back a provider-specific reserve so scheduled work does not consume the capacity I
+          need for an interactive session.</p>
+        <p>If both providers are eligible, the router chooses the one with more weekly headroom and uses
+          the short window as the tie-breaker. If neither is safe, it fails closed. Job scoring remains
+          queued, while AIOps keeps the local classification and marks the escalation unavailable.</p>
+      </section>
+
+      <section class="block">
+        <h2>The headless process keeps the old safety boundary</h2>
+        <p>The selected agent runs without tools, without session persistence, in a read-only sandbox,
+          and against a strict JSON schema. Subscription credentials exist only inside the child process
+          wrapper. The pipeline does not read a model API key and there is no silent fallback to metered
+          billing.</p>
+        <p>This is a cost saving, not free AI. The subscriptions still have a fixed cost, and capacity is
+          finite. The saving is the incremental API charge avoided by placing scheduled work into paid
+          headroom that would otherwise expire.</p>
+      </section>
+
+      <section class="block">
+        <h2>The same router now serves two different workloads</h2>
+        <p>The job-search pipeline uses it for scoring and resume work. The AIOps morning chain remains
+          local-first and invokes it only for hard classifications. Both workloads share the usage
+          observation, freshness rules, reserves, provider choice, structured output contract, and
+          fail-closed behavior.</p>
+        <p>That shared mechanism is the useful result. Adding another scheduled AI consumer no longer
+          starts with a new API key and a new spend ledger. It starts by deciding whether the work fits
+          the existing usage envelope.</p>
       </section>
 
       <div class="links">
-        <a href="/platform/">How the platform works &#8594;</a>
-        <a href="/skills/">Explore the capabilities &#8594;</a>
-        <a href="/roadmap/">Read the roadmap &#8594;</a>
+        <a href="/projects/job-reporting/">Job reporting pipeline &#8594;</a>
+        <a href="/projects/aiops-triage/">AIOps morning triage &#8594;</a>
+        <a href="/ai/">Applied AI &#8594;</a>
       </div>
     </div>
 

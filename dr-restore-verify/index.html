@@ -202,6 +202,22 @@
       </section>
 
       <section class="block">
+        <h2>The daily email is designed to be read</h2>
+        <p>The weekly restore test proves recovery, while the daily backup digest makes the ordinary state
+          easy to scan. The first line answers whether every expected backup arrived. Freshness and local
+          replication are charts, then the per-group table carries the verification result. A stale or
+          failed backup turns red and also sends a separate alert. If the digest itself is missing, the
+          delivery monitor treats that absence as a failure.</p>
+        <figure class="email-preview">
+          <img src="/assets/email-previews/backup-digest.png"
+            alt="Sanitized backup digest email showing all four service groups current, complete local replication, and successful verification results"
+            loading="lazy" width="1265" height="1116">
+          <figcaption>Rendered by the production backup email template with public-safe service-group
+            labels. Infrastructure names and management links have been replaced.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block">
         <h2>The 97 second restore</h2>
         <p>For the secrets server, the measured destroy and restore is <b>97 seconds</b>: delete the running
           machine, restore it from the most recent backup, boot it, and confirm the service is answering. That

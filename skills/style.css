@@ -763,6 +763,26 @@ section.block ul.legend-swatches li::marker { content: ""; }
   }
 }
 
+/* Public-safe captures of the real HTML email renderers. */
+.email-preview {
+  margin: 20px 0 4px;
+}
+.email-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: #080d19;
+}
+.email-preview figcaption {
+  margin-top: 9px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
 /* impact stat callouts */
 .stats {
   display: grid;

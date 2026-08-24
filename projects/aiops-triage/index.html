@@ -202,13 +202,15 @@
       </section>
 
       <section class="block">
-        <h2>Local first, paid only for the hard cases</h2>
+        <h2>Local first, then subscription headroom for the hard cases</h2>
         <p>The common path is a local model. It handles the cheap, high-volume classification work with
-          no per-call cost and no need to move the easy cases off the platform. A paid model is there for
-          the cases the local path cannot handle with confidence, and it sits behind the same budget gate
-          and hard cap as the rest of the AI stack.</p>
-        <p>That matters because the value here is in the boundary, not in the word "AI." The hard cases
-          can escalate. The easy cases do not quietly consume budget just because a model was available.</p>
+          no per-call cost and no need to move the easy cases off the platform. For a hard case, the
+          pipeline reads an hourly usage snapshot and picks Codex or Claude only when the provider still
+          has room above its reserve. Stale usage or exhausted headroom leaves the local result in place.</p>
+        <p>This replaced the metered API path in the daily triage job. The historical ledger had recorded
+          ten metered calls totaling about $0.11 by August 24, 2026. The amount was small, but the design
+          repeated in other pipelines. Moving the work onto subscriptions I already pay for removes the
+          incremental token charge and the model API credential from this scheduled path.</p>
       </section>
 
       <section class="block">
@@ -219,11 +221,19 @@
           an email, or an issue, not a shell command.</p>
         <p>That is why the digest is useful. It explains what looked wrong and what to check first
           without pretending the model gets to apply the fix.</p>
+        <figure class="email-preview">
+          <img src="/assets/email-previews/aiops-morning-triage.png"
+            alt="Sanitized AIOps morning triage email showing a clean collector status, one actionable item, one item needing information, and one suppressed noise item"
+            loading="lazy" width="1265" height="724">
+          <figcaption>Rendered by the production email template with public-safe sample findings. The
+            screenshot preserves the real hierarchy and colors while replacing private hosts, links,
+            commands, and finding details.</figcaption>
+        </figure>
       </section>
 
       <section class="block" id="live" data-public-noc>
         <h2>Live AIOps and alerting evidence</h2>
-        <p>This public-safe dashboard shows the gateway budget, service health, component capacity, the
+        <p>This public-safe dashboard shows shared AI capacity, service health, component capacity, the
           latest triage result, triage activity, and aggregate alert severity. Findings, prompts, model
           responses, host identities, and internal management links stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live AIOps dashboard.</p>
@@ -237,6 +247,7 @@
       </section>
 
       <div class="links">
+        <a href="/projects/api-to-usage/">API to usage-based pipelines &#8594;</a>
         <a href="/ai/">Applied AI &#8594;</a>
         <a href="/ai-guardrails/">AI guardrails &#8594;</a>
         <a href="/platform/#aiops">Platform overview &#8594;</a>
