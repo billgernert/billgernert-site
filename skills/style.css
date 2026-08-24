@@ -678,6 +678,91 @@ section.block ul.legend-swatches li::marker { content: ""; }
 }
 .frame .sub { font-size: 0.85rem; color: var(--muted); font-weight: 300; max-width: 46ch; }
 
+/* Real architecture flows. Connectors occupy their own cells so they can never run through text. */
+.frame.skill-diagram {
+  min-height: 0;
+  border-style: solid;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,212,255,0.08), transparent 34%),
+    linear-gradient(135deg, rgba(6,18,34,0.98), rgba(4,13,26,0.98));
+  align-items: stretch;
+  gap: 20px;
+  padding: 28px;
+}
+.skill-flow {
+  list-style: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.skill-node {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 116px;
+  border: 1px solid var(--border-strong);
+  border-top: 2px solid var(--cyan);
+  border-radius: 9px;
+  background: rgba(5,17,32,0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  padding: 15px;
+  text-align: left;
+}
+.skill-node-number {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  color: var(--cyan);
+}
+.skill-node strong {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.25;
+  letter-spacing: 0.7px;
+  color: var(--text);
+}
+.skill-node-detail {
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.skill-arrow {
+  flex: 0 0 18px;
+  align-self: center;
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  color: var(--green);
+}
+.skill-diagram-note {
+  max-width: 72ch;
+  margin: 0 auto;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .frame.skill-diagram { padding: 20px; }
+  .skill-flow { flex-direction: column; }
+  .skill-node { min-height: 0; }
+  .skill-arrow {
+    flex-basis: auto;
+    line-height: 1;
+    transform: rotate(90deg);
+  }
+}
+
 /* impact stat callouts */
 .stats {
   display: grid;
