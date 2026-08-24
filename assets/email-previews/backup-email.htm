@@ -1,0 +1,247 @@
+<html><body style="margin:0;padding:0;background:#0a0e1a;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a0e1a" style="background:#0a0e1a;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="860" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a0e1a"
+       style="width:860px;max-width:100%;background:#0a0e1a;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+
+  <tr><td style="padding:4px 6px 16px;">
+    <div style="font-size:22px;font-weight:700;color:#00d4ff;">Backup Digest</div>
+    <div style="font-size:13px;color:#8fa3c8;margin-top:2px;">Proxmox Backup Server &middot; 2026-08-24 07:00 Mountain Daylight Time</div>
+  </td></tr>
+
+  
+  <tr><td style="padding:0 6px 16px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111a2e" style="background:#111a2e;border-radius:8px;border:1px solid #4a6080;">
+      <tr><td style="padding:12px 16px;color:#00ff96;font-size:15px;font-weight:700;">&#10003; All 4 guests backed up within the daily schedule.</td></tr>
+    </table>
+  </td></tr>
+  
+
+  <tr><td style="padding:0 6px 18px;color:#e0e8ff;font-size:14px;line-height:1.65;">
+    Guests are backed up by a Proxmox VE <b style="color:#00d4ff;">vzdump</b> job (01:30 daily,
+    all protected service groups, snapshot mode) to the PBS datastore
+    <b style="color:#00d4ff;">primary-backups</b>, retained keep-daily=7, keep-weekly=4, keep-monthly=3. A PBS local
+    <b style="color:#00d4ff;">sync</b> job then replicates that datastore to
+    <b style="color:#00d4ff;">dr-datastore</b> (03:30 daily). Both datastores live on the
+    <b>same PBS host</b>, so this is <b style="color:#e0e8ff;">local redundancy, not offsite DR</b>
+    (an offsite target is a future enhancement). Configured in PVE
+    <i style="color:#8fa3c8;">Datacenter &rarr; Backup</i> and PBS <i style="color:#8fa3c8;">Sync Jobs</i>.
+    Staleness now raises a real alert: when existing guests miss the schedule or a backup fails, a
+    dedicated <b style="color:#ff4d6d;">[ALERT]</b> email goes to the alert group (item 88) in
+    addition to this digest. A missing digest still pages via the job's own failure notification.
+  </td></tr>
+
+  <!-- charts -->
+  <tr><td style="padding:0 6px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111a2e"
+           style="background:#111a2e;border:1px solid #4a6080;border-radius:8px;margin-bottom:14px;">
+      <tr><td style="padding:14px 18px;">
+        <div style="font-size:13px;font-weight:700;color:#00d4ff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">Backup freshness (primary datastore)</div>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="110" style="color:#e0e8ff;font-size:13px;padding:3px 0;">Today (&lt;=24h)</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="340" bgcolor="#00ff96" style="background:#00ff96;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="0" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">4</td>
+        </tr></table>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="110" style="color:#e0e8ff;font-size:13px;padding:3px 0;">This week</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="0" bgcolor="#00d4ff" style="background:#00d4ff;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="340" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">0</td>
+        </tr></table>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="110" style="color:#e0e8ff;font-size:13px;padding:3px 0;">Stale (&gt;7d)</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="0" bgcolor="#ff4d6d" style="background:#ff4d6d;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="340" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">0</td>
+        </tr></table>
+        
+      </td></tr>
+    </table>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111a2e"
+           style="background:#111a2e;border:1px solid #4a6080;border-radius:8px;margin-bottom:18px;">
+      <tr><td style="padding:14px 18px;">
+        <div style="font-size:13px;font-weight:700;color:#00d4ff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;">DR coverage (local redundancy)</div>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="150" style="color:#e0e8ff;font-size:13px;padding:3px 0;">Primary</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="340" bgcolor="#00d4ff" style="background:#00d4ff;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="0" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">4</td>
+        </tr></table>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="150" style="color:#e0e8ff;font-size:13px;padding:3px 0;">Replicated (DR)</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="340" bgcolor="#00ff96" style="background:#00ff96;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="0" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">4</td>
+        </tr></table>
+        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+          <td width="150" style="color:#e0e8ff;font-size:13px;padding:3px 0;">Not replicated</td>
+          <td style="padding:3px 8px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="0" bgcolor="#ff4d6d" style="background:#ff4d6d;height:16px;font-size:0;line-height:0;border-radius:3px;">&nbsp;</td><td width="340" bgcolor="#1c2740" style="background:#1c2740;height:16px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+          <td width="40" style="color:#e0e8ff;font-size:14px;font-weight:700;text-align:right;">0</td>
+        </tr></table>
+        
+        <div style="color:#8fa3c8;font-size:12px;margin-top:8px;">4 of 4 guests replicated to dr-datastore; <span style="color:#ff4d6d;">0 not replicated</span> (local DR only, same host).</div>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <!-- per-datastore guest tables -->
+  
+  <tr><td style="padding:0 6px 6px;">
+    <div style="font-size:15px;font-weight:700;color:#e0e8ff;margin:6px 0 6px;">Datastore <span style="color:#00d4ff;">primary-backups</span>
+      <span style="color:#8fa3c8;font-size:13px;font-weight:400;">&middot; 4 guests, 4 OK</span></div>
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111a2e"
+           style="background:#111a2e;border:1px solid #4a6080;border-radius:8px;border-collapse:separate;font-size:13px;">
+      <tr>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Guest</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Last backup</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">7d</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Backups (last 7d)</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Verify</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Result</td>
+        
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">application services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">monitoring services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">identity services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">automation services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+    </table>
+    
+  </td></tr>
+  
+  <tr><td style="padding:0 6px 6px;">
+    <div style="font-size:15px;font-weight:700;color:#e0e8ff;margin:6px 0 6px;">Datastore <span style="color:#00d4ff;">replicated-backups</span>
+      <span style="color:#8fa3c8;font-size:13px;font-weight:400;">&middot; 4 guests, 4 OK</span></div>
+    
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#111a2e"
+           style="background:#111a2e;border:1px solid #4a6080;border-radius:8px;border-collapse:separate;font-size:13px;">
+      <tr>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Guest</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Last backup</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">7d</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Backups (last 7d)</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Verify</td>
+        
+        <td style="padding:8px 10px;color:#00d4ff;font-weight:700;border-bottom:1px solid #4a6080;text-align:left;">Result</td>
+        
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">application services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">monitoring services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">identity services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+      <tr>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">automation services</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">2026-08-24 03:30</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">4</td>
+        <td style="padding:7px 10px;color:#8fa3c8;border-bottom:1px solid #1c2740;">08-18, 08-20, 08-22, 08-24</td>
+        <td style="padding:7px 10px;color:#e0e8ff;border-bottom:1px solid #1c2740;">OK</td>
+        <td style="padding:7px 10px;color:#e0e8ff;font-weight:400;border-bottom:1px solid #1c2740;">OK</td>
+      </tr>
+      
+      
+    </table>
+    
+  </td></tr>
+  
+
+  
+
+  
+
+  
+
+  
+  <tr><td style="padding:12px 6px 0;">
+    <a href="#" style="color:#00d4ff;font-size:12px;text-decoration:none;font-weight:600;">Open the Proxmox cluster dashboard &rarr; backup posture &amp; PBS health</a>
+  </td></tr>
+  
+
+  <tr><td style="padding:16px 6px 4px;color:#8fa3c8;font-size:11px;line-height:1.5;">
+    
+    Generated by scripts/pbs-backup-digest.py via the lab mail platform. Stale and failed rows are red.
+    Trend chart (failures/stale over time) deferred until more history accrues.
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body></html>

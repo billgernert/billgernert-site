@@ -1,0 +1,101 @@
+<html><body style="margin:0;padding:0;background:#0a0e1a;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0a0e1a" style="background:#0a0e1a;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="820" cellpadding="0" cellspacing="0" border="0"
+       style="width:820px;max-width:100%;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+
+  <tr><td style="padding:4px 6px 14px;">
+    <div style="font-size:22px;font-weight:700;color:#00d4ff;">AIOps Morning Triage</div>
+    <div style="font-size:13px;color:#8fa3c8;margin-top:2px;">Last 24h &middot; 2026-08-24 06:12 UTC</div>
+  </td></tr>
+
+  
+  <tr><td style="padding:0 6px 16px;">
+    <table role="presentation" width="100%" bgcolor="#111a2e" style="background:#111a2e;border-radius:8px;border:1px solid #4a6080;"><tr>
+      <td style="padding:12px 16px;color:#00ff96;font-size:15px;font-weight:700;">
+        &#10003; Collectors and triage ran clean.
+        1 actionable, 1 needs-info.
+      </td></tr></table>
+  </td></tr>
+  
+
+  <tr><td style="padding:0 6px 16px;color:#8fa3c8;font-size:13px;">
+    3 findings &middot; <span style="color:#ff4d6d;">1 actionable</span>,
+    <span style="color:#ffb74d;">1 needs-info</span>,
+    1 noise suppressed.
+    Collectors: alerts=ok, monitoring=ok, delivery=ok, backup=ok.
+  </td></tr>
+
+  
+
+  
+
+  
+  <tr><td style="padding:8px 6px 2px;"><div style="font-size:15px;font-weight:700;color:#ff4d6d;">Actionable (1)</div></td></tr>
+  <tr><td style="padding:4px 6px;">
+    <table role="presentation" width="100%" bgcolor="#111a2e" style="background:#111a2e;border:1px solid #4a6080;border-left:3px solid #ff4d6d;border-radius:6px;margin-bottom:8px;"><tr><td style="padding:10px 14px;">
+      <div style="color:#e0e8ff;font-size:14px;font-weight:700;">
+        #104 Scheduled certificate renewal needs review
+      </div>
+      <div style="color:#8fa3c8;font-size:12px;margin:2px 0 6px;">
+        monitoring &middot; severity warning &middot; host public-service
+        
+        
+        
+      </div>
+      
+      <div style="color:#e0e8ff;font-size:13px;line-height:1.5;">The renewal window is approaching and the latest check did not confirm a replacement.</div>
+      
+      <div style="margin-top:6px;"><code style="display:block;background:#05070f;color:#00ff96;font-size:12px;padding:8px 10px;border-radius:4px;white-space:pre-wrap;word-break:break-all;">Review the certificate lifecycle report.</code></div>
+      <div style="margin-top:6px;color:#4a6080;font-size:11px;white-space:pre-wrap;word-break:break-all;">dispose: py -3 aiops/scripts/aiops-dispose.py --finding 104 --ruling &lt;known-noise|needs-info|actionable&gt; --scope title+host [--ttl 30d --note "..."]</div>
+    </td></tr></table>
+  </td></tr>
+  
+
+  
+  <tr><td style="padding:8px 6px 2px;"><div style="font-size:15px;font-weight:700;color:#ffb74d;">Needs info (1) - run the check</div></td></tr>
+  <tr><td style="padding:4px 6px;">
+    <table role="presentation" width="100%" bgcolor="#111a2e" style="background:#111a2e;border:1px solid #4a6080;border-left:3px solid #ffb74d;border-radius:6px;margin-bottom:8px;"><tr><td style="padding:10px 14px;">
+      <div style="color:#e0e8ff;font-size:14px;font-weight:700;">
+        #118 Backup verification result is older than expected
+      </div>
+      <div style="color:#8fa3c8;font-size:12px;margin:2px 0 6px;">
+        monitoring &middot; severity warning &middot; host backup-service
+        
+        
+        
+      </div>
+      
+      <div style="color:#e0e8ff;font-size:13px;line-height:1.5;">The backup exists, but the latest verification evidence is outside the normal window.</div>
+      
+      <div style="margin-top:6px;"><code style="display:block;background:#05070f;color:#00ff96;font-size:12px;padding:8px 10px;border-radius:4px;white-space:pre-wrap;word-break:break-all;">Open the backup verification report and confirm the latest restore test.</code></div>
+      <div style="margin-top:6px;color:#4a6080;font-size:11px;white-space:pre-wrap;word-break:break-all;">dispose: py -3 aiops/scripts/aiops-dispose.py --finding 118 --ruling &lt;known-noise|needs-info|actionable&gt; --scope title+host [--ttl 30d --note "..."]</div>
+    </td></tr></table>
+  </td></tr>
+  
+
+  
+
+  
+  <tr><td style="padding:8px 6px 2px;"><div style="font-size:14px;font-weight:700;color:#8fa3c8;">Suppressed as known-noise (1)</div></td></tr>
+  <tr><td style="padding:4px 6px 6px;">
+    <table role="presentation" width="100%" bgcolor="#111a2e" style="background:#111a2e;border:1px solid #4a6080;border-radius:6px;font-size:12px;">
+    
+      <tr><td style="padding:6px 12px;color:#8fa3c8;border-bottom:1px solid #1c2740;">
+        #121 monitoring/service-group: Expected maintenance-window restart <span style="color:#4a6080;">(seen 4 times, ruled noise)</span>
+        
+      </td></tr>
+    
+    </table>
+  </td></tr>
+  
+
+  <tr><td style="padding:16px 6px 4px;color:#8fa3c8;font-size:11px;line-height:1.5;">
+    Generated by aiops/scripts/send-digest.py. Read-only triage - no actions taken (Phase 5 is
+    hard-gated). A degraded banner means collectors or triage did not fully run; a MISSING digest
+    means the job itself failed (that is the alert).
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body></html>

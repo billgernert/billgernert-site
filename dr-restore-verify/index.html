@@ -182,23 +182,39 @@
     <header class="skill-head">
       <span class="badge">Backup and recovery</span>
       <h1>Proving the backups actually restore</h1>
-      <p class="descriptor">The secrets server holds every password and key in the lab. If it dies, everything
-        that depends on it dies too. So I built a pipeline that destroys that server on purpose every week and
-        rebuilds it from backup. A full destroy and restore takes 97 seconds. The number was the easy part.
-        Making the check tell the truth took twelve reruns, and that is the story worth reading.</p>
+      <p class="descriptor">Proxmox Backup Server can prove that chunks are readable. It cannot prove that
+        a VM boots, its filesystem mounts, or its service starts. I built a weekly Jenkins pipeline that
+        selects the next protected guest, restores it from both backup datastores into a fenced scratch VM,
+        tests the restored operating system, and removes the copy.</p>
     </header>
 
     <div class="skill-body">
       <section class="block">
-        <h2>What the pipeline does</h2>
-        <p>Once a week, a scheduled job runs the whole recovery path end to end against both of the lab's
-          backup stores. It verifies the backup chunks are intact, restores a machine from them, boots it,
-          runs checks that the restored machine is really working, then tears the test copy down again. It
-          does this for the secrets server and for the other machines that matter, so the claim is not
-          "a backup file exists" but "this backup boots and works, as of this week."</p>
+        <h2>The scheduled job now rotates through the recovery manifest</h2>
+        <p>Jenkins calculates the weekly rotation index and selects one guest from the recovery manifest.
+          The list covers Vault, both domain controllers, Zabbix, the Kubernetes control plane and workers,
+          Gitea, NetBox, the certificate authority, and Ansible control. Four of those entries had been
+          blocked by missing Proxmox VM IDs, which is why the production job was pinned to one domain controller. I corrected
+          the mappings from the managed inventory and removed that pin, so scheduled runs now use the
+          rotation the code was designed to use.</p>
         <p>A backup you have never restored is a hope, not a backup. The only way to know a restore works is to
           do the restore. Doing it by hand once a quarter is how you find out it is broken during the outage.
           Doing it automatically every week is how you find out on a Tuesday, with nothing at stake.</p>
+      </section>
+
+      <section class="block">
+        <h2>How PBS, Proxmox, and Jenkins divide the work</h2>
+        <p>The first gate asks Proxmox Backup Server whether the selected snapshot passed chunk
+          verification. A red verification result stops the run before a VM is created. For a passing
+          snapshot, the pipeline asks Proxmox to restore into the reserved scratch range on a node with an
+          isolated bridge. That bridge has no uplink, so a restored domain controller or Vault server
+          cannot advertise itself to the production network.</p>
+        <p>The same sequence runs once for the primary PBS datastore and again for the DR datastore. The
+          restored VM must appear in Proxmox, boot, answer through the guest agent, and mount its filesystem.
+          Type-specific checks then cover the service that matters: Vault must unseal and read a known
+          secret, a domain controller runs Windows directory checks, Kubernetes nodes open their local
+          state, and application guests prove the restored OS before deeper service assertions are added.
+          Jenkins records the result and always enters teardown, even when an earlier assertion fails.</p>
       </section>
 
       <section class="block">
@@ -209,21 +225,21 @@
           failed backup turns red and also sends a separate alert. If the digest itself is missing, the
           delivery monitor treats that absence as a failure.</p>
         <figure class="email-preview">
-          <img src="/assets/email-previews/backup-digest.png"
-            alt="Sanitized backup digest email showing all four service groups current, complete local replication, and successful verification results"
-            loading="lazy" width="1265" height="1116">
+          <iframe class="email-preview-frame" src="/assets/email-previews/backup-email.htm"
+            title="Scrollable sanitized backup digest email" loading="lazy" sandbox></iframe>
           <figcaption>Rendered by the production backup email template with public-safe service-group
-            labels. Infrastructure names and management links have been replaced.</figcaption>
+            labels. The HTML stays sharp and scrollable; infrastructure names and management links have
+            been replaced.</figcaption>
         </figure>
       </section>
 
       <section class="block">
-        <h2>The 97 second restore</h2>
-        <p>For the secrets server, the measured destroy and restore is <b>97 seconds</b>: delete the running
-          machine, restore it from the most recent backup, boot it, and confirm the service is answering. That
-          number is real and it is the point of the whole exercise. If the worst day starts with the secrets
-          server gone, recovery is a minute and a half of automation, not an afternoon of remembering how the
-          thing was built.</p>
+        <h2>The 97 second Vault recovery was a separate live-fire test</h2>
+        <p>The 97 second measurement came from the Vault recovery chronicle: remove the failed VM, restore
+          the latest snapshot, boot it, and confirm Vault is answering. It is not the guest selected every
+          Sunday and it should not be read as the duration of the rotating weekly job. The weekly pipeline
+          uses a scratch VM, tests both PBS datastores, and publishes its own measured duration in the live
+          dashboard below.</p>
       </section>
 
       <section class="block">
@@ -293,13 +309,13 @@
           says.</p>
       </section>
 
-      <section class="block" id="live" data-public-noc>
+      <section class="block live-wide" id="live" data-public-noc>
         <h2>Live backup and recovery evidence</h2>
         <p>This public-safe dashboard shows backup freshness, datastore capacity, verification results,
           and the weekly recovery-test outcome. Guest and datastore names are descriptive aliases;
           infrastructure identifiers and management links stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live backup dashboard.</p>
-        <iframe class="live-frame" data-live-frame
+        <iframe class="live-frame live-frame-tall" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328"
           title="Public backups and recovery dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>

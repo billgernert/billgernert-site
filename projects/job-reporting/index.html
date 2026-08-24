@@ -147,6 +147,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <script src="../../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/job-reporting/">
   <!-- END generated: canonical -->
@@ -183,60 +184,83 @@
     <header class="skill-head">
       <span class="badge">Project story</span>
       <h1>The job reporting pipeline</h1>
-      <p class="descriptor">This is the application pipeline that turns the platform from pure
-        infrastructure into something carrying a real workload: scheduled collection, enrichment, scored
-        reporting, and a database path that treats merged code and applied schema as different facts.</p>
+      <p class="descriptor">I wanted one place to answer three questions: what is new, what is actually a
+        fit, and what needs a response. Six Jenkins jobs collect board and mailbox alerts, normalize them in
+        PostgreSQL, enrich and score the postings, send a daily report, calibrate the scorer, and back up the
+        database.</p>
     </header>
 
     <div class="skill-body">
       <section class="block">
-        <h2>A real application is the honest platform test</h2>
-        <p>The job-search platform matters here because it is not a stateless demo. It has a database, a
-          scheduled data pipeline, and a report that has to be correct enough to be worth reading. That
-          forces the surrounding platform to carry the kinds of state and sequencing a simpler service can
-          hide.</p>
-        <p>The collect, enrich, and report stages run on a schedule, so the content stays current without
-          a manual refresh step. Secrets come from Vault at run time, and the application is deployed
-          through the same reviewed and reconciled path as the rest of the cluster.</p>
+        <h2>Collection starts with feeds and a shared mailbox</h2>
+        <p>The collection job polls the supported job-board and ATS feeds, then reads the shared jobs
+          mailbox. Indeed and LinkedIn alerts arrive as email digests, so the collector parses the message,
+          extracts the canonical posting URL, and sends it through the same normalization path as an API
+          result. Greenhouse, Lever, and Ashby postings keep their source metadata instead of being reduced
+          to an email-shaped blob.</p>
+        <p>PostgreSQL is the system of record. URL and source identifiers handle duplicates, while liveness
+          checks close postings that disappear and repost detection relates a new listing to an older one.
+          Every collection run records its own outcome, which is how the dashboard distinguishes no new jobs
+          from a collector that never completed. The normal daily intake is bounded at 50; a manual backlog
+          run can drain accumulated mail without changing that steady-state limit.</p>
       </section>
 
       <section class="block">
-        <h2>The real gotcha was schema, not UI</h2>
-        <p>The most useful failure from this project was a migration lesson. A merged PR that adds a
-          database migration does not change the live schema. The schema changes only when the pipeline's
-          migrate stage actually runs. Treating "merged" and "applied" as the same state is how a report
-          starts expecting columns the database does not have yet.</p>
-        <p>That became a standing rule. Trust the database for what is live, not the repository for what
-          should be live. The report path is only as honest as the schema it is reading.</p>
+        <h2>Enrichment is a queue, not one oversized model prompt</h2>
+        <p>The enrichment job takes unprocessed postings in bounded batches. Deterministic parsers pull out
+          salary ranges, location, remote status, deadlines, and skills first. A local Ollama model handles
+          the broad relevance pass. The headless scoring path then compares evidence from the posting with
+          the resume rubric and stores both the score and its explanation, so a 60 means there is reviewable
+          evidence behind it.</p>
+        <p>Harder scoring and resume work uses the same hourly subscription router as AIOps. Prometheus
+          reports Codex and Claude usage, the router preserves an interactive reserve, and Jenkins launches
+          the provider with available headroom. No scheduled path retains the old Claude API fallback. If
+          usage is stale or both subscriptions are full, the item stays queued instead of silently spending
+          through a metered API.</p>
       </section>
 
       <section class="block">
-        <h2>The scoring path is built to explain itself</h2>
-        <p>The score is not useful if it cannot show why it landed there. The reporting side is
-          constrained to describe what it found in the source data rather than to bluff past missing
-          evidence. That makes the report less flattering than an unconstrained summary and much more
-          useful when I need to decide whether the output is worth acting on.</p>
-        <p>The scoring and resume paths now use the same hourly subscription-usage router as AIOps.
-          Codex or Claude is selected from measured headroom, with a reserve held back for interactive
-          work. This removes per-call model API billing from the scheduled pipeline while keeping the
-          subscriptions themselves in the cost story.</p>
+        <h2>Six Jenkins jobs keep the responsibilities separate</h2>
+        <p><code>jobsearch-collect</code> ingests and reconciles postings. <code>jobsearch-enrich</code>
+          parses, classifies, and scores them. <code>jobsearch-digest</code> sends the daily high-fit and
+          expiring-posting report. <code>jobsearch-scorer-eval</code> checks scoring behavior against judged
+          examples. <code>jobsearch-db-backup</code> writes the database recovery artifact. The manual
+          <code>jobsearch-application</code> path changes lifecycle state and produces application-specific
+          material without giving the scheduled collectors permission to apply on my behalf.</p>
+        <p>The migration stage runs before code that expects a new schema. That rule came from an early
+          failure where merged code and the live database disagreed. The repository describes the intended
+          schema; PostgreSQL reports the applied schema. Jenkins has to make those states converge before an
+          enrichment or digest stage is allowed to trust a new column.</p>
       </section>
 
-      <section class="block" id="public-dashboard">
+      <section class="block">
+        <h2>The report is the operator interface</h2>
+        <p>The private Grafana dashboard shows open high-fit postings, source mix, collection age,
+          enrichment backlog, application state, and scoring evidence. The daily email pulls the decisions
+          forward: new high-fit matches, approaching deadlines, and records that need more information.
+          Titles, companies, links, contacts, application history, and resume evidence stay private.</p>
+        <p>Next I want to close the quality loop between applications and the scorer. The evaluation job can
+          already compare predictions with judged examples; the next step is to make response outcomes a
+          separate calibration signal without letting a small or biased sample rewrite the rubric. Company
+          enrichment and skill-gap reporting will remain opt-in until their signal is better than the extra
+          model work they create.</p>
+      </section>
+
+      <section class="block" id="public-dashboard" data-public-noc>
         <h2>A public version of the dashboard</h2>
-        <p>The private dashboard includes posting titles, companies, links, application history, and
-          resume-specific scoring evidence. This public view keeps the operating contract and strips the
-          records that would turn a portfolio page into a copy of my job search.</p>
-        <div class="stats" aria-label="Public job reporting dashboard">
-          <div class="stat"><div class="num">50</div><div class="label">new postings processed per normal day</div></div>
-          <div class="stat"><div class="num">60+</div><div class="label">high-fit review threshold</div></div>
-          <div class="stat"><div class="num">1 hour</div><div class="label">subscription usage observation</div></div>
-          <div class="stat"><div class="num">2</div><div class="label">eligible headless providers</div></div>
+        <p>The public Grafana view keeps the operational evidence and removes the job-search records. It
+          shows live Jenkins result history, duration, and daily run count for collection, enrichment,
+          digest delivery, and database backup. That is enough to demonstrate the pipeline is operating
+          without publishing where I applied or what the scorer said about a specific employer.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the public job reporting dashboard.</p>
+        <div>
+          <iframe class="live-frame" data-live-frame
+            data-src="/projects/job-reporting/open/dashboard"
+            title="Public job reporting pipeline dashboard" referrerpolicy="no-referrer" hidden></iframe>
+          <div class="live-fallback" data-live-fallback hidden>
+            <p>The live job reporting dashboard is unavailable. No cached pipeline state is presented as current.</p>
+          </div>
         </div>
-        <p>Collection combines job-board feeds with mailbox alerts. Enrichment stays queued and bounded,
-          high-fit review starts at 60, and model routing fails closed when neither subscription has safe
-          capacity. No title, company, posting URL, contact, application state, or resume text is exposed
-          here.</p>
       </section>
 
       <div class="links">
