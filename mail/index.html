@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/mail/">
   <!-- END generated: canonical -->
@@ -256,6 +257,22 @@ brevo2._domainkey  ->  b2.parsec-lab-com.dkim.brevo.com</code></pre>
           it alone, and the lesson generalises past mail: any long-lived connection through something you
           do not control needs to prove it is still there, or it will be closed underneath you and nothing
           will report it.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live mail operations</h2>
+        <p>This public-safe dashboard shows submission reachability, mail-host capacity, certificate
+          lifetime, and aggregate notification delivery. Domains, recipients, message content, queue
+          identifiers, account names, and internal addresses stay private.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live mail dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/e816c9f4610d45409a81d795219ee19b"
+          title="Public mail operations dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live mail dashboard is unavailable. The mail-platform write-up remains online, and it
+            does not present stale delivery state as current.</p>
+        </div>
+        <noscript><p>The live mail dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

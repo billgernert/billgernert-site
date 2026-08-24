@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <script src="../../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/aiops-triage/">
   <!-- END generated: canonical -->
@@ -82,6 +83,21 @@
           an email, or an issue, not a shell command.</p>
         <p>That is why the digest is useful. It explains what looked wrong and what to check first
           without pretending the model gets to apply the fix.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live AIOps and alerting evidence</h2>
+        <p>This public-safe dashboard shows the gateway budget, service health, component capacity, the
+          latest triage result, triage activity, and aggregate alert severity. Findings, prompts, model
+          responses, host identities, and internal management links stay private.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live AIOps dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f"
+          title="Public AIOps and alerting dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live AIOps dashboard is unavailable. No cached triage state is presented as current.</p>
+        </div>
+        <noscript><p>The live AIOps dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

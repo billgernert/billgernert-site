@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <script src="../../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/certificate-secret-renewal/">
   <!-- END generated: canonical -->
@@ -87,6 +88,22 @@
           full zero-touch renewal path yet. Some yearly certificates are still issued by hand and
           watched explicitly for expiry, which is an honest improvement over forgetting them but not the
           same thing as saying the whole estate is already hands-off.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live certificate and PKI evidence</h2>
+        <p>This public-safe dashboard reads the certificates that services are presenting now. It shows
+          the certificate horizon, the secrets service state, and lifetime by descriptive service name.
+          Addresses, certificate subjects, management links, and internal source labels stay private.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live certificate dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/f8c8dadad49f4b02a18a60a2e9e2af46"
+          title="Public certificate and PKI dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live certificate dashboard is unavailable. This project page remains online independently
+            of the lab, and it does not present a stale certificate value as current.</p>
+        </div>
+        <noscript><p>The live certificate dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

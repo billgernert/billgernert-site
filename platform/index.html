@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/platform/">
   <!-- END generated: canonical -->
@@ -456,6 +457,22 @@
           <a href="/skills/prometheus.html">Prometheus &#8594;</a>
           <a href="/skills/zabbix.html">Zabbix &#8594;</a>
         </div>
+      </section>
+
+      <section class="block" id="live-infrastructure" data-public-noc>
+        <h2>Live infrastructure evidence</h2>
+        <p>This public-safe dashboard shows node availability, guest state, per-node CPU and memory,
+          storage use, and recovery-test state under stable descriptive aliases. Hypervisor names,
+          numeric guest IDs, addresses, exporter labels, and management URLs are removed before the
+          dashboard can query the data.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live infrastructure dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
+          title="Public infrastructure dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live infrastructure dashboard is unavailable. No cached node or guest state is presented as current.</p>
+        </div>
+        <noscript><p>The live infrastructure dashboard requires JavaScript.</p></noscript>
       </section>
 
       <section class="block" id="secrets">

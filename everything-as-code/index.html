@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/everything-as-code/">
   <!-- END generated: canonical -->
@@ -111,6 +112,21 @@
           a build, so its correctness was invisible until too late. Everything as code is not about avoiding
           the console for its own sake. It is about making the state of the system knowable from the text,
           before it runs.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live delivery-pipeline evidence</h2>
+        <p>This public-safe dashboard shows whether the pipeline estate is reporting, the latest result
+          under descriptive job names, completed-build activity, and duration. Build numbers, console
+          output, users, parameters, repository links, and Jenkins management URLs stay private.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live delivery dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/95dabf6aa1884d4981c4a38ee9c7f910"
+          title="Public delivery pipelines dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live delivery dashboard is unavailable. No cached build result is presented as current.</p>
+        </div>
+        <noscript><p>The live delivery dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

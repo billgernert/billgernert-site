@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/gitops-argocd/">
   <!-- END generated: canonical -->
@@ -297,6 +298,21 @@
           Self-heal reverting your own hand-edit at two in the morning teaches GitOps better than any diagram,
           including mine. I have not earned that lesson yet, because I left self-heal off on purpose. Turning
           it on, one application at a time, is what this lab owes itself next.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live Kubernetes evidence</h2>
+        <p>This public-safe dashboard shows the running component inventory plus CPU and memory use by
+          purpose. Pod hashes, namespaces, nodes, images, addresses, and management links are removed
+          before the dashboard can query the data.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live Kubernetes dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126"
+          title="Public Kubernetes dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live Kubernetes dashboard is unavailable. No cached workload state is presented as current.</p>
+        </div>
+        <noscript><p>The live Kubernetes dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

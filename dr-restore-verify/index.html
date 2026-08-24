@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <script src="../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/dr-restore-verify/">
   <!-- END generated: canonical -->
@@ -138,6 +139,22 @@
           retry. The value here was never the green result. It was the twelve rounds of finding out what
           "green" had been hiding, and building the checks and the audit so the next green means what it
           says.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live backup and recovery evidence</h2>
+        <p>This public-safe dashboard shows backup freshness, datastore capacity, verification results,
+          and the weekly recovery-test outcome. Guest and datastore names are descriptive aliases;
+          infrastructure identifiers and management links stay private.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live backup dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328"
+          title="Public backups and recovery dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live backup dashboard is unavailable. This recovery write-up remains available, and no
+            cached backup state is presented as current.</p>
+        </div>
+        <noscript><p>The live backup dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">

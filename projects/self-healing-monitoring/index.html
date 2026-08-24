@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <script src="../../noc/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/self-healing-monitoring/">
   <!-- END generated: canonical -->
@@ -84,6 +85,22 @@
         <p>That is the useful limit to name. The platform can explain what it attempted and why. It is
           honest about the fact that "attempted" and "confirmed healthy afterwards" are still different
           statements.</p>
+      </section>
+
+      <section class="block" id="live" data-public-noc>
+        <h2>Live alerting evidence</h2>
+        <p>This public-safe dashboard shows evaluator health, firing severity, silences, notification
+          delivery, and latency. Alert names, hosts, incident text, recipients, and management links
+          stay private. The project story explains remediation; this view shows whether the alerting
+          path itself is working now.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live alerting dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/6bb0747444d3425fa238a4627b928439"
+          title="Public alerting dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live alerting dashboard is unavailable. No cached alert count is presented as current.</p>
+        </div>
+        <noscript><p>The live alerting dashboard requires JavaScript.</p></noscript>
       </section>
 
       <div class="links">
