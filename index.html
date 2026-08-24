@@ -526,7 +526,10 @@
       overflow: hidden;
       background: #050912;
     }
-    .noc-shot img { display: block; width: 100%; height: auto; }
+    .noc-shot .live-frame { width: 100%; min-height: 600px; border: 0; display: block; background: #050912; }
+    .noc-shot .live-fallback { padding: 28px; color: var(--muted); }
+    .noc-shot .live-fallback[hidden], .noc-shot .live-frame[hidden] { display: none; }
+    .noc-shot .live-status { margin: 0; padding: 10px 14px; color: var(--muted); font-family: var(--mono); font-size: 0.78rem; }
     .noc-copy p { color: var(--muted); }
 
     .experience-grid {
@@ -645,6 +648,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
+  <script src="/noc/live-dashboard.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1063,14 +1067,20 @@
         </div>
 
         <div class="noc-layout">
-          <figure class="noc-shot">
-            <img src="https://billgernert.com/noc/img/noc-hub-full.png" alt="Public-safe NOC overview with nine domain tiles and four summary facts" loading="lazy">
-            <figcaption>Representative public-safe NOC snapshot. Open the live NOC for current operating state. Grey means no data, not healthy.</figcaption>
-          </figure>
+          <div class="noc-shot" data-public-noc>
+            <p class="live-status" data-live-status aria-live="polite">Checking the live NOC.</p>
+            <iframe class="live-frame" data-live-frame
+              data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
+              title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
+            <div class="live-fallback" data-live-fallback hidden>
+              The live board is temporarily unavailable. The public site remains independent of the lab.
+            </div>
+          </div>
           <div class="noc-copy">
             <p>
-              Nine domain tiles report their worst current state. The fact row shows firing alerts,
-              certificate expiry, Vault seal state, and backup age. A tile with no data renders grey.
+              Twelve operational tiles report their worst current state and open public-safe drill-downs.
+              Alert state, web consoles, backup freshness, certificate lifecycle, and subscription pacing
+              are visible without exposing internal identifiers. A tile with no data renders grey.
               The page generator refuses to publish an overview when a dashboard is missing its domain
               mapping, and a nightly check compares the generated definition with the running dashboard.
             </p>

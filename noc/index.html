@@ -140,7 +140,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The NOC hub - Bill Gernert</title>
-  <meta name="description" content="One dashboard the whole estate reports into: nine domain tiles coloured by worst severity, actionable alert, web-console, and backup signals, and a rule that no-data never reads as green. Generated from the backlog and self-policing.">
+  <meta name="description" content="A live public-safe NOC: twelve drill-down tiles, operational summaries, infrastructure detail, and subscription usage pacing, with no-data never shown as healthy.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,11 +150,10 @@
   <style>
     /* Wider column for this page only: a 1600px dashboard capture is unreadable at the 760px body width. */
     main.page-wide { max-width: 1100px; }
-    figure.shot { margin: 1.5rem 0; }
-    figure.shot img { width: 100%; height: auto; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; display: block; }
-    figure.shot figcaption { font-size: 0.85rem; opacity: 0.75; margin-top: 0.4rem; }
     .live-status { font-family: "Share Tech Mono", monospace; color: #8fa8c8; }
     .live-frame { width: 100%; min-height: 720px; border: 1px solid rgba(0, 212, 255, 0.25); border-radius: 6px; background: #0a0e1a; }
+    .live-frame.detail { min-height: 860px; }
+    .live-fallback { border-left: 3px solid rgba(0, 212, 255, 0.45); padding: 0.85rem 1rem; background: rgba(0, 212, 255, 0.05); }
     .live-fallback[hidden], .live-frame[hidden] { display: none; }
   </style>
   <script src="live-dashboard.js" defer></script>
@@ -193,16 +192,13 @@
       <span class="badge">Monitoring</span>
       <h1>The NOC hub</h1>
       <p class="descriptor">A network operations centre is one screen you can glance at and know whether the
-        estate is healthy. This lab has one: a single dashboard that every domain reports into, with nine
-        tiles coloured by their worst problem and a row of facts that answer the whole question without
-        opening anything. Two rules make it trustworthy: a tile with no data is never green, and the whole
-        thing is generated from the backlog rather than arranged by hand.</p>
+        estate is healthy. This page now shows the running dashboards themselves: twelve public-safe domain
+        tiles, live drill-downs, and supporting signals. No-data is never green, and identifiers are scrubbed
+        before Grafana can query the public series.</p>
     </header>
 
     <nav class="crumbs" aria-label="On this page">
       <a href="#live">Live status board</a>
-      <span class="sep">/</span>
-      <a href="#hub">One screen to start from</a>
       <span class="sep">/</span>
       <a href="#tiles">The tiles, and what grey means</a>
       <span class="sep">/</span>
@@ -230,39 +226,22 @@
         <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
           title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <figure class="shot live-fallback" data-live-fallback>
-          <img src="img/noc-hub-full.png" alt="The latest public-safe NOC capture: nine domain tiles above four summary facts.">
-          <figcaption>Fallback capture from 2026-07-27. The website is independent of the lab, so this
-            dated image remains available when the live route is offline.</figcaption>
-        </figure>
-        <noscript><p>The live check needs JavaScript. The dated capture is shown instead.</p></noscript>
-      </section>
-
-      <section class="block" id="hub">
-        <h2>One screen to start from</h2>
-        <p>The pattern is simple and it is the whole point: instead of a wall of dashboards you have to know
-          your way around, there is one hub. Each domain of the estate gets a tile, the tile shows that
-          domain's worst current state, and clicking it takes you to that domain's own dashboard. The morning
-          question, "is anything on fire," is answered by looking at one page.</p>
-        <figure class="shot">
-          <img src="img/noc-hub-full.png" alt="The NOC overview dashboard: nine domain tiles above a row of four summary facts.">
-          <figcaption>The NOC overview hub: nine domain tiles and the facts row. Captured 2026-07-27.</figcaption>
-        </figure>
+        <div class="live-fallback" data-live-fallback hidden>
+          <strong>Live board offline.</strong> The site remains available independently; the dashboard reconnects
+          automatically when the public monitoring route is healthy.
+        </div>
+        <noscript><p>The live dashboards need JavaScript. Use the public dashboard links below.</p></noscript>
       </section>
 
       <section class="block" id="tiles">
         <h2>The tiles, and what grey means</h2>
-        <p>Nine tiles, one per domain, each coloured by the worst severity in that domain: green is healthy,
+        <p>Twelve tiles, one per operational view, each coloured by the worst severity in that view: green is healthy,
           amber and red escalate, and grey means no data. Grey is the honest one. Some domains are not fully
           wired yet, so their tiles are grey today, and the page says that plainly rather than hiding it. That
           matters because of a rule the hub enforces: a tile with no data must never render green. A green
           tile is a promise that the domain is healthy, and a domain you are not actually measuring cannot
           make that promise. So it stays grey until real data backs it, which is exactly the bug this rule
           exists to prevent: a monitoring screen that looks reassuring while measuring nothing.</p>
-        <figure class="shot">
-          <img src="img/noc-tiles.png" alt="A close crop of the nine domain tiles, some coloured and some grey for no-data.">
-          <figcaption>The nine domain tiles, worst-severity coloured; grey is no-data, not healthy. Captured 2026-07-27.</figcaption>
-        </figure>
       </section>
 
       <section class="block" id="facts">
@@ -271,32 +250,35 @@
           backup freshness. Each is clickable, and each is backed by a real public-safe data projection rather
           than a placeholder. Certificate horizon and secrets-service state are combined into the Certificates
           &amp; PKI tile above, where they can be investigated together.</p>
-        <figure class="shot">
-          <img src="img/noc-facts.png" alt="The four summary facts: firing alerts, days to cert expiry, secrets-server sealed state, hours since last backup.">
-          <figcaption>The facts row: four numbers that answer the health question without opening anything. Captured 2026-07-27.</figcaption>
-        </figure>
       </section>
 
-      <section class="block" id="click">
+      <section class="block" id="click" data-public-noc>
         <h2>Click through to a domain</h2>
         <p>A tile is a door, not just a light. Clicking a domain's tile opens that domain's own overview
-          dashboard, so the hub is the starting point and the detail is one click away. The picture shows the
-          virtualization tile leading to the cluster overview, where the per-host detail lives.</p>
-        <figure class="shot">
-          <img src="img/pve-cluster.png" alt="A cluster overview dashboard reached by clicking a domain tile, showing aggregate cluster figures.">
-          <figcaption>A domain tile opens its own dashboard: the cluster overview. Captured 2026-07-27.</figcaption>
-        </figure>
+          dashboard, so the hub is the starting point and the detail is one click away. This live Infrastructure
+          view shows node state, guest capacity, and resource trends under stable aliases. Source hostnames,
+          addresses, guest IDs, pod labels, and management URLs never enter its public query results.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live Infrastructure dashboard.</p>
+        <p class="links"><a href="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66">Open Infrastructure full screen &#8594;</a></p>
+        <iframe class="live-frame detail" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
+          title="Public Infrastructure live dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden><strong>Infrastructure view offline.</strong>
+          The hub above still reports the last available public-safe state.</div>
       </section>
 
-      <section class="block" id="budget">
+      <section class="block" id="budget" data-public-noc>
         <h2>The AI usage board</h2>
         <p>The ChatGPT and Claude tile compares weekly remaining subscription capacity with the ideal pace to
           the next reset. It opens the provider-neutral usage board, where both services show actual remaining
           capacity and the time-based ideal line without exposing account identifiers.</p>
-        <figure class="shot">
-          <img src="img/litellm-budget.png" alt="The AI gateway budget and spend dashboard: layered budget panels by consumer.">
-          <figcaption>The AI gateway budget board: layered budgets, most-restrictive-wins. Captured 2026-07-27.</figcaption>
-        </figure>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live subscription usage dashboard.</p>
+        <p class="links"><a href="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d">Open usage full screen &#8594;</a></p>
+        <iframe class="live-frame detail" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
+          title="Public ChatGPT and Claude live usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden><strong>Usage view offline.</strong>
+          Account identifiers, credentials, and raw exporter labels remain private in every state.</div>
       </section>
 
       <section class="block" id="generated">
