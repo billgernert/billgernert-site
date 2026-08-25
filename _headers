@@ -6,6 +6,7 @@
 # The only external requests are the parsec-lab brand fonts (Share Tech Mono + Exo 2) from
 # Google Fonts, so the CSP allows exactly those two hosts and nothing else.
 /*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

@@ -1,0 +1,3 @@
+Contact: https://www.linkedin.com/in/billgernert
+Expires: 2027-08-24T23:59:59Z
+Canonical: https://billgernert.com/.well-known/security.txt

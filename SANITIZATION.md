@@ -23,6 +23,7 @@ page deleted in the private repo is deleted here.
 | `index.html` | the landing page |
 | `_headers` | response headers (CSP + security headers) |
 | `_redirects` | the mirror redirect map (added to the gate with the new page dirs, 2026-07-27) |
+| `.well-known/` | the public security contact document |
 | `skills/` | the capability pages + the shared `style.css` |
 | `roadmap/` | the public roadmap (its facts block is generated) |
 | `public-roadmap/` | the born-generated milestone roadmap page |
