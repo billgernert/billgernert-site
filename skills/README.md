@@ -51,7 +51,7 @@ Every skill page has the same seven sections, in order:
 4. **In action** - screenshot placeholder (`<div class="frame">`) until a scrubbed screenshot exists
 5. **Lessons learned & gotchas**
 6. **Impact**
-7. **Code & further reading** - scrubbed repo link (disabled placeholder until a public-safe repo exists)
+7. **Code & further reading** - scrubbed repo link (disabled placeholder until a public repo exists)
 
 Unwritten prose sections show a tasteful `<div class="coming">Writeup coming</div>` placeholder,
 so a half-finished page still looks intentional rather than broken.

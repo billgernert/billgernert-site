@@ -326,13 +326,15 @@
         <p class="risk-status">Accepted 2026-08-05 &#183; staging embed built 2026-08-21, live aggregate pending</p>
 
         <h3 class="eyebrow">A curated public Grafana set bypasses sign-in</h3>
-        <p>The dedicated status hostname may expose only dashboards listed in the committed public
-          manifest without Cloudflare Access. The rest of Grafana stays behind Access. Public panels
+        <p>The dedicated status hostname exposes the dashboards in the committed public manifest and
+          the document, data, health, and static asset routes they need without Cloudflare Access. The
+          rest of Grafana stays behind Access. Public panels
           query fixed recording rules that remove source identity before Grafana reads the data; free-form
           queries, variables, annotations, private links, credentials, account identifiers, and raw target
           labels remain unavailable. The route is rate-limited at the edge and restricted to embedding by
-          this site.</p>
-        <p class="risk-status">Accepted 2026-08-21 &#183; active only while the public route is enabled</p>
+          this site. The catch-all Access application has one block-all policy and no SSO policy, which
+          closes the login path on the public host.</p>
+        <p class="risk-status">Accepted 2026-08-21 &#183; public-host login path risk closed 2026-08-25 &#183; active only while the public route is enabled</p>
 
         <h3 class="eyebrow">The live views can die while the site stays healthy</h3>
         <p>Anything live on this site depends on the lab, even though the pages do not. When the lab is

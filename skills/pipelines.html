@@ -206,7 +206,7 @@
         <h2>How I use it in the lab</h2>
         <ul>
           <li><b>Publish pipeline (the centerpiece).</b> The private git server is the source of
-            truth; a build job takes the site's public-safe subtree, runs a fail-closed scrub gate
+            truth; a build job takes the site's public subtree, runs a fail-closed scrub gate
             over it, and only then pushes it to a public repository that a static host serves.</li>
           <li><b>Fail-closed scrub gate.</b> The same publishing checklist that governs the content
             runs as a pipeline step: if it finds a forbidden pattern (an internal address,
