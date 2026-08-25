@@ -553,6 +553,12 @@ section.block li::marker { color: var(--cyan); }
   display: none;
 }
 
+figure.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 section.block ul.legend-swatches {
   list-style: none;
   margin: 18px 0;

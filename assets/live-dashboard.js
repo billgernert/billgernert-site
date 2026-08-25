@@ -16,82 +16,61 @@
   var HEALTH_CHECK_INTERVAL_MS = 8000;
   var BADGE_TICK_INTERVAL_MS = 1000;
   var STATUS_ORIGIN = "https://status.billgernert.com";
-  var TALLEST_KNOWN_BOARD_HEIGHT = 2636;
+  var DASHBOARD_WIDTH = 1200;
+  var GRID_ROW_HEIGHT = 38;
+  var DASHBOARD_CHROME_HEIGHT = 96;
   var routeIsLive = false;
   var lastStateAt = Date.now();
   var checking = false;
   var connections = [];
 
-  function setFrameHeight(frame, height, source) {
-    if (!frame.hasAttribute("data-live-auto-height") || !Number.isFinite(height)) {
-      return;
-    }
-    if (height < 320 || height > 10000) {
-      return;
-    }
-    frame.style.height = Math.ceil(height) + "px";
-    frame.setAttribute("data-height-source", source);
-  }
+  function prepareViewport(frame) {
+    var rows = parseInt(frame.getAttribute("data-dashboard-rows"), 10);
+    var naturalHeight = rows * GRID_ROW_HEIGHT + DASHBOARD_CHROME_HEIGHT;
+    var shell = document.createElement("div");
 
-  function useKnownBoardHeight(frame) {
-    setFrameHeight(frame, TALLEST_KNOWN_BOARD_HEIGHT, "known-board");
-  }
+    shell.className = "live-frame-viewport";
+    shell.hidden = true;
+    shell.style.position = "relative";
+    shell.style.width = "100%";
+    shell.style.maxWidth = DASHBOARD_WIDTH + "px";
+    shell.style.margin = "0 auto";
+    shell.style.overflow = "hidden";
+    frame.parentNode.insertBefore(shell, frame);
+    shell.appendChild(frame);
 
-  function measureFrame(frame) {
-    if (!frame.hasAttribute("data-live-auto-height")) {
-      return;
+    frame.setAttribute("scrolling", "no");
+    frame.style.position = "absolute";
+    frame.style.inset = "0 auto auto 0";
+    frame.style.width = DASHBOARD_WIDTH + "px";
+    frame.style.height = naturalHeight + "px";
+    frame.style.minHeight = "0";
+    frame.style.transformOrigin = "top left";
+
+    function resize() {
+      var scale = Math.min(1, shell.clientWidth / DASHBOARD_WIDTH);
+      frame.style.transform = "scale(" + scale + ")";
+      shell.style.height = Math.ceil(naturalHeight * scale) + "px";
     }
-    try {
-      var frameDocument = frame.contentDocument || frame.contentWindow.document;
-      var measuredHeight = Math.max(
-        frameDocument.body ? frameDocument.body.scrollHeight : 0,
-        frameDocument.documentElement ? frameDocument.documentElement.scrollHeight : 0
-      );
-      if (measuredHeight > 0) {
-        setFrameHeight(frame, measuredHeight, "measured");
-        return;
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(resize).observe(shell);
+    } else {
+      window.addEventListener("resize", resize);
+    }
+
+    return {
+      hide: function () {
+        frame.hidden = true;
+        shell.hidden = true;
+      },
+      show: function () {
+        shell.hidden = false;
+        frame.hidden = false;
+        resize();
       }
-    } catch (_error) {
-      // The public dashboard is normally cross-origin. Its known rendered height remains the fallback.
-    }
-    useKnownBoardHeight(frame);
+    };
   }
-
-  function messageHeight(data) {
-    if (!data || typeof data !== "object") {
-      return null;
-    }
-    var messageType = String(data.type || data.event || data.eventName || data.name || "").toLowerCase();
-    if (messageType.indexOf("height") === -1 && messageType.indexOf("resize") === -1 &&
-        messageType.indexOf("size") === -1) {
-      return null;
-    }
-    var candidates = [data.height, data.contentHeight, data.documentHeight];
-    if (data.payload && typeof data.payload === "object") {
-      candidates.push(data.payload.height, data.payload.contentHeight, data.payload.documentHeight);
-    }
-    for (var index = 0; index < candidates.length; index += 1) {
-      var candidate = Number(candidates[index]);
-      if (Number.isFinite(candidate)) {
-        return candidate;
-      }
-    }
-    return null;
-  }
-
-  window.addEventListener("message", function (event) {
-    if (event.origin !== STATUS_ORIGIN) {
-      return;
-    }
-    Array.prototype.forEach.call(connections, function (connection) {
-      if (event.source === connection.frame.contentWindow) {
-        var height = messageHeight(event.data);
-        if (height !== null) {
-          setFrameHeight(connection.frame, height, "message");
-        }
-      }
-    });
-  });
 
   function updateBadges() {
     var elapsed = Math.max(0, Date.now() - lastStateAt);
@@ -117,6 +96,7 @@
     var status = root.querySelector("[data-live-status]");
     var badge = root.querySelector("[data-live-badge]");
     var home = root.querySelector("[data-live-home]");
+    var viewport = prepareViewport(frame);
     var connection = {
       badge: badge,
       fallback: fallback,
@@ -126,10 +106,8 @@
     };
     connections.push(connection);
 
-    useKnownBoardHeight(frame);
-
     function showFallback() {
-      frame.hidden = true;
+      viewport.hide();
       frame.removeAttribute("src");
       fallback.hidden = false;
       status.textContent = "Live dashboard unavailable. The explanatory summary remains available.";
@@ -143,16 +121,15 @@
         connection.loaded = true;
         fallback.hidden = true;
         status.textContent = "Live dashboard connected.";
-        measureFrame(frame);
       }, { once: true });
-      frame.hidden = false;
+      viewport.show();
       frame.src = frame.getAttribute("data-src");
     }
 
     if (home) {
       home.addEventListener("click", function (event) {
         event.preventDefault();
-        frame.hidden = false;
+        viewport.show();
         fallback.hidden = true;
         status.textContent = "Returning to the live dashboard.";
         loadFrame();
