@@ -141,7 +141,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live - Bill Gernert</title>
-  <meta name="description" content="The public live view of AutomationLab: a sanitized architecture diagram and a public-safe NOC entry point, with the boundary drawn at publishable evidence rather than internal identifiers.">
+  <meta name="description" content="The public live view of AutomationLab: a sanitized architecture diagram and the NOC entry point, with the boundary drawn at publishable evidence rather than internal identifiers.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -182,11 +182,10 @@
 
     <header class="skill-head">
       <span class="badge" data-accent="green">Live</span>
-      <h1>Running evidence, kept public-safe</h1>
-      <p class="descriptor">Live is the public operating view of the lab: one architecture page that
-        shows the running shape of the estate, and one monitoring page that shows the public-safe
-        status surface. It exists to show evidence from the running system without publishing the
-        identifiers the system runs on.</p>
+      <h1>Running evidence</h1>
+      <p class="descriptor">Live is the public operating view of the lab: an architecture diagram that
+        shows the running shape of the estate, and the <a href="/noc/">NOC</a>, where the dashboards
+        Grafana serves from the running lab are open to anyone. Both are evidence from the live system.</p>
       <div class="links">
         <a href="/diagram/">Open the diagram</a>
         <a href="/noc/">Open the NOC</a>
@@ -197,8 +196,8 @@
       <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Live</b>:</p>
       <ol class="project-list">
-        <li><b>Architecture diagram.</b> The public-safe map of the lab's shape and the pages that explain each region. <a href="/diagram/">Read more &#8594;</a></li>
-        <li><b>NOC.</b> The public dashboard entry point, where no-data stays visibly unknown. <a href="/noc/">Read more &#8594;</a></li>
+        <li><b>Architecture diagram.</b> The map of the lab's shape and the pages that explain each region. <a href="/diagram/">Read more &#8594;</a></li>
+        <li><b>NOC.</b> The live dashboards, interactive, where no data never reads as green. <a href="/noc/">Read more &#8594;</a></li>
         <li><b>Postmortems.</b> Long-form failure writeups and the follow-on work they produced. <a href="/postmortems-index/">Read more &#8594;</a></li>
       </ol>
       <!-- END generated: group-hub -->
@@ -211,34 +210,20 @@
           <li><b>Diagram.</b> A sanitized platform map: network segments, compute layers, core
             services, and the pages that explain them. It is about running shape, not private wiring.
             <a href="/diagram/">Open the diagram &#8594;</a></li>
-          <li><b>NOC.</b> A public-safe Grafana entry point: one overview hub, curated drilldowns,
+          <li><b>NOC.</b> The live Grafana boards: one overview hub, curated drilldowns,
             and a rule that no data never reads as green. <a href="/noc/">Open the NOC &#8594;</a></li>
         </ol>
       </section>
 
       <section class="block" id="boundary">
-        <h2>The sanitization boundary is part of the design</h2>
-        <p>The public boundary is enforced on purpose. The diagram keeps the shape and removes the
-          identifiers that would turn it into a map of the private estate. The NOC keeps the
-          operating signals that are safe to publish and leaves out hostnames, IPs, ports,
-          datasource URLs, query parameters, app names, and private dashboard identifiers. That is
-          not apology copy. It is the same engineering rule as any other boundary: publish the
-          evidence, keep the control plane private.</p>
-        <p>The rule also keeps the claims honest. If a subsystem is designed and not deployed yet, it
-          stays described as designed on its own page and does not get promoted here as running
-          proof.</p>
-      </section>
-
-      <section class="block" id="limits">
-        <h2>What Live will not imply</h2>
-        <ul>
-          <li>A designed subsystem is not shown here as live evidence until it is deployed or
-            measured.</li>
-          <li>The NOC keeps the "no data never green" rule explicit, so an unmeasured surface stays
-            visibly unmeasured.</li>
-          <li>Deeper design, trade-offs, and planned work stay on the explanatory pages; Live points
-            at current structure and current signal.</li>
-        </ul>
+        <h2>What is left out, and why</h2>
+        <p>Both pages keep the shape and the signal and drop the identifiers: hostnames, addresses,
+          ports, datasource URLs, query parameters and private dashboard IDs never reach the public
+          side. The <a href="/noc/">NOC page</a> explains exactly what that costs and what it keeps. Two
+          other rules hold here. A subsystem that is designed but not deployed stays described as
+          designed on its own page and is never promoted to running proof. And a surface that is not
+          measured stays visibly unmeasured, because a green tile with no data behind it is the one
+          thing this page must never show.</p>
       </section>
 
       <section class="block" id="follow">

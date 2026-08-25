@@ -235,9 +235,11 @@
           inbound hole.</p>
         <p>Every application hostname sits behind <b>single sign-on at the edge</b>, so an
           unauthenticated request is turned away before it reaches the app rather than by the app.
-          Identity comes from the directory, group membership decides access, and the public landing
-          page you are reading is the one deliberate exception: it is the only thing with no login in
-          front of it. Remote access for me is a mesh VPN, not an exposed service.</p>
+          Identity comes from the directory and group membership decides access. There are two
+          deliberate exceptions. This site has no login in front of it, because it is meant to be
+          read. The public status host serves the NOC dashboards and their data route to anyone, and
+          everything else on that host goes to an Access policy whose only action is block, so it has
+          no login path at all. Remote access for me is a mesh VPN, not an exposed service.</p>
         <div class="links">
           <a href="/skills/cloudflare.html">Cloudflare Zero Trust &#8594;</a>
           <a href="/skills/entra-id.html">Entra ID &#8594;</a>
