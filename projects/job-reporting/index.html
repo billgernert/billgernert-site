@@ -140,7 +140,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Job reporting - Bill Gernert</title>
-  <meta name="description" content="How the job reporting pipeline works in AutomationLab: scheduled collection, enrichment, schema-aware reporting, and a scoring path that is forced to explain what it saw instead of bluffing past missing evidence.">
+  <meta name="description" content="How the job reporting pipeline handles scheduled collection, shared-mailbox ingestion, PostgreSQL normalization, bounded enrichment, evidence-backed scoring, reporting, and recovery.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -185,9 +185,8 @@
       <span class="badge">Project story</span>
       <h1>The job reporting pipeline</h1>
       <p class="descriptor">I wanted one place to answer three questions: what is new, what is actually a
-        fit, and what needs a response. Six Jenkins jobs collect board and mailbox alerts, normalize them in
-        PostgreSQL, enrich and score the postings, send a daily report, calibrate the scorer, and back up the
-        database.</p>
+        fit, and what needs a response. Four live Jenkins jobs collect board and mailbox alerts, normalize
+        them in PostgreSQL, enrich and score the postings, send a daily report, and back up the database.</p>
     </header>
 
     <div class="skill-body">
@@ -196,8 +195,7 @@
         <p>The collection job polls the supported job-board and ATS feeds, then reads the shared jobs
           mailbox. Indeed and LinkedIn alerts arrive as email digests, so the collector parses the message,
           extracts the canonical posting URL, and sends it through the same normalization path as an API
-          result. Greenhouse, Lever, and Ashby postings keep their source metadata instead of being reduced
-          to an email-shaped blob.</p>
+          result. Greenhouse, Lever, and Ashby postings keep their source metadata through normalization.</p>
         <p>PostgreSQL is the system of record. URL and source identifiers handle duplicates, while liveness
           checks close postings that disappear and repost detection relates a new listing to an older one.
           Every collection run records its own outcome, which is how the dashboard distinguishes no new jobs
@@ -215,18 +213,20 @@
         <p>Harder scoring and resume work uses the same hourly subscription router as AIOps. Prometheus
           reports Codex and Claude usage, the router preserves an interactive reserve, and Jenkins launches
           the provider with available headroom. No scheduled path retains the old Claude API fallback. If
-          usage is stale or both subscriptions are full, the item stays queued instead of silently spending
-          through a metered API.</p>
+          usage is stale or both subscriptions are full, the item stays queued and no metered API call is
+          made.</p>
       </section>
 
       <section class="block">
-        <h2>Six Jenkins jobs keep the responsibilities separate</h2>
+        <h2>Four live Jenkins jobs keep scheduled work separate</h2>
         <p><code>jobsearch-collect</code> ingests and reconciles postings. <code>jobsearch-enrich</code>
           parses, classifies, and scores them. <code>jobsearch-digest</code> sends the daily high-fit and
-          expiring-posting report. <code>jobsearch-scorer-eval</code> checks scoring behavior against judged
-          examples. <code>jobsearch-db-backup</code> writes the database recovery artifact. The manual
-          <code>jobsearch-application</code> path changes lifecycle state and produces application-specific
-          material without giving the scheduled collectors permission to apply on my behalf.</p>
+          expiring-posting report, and <code>jobsearch-db-backup</code> writes the database recovery artifact.</p>
+        <p>The repository also contains separate Jenkinsfiles for scorer evaluation and parameterized
+          application work, but those two definitions are not jobs on the production controller today. I do
+          not count them in the four above. The evaluation script can compare scores with judged examples,
+          while application lifecycle changes remain an operator-run path that cannot be triggered by a
+          scheduled collector.</p>
         <p>The migration stage runs before code that expects a new schema. That rule came from an early
           failure where merged code and the live database disagreed. The repository describes the intended
           schema; PostgreSQL reports the applied schema. Jenkins has to make those states converge before an
@@ -239,7 +239,7 @@
           enrichment backlog, application state, and scoring evidence. The daily email pulls the decisions
           forward: new high-fit matches, approaching deadlines, and records that need more information.
           Titles, companies, links, contacts, application history, and resume evidence stay private.</p>
-        <p>Next I want to close the quality loop between applications and the scorer. The evaluation job can
+        <p>Next I want to close the quality loop between applications and the scorer. The evaluation script can
           already compare predictions with judged examples; the next step is to make response outcomes a
           separate calibration signal without letting a small or biased sample rewrite the rubric. Company
           enrichment and skill-gap reporting will remain opt-in until their signal is better than the extra
@@ -249,8 +249,9 @@
       <section class="block" id="public-dashboard" data-public-noc>
         <h2>A public version of the dashboard</h2>
         <p>The public Grafana view keeps the operational evidence and removes the job-search records. It
-          shows live Jenkins result history, duration, and daily run count for collection, enrichment,
-          digest delivery, and database backup. That is enough to demonstrate the pipeline is operating
+          shows live Jenkins result history, duration, and observed 24-hour run count for collection,
+          enrichment, digest delivery, and database backup. Green intervals are successful completed builds;
+          red intervals are failed or unstable builds. That is enough to demonstrate the pipeline is operating
           without publishing where I applied or what the scorer said about a specific employer.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the public job reporting dashboard.</p>
         <div>
