@@ -527,10 +527,22 @@
       overflow: hidden;
       background: #050912;
     }
-    .noc-shot .live-frame { width: 100%; min-height: 600px; border: 0; display: block; background: #050912; }
+    .noc-shot .live-frame { width: 100%; border: 0; display: block; background: #050912; }
     .noc-shot .live-fallback { padding: 28px; color: var(--muted); }
     .noc-shot .live-fallback[hidden], .noc-shot .live-frame[hidden] { display: none; }
     .noc-shot .live-status { margin: 0; padding: 10px 14px; color: var(--muted); font-family: var(--mono); font-size: 0.78rem; }
+    .noc-shot .noc-badge {
+      display: inline-flex;
+      margin: 12px 14px 0;
+      padding: 5px 9px;
+      border: 1px solid rgba(0, 255, 150, 0.45);
+      border-radius: 999px;
+      color: #00ff96;
+      background: rgba(0, 255, 150, 0.08);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+    }
+    .noc-shot .noc-badge.is-stale { border-color: var(--border); color: var(--muted); background: rgba(143, 168, 200, 0.08); }
     .noc-copy p { color: var(--muted); }
 
     .experience-grid {
@@ -649,7 +661,7 @@
       html { scroll-behavior: auto; }
     }
   </style>
-  <script src="/noc/live-dashboard.js" defer></script>
+  <script src="/assets/live-dashboard.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -1069,8 +1081,9 @@
 
         <div class="noc-layout">
           <div class="noc-shot" data-public-noc>
+            <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
             <p class="live-status" data-live-status aria-live="polite">Checking the live NOC.</p>
-            <iframe class="live-frame" data-live-frame
+            <iframe class="live-frame" data-live-frame data-live-auto-height
               data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
               title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
             <div class="live-fallback" data-live-fallback hidden>
@@ -1079,7 +1092,7 @@
           </div>
           <div class="noc-copy">
             <p>
-              Twelve operational tiles report their worst current state and open public-safe drill-downs.
+              Operational tiles report their worst current state and open public drill-downs.
               Alert state, web consoles, backup freshness, certificate lifecycle, and subscription pacing
               are visible without exposing internal identifiers. A tile with no data renders grey.
               The page generator refuses to publish an overview when a dashboard is missing its domain
