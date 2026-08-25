@@ -312,10 +312,10 @@
           cause and pointed at the git server instead, either at the issue tracker being disabled on that
           repository or at a version older than the bot expects for that part of its API. It does not
           block anything.</p>
-        <p>And its pull requests carry no release notes. Renovate fetches changelogs from GitHub, and
-          this is a self-hosted, internal-only deployment with no GitHub credential configured, so it
-          cannot pull them. The version change and the diff are still there. It is a cosmetic gap with a
-          known fix that has not been judged worth the extra credential.</p>
+        <p>Its pull requests carry no release notes. Renovate normally fetches upstream changelogs, but
+          this self-hosted deployment has no credential for that service, so it cannot pull them. The
+          version change and the diff are still there. It is a cosmetic gap with a known fix that has not
+          been judged worth the extra credential.</p>
         <p>If it turns out to be flaky in practice, the plan is not to fight it. Suspend the schedule and
           fall back to the monthly manual sweep. That fallback being written down before it was needed is
           the reason adopting the bot was a low-risk decision rather than a bet.</p>
