@@ -2,8 +2,35 @@ import { chromium } from "playwright";
 
 const SITE_URL = "https://billgernert.com/noc/";
 const HOME_URL = "https://billgernert.com/";
+const MAP_URL = "https://billgernert.com/map/";
+const MAP_EMBED_URL = "https://billgernert.com/map/embed/";
 const STATUS_ORIGIN = "https://status.billgernert.com";
 const STATES = /\b(?:HEALTHY|DEGRADED|CRITICAL|NO SIGNAL)\b/;
+
+function frameAncestors(response) {
+  const csp = response.headers.get("Content-Security-Policy") || "";
+  return csp.split(";").map(part => part.trim()).find(part => part.startsWith("frame-ancestors ")) || "";
+}
+
+async function checkSiteFrameHeaders() {
+  const embedResponse = await fetch(MAP_EMBED_URL);
+  if (!embedResponse.ok || frameAncestors(embedResponse) !== "frame-ancestors 'self'") {
+    throw new Error("map embed does not allow same-origin framing");
+  }
+  if (embedResponse.headers.has("X-Frame-Options")) {
+    throw new Error("map embed still sends X-Frame-Options");
+  }
+
+  for (const url of [HOME_URL, MAP_URL, SITE_URL]) {
+    const response = await fetch(url);
+    if (!response.ok || frameAncestors(response) !== "frame-ancestors 'none'") {
+      throw new Error(url + " does not deny framing");
+    }
+    if ((response.headers.get("X-Frame-Options") || "").toUpperCase() !== "DENY") {
+      throw new Error(url + " does not send X-Frame-Options: DENY");
+    }
+  }
+}
 
 async function checkHealthContract() {
   const response = await fetch(STATUS_ORIGIN + "/healthz", {
@@ -55,6 +82,7 @@ async function checkEmbed() {
   }
 }
 
+await checkSiteFrameHeaders();
 await checkHealthContract();
 await checkEmbed();
 console.log("public NOC outside health and embed checks passed");
