@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live - Bill Gernert</title>
   <meta name="description" content="The public live view of Automation Lab: an interactive topology map, an architecture diagram, and the NOC entry point.">
@@ -204,7 +204,7 @@
       </ol>
       <!-- END generated: group-hub -->
       <section class="block" id="views">
-        <h2>Three views, three jobs</h2>
+        <h2>Three views, <!--LIVE:JOB_VIEW_COUNT:START-->3<!--LIVE:JOB_VIEW_COUNT:END--> jobs</h2>
         <p>Live is a hub because the three pages answer different questions. The map follows current
           health from the whole estate to an individual component. The diagram explains the intended
           structure. The NOC answers the glance question: what is being measured right now, and where

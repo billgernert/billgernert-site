@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Unattended Multi-Vendor Agent Fleet - Bill Gernert</title>
   <meta name="description" content="How the unattended agent fleet works today: written taskings, isolated git worktrees, cross-vendor review, 10-minute spawners, a 45-minute pickup guard, a four-hour deep cycle, PID locks, Gitea pull-request state, PAUSE, and deterministic merge gates.">
@@ -411,7 +411,7 @@ codex exec "$(cat tasking.md)"</code></pre>
           internal links, and free-form queries remain private. The dashboard below is a separate read-only
           model whose exact panels and query strings are enforced in CI.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live usage dashboard.</p>
-        <iframe class="live-frame" data-live-frame scrolling="yes"
+        <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
           title="Public ChatGPT and Claude subscription usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>
@@ -679,7 +679,7 @@ codex exec "$(cat tasking.md)"</code></pre>
 
       <section class="block" id="timing">
         <h2>The timing story is three clocks, not one cycle</h2>
-        <p>The old page over-centered one four-hour loop and one stale half-hour helper. The current model is three distinct clocks with three distinct jobs. First, the 10-minute spawner ticks on the Windows and Linux worker hosts start eligible workers or exit without invoking a model. Second, the pickup guard is meant to notice new signals and summon the tasking agent only after a 45-minute cooldown. Third, the deep cycle runs the tasking agent unconditionally every four hours as the quiet-period backstop.</p>
+        <p>The old page over-centered one four-hour loop and one stale half-hour helper. The current model is three distinct clocks with <!--LIVE:BUILDER_JOB_COUNT:START-->3<!--LIVE:BUILDER_JOB_COUNT:END--> distinct jobs. First, the 10-minute spawner ticks on the Windows and Linux worker hosts start eligible workers or exit without invoking a model. Second, the pickup guard is meant to notice new signals and summon the tasking agent only after a 45-minute cooldown. Third, the deep cycle runs the tasking agent unconditionally every four hours as the quiet-period backstop.</p>
         <p>Those clocks do not all have the same maturity. The spawner ticks and the four-hour deep cycle are real running machinery. The pickup-guard script and its cooldown are committed, but that path is mid-change: its watched signals still refer to the retired report-file transport, so this page treats the guard as a blocked transition rather than silently calling it fully current.</p>
 
         <h3 class="eyebrow">What a spawner checks before starting a worker</h3>

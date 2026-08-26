@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GitOps with Argo CD - Bill Gernert</title>
   <meta name="description" content="How GitOps actually works in this lab: Argo CD tracks eight service directories from git, reports drift, and deliberately changes nothing until a person syncs. Includes the live drift demo, the full path a code change travels, the failure modes, and the parts of the cluster Argo CD does not manage.">
@@ -443,7 +443,7 @@
           purpose. Pod hashes, namespaces, nodes, images, addresses, and management links are removed
           before the dashboard can query the data.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live Kubernetes dashboard.</p>
-        <iframe class="live-frame" data-live-frame scrolling="yes"
+        <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126"
           title="Public Kubernetes dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>

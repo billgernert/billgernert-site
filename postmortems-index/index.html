@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Postmortems - Bill Gernert</title>
   <meta name="description" content="Three infrastructure incidents from the lab, written up honestly: a backup datastore that corrupted itself when thin provisioning hit its cap, a one-word commit message that silently switched off all CI for a pull request, and a build-toolchain vulnerability caught and fixed in the pipeline.">
@@ -217,7 +217,7 @@
         <h2>The commit that switched off CI</h2>
         <p>A pull request went green with no failures. It went green because nothing ran. A single control
           token in the commit message told the automation to skip scheduling its workflows, and instead of
-          skipping one noisy job it suppressed every check for that pull request. The pull request looked
+          skipping <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> noisy job it suppressed every check for that pull request. The pull request looked
           clean because none of the checks that would have failed it had executed at all.</p>
         <p>This is the most dangerous shape a CI failure can take, because it does not look like a failure. A
           red build tells you something is wrong. A build that silently did not run looks identical to a build
@@ -290,7 +290,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-13</p>
+      <p class="verified-line">Verified against the lab on 2026-08-25</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

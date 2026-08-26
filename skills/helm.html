@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <script defer src="/assets/skill-diagrams.js"></script>
@@ -135,11 +136,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Helm - Engineering capabilities - Bill Gernert</title>
   <meta name="description" content="How I use Helm in AutomationLab - packaged, versioned, parameterized releases, and the upgrade and values gotchas that bite when you assume it merges like you would.">
@@ -150,7 +150,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/helm.html">
+  <link rel="canonical" href="https://billgernert.com/skills/helm">
   <!-- END generated: canonical -->
 </head>
 <body>
@@ -248,7 +248,7 @@
           not necessarily deleted - it can linger as an orphan that the release no longer manages
           but the cluster still runs. "I took it out of the chart" is not the same as "it is gone."
           Second: when you override values, Helm deep-merges <b>maps</b> but <b>replaces lists
-          wholesale</b> - supply a one-item array and you do not add to the default list, you
+          wholesale</b> - supply a <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END-->-item array and you do not add to the default list, you
           replace all of it. Both come from assuming Helm merges the way you would in your head; it
           has its own rules, and you have to render and check rather than trust your intuition.
         </div>

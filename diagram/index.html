@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,14 +135,13 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lab diagram - Bill Gernert</title>
-  <meta name="description" content="The AutomationLab architecture: a five-node Proxmox HA cluster, four segmented networks, a K3s cluster and its workloads, the platform services, identity, backup, and the edge. Click any region for what it does and why.">
+  <meta name="description" content="The AutomationLab architecture: a <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox HA cluster, four segmented networks, a K3s cluster and its workloads, the platform services, identity, backup, and the edge. Click any region for what it does and why.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -225,7 +225,7 @@
         <div class="flow">&#8595;</div>
 
         <div class="tier">
-          <div class="tier-label">Compute - five-node Proxmox HA cluster</div>
+          <div class="tier-label">Compute - <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox HA cluster</div>
           <div class="tier-row">
             <a class="dnode" href="#compute"><span class="dnode-name">Node x5</span><span class="dnode-role">HA cluster; a guest can move between them</span></a>
             <a class="dnode" href="#compute"><span class="dnode-name">Templates</span><span class="dnode-role">rebuilt weekly, never patched in place</span></a>
@@ -236,7 +236,7 @@
         <div class="flow">&#8595;</div>
 
         <div class="tier">
-          <div class="tier-label">Kubernetes - K3s, one control node + two workers</div>
+          <div class="tier-label">Kubernetes - K3s, <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node + two workers</div>
           <div class="tier-row">
             <a class="dnode" href="#kubernetes"><span class="dnode-name">Control</span><span class="dnode-role">API + scheduler</span></a>
             <a class="dnode" href="#kubernetes"><span class="dnode-name">Worker x2</span><span class="dnode-role">where the work runs</span></a>
@@ -301,7 +301,7 @@
 
         <div class="region-card" id="certs">
           <h3>Certificates</h3>
-          <p>Two certificate stories, on purpose. Public hostnames get a wildcard certificate issued
+          <p><!--LIVE:CERTIFICATE_STORY_COUNT:START-->2<!--LIVE:CERTIFICATE_STORY_COUNT:END--> certificate stories, on purpose. Public hostnames get a wildcard certificate issued
             automatically against a DNS challenge and renewed without anyone remembering to. Internal
             services that no public authority should ever vouch for get theirs from an internal
             certificate authority instead. The interesting part of running a CA is not issuing, it is
@@ -330,7 +330,7 @@
 
         <div class="region-card" id="topology">
           <h3>Topology</h3>
-          <p>This is the wiring under every region above: egress, the switch, and the five nodes.
+          <p>This is the wiring under every region above: egress, the switch, and the <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes.
             Traffic gets in through a tunnel that dials out from inside the lab, so the firewall has no
             open inbound ports. Below the firewall it is one switch, five small machines, and two NAS
             boxes. Cyan boxes link to the page that covers them.</p>
@@ -402,7 +402,7 @@
               <text class="topo-t" x="150" y="545" text-anchor="middle">Infrastructure</text>
               <text class="topo-s" x="150" y="565" text-anchor="middle">platform services</text>
             </g></a>
-            <g class="topo-node"><title>The k3s cluster: one control node, two workers.</title>
+            <g class="topo-node"><title>The k3s cluster: <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node, two workers.</title>
               <rect x="260" y="520" width="180" height="64"/>
               <text class="topo-t" x="350" y="545" text-anchor="middle">Kubernetes</text>
               <text class="topo-s" x="350" y="565" text-anchor="middle">k3s cluster</text>
@@ -436,7 +436,7 @@
 
         <div class="region-card" id="compute">
           <h3>Compute</h3>
-          <p>Five nodes in a high-availability cluster, so a guest is not welded to the machine it
+          <p><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes in a high-availability cluster, so a guest is not welded to the machine it
             happens to be running on. Two build paths sit on top: Windows clones a template that a
             weekly pipeline rebuilds from scratch (patching a golden image is a fiction, rebuilding it
             is not), and Linux boots a shared cloud image with no golden-template dependency at all.
@@ -450,7 +450,7 @@
 
         <div class="region-card" id="kubernetes">
           <h3>Kubernetes</h3>
-          <p>A K3s cluster: one control node, two workers. It is where the platform's own software
+          <p>A K3s cluster: <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node, two workers. It is where the platform's own software
             runs, which is the part people usually leave out of a homelab picture. CI, GitOps
             reconciliation, image builds, dependency updates, the AI gateway, and the metrics stack are
             all workloads here, not pets on a VM somewhere.</p>
@@ -598,7 +598,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-13</p>
+      <p class="verified-line">Verified against the lab on 2026-08-25</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

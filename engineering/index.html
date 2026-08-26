@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Engineering - Bill Gernert</title>
   <meta name="description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, the AI and Claude Code pages, and the observability surfaces that show what is measured.">
@@ -207,7 +207,7 @@
       <!-- END generated: group-hub -->
       <section class="block" id="architecture">
         <h2>Architecture</h2>
-        <p>The diagram page is the map. It shows the edge, the segmented network, the five-node compute
+        <p>The diagram page is the map. It shows the edge, the segmented network, the <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node compute
           layer, Kubernetes, the systems that hold the truth, and the identity and backup layers
           underneath them. Every clickable region on that page fans out to the page that explains the
           subsystem it names, so it is the fastest way to get the whole lab onto one screen.</p>
@@ -301,7 +301,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-22</p>
+      <p class="verified-line">Verified against the lab on 2026-08-25</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

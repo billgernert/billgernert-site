@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Everything as code - Bill Gernert</title>
   <meta name="description" content="Every job in the lab is defined in one seed file, not clicked together in a web console. Generated files are never hand-edited. And a job's schedule is proven the moment it is created, after a bug where a seeded job had no trigger at all.">
@@ -202,7 +202,7 @@
 
       <section class="block">
         <h2>The seed file is the source of truth</h2>
-        <p>All the jobs are declared in one place, a seed definition that lists each job with its parameters and
+        <p><!--LIVE:JENKINS_JOB_COUNT:START-->50<!--LIVE:JENKINS_JOB_COUNT:END--> jobs are declared in one place, a seed definition that lists each job with its parameters and
           its schedule. A small tool reads that file and creates or updates the real jobs to match. If you want
           a new job you add it to the file and let the tool build it. You do not build it by hand and then try
           to remember to write it down. The important part is that the parameters and the trigger are declared
@@ -257,7 +257,7 @@
           under descriptive job names, completed-build activity, and duration. Build numbers, console
           output, users, parameters, repository links, and Jenkins management URLs stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live delivery dashboard.</p>
-        <iframe class="live-frame" data-live-frame scrolling="yes"
+        <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/95dabf6aa1884d4981c4a38ee9c7f910"
           title="Public delivery pipelines dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>

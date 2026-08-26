@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The NOC hub - Bill Gernert</title>
   <meta name="description" content="A live public NOC with interactive operational views, infrastructure detail, and subscription usage pacing, with no-data never shown as healthy.">
@@ -215,12 +215,12 @@
     <div class="skill-body">
       <section class="block" id="live" data-public-noc>
         <h2>Live status board</h2>
-        <p>One screen you can glance at and know whether the estate is healthy. One tile per operational view, each reduced to one of four states before it leaves the monitoring system: HEALTHY, DEGRADED, CRITICAL, or NO SIGNAL. Every tile is a door. Click one and the domain's public overview opens, so the hub is the starting point and the detail is one click away.</p>
+        <p>One screen you can glance at and know whether the estate is healthy. <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> tile per operational view, each reduced to one of four states before it leaves the monitoring system: HEALTHY, DEGRADED, CRITICAL, or NO SIGNAL. Every tile is a door. Click one and the domain's public overview opens, so the hub is the starting point and the detail is one click away.</p>
         <p>The board updates on its own. The badge above it reports whether the public monitoring route answered on the last check and how long ago. If the route fails, the badge says so and the page keeps the last state it received rather than pretending.</p>
         <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
         <p class="links"><a href="/noc/" data-live-home>&larr; Back to NOC overview</a></p>
-        <iframe class="live-frame" data-live-frame scrolling="yes"
+        <iframe class="live-frame" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
           title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>
@@ -232,7 +232,7 @@
 
       <section class="block" id="tiles">
         <h2>The tiles, and what grey means</h2>
-        <p>One tile per operational view, each coloured by the worst severity in that view: green is healthy,
+        <p><!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> tile per operational view, each coloured by the worst severity in that view: green is healthy,
           amber and red escalate, and grey means no data. Grey is the honest one. Some domains are not fully
           wired yet, so their tiles are grey today, and the page says that plainly rather than hiding it. That
           matters because of a rule the hub enforces: a tile with no data must never render green. A green
@@ -262,7 +262,7 @@
           view shows node state, guest capacity, and resource trends under stable aliases.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live Infrastructure dashboard.</p>
         <p class="links"><a href="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66">Open Infrastructure full screen &#8594;</a></p>
-        <iframe class="live-frame detail" data-live-frame scrolling="yes"
+        <iframe class="live-frame detail" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
           title="Public Infrastructure live dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden><strong>Infrastructure view offline.</strong>
@@ -276,7 +276,7 @@
           capacity and the time-based ideal line.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live subscription usage dashboard.</p>
         <p class="links"><a href="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d">Open usage full screen &#8594;</a></p>
-        <iframe class="live-frame detail" data-live-frame scrolling="yes"
+        <iframe class="live-frame detail" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
           title="Public ChatGPT and Claude live usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden><strong>Usage view offline.</strong></div>
@@ -288,7 +288,7 @@
           is generated from the backlog, and the generator is the enforcement point. It fails the build if a
           domain is missing its tag or if a domain has no single primary dashboard to link to, a drift check
           in CI catches a hub that has fallen out of step, and a nightly job reconciles it against what Grafana
-          is actually serving. That is what keeps the no-data-never-green rule and the one-tile-per-domain
+          is actually serving. That is what keeps the no-data-never-green rule and the <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END-->-tile-per-domain
           shape true over time, rather than true on the day it was built. A hand-maintained wall drifts; a
           generated one that fails its own checks does not.</p>
       </section>

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Proving the backups restore - Bill Gernert</title>
   <meta name="description" content="How a weekly Jenkins pipeline restores rotating protected VMs from two Proxmox Backup Server datastores, verifies the guest, and confirms teardown.">
@@ -187,6 +187,7 @@
         a VM boots, its filesystem mounts, or its service starts. I built a weekly Jenkins pipeline that
         selects the next protected guest, restores it from both backup datastores into a fenced scratch VM,
         tests the restored operating system, and removes the copy.</p>
+      <p class="descriptor">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> &middot; <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--></p>
     </header>
 
     <div class="skill-body">
@@ -314,7 +315,7 @@
           and the weekly recovery-test outcome. Guest and datastore names are descriptive aliases;
           infrastructure identifiers and management links stay private.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live backup dashboard.</p>
-        <iframe class="live-frame live-frame-tall" data-live-frame scrolling="yes"
+        <iframe class="live-frame live-frame-tall" data-live-frame
           data-src="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328"
           title="Public backups and recovery dashboard" referrerpolicy="no-referrer" hidden></iframe>
         <div class="live-fallback" data-live-fallback hidden>

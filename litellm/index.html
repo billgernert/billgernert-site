@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
   <style>
@@ -134,11 +135,10 @@
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(0, 212, 255, 0.14);
   }
   @media (prefers-reduced-motion: reduce) {
-    html.m-on :is(.site-header, .hero .logo, .hero .eyebrow, .hero h1, .hero .hero-lede, .hero .hero-copy, .hero .actions, .proof, .section-heading .section-label, .section-heading h2, .section-heading .section-intro, .fleet-figure, .fleet-notes, .incident, .lifecycle-step, .split-copy > div:first-child, .split-copy > div:last-child, .provision-table caption, .provision-table tr, .measurement, .recovery-copy, .project-row, .noc-shot, .noc-copy, .experience-item:nth-child(1), .experience-item:nth-child(2), .capability, .section > .actions, .crumbs, .skill-head, .descriptor, .stats, .stat, .skill-card, .block, .callout, .note, .frame, .legend, main figure, main aside, main table tr, .links, footer), html.m-on .m-in { opacity: 1; animation: none; transform: none; }
+    html.m-on [data-m-set="1"], html.m-on .m-in { opacity: 1; animation: none; transform: none; }
   }
   </style>
   <!-- END generated: motion -->
-  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Putting a hard ceiling on AI spending - Bill Gernert</title>
   <meta name="description" content="Several jobs in this lab call language models on a schedule, which is a bill that grows while nobody is watching. One gateway now fronts every model, with three independent budget layers and a fixed 50 dollar monthly ceiling. This page covers the layering, and the metrics finding that broke the first dashboard.">
@@ -184,7 +184,7 @@
       <h1>Putting a hard ceiling on AI spending</h1>
       <p class="descriptor">Several jobs in this lab call a language model on a schedule, without an operator
         in the loop. That is a bill that grows while nobody is watching, and the failure mode is not a
-        crash, it is an invoice. Every one of those jobs now goes through a single gateway with three
+        crash, it is an invoice. Every <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> of those jobs now goes through a single gateway with three
         independent spending limits stacked behind it: a <strong>50 dollar monthly ceiling across
         everything</strong>, a per-job allowance under it, and each job's own credit gate as the
         innermost backstop. The ceiling and the callbacks enforcing it were verified against the running
@@ -377,7 +377,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-15</p>
+      <p class="verified-line">Verified against the lab on 2026-08-25</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
