@@ -580,11 +580,11 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
-      background: var(--border);
+      background: transparent;
     }
     .capability {
       padding: 24px;
-      background: var(--card);
+      background: #0a0e1a;
     }
     .capability:last-child { grid-column: 1 / -1; }
     .capability h3 {
@@ -596,9 +596,10 @@
       letter-spacing: 1.2px;
       text-transform: uppercase;
     }
+    .capability h3 a { color: #fff; }
     .capability p {
       margin: 0;
-      color: var(--muted);
+      color: var(--fg);
       font-size: 0.94rem;
     }
 
