@@ -107,6 +107,9 @@ def _redirect_target_file(root, route):
     candidate = os.path.abspath(os.path.join(root, route.lstrip("/")))
     if route.endswith("/") or os.path.isdir(candidate):
         candidate = os.path.join(candidate, "index.html")
+    elif not os.path.isfile(candidate) and os.path.isfile(candidate + ".html"):
+        # Cloudflare Pages clean URLs serve /name from the committed name.html document.
+        candidate += ".html"
     root_real = os.path.realpath(root)
     candidate_real = os.path.realpath(candidate)
     try:
@@ -245,6 +248,8 @@ def main():
             # A directory link (trailing slash, or a real directory) serves its index.html.
             if target_path.endswith("/") or os.path.isdir(abs_target):
                 abs_target = os.path.join(abs_target, "index.html")
+            elif not os.path.exists(abs_target) and os.path.isfile(abs_target + ".html"):
+                abs_target += ".html"
             checked += 1
             if not os.path.exists(abs_target):
                 redirect_source = target_path if target_path.startswith("/") else None
