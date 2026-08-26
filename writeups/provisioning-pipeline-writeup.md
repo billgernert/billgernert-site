@@ -1,6 +1,6 @@
 # The Self-Service Server Build Pipeline
 
-*One click to provision a fully configured, monitored, domain-joined VM from nothing, and cleanly tear it back down.*
+*Submit a pull request and the pipeline turns it into a fully configured, monitored, domain-joined running server, with a clean teardown path.*
 
 ---
 

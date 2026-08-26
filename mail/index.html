@@ -348,8 +348,8 @@
           domain publish several keys at once and rotate them without an outage. Two selectors are
           published for this domain, and rather than holding the key text directly they point at the
           sending relay's own published keys:</p>
-        <pre><code>brevo1._domainkey  ->  b1.parsec-lab-com.dkim.brevo.com
-brevo2._domainkey  ->  b2.parsec-lab-com.dkim.brevo.com</code></pre>
+        <pre><code>brevo1._domainkey  ->  b1.example.invalid
+brevo2._domainkey  ->  b2.example.invalid</code></pre>
         <p>That pointer arrangement is deliberate and it is the normal pattern when a relay signs on your
           behalf. The relay holds the private key and rotates it on its own schedule; because the domain
           publishes a pointer rather than a copy, the rotation happens without anyone editing this domain's

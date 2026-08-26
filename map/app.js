@@ -246,7 +246,7 @@
     setDetail("detail-network", details.network || details.meaning || "No network detail");
     const admin = document.getElementById("detail-admin"); const noAdmin = document.getElementById("detail-no-admin");
     let adminUrl = null;
-    try { const candidate = new URL(node.admin_url); if (candidate.protocol === "https:" && candidate.hostname.endsWith(".parsec-lab.com")) adminUrl = candidate.href; } catch (_reason) { adminUrl = null; }
+    try { const candidate = new URL(node.admin_url); if (candidate.protocol === "https:" && candidate.hostname.endsWith(".automationlab.internal")) adminUrl = candidate.href; } catch (_reason) { adminUrl = null; }
     admin.hidden = !adminUrl; noAdmin.hidden = Boolean(adminUrl); if (adminUrl) admin.href = adminUrl;
     const panel = document.getElementById("alerts-panel"); const list = document.getElementById("alerts-list"); const toggle = document.getElementById("alerts-toggle"); list.replaceChildren();
     const alerts = node.alerts || []; panel.hidden = alerts.length === 0;
