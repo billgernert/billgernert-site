@@ -549,7 +549,8 @@
     .live-two { display: grid; gap: 30px; margin-top: 30px; }
     .live-panel { width: 100%; }
     .map-embed { margin: 0; }
-    .map-embed-frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 1px solid var(--border); border-radius: 10px; background: #050912; }
+    .map-frame-shell { position: relative; width: 100%; height: 0; padding-top: 62.5%; }
+    .map-embed-frame { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: block; width: 100%; height: 100%; border: 1px solid var(--border); border-radius: 10px; background: #050912; }
 
     .experience-grid {
       display: grid;
@@ -660,7 +661,7 @@
       .hero-career-stats .proof { border-right: 0; border-bottom: 1px solid var(--border-quiet); }
       .hero-career-stats .proof:last-child { border-bottom: 0; }
       .capability:last-child { grid-column: auto; }
-      .map-embed-frame { aspect-ratio: 4 / 5; }
+      .map-frame-shell { padding-top: 125%; }
       .proof { min-height: auto; padding: 16px 0; border-right: 0; border-bottom: 1px solid var(--border-quiet); }
       .proof:last-child { border-bottom: 0; }
       .section { padding: 58px 0; }
@@ -736,10 +737,10 @@
             <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
             <p class="live-status" data-live-status aria-live="polite">Checking the live NOC.</p>
             <p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any tile to drill into that domain's live dashboard.">Click any tile to drill into that domain's live dashboard.</p>
-            <iframe class="live-frame" data-live-frame data-dashboard-rows="28" scrolling="no" data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
+            <iframe class="live-frame" data-live-frame data-dashboard-rows="28" data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
             <div class="live-fallback" data-live-fallback hidden>The live board is temporarily unavailable. The public site remains independent of the lab.</div>
           </div>
-          <div class="live-panel map-embed"><p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any node to drill into it. Tap again to open the next layer.">Click any node to drill into it. Click again to open the next layer.</p><iframe class="map-embed-frame" data-map-frame src="/map/embed/" loading="lazy" scrolling="no" title="Interactive live topology map"></iframe></div>
+          <div class="live-panel map-embed"><p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any node to drill into it. Tap again to open the next layer.">Click any node to drill into it. Click again to open the next layer.</p><div class="map-frame-shell"><iframe class="map-embed-frame" data-map-frame src="/map/embed/" loading="lazy" title="Interactive live topology map"></iframe></div></div>
         </div>
         <div class="actions"><a class="button" href="/noc/">Open the NOC</a><a class="button" href="/map/">Open the map</a></div>
       </section>

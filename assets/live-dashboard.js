@@ -36,7 +36,6 @@
       shell.style.overflow = "hidden";
       frame.parentNode.insertBefore(shell, frame);
       shell.appendChild(frame);
-      frame.setAttribute("scrolling", "no");
       frame.style.position = "absolute";
       frame.style.inset = "0 auto auto 0";
       frame.style.width = DASHBOARD_WIDTH + "px";
@@ -59,7 +58,6 @@
         show: function () { shell.hidden = false; frame.hidden = false; resize(); }
       };
     }
-    frame.setAttribute("scrolling", "yes");
     return {
       hide: function () {
         frame.hidden = true;
