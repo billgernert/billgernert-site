@@ -77,7 +77,7 @@
         return;
       }
       if (routeIsLive) {
-        connection.badge.textContent = "Live, checked " + Math.floor(elapsed / 1000) + "s ago";
+        connection.badge.textContent = "Live and interactive, checked " + Math.floor(elapsed / 1000) + "s ago";
         connection.badge.classList.add("is-live");
         connection.badge.classList.remove("is-stale");
       } else {
@@ -87,6 +87,12 @@
       }
     });
   }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-interaction-cue]"), function (cue) {
+    if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
+      cue.textContent = cue.getAttribute("data-touch-text");
+    }
+  });
 
   function connect(root) {
     var frame = root.querySelector("[data-live-frame]");

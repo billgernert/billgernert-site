@@ -532,7 +532,8 @@
     .noc-shot .live-fallback { padding: 28px; color: var(--muted); }
     .noc-shot .live-fallback[hidden], .noc-shot .live-frame[hidden] { display: none; }
     .noc-shot .live-status { margin: 0; padding: 10px 14px; color: var(--muted); font-family: var(--mono); font-size: 0.78rem; }
-    .noc-shot .noc-badge {
+    .noc-shot .noc-badge,
+    .map-embed .noc-badge {
       display: inline-flex;
       margin: 12px 14px 0;
       padding: 5px 9px;
@@ -547,9 +548,8 @@
     .noc-copy p { color: var(--muted); }
     .live-two { display: grid; gap: 30px; margin-top: 30px; }
     .live-panel { width: 100%; }
-    .map-still { margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #050912; }
-    .map-still a { display: block; }
-    .map-still img { display: block; width: 100%; height: auto; }
+    .map-embed { margin: 0; }
+    .map-embed-frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 1px solid var(--border); border-radius: 10px; background: #050912; }
 
     .experience-grid {
       display: grid;
@@ -660,6 +660,7 @@
       .hero-career-stats .proof { border-right: 0; border-bottom: 1px solid var(--border-quiet); }
       .hero-career-stats .proof:last-child { border-bottom: 0; }
       .capability:last-child { grid-column: auto; }
+      .map-embed-frame { aspect-ratio: 4 / 5; }
       .proof { min-height: auto; padding: 16px 0; border-right: 0; border-bottom: 1px solid var(--border-quiet); }
       .proof:last-child { border-bottom: 0; }
       .section { padding: 58px 0; }
@@ -720,12 +721,6 @@
         <p class="eyebrow">Platform and infrastructure engineer · Denver, Colorado</p>
         <h1>I build infrastructure that runs without someone watching it.</h1>
         <p class="hero-lede">Fifteen years of Windows and Linux infrastructure in higher education and county government. In 2026 I moved to platform engineering on purpose. AutomationLab is the platform I built to do it properly: servers from a pull request, certificates and secrets renewed before they expire, backups restored every week to prove they work.</p>
-        <p class="eyebrow">Before the lab, in three numbers</p>
-        <div class="proof-strip hero-career-stats" aria-label="Career results">
-          <div class="proof"><b>20 to 135</b><span>Jenkins jobs, from a folder of scripts to a platform</span></div>
-          <div class="proof"><b>200+</b><span>unused service accounts removed, the rest rotated and documented</span></div>
-          <div class="proof"><b>1,000 VMs</b><span>the VMware estate I operated</span></div>
-        </div>
         <p class="hero-copy">Looking for a platform or infrastructure automation role at a hybrid Windows and Linux shop moving to Kubernetes and infrastructure as code. Reach me on LinkedIn.</p>
         <div class="actions"><a class="button primary" href="/projects/server-provisioning/">Server provisioning</a><a class="button" href="/projects/certificate-secret-renewal/">Certificate renewal</a></div>
       </header>
@@ -734,16 +729,17 @@
         <div class="section-heading">
           <p class="section-label">Live, two ways</p>
           <h2>The lab is running right now. Here are two ways to look at it.</h2>
-          <p class="section-intro">The NOC is the operator's view. Every tile is one operational domain reduced to its worst current state, and every tile opens its own live dashboard. The map is the system's view. More than <!--LIVE:MAP_COMPONENT_COUNT:START-->600<!--LIVE:MAP_COMPONENT_COUNT:END--> components in one radial drill-down, colored by health, fed from the running lab. Both are the sanitized public projection: hostnames, addresses and admin links are removed before the data leaves the lab, and the NOC page explains exactly what that costs.</p>
+          <p class="section-intro">The NOC is the operator's view. Every tile is one operational domain reduced to its worst current state, and click any tile and its own live dashboard opens. The map is the system's view. More than <!--LIVE:MAP_COMPONENT_COUNT:START-->600<!--LIVE:MAP_COMPONENT_COUNT:END--> components in one radial map you drill into node by node, colored by health, fed from the running lab. Both are the sanitized public projection: hostnames, addresses and admin links are removed before the data leaves the lab, and the NOC page explains exactly what that costs.</p>
         </div>
         <div class="live-two">
           <div class="live-panel noc-shot" data-public-noc>
             <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
             <p class="live-status" data-live-status aria-live="polite">Checking the live NOC.</p>
+            <p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any tile to drill into that domain's live dashboard.">Click any tile to drill into that domain's live dashboard.</p>
             <iframe class="live-frame" data-live-frame data-dashboard-rows="28" scrolling="no" data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
             <div class="live-fallback" data-live-fallback hidden>The live board is temporarily unavailable. The public site remains independent of the lab.</div>
           </div>
-          <figure class="live-panel map-still"><a href="/map/"><img src="/map/img/topology-map.png" alt="Live topology map, captured at publish"></a><figcaption><a href="/map/">Live topology map, open it.</a></figcaption></figure>
+          <div class="live-panel map-embed"><p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any node to drill into it. Tap again to open the next layer.">Click any node to drill into it. Click again to open the next layer.</p><iframe class="map-embed-frame" data-map-frame src="/map/embed/" loading="lazy" scrolling="no" title="Interactive live topology map"></iframe></div>
         </div>
         <div class="actions"><a class="button" href="/noc/">Open the NOC</a><a class="button" href="/map/">Open the map</a></div>
       </section>
@@ -773,13 +769,13 @@
 
         <div class="section-heading capability-heading"><h3>Tools I use to build, secure, and operate systems</h3></div>
         <div class="capabilities-grid">
-          <article class="capability"><h3><a href="/skills/terraform.html">Cloud &amp; IaC</a></h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
-          <article class="capability"><h3><a href="/skills/jenkins.html">CI/CD &amp; GitOps</a></h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
-          <article class="capability"><h3><a href="/skills/kubernetes-k3s.html">Containers &amp; orchestration</a></h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
-          <article class="capability"><h3><a href="/skills/python-tooling.html">Languages &amp; APIs</a></h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
-          <article class="capability"><h3><a href="/skills/active-directory.html">Identity &amp; security</a></h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
-          <article class="capability"><h3><a href="/skills/zabbix.html">Observability</a></h3><p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p></article>
-          <article class="capability"><h3><a href="/skills/proxmox.html">Virtualization &amp; network</a></h3><p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/terraform.html">Cloud &amp; IaC</a></h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/jenkins.html">CI/CD &amp; GitOps</a></h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/kubernetes-k3s.html">Containers &amp; orchestration</a></h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/python-tooling.html">Languages &amp; APIs</a></h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/active-directory.html">Identity &amp; security</a></h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/zabbix.html">Observability</a></h3><p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p></article>
+          <article class="capability experience-item"><h3><a href="/skills/proxmox.html">Virtualization &amp; network</a></h3><p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p></article>
         </div>
 
         <div class="section-heading more-lab-heading"><h3>More from the lab</h3></div>

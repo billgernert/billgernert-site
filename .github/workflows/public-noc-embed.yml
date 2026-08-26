@@ -1,7 +1,6 @@
 name: public-noc-outside
 
 on:
-  push:
   workflow_dispatch:
   schedule:
     - cron: '17,47 * * * *'
@@ -21,31 +20,3 @@ jobs:
         run: npm install --no-save --ignore-scripts playwright@1.55.0
       - name: Check the health contract and rendered NOC frame
         run: node .github/scripts/check-public-noc-embed.mjs
-
-  capture-map:
-    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    container:
-      image: mcr.microsoft.com/playwright:v1.55.0-noble
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - name: Install the pinned Playwright client
-        run: npm install --no-save --ignore-scripts playwright@1.55.0
-      - name: Capture the live topology map
-        run: node .github/scripts/capture-public-topology-map.mjs map/img/topology-map.png
-      - name: Commit the publish capture
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add map/img/topology-map.png
-          if git diff --cached --quiet; then
-            echo "map capture is unchanged"
-            exit 0
-          fi
-          git commit -m "site: refresh publish topology capture"
-          git pull --rebase origin main
-          git push origin HEAD:main

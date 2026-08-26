@@ -8,7 +8,7 @@
   const topologyEndpoint = endpointMeta?.content ||
     (publicView ? "/api/v1/public-topology" : "/api/v1/topology");
   const snapshotCacheKey = publicView ? "automation-lab-public-topology-v1" : null;
-  const state = { snapshot: null, byId: new Map(), focus: null, path: [], selected: null, scale: 1, x: 0, y: 0, dragging: false };
+  const state = { snapshot: null, byId: new Map(), focus: null, path: [], selected: null, scale: 1, x: 0, y: 0, dragging: false, routeLive: false };
   const NS = "http://www.w3.org/2000/svg";
   const ICONS = {
     lab: "brand", network: "network", compute: "server", kubernetes: "kubernetes",
@@ -27,11 +27,14 @@
 
   if (publicView) {
     if (!endpointMeta) document.title = "AutomationLab public map";
-    document.getElementById("map-eyebrow").textContent = "PUBLIC LIVE TOPOLOGY";
-    document.getElementById("map-heading").textContent = "AutomationLab public map";
-    document.getElementById("legend-source").textContent = "Live telemetry · sanitized public projection";
-    document.querySelector(".detail-action").hidden = true;
+    const eyebrow = document.getElementById("map-eyebrow"); if (eyebrow) eyebrow.textContent = "PUBLIC LIVE TOPOLOGY";
+    const heading = document.getElementById("map-heading"); if (heading) heading.textContent = "AutomationLab public map";
+    const source = document.getElementById("legend-source"); if (source) source.textContent = "Live telemetry · sanitized public projection";
+    const detailAction = document.querySelector(".detail-action"); if (detailAction) detailAction.hidden = true;
   }
+  Array.from(document.querySelectorAll("[data-interaction-cue]")).forEach(cue => {
+    if (window.matchMedia?.("(pointer: coarse)").matches) cue.textContent = cue.dataset.touchText;
+  });
 
   function iconForNode(node) {
     if (ICONS[node.id]) return ICONS[node.id];
@@ -248,7 +251,9 @@
     let adminUrl = null;
     try { const candidate = new URL(node.admin_url); if (candidate.protocol === "https:" && candidate.hostname.endsWith(".parsec-lab.com")) adminUrl = candidate.href; } catch (_reason) { adminUrl = null; }
     admin.hidden = !adminUrl; noAdmin.hidden = Boolean(adminUrl); if (adminUrl) admin.href = adminUrl;
-    const panel = document.getElementById("alerts-panel"); const list = document.getElementById("alerts-list"); const toggle = document.getElementById("alerts-toggle"); list.replaceChildren();
+    const panel = document.getElementById("alerts-panel"); const list = document.getElementById("alerts-list"); const toggle = document.getElementById("alerts-toggle");
+    if (!panel || !list || !toggle) return;
+    list.replaceChildren();
     const alerts = node.alerts || []; panel.hidden = alerts.length === 0;
     document.getElementById("alerts-heading").textContent = `Alerts · ${alerts.length}`;
     let expanded = false;
@@ -264,7 +269,7 @@
     toggle.onclick = () => { expanded = !expanded; renderAlerts(); }; renderAlerts();
   }
   function renderBreadcrumbs() {
-    const host = document.getElementById("breadcrumbs"); host.replaceChildren();
+    const host = document.getElementById("breadcrumbs"); if (!host) return; host.replaceChildren();
     state.path.forEach((id, index) => {
       if (index) { const separator = document.createElement("span"); separator.textContent = "›"; host.appendChild(separator); }
       const node = nodeById(id); const button = document.createElement("button"); button.type = "button"; button.textContent = node.name;
@@ -301,8 +306,9 @@
         try { window.localStorage.setItem(snapshotCacheKey, JSON.stringify(snapshot)); } catch (_reason) { /* cache is best effort */ }
       }
       if (!state.focus || !state.byId.has(state.focus)) { state.focus = snapshot.root; state.path = [snapshot.root]; state.selected = snapshot.root; }
-      document.getElementById("mode-badge").textContent = publicView ? (snapshot.degraded ? "PUBLIC · DEGRADED" : "PUBLIC · LIVE") : snapshot.mode === "demo" ? "DEMO DATA" : snapshot.degraded ? "LIVE · DEGRADED" : "LIVE";
-      document.getElementById("updated").textContent = `Updated ${new Date(snapshot.generated_at).toLocaleTimeString()}`; error.hidden = true; render();
+      state.routeLive = true; updateMapBadge();
+      const updated = document.getElementById("updated"); if (updated) updated.textContent = `Updated ${new Date(snapshot.generated_at).toLocaleTimeString()}`;
+      if (error) error.hidden = true; render();
     } catch (reason) {
       let restored = false;
       if (snapshotCacheKey && !state.snapshot) {
@@ -317,9 +323,21 @@
       }
       const hasLastKnown = Boolean(state.snapshot);
       const cachedAt = hasLastKnown ? ` Last known state is from ${new Date(state.snapshot.generated_at).toLocaleString()}.` : "";
-      error.textContent = `Live map unavailable: ${reason.message}.${cachedAt || " No last known state is available."}`; error.hidden = false;
-      if (hasLastKnown) document.getElementById("updated").textContent = `Last known ${new Date(state.snapshot.generated_at).toLocaleString()}`;
-      document.getElementById("mode-badge").textContent = restored || state.snapshot ? "OFFLINE · LAST KNOWN" : "OFFLINE";
+      state.routeLive = false;
+      if (error) { error.textContent = `Live map unavailable: ${reason.message}.${cachedAt || " No last known state is available."}`; error.hidden = false; }
+      const updated = document.getElementById("updated"); if (hasLastKnown && updated) updated.textContent = `Last known ${new Date(state.snapshot.generated_at).toLocaleString()}`;
+      updateMapBadge(restored);
+    }
+  }
+  function updateMapBadge(restored = false) {
+    const badge = document.getElementById("mode-badge"); if (!badge) return;
+    if (publicView && state.routeLive && state.snapshot) {
+      const age = Math.max(0, Math.floor((Date.now() - new Date(state.snapshot.generated_at).getTime()) / 1000));
+      badge.textContent = state.snapshot.degraded ? `Live and interactive, degraded, updated ${age}s ago` : `Live and interactive, updated ${age}s ago`;
+    } else if (publicView) {
+      badge.textContent = restored || state.snapshot ? "Offline · last known" : "Offline";
+    } else {
+      badge.textContent = state.snapshot?.mode === "demo" ? "DEMO DATA" : state.snapshot?.degraded ? "LIVE · DEGRADED" : "LIVE";
     }
   }
   svg.addEventListener("pointerdown", event => { state.dragging = true; state.dragStart = {x: event.clientX - state.x, y: event.clientY - state.y}; svg.setPointerCapture(event.pointerId); svg.classList.add("dragging"); });
@@ -329,6 +347,6 @@
   document.getElementById("zoom-in").addEventListener("click", () => { state.scale = Math.min(2.4, state.scale * 1.2); setTransform(); });
   document.getElementById("zoom-out").addEventListener("click", () => { state.scale = Math.max(.55, state.scale / 1.2); setTransform(); });
   document.getElementById("reset-view").addEventListener("click", resetView);
-  document.getElementById("refresh").addEventListener("click", load);
-  window.addEventListener("resize", render); load(); window.setInterval(load, 15000);
+  const refresh = document.getElementById("refresh"); if (refresh) refresh.addEventListener("click", load);
+  window.addEventListener("resize", render); load(); window.setInterval(load, 15000); window.setInterval(updateMapBadge, 1000);
 })();

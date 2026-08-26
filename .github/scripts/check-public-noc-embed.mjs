@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
 
 const SITE_URL = "https://billgernert.com/noc/";
+const HOME_URL = "https://billgernert.com/";
 const STATUS_ORIGIN = "https://status.billgernert.com";
 const STATES = /\b(?:HEALTHY|DEGRADED|CRITICAL|NO SIGNAL)\b/;
 
@@ -41,6 +42,14 @@ async function checkEmbed() {
     if (!STATES.test(text)) {
       throw new Error("first live frame contained no approved NOC state");
     }
+
+    await page.goto(HOME_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const mapElement = page.locator("iframe[data-map-frame]");
+    await mapElement.scrollIntoViewIfNeeded();
+    const mapHandle = await mapElement.elementHandle();
+    const mapFrame = mapHandle && await mapHandle.contentFrame();
+    if (!mapFrame) throw new Error("live map frame did not attach");
+    await mapFrame.locator("#viewport g.node").first().waitFor({ state: "visible", timeout: 60000 });
   } finally {
     await browser.close();
   }

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-topology-view="public">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="topology-endpoint" content="https://topology-feed.billgernert.com/v1/topology">
+  <title>Interactive live topology map</title>
+  <meta name="color-scheme" content="dark">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    .map-shell { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; width: 100%; height: 100%; padding: 0; }
+    .map-stage { width: 100%; height: auto; min-height: 0; }
+    .detail-strip { margin-top: 0; }
+  </style>
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/map/embed/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <main class="map-shell">
+    <section class="map-stage" aria-label="Interactive system topology">
+      <svg id="map" role="img" aria-labelledby="map-title map-description"><title id="map-title">Radial operations topology</title><desc id="map-description">Select a system to drill into its child systems. Color and shape encode current health.</desc><g id="viewport"></g></svg>
+      <div class="map-controls" aria-label="Map controls"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="reset-view">Fit</button></div>
+      <div class="legend" aria-label="Status key"><span><i class="legend-status healthy">✓</i>Healthy</span><span><i class="legend-status warning">!</i>Warning</span><span><i class="legend-status critical">×</i>Critical</span><span><i class="legend-status unknown">?</i>No signal</span><span id="legend-source" class="legend-source">Live telemetry · sanitized public projection</span></div>
+    </section>
+    <section id="detail" class="detail-strip" aria-live="polite">
+      <div class="detail-primary"><span class="detail-label">Selected</span><strong id="detail-name">-</strong><span id="detail-kind" class="detail-secondary">-</span></div>
+      <div><span class="detail-label">State</span><strong id="detail-state">-</strong></div>
+      <div><span class="detail-label">Scale / instances</span><strong id="detail-scale">-</strong></div>
+      <div><span class="detail-label">Runtime</span><strong id="detail-runtime">-</strong></div>
+      <div class="detail-resources"><span class="detail-label">Resources</span><strong id="detail-resources">-</strong></div>
+      <div><span class="detail-label">Network</span><strong id="detail-network">-</strong></div>
+      <div class="detail-action" hidden><span id="detail-no-admin" class="detail-secondary">No public admin URL</span><a id="detail-admin" href="#" target="_blank" rel="noreferrer" hidden>Open admin ↗</a></div>
+    </section>
+  </main>
+  <script src="../app.js"></script>
+</body>
+</html>

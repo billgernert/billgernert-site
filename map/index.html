@@ -185,6 +185,7 @@
       <div class="map-status" aria-live="polite"><span id="mode-badge" class="mode-badge">CONNECTING</span><span id="updated">Waiting for data</span><button id="refresh" type="button">Refresh</button></div>
     </header>
     <nav id="breadcrumbs" class="breadcrumbs map-breadcrumbs" aria-label="Current topology path"></nav>
+    <p class="mode-badge interaction-cue" data-interaction-cue data-touch-text="Tap any node to drill into it. Tap again to open the next layer.">Click any node to drill into it. Click again to open the next layer.</p>
     <section class="map-stage" aria-label="Interactive system topology">
       <svg id="map" role="img" aria-labelledby="map-title map-description"><title id="map-title">Radial operations topology</title><desc id="map-description">Select a system to drill into its child systems. Color and shape encode current health.</desc><g id="viewport"></g></svg>
       <div class="map-controls" aria-label="Map controls"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="reset-view">Fit</button></div>
