@@ -141,7 +141,7 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bill Gernert | Senior Platform and Infrastructure Engineer</title>
-  <meta name="description" content="Bill Gernert builds and operates AutomationLab, a self-hosted platform with a provider-neutral unattended builder fleet, automated certificate lifecycle management, server provisioning, and tested recovery.">
+  <meta name="description" content="Bill Gernert is a platform and infrastructure engineer who built AutomationLab to provision servers, renew certificates and secrets, and prove backups through automated restores.">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://billgernert.com/">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
@@ -354,6 +354,7 @@
       font-weight: 400;
     }
     .proof span { color: var(--muted); font-size: 0.9rem; }
+    .hero-career-stats { grid-template-columns: repeat(3, 1fr); margin: 30px 0; }
 
     .section {
       padding: 76px 0;
@@ -544,6 +545,11 @@
     }
     .noc-shot .noc-badge.is-stale { border-color: var(--border); color: var(--muted); background: rgba(143, 168, 200, 0.08); }
     .noc-copy p { color: var(--muted); }
+    .live-two { display: grid; gap: 30px; margin-top: 30px; }
+    .live-panel { width: 100%; }
+    .map-still { margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #050912; }
+    .map-still a { display: block; }
+    .map-still img { display: block; width: 100%; height: auto; }
 
     .experience-grid {
       display: grid;
@@ -558,6 +564,11 @@
     }
     .experience-item p { margin: 0; color: var(--muted); }
     .experience-item strong { color: var(--green); }
+    .experience-three { grid-template-columns: repeat(3, 1fr); }
+    .capability-heading, .more-lab-heading { margin-top: 66px; }
+    .capability-heading h3, .more-lab-heading h3 { font-size: clamp(1.45rem, 3vw, 2rem); }
+    .more-lab-list .project-row { grid-template-columns: minmax(220px, 0.5fr) minmax(0, 1fr); }
+    .generated-line { padding: 16px 18px; border-left: 3px solid var(--green); background: rgba(0, 255, 150, 0.035); font-family: var(--mono); }
 
     .capabilities-grid {
       display: grid;
@@ -627,7 +638,7 @@
       .proof-strip { grid-template-columns: repeat(2, 1fr); }
       .proof:nth-child(2) { border-right: 0; }
       .proof:nth-child(-n+2) { border-bottom: 1px solid var(--border-quiet); }
-      .fleet-layout, .noc-layout { grid-template-columns: 1fr; }
+      .fleet-layout, .noc-layout, .experience-three { grid-template-columns: 1fr; }
       .lifecycle-flow { grid-template-columns: 1fr; }
       .lifecycle-step { min-height: auto; border-right: 1px solid var(--border); border-bottom: 0; }
       .lifecycle-step:first-child { border-radius: 9px 9px 0 0; }
@@ -646,6 +657,8 @@
       .hero { padding-top: 48px; }
       h1 { letter-spacing: -1px; }
       .proof-strip, .split-copy, .recovery, .experience-grid, .capabilities-grid { grid-template-columns: 1fr; }
+      .hero-career-stats .proof { border-right: 0; border-bottom: 1px solid var(--border-quiet); }
+      .hero-career-stats .proof:last-child { border-bottom: 0; }
       .capability:last-child { grid-column: auto; }
       .proof { min-height: auto; padding: 16px 0; border-right: 0; border-bottom: 1px solid var(--border-quiet); }
       .proof:last-child { border-bottom: 0; }
@@ -677,7 +690,7 @@
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/">Platform</a>
-        <a href="/fleet/">Unattended fleet</a>
+        <a href="/fleet/">Fleet</a>
         <a href="/live/">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
@@ -686,507 +699,98 @@
       </nav>
     </header>
 
-    <main id="main">
+<main id="main">
       <header class="hero">
         <svg class="logo" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bill Gernert">
           <defs>
-            <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00d4ff"/>
-              <stop offset="100%" stop-color="#0066ff"/>
-            </linearGradient>
-            <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00ff96"/>
-              <stop offset="100%" stop-color="#00cc66"/>
-            </linearGradient>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <radialGradient id="bgGlow" cx="50%" cy="50%" r="60%">
-              <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.12"/>
-              <stop offset="100%" stop-color="#0a0e1a" stop-opacity="0"/>
-            </radialGradient>
+            <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#0066ff"/></linearGradient>
+            <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ff96"/><stop offset="100%" stop-color="#00cc66"/></linearGradient>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="bgGlow" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#00d4ff" stop-opacity="0.12"/><stop offset="100%" stop-color="#0a0e1a" stop-opacity="0"/></radialGradient>
           </defs>
           <ellipse cx="110" cy="110" rx="120" ry="120" fill="url(#bgGlow)"/>
           <g transform="translate(110,110)" filter="url(#glow)">
             <polygon points="0,-62 54,-31 54,31 0,62 -54,31 -54,-31" fill="none" stroke="url(#cyanGrad)" stroke-width="3"/>
             <polygon points="0,-40 35,-20 35,20 0,40 -35,20 -35,-20" fill="rgba(0,212,255,0.06)" stroke="rgba(0,212,255,0.4)" stroke-width="1.5"/>
-            <circle cx="0" cy="-40" r="4" fill="#00d4ff"/>
-            <circle cx="35" cy="-20" r="4" fill="#00ff96"/>
-            <circle cx="35" cy="20" r="4" fill="#00d4ff"/>
-            <circle cx="0" cy="40" r="4" fill="#00ff96"/>
-            <circle cx="-35" cy="20" r="4" fill="#00d4ff"/>
-            <circle cx="-35" cy="-20" r="4" fill="#00ff96"/>
-            <circle cx="0" cy="0" r="8" fill="url(#greenGrad)"/>
-            <line x1="0" y1="0" x2="0" y2="-40" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/>
-            <line x1="0" y1="0" x2="35" y2="-20" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/>
-            <line x1="0" y1="0" x2="35" y2="20" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/>
-            <line x1="0" y1="0" x2="0" y2="40" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/>
-            <line x1="0" y1="0" x2="-35" y2="20" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/>
-            <line x1="0" y1="0" x2="-35" y2="-20" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/>
+            <circle cx="0" cy="-40" r="4" fill="#00d4ff"/><circle cx="35" cy="-20" r="4" fill="#00ff96"/><circle cx="35" cy="20" r="4" fill="#00d4ff"/><circle cx="0" cy="40" r="4" fill="#00ff96"/><circle cx="-35" cy="20" r="4" fill="#00d4ff"/><circle cx="-35" cy="-20" r="4" fill="#00ff96"/><circle cx="0" cy="0" r="8" fill="url(#greenGrad)"/>
+            <line x1="0" y1="0" x2="0" y2="-40" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><line x1="0" y1="0" x2="35" y2="-20" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/><line x1="0" y1="0" x2="35" y2="20" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="40" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/><line x1="0" y1="0" x2="-35" y2="20" stroke="rgba(0,212,255,0.5)" stroke-width="1.5"/><line x1="0" y1="0" x2="-35" y2="-20" stroke="rgba(0,255,150,0.5)" stroke-width="1.5"/>
           </g>
-          <text x="210" y="108" font-family="'Share Tech Mono', monospace" font-size="46" letter-spacing="6" fill="#00d4ff" filter="url(#glow)">BILL</text>
-          <text x="212" y="150" font-family="'Share Tech Mono', monospace" font-size="28" letter-spacing="14" fill="#e0e8ff">GERNERT</text>
-          <line x1="212" y1="166" x2="440" y2="166" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+          <text x="210" y="108" font-family="'Share Tech Mono', monospace" font-size="46" letter-spacing="6" fill="#00d4ff" filter="url(#glow)">BILL</text><text x="212" y="150" font-family="'Share Tech Mono', monospace" font-size="28" letter-spacing="14" fill="#e0e8ff">GERNERT</text><line x1="212" y1="166" x2="440" y2="166" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
         </svg>
-
-        <p class="eyebrow">Senior platform and infrastructure engineer</p>
-        <h1>I build infrastructure systems that can run without me watching them.</h1>
-        <p class="hero-lede">
-          Fifteen years of systems administration taught me where manual work fails: at handoffs,
-          after hours, and when the person who remembers the odd step is unavailable.
-        </p>
-        <p class="hero-copy">
-          AutomationLab is the platform I built around that problem. It provisions Windows and Linux
-          servers, rotates certificates and secrets, rebuilds templates, checks backups by restoring
-          them, and runs an unattended, provider-neutral builder fleet. The platform runs on a Proxmox
-          high-availability cluster, with Jenkins coordinating infrastructure jobs and Argo CD reconciling the
-          Kubernetes cluster to git.
-        </p>
-        <div class="actions">
-          <a class="button primary" href="#agent-fleet">Explore the unattended fleet</a>
-          <a class="button" href="/noc/">Open the live NOC dashboard</a>
+        <p class="eyebrow">Platform and infrastructure engineer · Denver, Colorado</p>
+        <h1>I build infrastructure that runs without someone watching it.</h1>
+        <p class="hero-lede">Fifteen years of Windows and Linux infrastructure in higher education and county government. In 2026 I moved to platform engineering on purpose. AutomationLab is the platform I built to do it properly: servers from a pull request, certificates and secrets renewed before they expire, backups restored every week to prove they work.</p>
+        <div class="proof-strip hero-career-stats" aria-label="Career results">
+          <div class="proof"><b>20 to 135</b><span>Jenkins jobs, from a folder of scripts to a platform</span></div>
+          <div class="proof"><b>200+</b><span>unused service accounts removed, the rest rotated and documented</span></div>
+          <div class="proof"><b>1,000 VMs</b><span>the VMware estate I operated</span></div>
         </div>
+        <p class="hero-copy">Looking for a platform or infrastructure automation role at a hybrid Windows and Linux shop moving to Kubernetes and infrastructure as code. Reach me on LinkedIn.</p>
+        <div class="actions"><a class="button primary" href="/projects/server-provisioning/">Server provisioning</a><a class="button" href="/projects/certificate-secret-renewal/">Certificate renewal</a></div>
       </header>
-
-      <div class="proof-strip" aria-label="Selected results">
-        <div class="proof"><b><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes</b><span>Proxmox high-availability cluster</span></div>
-        <div class="proof"><b>5 to 10 min</b><span>basic Windows or Linux server build</span></div>
-        <div class="proof"><b>97 seconds</b><span>measured Vault destroy and restore</span></div>
-        <div class="proof"><b>1 control plane</b><span>approved builders behind the same policy gates</span></div>
-      </div>
-
-      <section class="section" id="agent-fleet">
-        <div class="section-heading">
-          <p class="section-label">Unattended engineering</p>
-          <h2>Multiple builder providers, one unattended control and policy plane</h2>
-          <p class="section-intro">
-            An orchestrator reads the queue and durable Gitea state, then dispatches one eligible task
-            through a provider adapter. Claude Code, Codex, Grok, and Gemini are approved builders using
-            the same launch, result, and failure contract. A provider can change without changing task
-            eligibility, worktree isolation, review gates, merge policy, or durable state.
-          </p>
-        </div>
-
-        <div class="fleet-layout">
-          <figure class="fleet-figure">
-            <svg viewBox="0 0 900 790" xmlns="http://www.w3.org/2000/svg" font-family="'Share Tech Mono', monospace" role="img" aria-label="A scheduled control loop checks fleet policy and starts a provider-neutral orchestrator. A shared adapter contract dispatches one task to an approved Claude Code, Codex, Grok, or Gemini builder. Review and merge policy chooses the remaining gates, and Gitea holds the durable pull-request state. The legend is inside the lower-right corner of the diagram.">
-              <defs>
-                <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/></marker>
-                <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/></marker>
-                <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffb84d"/></marker>
-              </defs>
-
-              <rect x="8" y="8" width="884" height="774" rx="14" fill="#070c16" stroke="#1a4463" stroke-width="1.5"/>
-
-              <rect x="310" y="36" width="280" height="66" rx="10" fill="rgba(255,184,77,0.07)" stroke="#ffb84d" stroke-width="2"/>
-              <text x="450" y="63" fill="#fff" font-size="14" text-anchor="middle">SCHEDULED CONTROL LOOP</text>
-              <text x="450" y="84" fill="#ffb84d" font-size="11" text-anchor="middle">checks pause, caps, locks, and state</text>
-
-              <line x1="450" y1="103" x2="450" y2="144" stroke="#ffb84d" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arrowAmber)"/>
-
-              <rect x="285" y="148" width="330" height="72" rx="10" fill="rgba(0,212,255,0.06)" stroke="#00d4ff" stroke-width="2"/>
-              <text x="450" y="177" fill="#fff" font-size="14" text-anchor="middle">PROVIDER-NEUTRAL ORCHESTRATOR</text>
-              <text x="450" y="199" fill="#8fa8c8" font-size="10.5" text-anchor="middle">reads the queue, policy, and Gitea state</text>
-
-              <line x1="450" y1="220" x2="450" y2="250" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowCyan)"/>
-
-              <rect x="160" y="254" width="580" height="62" rx="10" fill="rgba(0,212,255,0.045)" stroke="#00d4ff" stroke-width="1.6"/>
-              <text x="450" y="280" fill="#fff" font-size="14" text-anchor="middle">SHARED PROVIDER ADAPTER CONTRACT</text>
-              <text x="450" y="301" fill="#8fa8c8" font-size="10.5" text-anchor="middle">normalized launch, result, and failure interface</text>
-
-              <path d="M450 316 L450 334 L135 334 L135 350" fill="none" stroke="#00d4ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
-              <path d="M450 316 L450 334 L345 334 L345 350" fill="none" stroke="#00d4ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
-              <path d="M450 316 L450 334 L555 334 L555 350" fill="none" stroke="#00d4ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
-              <path d="M450 316 L450 334 L765 334 L765 350" fill="none" stroke="#00d4ff" stroke-width="1.8" marker-end="url(#arrowCyan)"/>
-
-              <rect x="40" y="354" width="190" height="72" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.6"/>
-              <text x="135" y="383" fill="#fff" font-size="13" text-anchor="middle">CLAUDE CODE</text>
-              <text x="135" y="406" fill="#00ff96" font-size="10.5" text-anchor="middle">APPROVED BUILDER</text>
-
-              <rect x="250" y="354" width="190" height="72" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.6"/>
-              <text x="345" y="383" fill="#fff" font-size="13" text-anchor="middle">CODEX</text>
-              <text x="345" y="406" fill="#00ff96" font-size="10.5" text-anchor="middle">APPROVED BUILDER</text>
-
-              <rect x="460" y="354" width="190" height="72" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.6"/>
-              <text x="555" y="383" fill="#fff" font-size="13" text-anchor="middle">GROK</text>
-              <text x="555" y="406" fill="#00ff96" font-size="10.5" text-anchor="middle">APPROVED BUILDER</text>
-
-              <rect x="670" y="354" width="190" height="72" rx="10" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.6"/>
-              <text x="765" y="383" fill="#fff" font-size="13" text-anchor="middle">GEMINI</text>
-              <text x="765" y="406" fill="#00ff96" font-size="10.5" text-anchor="middle">APPROVED BUILDER</text>
-
-              <path d="M135 426 C135 459 330 456 370 468" fill="none" stroke="#00ff96" stroke-width="1.8" marker-end="url(#arrowGreen)"/>
-              <path d="M345 426 C345 446 395 451 420 468" fill="none" stroke="#00ff96" stroke-width="1.8" marker-end="url(#arrowGreen)"/>
-              <path d="M555 426 C555 446 505 451 480 468" fill="none" stroke="#00ff96" stroke-width="1.8" marker-end="url(#arrowGreen)"/>
-              <path d="M765 426 C765 459 570 456 530 468" fill="none" stroke="#00ff96" stroke-width="1.8" marker-end="url(#arrowGreen)"/>
-
-              <polygon points="325,474 575,474 600,511 575,548 325,548 300,511" fill="rgba(0,255,150,0.06)" stroke="#00ff96" stroke-width="2"/>
-              <text x="450" y="503" fill="#fff" font-size="14" text-anchor="middle">REVIEW AND MERGE POLICY</text>
-              <text x="450" y="525" fill="#8fa8c8" font-size="10.5" text-anchor="middle">the builder cannot bypass the remaining gates</text>
-
-              <line x1="450" y1="548" x2="450" y2="582" stroke="#00ff96" stroke-width="2" marker-end="url(#arrowGreen)"/>
-              <rect x="275" y="586" width="350" height="62" rx="9" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.6"/>
-              <text x="450" y="613" fill="#fff" font-size="14" text-anchor="middle">GITEA PULL REQUEST</text>
-              <text x="450" y="633" fill="#8fa8c8" font-size="10.5" text-anchor="middle">policy-approved auto-merge or required manual approval</text>
-
-              <g transform="translate(646,620)">
-                <rect x="0" y="0" width="220" height="142" rx="8" fill="#0a1220" stroke="#31516f" stroke-width="1"/>
-                <line x1="16" y1="22" x2="42" y2="22" stroke="#00d4ff" stroke-width="3"/>
-                <text x="52" y="26" fill="#c8d6eb" font-size="10">Cyan. Dispatch or work path</text>
-                <line x1="16" y1="49" x2="42" y2="49" stroke="#00ff96" stroke-width="3"/>
-                <text x="52" y="53" fill="#c8d6eb" font-size="10">Green. Review or merge path</text>
-                <line x1="16" y1="76" x2="42" y2="76" stroke="#ffb84d" stroke-width="3" stroke-dasharray="5 3"/>
-                <text x="52" y="80" fill="#c8d6eb" font-size="10">Amber. Scheduler path</text>
-                <rect x="16" y="94" width="26" height="16" rx="4" fill="none" stroke="#8fa8c8"/>
-                <text x="52" y="106" fill="#c8d6eb" font-size="10">Box. Process or state</text>
-                <line x1="16" y1="127" x2="42" y2="127" stroke="#8fa8c8" marker-end="url(#arrowCyan)"/>
-                <text x="52" y="131" fill="#c8d6eb" font-size="10">Arrow. Direction of work</text>
-              </g>
-            </svg>
-            <figcaption>Provider-neutral fleet path. Scheduled launch scripts start eligible work or exit without invoking a model.</figcaption>
-          </figure>
-
-          <aside class="fleet-notes" aria-label="Fleet controls">
-            <h3>The scheduler decides whether a provider is called</h3>
-            <p>
-              Ten-minute spawner ticks check <code>PAUSE</code>, the daily launch cap, the newest tasking,
-              live PID locks, and whether that tasking has already run. An idle tick exits in under a
-              second and calls no model.
-            </p>
-            <p>
-              A pickup guard handles new work after its cooldown. The four-hour cycle still performs a
-              full board review when the lab has been quiet.
-            </p>
-            <p>
-              Provider adapters give the orchestrator the same launch, result, and failure interface for
-              Claude Code, Codex, Grok, and Gemini. Task policy selects an approved builder. The adapter
-              can execute a task; it cannot decide whether the task was eligible or whether its pull
-              request may merge.
-            </p>
-            <p>
-              The operator interface can observe the fleet, pause dispatch, or request a cycle through
-              chat, but it is not the scheduler and holds no unique state. Gitea records the task,
-              branch, pull request, CI result, reviewer verdict, and merge outcome. Routine low-risk work
-              can merge after its deterministic gates. Work outside that policy waits for manual approval.
-            </p>
-          </aside>
-        </div>
-
-        <div class="incident">
-          <p class="section-label">Failure that changed the design</p>
-          <h3>The old consumption marker created duplicate pull requests</h3>
-          <p>
-            A worker originally marked its tasking as consumed by appending a footer on its own branch.
-            Review latency kept that footer away from the spawner, so completed work still looked new and
-            launched again. Six duplicate pull requests arrived in pairs. A tasking can now launch once,
-            and the existence of its Gitea pull request is the consumption signal.
-          </p>
-        </div>
-
-        <div class="actions">
-          <a class="button" href="/fleet/">How the unattended fleet works</a>
-          <a class="button" href="/dead-man-monitoring/">Monitoring the monitoring</a>
-        </div>
-      </section>
-
-      <section class="section" id="certificate-lifecycle">
-        <div class="section-heading">
-          <p class="section-label">Certificate and secret lifecycle</p>
-          <h2>Renewal, deployment, and verification run before expiry</h2>
-          <p class="section-intro">
-            Internal services, Windows and Linux hosts, and Kubernetes workloads use different issuance
-            paths, so the automation meets each system where it runs. Jenkins coordinates the server-side
-            jobs, Vault supplies credentials at run time, AD CS issues internal certificates, and
-            cert-manager handles the Let's Encrypt wildcard through DNS-01.
-          </p>
-        </div>
-
-        <div class="lifecycle-flow" aria-label="Five stages in the certificate lifecycle">
-          <div class="lifecycle-step">
-            <h3>Watch</h3>
-            <p>Inventory and expiry data identify certificates entering the renewal window.</p>
-          </div>
-          <div class="lifecycle-step">
-            <h3>Issue</h3>
-            <p>AD CS signs internal requests. cert-manager completes DNS-01 for the wildcard.</p>
-          </div>
-          <div class="lifecycle-step">
-            <h3>Deploy</h3>
-            <p>Ansible installs server certificates. Kubernetes updates its managed secrets.</p>
-          </div>
-          <div class="lifecycle-step">
-            <h3>Verify</h3>
-            <p>The job checks the presented certificate, chain, name, and new expiration date.</p>
-          </div>
-          <div class="lifecycle-step">
-            <h3>Record</h3>
-            <p>Grafana shows the next expiry, last rotation, and any failed deployment.</p>
-          </div>
-        </div>
-
-        <div class="split-copy">
-          <div>
-            <h3>Certificates</h3>
-            <p>
-              Zabbix hosts receive rotating internal certificates, internal web endpoints use the managed
-              wildcard where that trust model fits, and private services use the internal authority. A
-              failed validation leaves the working certificate in place and raises an alert.
-            </p>
-          </div>
-          <div>
-            <h3>Secrets</h3>
-            <p>
-              Rotation jobs write the new credential to Vault, update the consuming service, verify the
-              new value, and retire the old one after the consumer succeeds. The job stops before removal
-              when it cannot verify the replacement.
-            </p>
-          </div>
-        </div>
-
-        <div class="actions">
-          <a class="button" href="/projects/certificate-secret-renewal/">Read the lifecycle story</a>
-          <a class="button" href="/noc/">See expiry tracking in the NOC</a>
-        </div>
-      </section>
-
-      <section class="section" id="provisioning">
-        <div class="section-heading">
-          <p class="section-label">Server provisioning</p>
-          <h2>One request builds the same server across every system that needs to know it</h2>
-          <p class="section-intro">
-            A basic Windows or Linux build finishes in about five to ten minutes. The request still passes
-            an approval gate, and each platform keeps ownership of its own part of the result.
-          </p>
-        </div>
-
-        <table class="provision-table">
-          <caption>Ownership during a basic server build</caption>
-          <tbody>
-            <tr>
-              <th scope="row">Request and gate</th>
-              <td>Jenkins validates the request, runs the collision check across the authoritative systems, presents the plan, and keeps the execution log.</td>
-            </tr>
-            <tr>
-              <th scope="row">Infrastructure</th>
-              <td>NetBox allocates the address. Terraform manages the requested definition, plan, apply, and per-VM state. The Proxmox provider sends the approved change to the cluster.</td>
-            </tr>
-            <tr>
-              <th scope="row">Configuration</th>
-              <td>Ansible configures the operating system. Windows uses a template rebuilt from code and can join the domain, add features, install selected software, and enroll in MFA. Linux starts from a cloud image and follows its own role path.</td>
-            </tr>
-            <tr>
-              <th scope="row">Registration</th>
-              <td>Vault receives the host's monitoring key, Zabbix receives the host, DNS receives the record, and the pipeline records the completed machine in git.</td>
-            </tr>
-            <tr>
-              <th scope="row">Partial failure</th>
-              <td>Before apply, the pipeline releases reserved resources. After apply, it keeps the VM and resumes forward on the next run, so a live machine is not removed underneath a failed configuration step.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="actions">
-          <a class="button" href="/projects/server-provisioning/">See the full provisioning run</a>
-          <a class="button" href="/platform/">How Jenkins coordinates the platform</a>
-        </div>
-      </section>
-
-      <section class="section" id="recovery">
-        <div class="section-heading">
-          <p class="section-label">Recovery testing</p>
-          <h2>The backup check includes booting the restored service</h2>
-        </div>
-
-        <div class="recovery">
-          <div class="measurement" aria-label="Vault restored in 97 seconds">
-            <b>97s</b>
-            <span>destroy to initialized and unsealed</span>
-          </div>
-          <div class="recovery-copy">
-            <p>last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> &middot; <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--></p>
-            <p>
-              The recovery pipeline restores critical VMs into an isolated test path every week, boots
-              them, checks the application, and removes the test copy. In the measured Vault run, the VM
-              was destroyed outright and restored from that night's snapshot. A canary secret written
-              minutes before the destroy survived, and credential fetches worked after the service returned.
-            </p>
-            <p>
-              The first implementation needed twelve reruns. Several checks could report success before
-              they had verified the restored service. Those checks now test the service response and the
-              canary value before the run is allowed to pass.
-            </p>
-            <div class="actions">
-              <a class="button" href="/dr-restore-verify/">Read the recovery test</a>
-              <a class="button" href="/postmortems-index/">Read the postmortems</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="projects">
-        <div class="section-heading">
-          <p class="section-label">More completed systems</p>
-          <h2>The rest of the platform runs through the same review and evidence path</h2>
-          <p class="section-intro">
-            These projects share the repository, approval, logging, monitoring, and recovery conventions
-            used by the four systems above. Their individual pages carry the diagrams, screenshots,
-            failures, and code excerpts.
-          </p>
-        </div>
-
-        <div class="project-list">
-          <article class="project-row">
-            <h3>Windows template factory</h3>
-            <p>Rebuilds golden images from code on a schedule, verifies the result, and promotes only the image that passes.</p>
-            <a href="/projects/template-factory/">Read story</a>
-          </article>
-          <article class="project-row">
-            <h3>Self-healing monitoring</h3>
-            <p>Classifies host failures, applies allowlisted OS-aware repairs, records the outcome, and escalates cases outside the safe set.</p>
-            <a href="/projects/self-healing-monitoring/">Read story</a>
-          </article>
-          <article class="project-row">
-            <h3>Safe decommission</h3>
-            <p>Requires a destroy plan that contains the expected deletion, then removes the VM, monitoring, DNS, secrets, and address in the checked order.</p>
-            <a href="/projects/decommission/">Read story</a>
-          </article>
-          <article class="project-row">
-            <h3>AIOps morning triage</h3>
-            <p>Collects monitoring, metrics, CI, and backup findings, correlates them in code, and sends the difficult cases to the paid reasoning path.</p>
-            <a href="/projects/aiops-triage/">Read story</a>
-          </article>
-          <article class="project-row">
-            <h3>Job reporting pipeline</h3>
-            <p>Ingests postings, enriches and scores them, tailors from a long resume source, and keeps unsupported claims out of generated material.</p>
-            <a href="/projects/job-reporting/">Read story</a>
-          </article>
-          <article class="project-row">
-            <h3>Identity lifecycle</h3>
-            <p>Creates and disables users from role definitions, waits through directory sync, applies cloud access, and preserves a restorable snapshot before offboarding.</p>
-            <a href="/windows-identity/">Read story</a>
-          </article>
-        </div>
-
-        <div class="actions">
-          <a class="button" href="/projects/">All project stories</a>
-          <a class="button" href="/skills/">Capabilities used across them</a>
-        </div>
-      </section>
 
       <section class="section" id="live">
         <div class="section-heading">
-          <p class="section-label">Live operating evidence</p>
-          <h2>The public NOC starts with one question: is anything unhealthy?</h2>
+          <p class="section-label">Live, two ways</p>
+          <h2>The lab is running right now. Here are two ways to look at it.</h2>
+          <p class="section-intro">The NOC is the operator's view. Every tile is one operational domain reduced to its worst current state, and every tile opens its own live dashboard. The map is the system's view. Nearly <!--LIVE:MAP_COMPONENT_COUNT:START-->600<!--LIVE:MAP_COMPONENT_COUNT:END--> components in one radial drill-down, colored by health, fed from the running lab. Both are the sanitized public projection: hostnames, addresses and admin links are removed before the data leaves the lab, and the NOC page explains exactly what that costs.</p>
         </div>
-
-        <div class="noc-layout">
-          <div class="noc-shot" data-public-noc>
+        <div class="live-two">
+          <div class="live-panel noc-shot" data-public-noc>
             <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
             <p class="live-status" data-live-status aria-live="polite">Checking the live NOC.</p>
-            <iframe class="live-frame" data-live-frame
-              data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
-              title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
-            <div class="live-fallback" data-live-fallback hidden>
-              The live board is temporarily unavailable. The public site remains independent of the lab.
-            </div>
+            <iframe class="live-frame" data-live-frame data-dashboard-rows="28" scrolling="no" data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
+            <div class="live-fallback" data-live-fallback hidden>The live board is temporarily unavailable. The public site remains independent of the lab.</div>
           </div>
-          <div class="noc-copy">
-            <p>
-              Operational tiles report their worst current state and open public drill-downs.
-              Alert state, web consoles, backup freshness, certificate lifecycle, and subscription pacing
-              are visible without exposing internal identifiers. A tile with no data renders grey.
-              The page generator refuses to publish an overview when a dashboard is missing its domain
-              mapping, and a nightly check compares the generated definition with the running dashboard.
-            </p>
-            <div class="actions">
-              <a class="button" href="/noc/">Open the NOC</a>
-              <a class="button" href="/diagram/">Explore the lab diagram</a>
-            </div>
-          </div>
+          <figure class="live-panel map-still"><a href="/map/"><img src="/map/img/topology-map.svg" alt="Captured still of the live AutomationLab topology map, colored by health."></a><figcaption><a href="/map/">Live topology map, open it.</a></figcaption></figure>
+        </div>
+        <div class="actions"><a class="button" href="/noc/">Open the NOC</a><a class="button" href="/map/">Open the map</a></div>
+      </section>
+
+      <section class="section" id="recovery">
+        <div class="section-heading"><p class="section-label">Backup and DR</p><h2>The backups are restored every week, by a pipeline, without a person.</h2></div>
+        <div class="recovery-copy">
+          <p>Every week the recovery pipeline restores critical VMs into an isolated test path, boots them, checks the application, and removes the test copy. In the measured Vault run the VM was destroyed outright and restored from that night's snapshot. A canary secret written minutes before the destroy survived, and credential fetches worked after the service returned.</p>
+          <p class="generated-line">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_SECONDS:START-->97<!--LIVE:RESTORE_SECONDS:END--> seconds destroy to restored and unsealed</p>
+          <p>The first implementation needed twelve reruns. Several checks could report success before they had verified the restored service. Those checks now test the service response and the canary value before the run is allowed to pass.</p>
+          <div class="actions"><a class="button" href="/dr-restore-verify/">Read the recovery test</a><a class="button" href="/postmortems-index/">Read the postmortems</a></div>
         </div>
       </section>
 
       <section class="section" id="experience">
         <div class="section-heading">
-          <p class="section-label">Experience behind the lab</p>
+          <p class="section-label">Experience and capabilities</p>
           <h2>I built AutomationLab from work I had already learned to operate at scale</h2>
-          <p class="section-intro">
-            My background is Windows-heavy infrastructure, virtualization, identity, monitoring, and
-            automation across higher education and county government. The lab gave me a greenfield place
-            to connect those systems through Kubernetes, infrastructure as code, GitOps, and newer AI tooling.
-          </p>
+          <p class="section-intro">My background is Windows-heavy infrastructure, virtualization, identity, monitoring, and automation across higher education and county government. The lab gave me a greenfield place to connect those systems through Kubernetes, infrastructure as code and GitOps.</p>
         </div>
-
-        <div class="experience-grid">
-          <div class="experience-item">
-            <h3>Automation and operations</h3>
-            <p>
-              I grew a Jenkins platform from 20 scripts to <strong>135 Python and PowerShell jobs</strong>.
-              A PowerShell service I wrote watched 350 virtual desktops, patched their images and fixed
-              the common failures without an operator, so we never had to buy the $30,000 a year product
-              that did the same job.
-            </p>
-          </div>
-          <div class="experience-item">
-            <h3>Infrastructure at scale</h3>
-            <p>
-              I ran two Windows-heavy estates, one of about 1,000 VMs with more than 700 Windows servers
-              and one of a few hundred servers. I recovered about <strong>$10,000 per month</strong> in missed
-              billing, supported a two-site Horizon environment using Cloud Pod Architecture, and
-              automated patching for Horizon desktop images.
-            </p>
-          </div>
+        <div class="experience-grid experience-three">
+          <div class="experience-item"><h3>Automation and operations</h3><p>I grew a Jenkins platform from 20 scripts to 135 Python and PowerShell jobs. A PowerShell service I wrote watched 350 virtual desktops, patched their images and fixed the common failures without an operator, so we never had to buy the $30,000 a year product that did the same job.</p></div>
+          <div class="experience-item"><h3>Infrastructure at scale</h3><p>I ran two Windows-heavy estates, one of about 1,000 VMs with more than 700 Windows servers and one of a few hundred servers. I recovered about $10,000 per month in missed billing, supported a two-site Horizon environment using Cloud Pod Architecture, and automated patching for Horizon desktop images.</p></div>
+          <div class="experience-item"><h3>Identity and service accounts</h3><p>I removed over 200 unused service accounts, rotated and documented every one that remained, made every Jenkins service account auto-rotating, disabled interactive login for service accounts, and migrated SQL Server to gMSA.</p></div>
         </div>
+        <div class="actions"><a class="button primary" href="/about/">About Bill</a><a class="button" href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a><a class="button" href="https://github.com/billgernert" rel="me">GitHub</a></div>
 
-        <div class="actions">
-          <a class="button primary" href="/about/">About Bill</a>
-          <a class="button" href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
-          <a class="button" href="https://github.com/billgernert" rel="me">GitHub</a>
-        </div>
-      </section>
-
-      <section class="section" id="capabilities">
-        <div class="section-heading">
-          <p class="section-label">Engineering capabilities</p>
-          <h2>Tools I use to build, secure, and operate systems</h2>
-        </div>
-
+        <div class="section-heading capability-heading"><h3>Tools I use to build, secure, and operate systems</h3></div>
         <div class="capabilities-grid">
-          <article class="capability">
-            <h3>Cloud &amp; IaC</h3>
-            <p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p>
-          </article>
-          <article class="capability">
-            <h3>CI/CD &amp; GitOps</h3>
-            <p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p>
-          </article>
-          <article class="capability">
-            <h3>Containers &amp; orchestration</h3>
-            <p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p>
-          </article>
-          <article class="capability">
-            <h3>Languages &amp; APIs</h3>
-            <p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p>
-          </article>
-          <article class="capability">
-            <h3>Identity &amp; security</h3>
-            <p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p>
-          </article>
-          <article class="capability">
-            <h3>Observability</h3>
-            <p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p>
-          </article>
-          <article class="capability">
-            <h3>Virtualization &amp; network</h3>
-            <p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p>
-          </article>
+          <article class="capability"><h3>Cloud &amp; IaC</h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
+          <article class="capability"><h3>CI/CD &amp; GitOps</h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
+          <article class="capability"><h3>Containers &amp; orchestration</h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
+          <article class="capability"><h3>Languages &amp; APIs</h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
+          <article class="capability"><h3>Identity &amp; security</h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
+          <article class="capability"><h3>Observability</h3><p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p></article>
+          <article class="capability"><h3>Virtualization &amp; network</h3><p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p></article>
         </div>
 
-        <div class="actions">
-          <a class="button primary" href="/skills/">Explore how I use these</a>
-          <a class="button" href="/roadmap/">Read the roadmap</a>
+        <div class="section-heading more-lab-heading"><h3>More from the lab</h3></div>
+        <div class="project-list more-lab-list">
+          <article class="project-row"><h3><a href="/projects/template-factory/">Windows template factory</a></h3><p>rebuilds golden images from code on a schedule and promotes only the image that passes.</p></article>
+          <article class="project-row"><h3><a href="/projects/self-healing-monitoring/">Self-healing monitoring</a></h3><p>applies allowlisted OS-aware repairs and escalates the rest.</p></article>
+          <article class="project-row"><h3><a href="/projects/decommission/">Safe decommission</a></h3><p>removes the VM, monitoring, DNS, secrets and address in the checked order.</p></article>
+          <article class="project-row"><h3><a href="/windows-identity/">Identity lifecycle</a></h3><p>creates and disables users from role definitions with a restorable snapshot before offboarding.</p></article>
+          <article class="project-row"><h3><a href="/fleet/">Unattended builder fleet</a></h3><p>approved AI builders behind review gates, with the postmortem for the day it went wrong.</p></article>
+          <article class="project-row"><h3><a href="/projects/aiops-triage/">AIOps morning triage</a></h3><p>correlates monitoring, metrics, CI and backup findings in code.</p></article>
         </div>
+        <div class="actions"><a class="button" href="/projects/">All project stories</a><a class="button" href="/roadmap/">Read the roadmap</a></div>
       </section>
     </main>
 
@@ -1207,7 +811,7 @@
         </div>
         <div class="sitemap-group">
           <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Unattended fleet</a>
+          <a href="/fleet/">Fleet</a>
           <a href="/security/">Security</a>
           <a href="/ai/">Applied AI</a>
           <a href="/dead-man-monitoring/">Watchdog</a>

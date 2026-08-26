@@ -1,9 +1,9 @@
 {
   "backlog_completed_count": 242,
-  "backlog_open_count": 235,
+  "backlog_open_count": 234,
   "builder_job_count": 3,
   "certificate_count": 15,
-  "certificate_nearest_expiry_days": 33,
+  "certificate_nearest_expiry_days": 32,
   "certificate_story_count": 2,
   "dashboard_count": 19,
   "jenkins_job_count": 50,
@@ -11,9 +11,11 @@
   "job_view_count": 3,
   "kubernetes_control_node_count": 1,
   "kubernetes_node_count": 3,
+  "map_component_count": 600,
   "proxmox_node_count": 5,
   "restore_last_run_date": "2026-08-25",
   "restore_last_run_result": "PASS",
+  "restore_seconds": 97,
   "unit_count": 1,
   "vault_node_count": 3
 }
