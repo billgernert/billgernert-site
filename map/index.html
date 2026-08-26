@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-topology-view="public">
 <head>
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
@@ -140,20 +140,23 @@
   <!-- END generated: motion -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects - Bill Gernert</title>
-  <meta name="description" content="Pipelines from AutomationLab: automated server provisioning, certificate and secret renewal, a Windows template factory, a job reporting pipeline, self-healing monitoring, VM decommission with safety gates, and AIOps morning triage. Each with the problem, the stages, what broke, and the code that fixed it.">
+  <meta name="topology-endpoint" content="https://topology-feed.billgernert.com/v1/topology">
+  <title>Live Automation Lab map - Bill Gernert</title>
+  <meta name="description" content="A live interactive map of Automation Lab with health states and drill-down from platforms to their running components.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="site.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/projects/">
+  <link rel="canonical" href="https://billgernert.com/map/">
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <main class="map-shell">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -163,10 +166,10 @@
         <span class="brand-name">Bill Gernert</span>
       </a>
       <nav class="topnav" aria-label="Primary navigation">
-        <a href="/projects/" class="active" aria-current="page">Projects</a>
+        <a href="/projects/">Projects</a>
         <a href="/platform/">Platform</a>
         <a href="/fleet/">Unattended fleet</a>
-        <a href="/live/">Live</a>
+        <a href="/live/" class="active" aria-current="page">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
@@ -174,57 +177,32 @@
       </nav>
     </header>
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">billgernert.com</a>
-      <span class="sep">/</span>
-      <span class="here">Projects</span>
+      <a href="/">billgernert.com</a><span class="sep">/</span><a href="/live/">Live</a><span class="sep">/</span><span class="here">Map</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Pipelines</span>
-      <h1>Projects</h1>
-      <p class="descriptor">Pipelines I built and run. Each one gets the same treatment: the problem
-        it exists to solve, the stages it actually runs, <b>what broke and what I did about it</b>, and
-        the code that fixed it. The bugs are the interesting part, so they are not skipped. For the
-        subsystems these run on, see <a href="/platform/">Platform</a>.</p>
+    <header class="map-toolbar">
+      <div><p id="map-eyebrow" class="eyebrow">PUBLIC LIVE TOPOLOGY</p><h1 id="map-heading">Automation Lab map</h1></div>
+      <div class="map-status" aria-live="polite"><span id="mode-badge" class="mode-badge">CONNECTING</span><span id="updated">Waiting for data</span><button id="refresh" type="button">Refresh</button></div>
     </header>
-
-    <div class="skill-body">
-      <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
-      <!-- END generated: group-hub -->
-      <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
-      <ol class="project-list">
-        <li id="server-provisioning"><b>Automated server provisioning.</b> Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident. <a href="/projects/server-provisioning/">Read the full write-up &#8594;</a></li>
-        <li id="certificate-secret-renewal"><b>Automated certificate and secret renewal.</b> Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill. <a href="/projects/certificate-secret-renewal/">Read the full write-up &#8594;</a></li>
-        <li id="template-factory"><b>The template factory.</b> Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live. <a href="/projects/template-factory/">Read the full write-up &#8594;</a></li>
-        <li id="job-reporting"><b>The job reporting pipeline.</b> Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt. <a href="/projects/job-reporting/">Read the full write-up &#8594;</a></li>
-        <li id="api-to-usage"><b>API to usage-based AI pipelines.</b> Routes unattended AI work through existing subscription headroom, with hourly provider selection, reserve thresholds, and a fail-closed path when neither provider is safe. <a href="/projects/api-to-usage/">Read the full write-up &#8594;</a></li>
-        <li id="self-healing-monitoring"><b>Self-healing monitoring.</b> Classifies every broken host, emails the full remediation plan, and heals only what the operator has approved. <a href="/projects/self-healing-monitoring/">Read the full write-up &#8594;</a></li>
-        <li id="decommission"><b>Decommission, with the gate that says no.</b> Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown. <a href="/projects/decommission/">Read the full write-up &#8594;</a></li>
-        <li id="aiops-triage"><b>AIOps morning triage.</b> Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model. <a href="/projects/aiops-triage/">Read the full write-up &#8594;</a></li>
-        <li id="automation-lab-map"><b>The live Automation Lab map.</b> Turns live monitoring and inventory into a health-aware atlas that drills from the whole lab to the running component behind an alert. <a href="/projects/automation-lab-map/">Read the full write-up &#8594;</a></li>
-      </ol>
-      <!-- END generated: projects-index -->
-
-      <section class="block">
-        <h2>Code on GitHub</h2>
-        <p>The project pages include scrubbed excerpts where they help explain a control or failure. The
-          AutomationLab repository stays private because it contains live configuration and network
-          detail. Public pages cross a fail-closed scrub gate before publication.</p>
-        <div class="links">
-          <a href="https://github.com/billgernert" rel="me">Profile &#8594;</a>
-          <a href="https://github.com/billgernert/production-automation">production-automation &#8594;</a>
-        </div>
-        <p class="note"><b>production-automation</b> is de-identified professional work predating the
-          lab. Each script documents its story, failsafes, and setup.</p>
-      </section>
-
-      <div class="links">
-        <a href="/platform/">How the platform works &#8594;</a>
-        <a href="/skills/">Explore the capabilities &#8594;</a>
-        <a href="/roadmap/">Read the roadmap &#8594;</a>
-      </div>
-    </div>
-
+    <nav id="breadcrumbs" class="breadcrumbs map-breadcrumbs" aria-label="Current topology path"></nav>
+    <section class="map-stage" aria-label="Interactive system topology">
+      <svg id="map" role="img" aria-labelledby="map-title map-description"><title id="map-title">Radial operations topology</title><desc id="map-description">Select a system to drill into its child systems. Color and shape encode current health.</desc><g id="viewport"></g></svg>
+      <div class="map-controls" aria-label="Map controls"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="reset-view">Fit</button></div>
+      <div class="legend" aria-label="Status key"><span><i class="legend-status healthy">✓</i>Healthy</span><span><i class="legend-status warning">!</i>Warning</span><span><i class="legend-status critical">×</i>Critical</span><span><i class="legend-status unknown">?</i>No signal</span><span id="legend-source" class="legend-source">Live telemetry · sanitized public projection</span></div>
+    </section>
+    <section id="detail" class="detail-strip" aria-live="polite">
+      <div class="detail-primary"><span class="detail-label">Selected</span><strong id="detail-name">-</strong><span id="detail-kind" class="detail-secondary">-</span></div>
+      <div><span class="detail-label">State</span><strong id="detail-state">-</strong></div>
+      <div><span class="detail-label">Scale / instances</span><strong id="detail-scale">-</strong></div>
+      <div><span class="detail-label">Runtime</span><strong id="detail-runtime">-</strong></div>
+      <div class="detail-resources"><span class="detail-label">Resources</span><strong id="detail-resources">-</strong></div>
+      <div><span class="detail-label">Network</span><strong id="detail-network">-</strong></div>
+      <div class="detail-action" hidden><span id="detail-no-admin" class="detail-secondary">No public admin URL</span><a id="detail-admin" href="#" target="_blank" rel="noreferrer" hidden>Open admin ↗</a></div>
+    </section>
+    <section id="alerts-panel" class="alerts-panel" hidden><h2 id="alerts-heading">Alerts</h2><ol id="alerts-list"></ol><button id="alerts-toggle" type="button" hidden></button></section>
+    <p id="error" class="error" hidden></p>
+    <p class="map-note">This is the same drill-down hierarchy as the private operating map. Addresses, internal domains, raw alert text, exact capacity, and administration links are removed before the data leaves the lab.</p>
+    <noscript><p class="error">The interactive map requires JavaScript.</p></noscript>
     <footer>
       <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
       <nav class="sitemap" aria-label="Site map">
@@ -262,5 +240,6 @@
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
+  <script src="app.js"></script>
 </body>
 </html>

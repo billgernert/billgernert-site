@@ -31,6 +31,7 @@ page deleted in the private repo is deleted here.
 | `projects/` | the pipeline stories |
 | `platform/` | the subsystem writeups |
 | `diagram/` | the lab architecture (a public rendition; the internal diagram is never published) |
+| `map/` | the live public topology atlas and its same-origin renderer assets |
 | `writeups/` | long-form writeups (adopted into the gate 2026-07-15; was hand-committed) |
 | `operations/` | the operations section; its first page is the accepted risk register |
 | `noc/` | the NOC/Grafana showcase page; it currently carries five committed PNG captures under `noc/img/` |
@@ -102,8 +103,11 @@ internal string long, and a public leak is irreversible.
 - **Secrets of any kind** - tokens, API keys, passwords, PSKs, private keys, Vault paths or policies,
   credential ids, connection strings, `.env` files.
 - **Internal network detail** - internal hostnames and service subdomains, the internal AD domain
-  name, IP addresses, subnet/VLAN layout, VM names or ids, tunnel connector ids, and Access
-  application names or policies. The public site only ever names the apex `parsec-lab.com`.
+  name, IP addresses, subnet/VLAN layout, VM ids, tunnel connector ids, and Access application names
+  or policies. The live topology feed is the one reviewed exception for display names: product,
+  platform, host, VM, namespace, workload, service, and pipeline names are preserved because they are
+  the map's vocabulary. The projector removes address suffixes and rebuilds every other field through
+  its public allowlist before the publisher can send it.
 - **Anything only a picture would leak** - see Images above. The scrub gate will not catch it.
 - **`CLAUDE.md` and internal ops docs** - private-only by rule (they hold internal IPs/hostnames);
   likewise runbooks, architecture docs, the backlog, and the roadmap source.

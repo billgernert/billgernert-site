@@ -11,12 +11,14 @@
   <url><loc>https://billgernert.com/gitops-argocd/</loc></url>
   <url><loc>https://billgernert.com/live/</loc></url>
   <url><loc>https://billgernert.com/mail/</loc></url>
+  <url><loc>https://billgernert.com/map/</loc></url>
   <url><loc>https://billgernert.com/noc/</loc></url>
   <url><loc>https://billgernert.com/platform/</loc></url>
   <url><loc>https://billgernert.com/postmortems-index/</loc></url>
   <url><loc>https://billgernert.com/projects/</loc></url>
   <url><loc>https://billgernert.com/projects/aiops-triage/</loc></url>
   <url><loc>https://billgernert.com/projects/api-to-usage/</loc></url>
+  <url><loc>https://billgernert.com/projects/automation-lab-map/</loc></url>
   <url><loc>https://billgernert.com/projects/certificate-secret-renewal/</loc></url>
   <url><loc>https://billgernert.com/projects/decommission/</loc></url>
   <url><loc>https://billgernert.com/projects/job-reporting/</loc></url>

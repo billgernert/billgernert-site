@@ -1,0 +1,11 @@
+body { font-family: "Exo 2", sans-serif; }
+.map-shell { width: min(1440px, 100%); }
+.map-shell .site-header { margin-bottom: 1rem; }
+.map-shell .crumbs { margin-bottom: 1rem; }
+.map-breadcrumbs { margin-bottom: 8px; }
+.map-note { max-width: 920px; margin: 1rem auto 0; color: #8e9bac; text-align: center; }
+.map-shell footer { margin-top: 2rem; }
+@media (max-width: 720px) {
+  .map-shell .site-header { margin-bottom: .6rem; }
+  .map-note { text-align: left; }
+}

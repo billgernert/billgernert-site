@@ -141,7 +141,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live - Bill Gernert</title>
-  <meta name="description" content="The public live view of AutomationLab: a sanitized architecture diagram and the NOC entry point, with the boundary drawn at publishable evidence rather than internal identifiers.">
+  <meta name="description" content="The public live view of Automation Lab: an interactive topology map, an architecture diagram, and the NOC entry point.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -183,10 +183,11 @@
     <header class="skill-head">
       <span class="badge" data-accent="green">Live</span>
       <h1>Running evidence</h1>
-      <p class="descriptor">Live is the public operating view of the lab: an architecture diagram that
-        shows the running shape of the estate, and the <a href="/noc/">NOC</a>, where the dashboards
-        Grafana serves from the running lab are open to anyone. Both are evidence from the live system.</p>
+      <p class="descriptor">Live is the public operating view of the lab: an <a href="/map/">interactive
+        topology map</a>, an architecture diagram, and the <a href="/noc/">NOC</a>, where Grafana serves
+        dashboards from the running lab. Each view answers a different operating question.</p>
       <div class="links">
+        <a href="/map/">Open the live map</a>
         <a href="/diagram/">Open the diagram</a>
         <a href="/noc/">Open the NOC</a>
       </div>
@@ -196,17 +197,22 @@
       <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Live</b>:</p>
       <ol class="project-list">
+        <li><b>Live map.</b> The live topology atlas, with health and drill-down to individual components. <a href="/map/">Read more &#8594;</a></li>
         <li><b>Architecture diagram.</b> The map of the lab's shape and the pages that explain each region. <a href="/diagram/">Read more &#8594;</a></li>
         <li><b>NOC.</b> The live dashboards, interactive, where no data never reads as green. <a href="/noc/">Read more &#8594;</a></li>
         <li><b>Postmortems.</b> Long-form failure writeups and the follow-on work they produced. <a href="/postmortems-index/">Read more &#8594;</a></li>
       </ol>
       <!-- END generated: group-hub -->
       <section class="block" id="views">
-        <h2>Two views, two jobs</h2>
-        <p>Live is a hub because the two pages answer different questions. The diagram explains what
-          is in the estate and how the major systems relate. The NOC answers the glance question:
-          what is being measured right now, and where should a deeper look start.</p>
+        <h2>Three views, three jobs</h2>
+        <p>Live is a hub because the three pages answer different questions. The map follows current
+          health from the whole estate to an individual component. The diagram explains the intended
+          structure. The NOC answers the glance question: what is being measured right now, and where
+          should a deeper look start.</p>
         <ol class="project-list">
+          <li><b>Live map.</b> The same layers and display names as the private operating atlas, with
+            addresses, raw alerts, exact capacity, and administration links removed before publication.
+            <a href="/map/">Open the live map &#8594;</a></li>
           <li><b>Diagram.</b> A sanitized platform map: network segments, compute layers, core
             services, and the pages that explain them. It is about running shape, not private wiring.
             <a href="/diagram/">Open the diagram &#8594;</a></li>
@@ -217,9 +223,11 @@
 
       <section class="block" id="boundary">
         <h2>What is left out, and why</h2>
-        <p>Both pages keep the shape and the signal and drop the identifiers: hostnames, addresses,
-          ports, datasource URLs, query parameters and private dashboard IDs never reach the public
-          side. The <a href="/noc/">NOC page</a> explains exactly what that costs and what it keeps. Two
+        <p>The live map keeps the reviewed display names because they are the vocabulary that makes its
+          drill-down useful. It replaces internal IDs, addresses, domain suffixes, raw alerts, exact
+          capacity, and administration links before the feed leaves the lab. The diagram and NOC apply
+          their own narrower publication boundaries. The <a href="/noc/">NOC page</a> explains exactly
+          what that costs and what it keeps. Two
           other rules hold here. A subsystem that is designed but not deployed stays described as
           designed on its own page and is never promoted to running proof. And a surface that is not
           measured stays visibly unmeasured, because a green tile with no data behind it is the one
@@ -228,9 +236,9 @@
 
       <section class="block" id="follow">
         <h2>Follow the evidence back to the system</h2>
-        <p>Use the diagram when the question is structure. Use the NOC when the question is current
-          signal. From either page, follow through to the subsystem writeups for the design, the
-          limits, and the work that is still planned rather than running.</p>
+        <p>Use the map when the question is where a current state comes from. Use the diagram when the
+          question is structure. Use the NOC when the question is current signal. From any view, follow
+          through to the subsystem writeups for the design, limits, and planned work.</p>
         <div class="links">
           <a href="/platform/">Platform</a>
           <a href="/security/">Security</a>
