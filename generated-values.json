@@ -6,7 +6,7 @@
   "certificate_nearest_expiry_days": 32,
   "certificate_story_count": 2,
   "dashboard_count": 19,
-  "jenkins_job_count": 50,
+  "jenkins_job_count": 51,
   "job_reporting_count": 4,
   "job_view_count": 3,
   "kubernetes_control_node_count": 1,
@@ -15,7 +15,7 @@
   "proxmox_node_count": 5,
   "restore_last_run_date": "2026-08-25",
   "restore_last_run_result": "PASS",
-  "restore_seconds": 97,
+  "restore_last_run_seconds": 689,
   "unit_count": 1,
   "vault_node_count": 3
 }

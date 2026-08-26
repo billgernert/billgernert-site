@@ -720,6 +720,7 @@
         <p class="eyebrow">Platform and infrastructure engineer · Denver, Colorado</p>
         <h1>I build infrastructure that runs without someone watching it.</h1>
         <p class="hero-lede">Fifteen years of Windows and Linux infrastructure in higher education and county government. In 2026 I moved to platform engineering on purpose. AutomationLab is the platform I built to do it properly: servers from a pull request, certificates and secrets renewed before they expire, backups restored every week to prove they work.</p>
+        <p class="eyebrow">Before the lab, in three numbers</p>
         <div class="proof-strip hero-career-stats" aria-label="Career results">
           <div class="proof"><b>20 to 135</b><span>Jenkins jobs, from a folder of scripts to a platform</span></div>
           <div class="proof"><b>200+</b><span>unused service accounts removed, the rest rotated and documented</span></div>
@@ -733,7 +734,7 @@
         <div class="section-heading">
           <p class="section-label">Live, two ways</p>
           <h2>The lab is running right now. Here are two ways to look at it.</h2>
-          <p class="section-intro">The NOC is the operator's view. Every tile is one operational domain reduced to its worst current state, and every tile opens its own live dashboard. The map is the system's view. Nearly <!--LIVE:MAP_COMPONENT_COUNT:START-->600<!--LIVE:MAP_COMPONENT_COUNT:END--> components in one radial drill-down, colored by health, fed from the running lab. Both are the sanitized public projection: hostnames, addresses and admin links are removed before the data leaves the lab, and the NOC page explains exactly what that costs.</p>
+          <p class="section-intro">The NOC is the operator's view. Every tile is one operational domain reduced to its worst current state, and every tile opens its own live dashboard. The map is the system's view. More than <!--LIVE:MAP_COMPONENT_COUNT:START-->600<!--LIVE:MAP_COMPONENT_COUNT:END--> components in one radial drill-down, colored by health, fed from the running lab. Both are the sanitized public projection: hostnames, addresses and admin links are removed before the data leaves the lab, and the NOC page explains exactly what that costs.</p>
         </div>
         <div class="live-two">
           <div class="live-panel noc-shot" data-public-noc>
@@ -742,7 +743,7 @@
             <iframe class="live-frame" data-live-frame data-dashboard-rows="28" scrolling="no" data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
             <div class="live-fallback" data-live-fallback hidden>The live board is temporarily unavailable. The public site remains independent of the lab.</div>
           </div>
-          <figure class="live-panel map-still"><a href="/map/"><img src="/map/img/topology-map.svg" alt="Captured still of the live AutomationLab topology map, colored by health."></a><figcaption><a href="/map/">Live topology map, open it.</a></figcaption></figure>
+          <figure class="live-panel map-still"><a href="/map/"><img src="/map/img/topology-map.png" alt="Live topology map, captured at publish"></a><figcaption><a href="/map/">Live topology map, open it.</a></figcaption></figure>
         </div>
         <div class="actions"><a class="button" href="/noc/">Open the NOC</a><a class="button" href="/map/">Open the map</a></div>
       </section>
@@ -750,8 +751,8 @@
       <section class="section" id="recovery">
         <div class="section-heading"><p class="section-label">Backup and DR</p><h2>The backups are restored every week, by a pipeline, without a person.</h2></div>
         <div class="recovery-copy">
-          <p>Every week the recovery pipeline restores critical VMs into an isolated test path, boots them, checks the application, and removes the test copy. In the measured Vault run the VM was destroyed outright and restored from that night's snapshot. A canary secret written minutes before the destroy survived, and credential fetches worked after the service returned.</p>
-          <p class="generated-line">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_SECONDS:START-->97<!--LIVE:RESTORE_SECONDS:END--> seconds destroy to restored and unsealed</p>
+          <p>Every week the recovery pipeline restores critical VMs into an isolated test path, boots them, checks the application, and removes the test copy. In the measured Vault run on 2026-07-12 the VM was destroyed outright and restored from that night's snapshot in 97 seconds. A canary secret written minutes before the destroy survived, and credential fetches worked after the service returned.</p>
+          <p class="generated-line">Weekly restore check: last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_LAST_RUN_SECONDS:START-->689<!--LIVE:RESTORE_LAST_RUN_SECONDS:END--> seconds</p>
           <p>The first implementation needed twelve reruns. Several checks could report success before they had verified the restored service. Those checks now test the service response and the canary value before the run is allowed to pass.</p>
           <div class="actions"><a class="button" href="/dr-restore-verify/">Read the recovery test</a><a class="button" href="/postmortems-index/">Read the postmortems</a></div>
         </div>
@@ -772,13 +773,13 @@
 
         <div class="section-heading capability-heading"><h3>Tools I use to build, secure, and operate systems</h3></div>
         <div class="capabilities-grid">
-          <article class="capability"><h3>Cloud &amp; IaC</h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
-          <article class="capability"><h3>CI/CD &amp; GitOps</h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
-          <article class="capability"><h3>Containers &amp; orchestration</h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
-          <article class="capability"><h3>Languages &amp; APIs</h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
-          <article class="capability"><h3>Identity &amp; security</h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
-          <article class="capability"><h3>Observability</h3><p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p></article>
-          <article class="capability"><h3>Virtualization &amp; network</h3><p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p></article>
+          <article class="capability"><h3><a href="/skills/terraform.html">Cloud &amp; IaC</a></h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
+          <article class="capability"><h3><a href="/skills/jenkins.html">CI/CD &amp; GitOps</a></h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
+          <article class="capability"><h3><a href="/skills/kubernetes-k3s.html">Containers &amp; orchestration</a></h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
+          <article class="capability"><h3><a href="/skills/python-tooling.html">Languages &amp; APIs</a></h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
+          <article class="capability"><h3><a href="/skills/active-directory.html">Identity &amp; security</a></h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
+          <article class="capability"><h3><a href="/skills/zabbix.html">Observability</a></h3><p>Zabbix (API automation, self-healing), Prometheus, Grafana, SCOM, SolarWinds</p></article>
+          <article class="capability"><h3><a href="/skills/proxmox.html">Virtualization &amp; network</a></h3><p>VMware vSphere/vSAN/Horizon, Proxmox VE (HA clusters), OPNsense, VLAN design, Cloudflare Zero Trust</p></article>
         </div>
 
         <div class="section-heading more-lab-heading"><h3>More from the lab</h3></div>
