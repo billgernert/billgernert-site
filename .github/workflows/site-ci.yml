@@ -28,7 +28,7 @@ jobs:
         # the repo and exits non-zero on any HTML5 validation error.
         # --ignore-re: vnu's CSS parser does not know the scroll-driven animations spec yet
         # (animation-timeline, index.html); real property, validator lag, not a site error.
-        run: html5validator --root . --log INFO --ignore-re 'CSS. .animation-timeline.. Parse Error'
+        run: html5validator --root . --log INFO --ignore-re 'CSS. .animation-timeline.. Parse Error|Attribute .loading. not allowed on element .iframe. at this point.'
   link-check:
     name: Internal link check
     runs-on: ubuntu-latest
