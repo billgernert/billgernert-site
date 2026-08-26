@@ -26,9 +26,9 @@
   };
 
   if (publicView) {
-    if (!endpointMeta) document.title = "AutomationLab public map";
+    if (!endpointMeta) document.title = "AutomationLab platform map";
     const eyebrow = document.getElementById("map-eyebrow"); if (eyebrow) eyebrow.textContent = "PUBLIC LIVE TOPOLOGY";
-    const heading = document.getElementById("map-heading"); if (heading) heading.textContent = "AutomationLab public map";
+    const heading = document.getElementById("map-heading"); if (heading) heading.textContent = "AutomationLab platform map";
     const source = document.getElementById("legend-source"); if (source) source.textContent = "Live telemetry · sanitized public projection";
     const detailAction = document.querySelector(".detail-action"); if (detailAction) detailAction.hidden = true;
   }
@@ -272,7 +272,7 @@
     const host = document.getElementById("breadcrumbs"); if (!host) return; host.replaceChildren();
     state.path.forEach((id, index) => {
       if (index) { const separator = document.createElement("span"); separator.textContent = "›"; host.appendChild(separator); }
-      const node = nodeById(id); const button = document.createElement("button"); button.type = "button"; button.textContent = node.name;
+      const node = nodeById(id); const button = document.createElement("button"); button.type = "button"; button.textContent = index === 0 ? "AutomationLab platform map" : node.name;
       if (index === state.path.length - 1) button.className = "current";
       button.addEventListener("click", () => { state.path = state.path.slice(0, index + 1); state.focus = id; state.selected = id; render(); }); host.appendChild(button);
     });
