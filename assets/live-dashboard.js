@@ -16,58 +16,19 @@
   var HEALTH_CHECK_INTERVAL_MS = 8000;
   var BADGE_TICK_INTERVAL_MS = 1000;
   var STATUS_ORIGIN = "https://status.billgernert.com";
-  var DASHBOARD_WIDTH = 1200;
-  var GRID_ROW_HEIGHT = 38;
-  var DASHBOARD_CHROME_HEIGHT = 96;
   var routeIsLive = false;
   var lastStateAt = Date.now();
   var checking = false;
   var connections = [];
 
-  function prepareViewport(frame) {
-    var rows = parseInt(frame.getAttribute("data-dashboard-rows"), 10);
-    var naturalHeight = rows * GRID_ROW_HEIGHT + DASHBOARD_CHROME_HEIGHT;
-    var shell = document.createElement("div");
-
-    shell.className = "live-frame-viewport";
-    shell.hidden = true;
-    shell.style.position = "relative";
-    shell.style.width = "100%";
-    shell.style.maxWidth = DASHBOARD_WIDTH + "px";
-    shell.style.margin = "0 auto";
-    shell.style.overflow = "hidden";
-    frame.parentNode.insertBefore(shell, frame);
-    shell.appendChild(frame);
-
-    frame.setAttribute("scrolling", "no");
-    frame.style.position = "absolute";
-    frame.style.inset = "0 auto auto 0";
-    frame.style.width = DASHBOARD_WIDTH + "px";
-    frame.style.height = naturalHeight + "px";
-    frame.style.minHeight = "0";
-    frame.style.transformOrigin = "top left";
-
-    function resize() {
-      var scale = Math.min(1, shell.clientWidth / DASHBOARD_WIDTH);
-      frame.style.transform = "scale(" + scale + ")";
-      shell.style.height = Math.ceil(naturalHeight * scale) + "px";
-    }
-
-    if (window.ResizeObserver) {
-      new ResizeObserver(resize).observe(shell);
-    } else {
-      window.addEventListener("resize", resize);
-    }
-
+  function prepareFrame(frame) {
+    frame.setAttribute("scrolling", "yes");
     return {
       hide: function () {
         frame.hidden = true;
-        shell.hidden = true;
       },
       show: function () {
-        shell.hidden = false;
         frame.hidden = false;
-        resize();
       }
     };
   }
@@ -96,7 +57,7 @@
     var status = root.querySelector("[data-live-status]");
     var badge = root.querySelector("[data-live-badge]");
     var home = root.querySelector("[data-live-home]");
-    var viewport = prepareViewport(frame);
+    var display = prepareFrame(frame);
     var connection = {
       badge: badge,
       fallback: fallback,
@@ -107,7 +68,7 @@
     connections.push(connection);
 
     function showFallback() {
-      viewport.hide();
+      display.hide();
       frame.removeAttribute("src");
       fallback.hidden = false;
       status.textContent = "Live dashboard unavailable. The explanatory summary remains available.";
@@ -122,14 +83,14 @@
         fallback.hidden = true;
         status.textContent = "Live dashboard connected.";
       }, { once: true });
-      viewport.show();
+      display.show();
       frame.src = frame.getAttribute("data-src");
     }
 
     if (home) {
       home.addEventListener("click", function (event) {
         event.preventDefault();
-        viewport.show();
+        display.show();
         fallback.hidden = true;
         status.textContent = "Returning to the live dashboard.";
         loadFrame();
