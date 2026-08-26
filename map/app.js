@@ -26,9 +26,9 @@
   };
 
   if (publicView) {
-    if (!endpointMeta) document.title = "Automation Lab public map";
+    if (!endpointMeta) document.title = "AutomationLab public map";
     document.getElementById("map-eyebrow").textContent = "PUBLIC LIVE TOPOLOGY";
-    document.getElementById("map-heading").textContent = "Automation Lab public map";
+    document.getElementById("map-heading").textContent = "AutomationLab public map";
     document.getElementById("legend-source").textContent = "Live telemetry · sanitized public projection";
     document.querySelector(".detail-action").hidden = true;
   }
@@ -36,7 +36,7 @@
   function iconForNode(node) {
     if (ICONS[node.id]) return ICONS[node.id];
     const kind = String(node.details?.kind || "").toLowerCase();
-    if (kind === "lab" || kind.includes("automation lab")) return "brand";
+    if (kind === "lab" || kind.includes("automationlab")) return "brand";
     if (kind.includes("namespace")) return "folder";
     if (kind.includes("deployment") || kind.includes("statefulset") || kind.includes("daemonset") || kind.includes("controller")) return "workload";
     if (kind.includes("replicaset")) return "layers";
@@ -246,7 +246,7 @@
     setDetail("detail-network", details.network || details.meaning || "No network detail");
     const admin = document.getElementById("detail-admin"); const noAdmin = document.getElementById("detail-no-admin");
     let adminUrl = null;
-    try { const candidate = new URL(node.admin_url); if (candidate.protocol === "https:" && candidate.hostname.endsWith(".automationlab.internal")) adminUrl = candidate.href; } catch (_reason) { adminUrl = null; }
+    try { const candidate = new URL(node.admin_url); if (candidate.protocol === "https:" && candidate.hostname.endsWith(".parsec-lab.com")) adminUrl = candidate.href; } catch (_reason) { adminUrl = null; }
     admin.hidden = !adminUrl; noAdmin.hidden = Boolean(adminUrl); if (adminUrl) admin.href = adminUrl;
     const panel = document.getElementById("alerts-panel"); const list = document.getElementById("alerts-list"); const toggle = document.getElementById("alerts-toggle"); list.replaceChildren();
     const alerts = node.alerts || []; panel.hidden = alerts.length === 0;

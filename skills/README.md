@@ -1,6 +1,6 @@
 # Skills portfolio (`site/skills/`)
 
-A static, multi-page skills portfolio for AutomationLab. The index groups every
+A static, multi-page skills portfolio for parsec-lab.com. The index groups every
 capability I operate in AutomationLab into six categories; each capability links to its
 own writeup page. Plain HTML + one shared stylesheet - no framework, no build step, no
 JavaScript. It deploys as-is with the rest of `site/` on Cloudflare Pages.
