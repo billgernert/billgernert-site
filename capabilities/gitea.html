@@ -241,12 +241,92 @@
 
       <section class="block">
         <h2>Architecture</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">Branch -&gt; PR -&gt; required checks -&gt; protected main -&gt;
-            consumed by CI and GitOps. Scrubbed of hostnames and addresses.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="gitea-flow-title gitea-flow-desc">
+              <title id="gitea-flow-title">Gitea architecture: Protected change path</title>
+              <desc id="gitea-flow-desc">A branch becomes a pull request, required checks report their results, branch protection controls the merge, and CI and GitOps consume protected main.</desc>
+              <defs>
+                <marker id="gitea-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">PROTECTED CHANGE PATH</text>
+              <g aria-hidden="true">
+                <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#gitea-flow-arrow)"/>
+                <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#gitea-flow-arrow)"/>
+                <path d="M 730.0 209.0 L 730.0 247.0 L 600.0 247.0 L 600.0 285.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#gitea-flow-arrow)"/>
+                <path d="M 478.0 337.0 L 422.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#gitea-flow-arrow)"/>
+              </g>
+                <g aria-label="Branch: A scoped change starts here">
+                  <title>Branch: A scoped change starts here</title>
+                  <rect x="48" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="64" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">BRANCH</tspan>
+                  </text>
+                  <text x="64" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">A scoped change starts here</tspan>
+                  </text>
+                </g>
+                <g aria-label="Pull request: Review and discussion happen here">
+                  <title>Pull request: Review and discussion happen here</title>
+                  <rect x="328" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="344" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">PULL REQUEST</tspan>
+                  </text>
+                  <text x="344" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Review and discussion happen here</tspan>
+                  </text>
+                </g>
+                <g aria-label="Required checks: CI reports pass or fail">
+                  <title>Required checks: CI reports pass or fail</title>
+                  <rect x="608" y="105" width="244" height="104" rx="8" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                  <text x="624" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">REQUIRED CHECKS</tspan>
+                  </text>
+                  <text x="624" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">CI reports pass or fail</tspan>
+                  </text>
+                </g>
+                <g aria-label="Protected main: Merge policy controls admission">
+                  <title>Protected main: Merge policy controls admission</title>
+                  <rect x="478" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="494" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="494" dy="0">PROTECTED MAIN</tspan>
+                  </text>
+                  <text x="494" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="494" dy="0">Merge policy controls admission</tspan>
+                  </text>
+                </g>
+                <g aria-label="CI and GitOps: Consume the accepted change">
+                  <title>CI and GitOps: Consume the accepted change</title>
+                  <rect x="178" y="285" width="244" height="104" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="194" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="194" dy="0">CI AND GITOPS</tspan>
+                  </text>
+                  <text x="194" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="194" dy="0">Consume the accepted change</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="470" x2="872" y2="470" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="493" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="503" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="517" width="16" height="12" rx="3" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                <text x="62" y="527" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Amber. Operator or policy gate.</text>
+                <rect x="32" y="541" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="551" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="565" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <text x="62" y="575" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Dashed box. Stored state or record.</text>
+                <rect x="32" y="589" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="619" x2="50" y2="619" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#gitea-flow-arrow)"/>
+                <text x="62" y="623" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The change path runs from a branch through review and required checks into protected main, then on to CI and GitOps. Hostnames and repository details are omitted.</figcaption>
+        </figure>
       </section>
 
       <section class="block">

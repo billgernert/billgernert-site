@@ -241,23 +241,112 @@
 
       <section class="block">
         <h2>Architecture</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">Data-source topology: the metrics backend and the Infinity JSON
-            path into Grafana, and how dashboards are published behind SSO. Addresses and
-            hostnames scrubbed.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="grafana-flow-title grafana-flow-desc">
+              <title id="grafana-flow-title">Grafana architecture: Two data paths into one dashboard</title>
+              <desc id="grafana-flow-desc">Prometheus metrics and Infinity JSON data meet in Grafana, where one dashboard presents both sources through the published SSO path.</desc>
+              <defs>
+                <marker id="grafana-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="834" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">TWO DATA PATHS INTO ONE DASHBOARD</text>
+              <g aria-hidden="true">
+                <path d="M 180.0 202.0 L 180.0 231.0 L 450.0 231.0 L 450.0 260.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#grafana-flow-arrow)"/>
+                <path d="M 720.0 202.0 L 720.0 231.0 L 450.0 231.0 L 450.0 260.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#grafana-flow-arrow)"/>
+                <path d="M 450.0 352.0 L 450.0 376.0 L 450.0 376.0 L 450.0 400.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#grafana-flow-arrow)"/>
+                <path d="M 450.0 492.0 L 450.0 516.0 L 450.0 516.0 L 450.0 540.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#grafana-flow-arrow)"/>
+                <path d="M 560.0 586.0 L 610.0 586.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#grafana-flow-arrow)"/>
+              </g>
+                <g aria-label="Prometheus: Time-series metrics">
+                  <title>Prometheus: Time-series metrics</title>
+                  <rect x="70" y="110" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="86" y="139" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="86" dy="0">PROMETHEUS</tspan>
+                  </text>
+                  <text x="86" y="168" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="86" dy="0">Time-series metrics</tspan>
+                  </text>
+                </g>
+                <g aria-label="Infinity JSON: Operational facts from APIs">
+                  <title>Infinity JSON: Operational facts from APIs</title>
+                  <rect x="610" y="110" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="626" y="139" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="626" dy="0">INFINITY JSON</tspan>
+                  </text>
+                  <text x="626" y="168" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="626" dy="0">Operational facts from APIs</tspan>
+                  </text>
+                </g>
+                <g aria-label="Grafana: Queries both data sources">
+                  <title>Grafana: Queries both data sources</title>
+                  <rect x="340" y="260" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="356" y="289" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="356" dy="0">GRAFANA</tspan>
+                  </text>
+                  <text x="356" y="318" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="356" dy="0">Queries both data sources</tspan>
+                  </text>
+                </g>
+                <g aria-label="Dashboard: Panels share one operational view">
+                  <title>Dashboard: Panels share one operational view</title>
+                  <rect x="340" y="400" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="356" y="429" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="356" dy="0">DASHBOARD</tspan>
+                  </text>
+                  <text x="356" y="458" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="356" dy="0">Panels share one operational view</tspan>
+                  </text>
+                </g>
+                <g aria-label="SSO boundary: Published access is authenticated">
+                  <title>SSO boundary: Published access is authenticated</title>
+                  <rect x="340" y="540" width="220" height="92" rx="8" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                  <text x="356" y="569" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="356" dy="0">SSO BOUNDARY</tspan>
+                  </text>
+                  <text x="356" y="598" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="356" dy="0">Published access is authenticated</tspan>
+                  </text>
+                </g>
+                <g aria-label="Reader: Receives the scrubbed public view">
+                  <title>Reader: Receives the scrubbed public view</title>
+                  <rect x="610" y="540" width="220" height="92" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="626" y="569" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="626" dy="0">READER</tspan>
+                  </text>
+                  <text x="626" y="598" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="626" dy="0">Receives the scrubbed public view</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="670" x2="872" y2="670" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="693" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="703" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="717" width="16" height="12" rx="3" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                <text x="62" y="727" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Amber. Operator or policy gate.</text>
+                <rect x="32" y="741" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="751" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="765" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <text x="62" y="775" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Dashed box. Stored state or record.</text>
+                <rect x="32" y="789" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="799" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="819" x2="50" y2="819" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#grafana-flow-arrow)"/>
+                <text x="62" y="823" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The dashboard combines the metrics backend and an Infinity JSON data path before publication behind SSO. Addresses and hostnames are omitted.</figcaption>
+        </figure>
       </section>
 
       <section class="block">
         <h2>In action</h2>
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Screenshot coming</span>
-          <span class="sub">A live dashboard combining a metrics panel with an Infinity
-            JSON-sourced table. Captured with any internal identifiers cropped per the
-            publishing checklist.</span>
+          <span class="cap">Static configuration evidence coming</span>
+          <span class="sub">Use a panel definition or data-source configuration view here. Do not
+            publish a screenshot of a live graph.</span>
         </div>
       </section>
 

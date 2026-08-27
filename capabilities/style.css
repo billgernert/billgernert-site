@@ -794,6 +794,30 @@ section.block ul.legend-swatches li::marker { content: ""; }
   }
 }
 
+/* Inline capability diagrams. The SVG carries its own palette and embedded legend so a copied or
+   exported diagram keeps the same meaning outside the surrounding page. On narrow screens the
+   diagram scrolls inside its own region rather than shrinking labels below a readable size. */
+.capability-diagram { margin: 18px 0 0; }
+.capability-diagram-scroll {
+  overflow-x: auto;
+  border-radius: 10px;
+  scrollbar-color: var(--border-strong) var(--bg-raised);
+}
+.capability-flow {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+  height: auto;
+}
+.capability-diagram figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2px;
+  line-height: 1.55;
+}
+
 /* Public-safe captures of the real HTML email renderers. */
 .email-preview {
   margin: 20px 0 4px;

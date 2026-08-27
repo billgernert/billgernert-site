@@ -243,13 +243,100 @@
 
       <section class="block">
         <h2>Architecture</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">Same name, two horizons: internal query -&gt; internal resolver -&gt;
-            internal ingress; external query -&gt; public DNS -&gt; edge. Scrubbed of domains,
-            resolver addresses, and hostnames.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 830" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="split-horizon-dns-flow-title split-horizon-dns-flow-desc">
+              <title id="split-horizon-dns-flow-title">Split-horizon DNS architecture: One name, two resolution paths</title>
+              <desc id="split-horizon-dns-flow-desc">The same hostname follows an internal resolver and ingress path from inside the network, or public DNS and the edge from outside, before both routes reach the service.</desc>
+              <defs>
+                <marker id="split-horizon-dns-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="814" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">ONE NAME, TWO RESOLUTION PATHS</text>
+              <g aria-hidden="true">
+                <path d="M 450.0 192.0 L 450.0 211.0 L 180.0 211.0 L 180.0 230.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <path d="M 450.0 192.0 L 450.0 211.0 L 720.0 211.0 L 720.0 230.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <path d="M 180.0 322.0 L 180.0 346.0 L 180.0 346.0 L 180.0 370.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <path d="M 720.0 322.0 L 720.0 346.0 L 720.0 346.0 L 720.0 370.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <path d="M 180.0 462.0 L 180.0 486.0 L 450.0 486.0 L 450.0 510.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <path d="M 720.0 462.0 L 720.0 486.0 L 450.0 486.0 L 450.0 510.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+              </g>
+                <g aria-label="Same hostname: One name for both locations">
+                  <title>Same hostname: One name for both locations</title>
+                  <rect x="340" y="100" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="356" y="129" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="356" dy="0">SAME HOSTNAME</tspan>
+                  </text>
+                  <text x="356" y="158" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="356" dy="0">One name for both locations</tspan>
+                  </text>
+                </g>
+                <g aria-label="Inside query: A client asks from the lab">
+                  <title>Inside query: A client asks from the lab</title>
+                  <rect x="70" y="230" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="86" y="259" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="86" dy="0">INSIDE QUERY</tspan>
+                  </text>
+                  <text x="86" y="288" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="86" dy="0">A client asks from the lab</tspan>
+                  </text>
+                </g>
+                <g aria-label="Outside query: A client asks from the internet">
+                  <title>Outside query: A client asks from the internet</title>
+                  <rect x="610" y="230" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="626" y="259" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="626" dy="0">OUTSIDE QUERY</tspan>
+                  </text>
+                  <text x="626" y="288" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="626" dy="0">A client asks from the internet</tspan>
+                  </text>
+                </g>
+                <g aria-label="Internal resolver: Return the internal ingress path">
+                  <title>Internal resolver: Return the internal ingress path</title>
+                  <rect x="70" y="370" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="86" y="399" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="86" dy="0">INTERNAL RESOLVER</tspan>
+                  </text>
+                  <text x="86" y="428" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="86" dy="0">Return the internal ingress path</tspan>
+                  </text>
+                </g>
+                <g aria-label="Public DNS: Return the public edge path">
+                  <title>Public DNS: Return the public edge path</title>
+                  <rect x="610" y="370" width="220" height="92" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="626" y="399" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="626" dy="0">PUBLIC DNS</tspan>
+                  </text>
+                  <text x="626" y="428" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="626" dy="0">Return the public edge path</tspan>
+                  </text>
+                </g>
+                <g aria-label="Service: Both paths reach the intended app">
+                  <title>Service: Both paths reach the intended app</title>
+                  <rect x="340" y="510" width="220" height="92" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="356" y="539" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="356" dy="0">SERVICE</tspan>
+                  </text>
+                  <text x="356" y="568" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="356" dy="0">Both paths reach the intended app</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="650" x2="872" y2="650" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="673" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="683" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="697" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="707" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="721" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="731" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="751" x2="50" y2="751" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#split-horizon-dns-flow-arrow)"/>
+                <text x="62" y="755" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The same name resolves through an internal path from inside and a public edge path from outside. Domains, resolver addresses, and hostnames are omitted.</figcaption>
+        </figure>
       </section>
 
       <section class="block">

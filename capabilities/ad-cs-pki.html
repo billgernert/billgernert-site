@@ -242,13 +242,107 @@
 
       <section class="block">
         <h2>Architecture</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">Root of trust -&gt; templates (what may be issued, and to whom) -&gt;
-            issued certs -&gt; revocation distribution that clients check. Scrubbed of the CA name,
-            host, and addresses.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ad-cs-pki-flow-title ad-cs-pki-flow-desc">
+              <title id="ad-cs-pki-flow-title">AD CS / PKI architecture: Certificate trust and revocation</title>
+              <desc id="ad-cs-pki-flow-desc">The root of trust constrains certificate templates, enrollment produces an issued certificate, and clients validate both the chain and current revocation data.</desc>
+              <defs>
+                <marker id="ad-cs-pki-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">CERTIFICATE TRUST AND REVOCATION</text>
+              <g aria-hidden="true">
+                <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+                <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+                <path d="M 730.0 209.0 L 730.0 247.0 L 730.0 247.0 L 730.0 285.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+                <path d="M 608.0 337.0 L 572.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+                <path d="M 328.0 337.0 L 292.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+              </g>
+                <g aria-label="Root of trust: Anchors the certificate chain">
+                  <title>Root of trust: Anchors the certificate chain</title>
+                  <rect x="48" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="64" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">ROOT OF TRUST</tspan>
+                  </text>
+                  <text x="64" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Anchors the certificate chain</tspan>
+                  </text>
+                </g>
+                <g aria-label="Template: Defines permitted use and enrollment">
+                  <title>Template: Defines permitted use and enrollment</title>
+                  <rect x="328" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="344" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">TEMPLATE</tspan>
+                  </text>
+                  <text x="344" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Defines permitted use and</tspan>
+                    <tspan x="344" dy="16">enrollment</tspan>
+                  </text>
+                </g>
+                <g aria-label="Enrollment gate: Identity and permission are checked">
+                  <title>Enrollment gate: Identity and permission are checked</title>
+                  <rect x="608" y="105" width="244" height="104" rx="8" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                  <text x="624" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">ENROLLMENT GATE</tspan>
+                  </text>
+                  <text x="624" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">Identity and permission are</tspan>
+                    <tspan x="624" dy="16">checked</tspan>
+                  </text>
+                </g>
+                <g aria-label="Issued certificate: The approved identity receives a cert">
+                  <title>Issued certificate: The approved identity receives a cert</title>
+                  <rect x="608" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="624" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">ISSUED CERTIFICATE</tspan>
+                  </text>
+                  <text x="624" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">The approved identity receives a</tspan>
+                    <tspan x="624" dy="16">cert</tspan>
+                  </text>
+                </g>
+                <g aria-label="Revocation data: Clients can reject withdrawn certs">
+                  <title>Revocation data: Clients can reject withdrawn certs</title>
+                  <rect x="328" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="344" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">REVOCATION DATA</tspan>
+                  </text>
+                  <text x="344" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Clients can reject withdrawn</tspan>
+                    <tspan x="344" dy="16">certs</tspan>
+                  </text>
+                </g>
+                <g aria-label="Client validation: Chain and status both pass">
+                  <title>Client validation: Chain and status both pass</title>
+                  <rect x="48" y="285" width="244" height="104" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="64" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">CLIENT VALIDATION</tspan>
+                  </text>
+                  <text x="64" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Chain and status both pass</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="470" x2="872" y2="470" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="493" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="503" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="517" width="16" height="12" rx="3" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                <text x="62" y="527" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Amber. Operator or policy gate.</text>
+                <rect x="32" y="541" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="551" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="565" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <text x="62" y="575" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Dashed box. Stored state or record.</text>
+                <rect x="32" y="589" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="619" x2="50" y2="619" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#ad-cs-pki-flow-arrow)"/>
+                <text x="62" y="623" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The trust path covers the root, certificate templates, enrollment, issued certificates, and revocation checks. CA names, hosts, and addresses are omitted.</figcaption>
+        </figure>
       </section>
 
       <section class="block">

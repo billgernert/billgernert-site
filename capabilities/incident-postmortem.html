@@ -241,12 +241,104 @@
 
       <section class="block">
         <h2>Architecture</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">The incident loop: detect -&gt; mitigate -&gt; timeline -&gt; root
-            cause -&gt; prevent, and where each step draws on monitoring and job history.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="incident-postmortem-flow-title incident-postmortem-flow-desc">
+              <title id="incident-postmortem-flow-title">Incident and postmortem practice architecture: Incident learning loop</title>
+              <desc id="incident-postmortem-flow-desc">Monitoring and job history support detection, mitigation, timeline reconstruction, root-cause analysis, and a prevention change that returns to monitoring.</desc>
+              <defs>
+                <marker id="incident-postmortem-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">INCIDENT LEARNING LOOP</text>
+              <g aria-hidden="true">
+                <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <path d="M 730.0 209.0 L 730.0 247.0 L 730.0 247.0 L 730.0 285.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <path d="M 608.0 337.0 L 572.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <path d="M 328.0 337.0 L 292.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <path d="M 48.0 337.0 L 24 337.0 L 24 157.0 L 48.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.4" stroke-dasharray="6 5" marker-end="url(#incident-postmortem-flow-arrow)"/>
+              </g>
+                <g aria-label="Detect: Monitoring or a job surfaces failure">
+                  <title>Detect: Monitoring or a job surfaces failure</title>
+                  <rect x="48" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="64" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">DETECT</tspan>
+                  </text>
+                  <text x="64" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Monitoring or a job surfaces</tspan>
+                    <tspan x="64" dy="16">failure</tspan>
+                  </text>
+                </g>
+                <g aria-label="Mitigate: Reduce impact and restore service">
+                  <title>Mitigate: Reduce impact and restore service</title>
+                  <rect x="328" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="344" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">MITIGATE</tspan>
+                  </text>
+                  <text x="344" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Reduce impact and restore service</tspan>
+                  </text>
+                </g>
+                <g aria-label="Timeline: Reconstruct events from evidence">
+                  <title>Timeline: Reconstruct events from evidence</title>
+                  <rect x="608" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="624" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">TIMELINE</tspan>
+                  </text>
+                  <text x="624" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">Reconstruct events from evidence</tspan>
+                  </text>
+                </g>
+                <g aria-label="Root cause: Name the mechanism that failed">
+                  <title>Root cause: Name the mechanism that failed</title>
+                  <rect x="608" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="624" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">ROOT CAUSE</tspan>
+                  </text>
+                  <text x="624" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">Name the mechanism that failed</tspan>
+                  </text>
+                </g>
+                <g aria-label="Prevent: Change code, checks, or procedure">
+                  <title>Prevent: Change code, checks, or procedure</title>
+                  <rect x="328" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="344" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">PREVENT</tspan>
+                  </text>
+                  <text x="344" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Change code, checks, or procedure</tspan>
+                  </text>
+                </g>
+                <g aria-label="Verify: Monitoring watches the new control">
+                  <title>Verify: Monitoring watches the new control</title>
+                  <rect x="48" y="285" width="244" height="104" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="64" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">VERIFY</tspan>
+                  </text>
+                  <text x="64" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Monitoring watches the new</tspan>
+                    <tspan x="64" dy="16">control</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="470" x2="872" y2="470" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="493" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="503" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="517" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="527" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="541" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <text x="62" y="551" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Dashed box. Stored state or record.</text>
+                <rect x="32" y="565" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="575" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="595" x2="50" y2="595" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#incident-postmortem-flow-arrow)"/>
+                <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The incident loop moves from detection and mitigation through timeline and root-cause work into a prevention change, using monitoring and job history as evidence.</figcaption>
+        </figure>
       </section>
 
       <section class="block">

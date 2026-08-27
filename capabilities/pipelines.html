@@ -261,13 +261,103 @@
             backstop, rather than by installing a source-forge-specific controller plugin - fewer
             plugins is a smaller attack surface for something that holds a publish credential.</li>
         </ul>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Architecture flow</span>
-          <span class="sub">Private repo -&gt; build + fail-closed scrub -&gt; push (token from
-            the secrets manager, in memory) -&gt; public repo -&gt; static host. One-way boundary.
-            Scrubbed of the controller's load-balancer address, repo URLs, and secret paths.</span>
-        </div>
+        <figure class="capability-diagram">
+          <div class="capability-diagram-scroll">
+            <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pipelines-flow-title pipelines-flow-desc">
+              <title id="pipelines-flow-title">Pipelines architecture: Private-to-public publish boundary</title>
+              <desc id="pipelines-flow-desc">A private repository enters a build that fails closed on the scrub gate, obtains a scoped token in memory, pushes the clean result to a public repository, and updates the static host.</desc>
+              <defs>
+                <marker id="pipelines-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
+                </marker>
+              </defs>
+              <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
+              <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">PRIVATE-TO-PUBLIC PUBLISH BOUNDARY</text>
+              <g aria-hidden="true">
+                <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#pipelines-flow-arrow)"/>
+                <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#pipelines-flow-arrow)"/>
+                <path d="M 730.0 209.0 L 730.0 247.0 L 730.0 247.0 L 730.0 285.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#pipelines-flow-arrow)"/>
+                <path d="M 608.0 337.0 L 572.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#pipelines-flow-arrow)"/>
+                <path d="M 328.0 337.0 L 292.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#pipelines-flow-arrow)"/>
+              </g>
+                <g aria-label="Private repository: Source and operational detail">
+                  <title>Private repository: Source and operational detail</title>
+                  <rect x="48" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="64" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">PRIVATE REPOSITORY</tspan>
+                  </text>
+                  <text x="64" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Source and operational detail</tspan>
+                  </text>
+                </g>
+                <g aria-label="Site build: Render the public output">
+                  <title>Site build: Render the public output</title>
+                  <rect x="328" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="344" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">SITE BUILD</tspan>
+                  </text>
+                  <text x="344" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Render the public output</tspan>
+                  </text>
+                </g>
+                <g aria-label="Scrub gate: A finding stops publication">
+                  <title>Scrub gate: A finding stops publication</title>
+                  <rect x="608" y="105" width="244" height="104" rx="8" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                  <text x="624" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">SCRUB GATE</tspan>
+                  </text>
+                  <text x="624" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">A finding stops publication</tspan>
+                  </text>
+                </g>
+                <g aria-label="Scoped push token: Fetched and used in memory">
+                  <title>Scoped push token: Fetched and used in memory</title>
+                  <rect x="608" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                  <text x="624" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="624" dy="0">SCOPED PUSH TOKEN</tspan>
+                  </text>
+                  <text x="624" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="624" dy="0">Fetched and used in memory</tspan>
+                  </text>
+                </g>
+                <g aria-label="Public repository: Receives the clean site">
+                  <title>Public repository: Receives the clean site</title>
+                  <rect x="328" y="285" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="7 5"/>
+                  <text x="344" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="344" dy="0">PUBLIC REPOSITORY</tspan>
+                  </text>
+                  <text x="344" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="344" dy="0">Receives the clean site</tspan>
+                  </text>
+                </g>
+                <g aria-label="Static host: Serves the published result">
+                  <title>Static host: Serves the published result</title>
+                  <rect x="48" y="285" width="244" height="104" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                  <text x="64" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
+                    <tspan x="64" dy="0">STATIC HOST</tspan>
+                  </text>
+                  <text x="64" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
+                    <tspan x="64" dy="0">Serves the published result</tspan>
+                  </text>
+                </g>
+                <line x1="28" y1="470" x2="872" y2="470" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
+                <rect x="32" y="493" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
+                <text x="62" y="503" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Cyan. Automated step or path.</text>
+                <rect x="32" y="517" width="16" height="12" rx="3" fill="rgba(255,184,77,0.06)" stroke="#ffb84d" stroke-width="1.5"/>
+                <text x="62" y="527" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Amber. Operator or policy gate.</text>
+                <rect x="32" y="541" width="16" height="12" rx="3" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
+                <text x="62" y="551" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Green. Recorded or healthy outcome.</text>
+                <rect x="32" y="565" width="16" height="12" rx="3" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <text x="62" y="575" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Dashed box. Stored state or record.</text>
+                <rect x="32" y="589" width="16" height="12" rx="4" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.2"/>
+                <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Rounded box. Actor or process.</text>
+                <line x1="32" y1="619" x2="50" y2="619" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#pipelines-flow-arrow)"/>
+                <text x="62" y="623" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
+            </svg>
+          </div>
+          <figcaption>The publish path crosses a one-way boundary from the private repository through a fail-closed scrub and into the public repository and static host. Addresses, repository URLs, and secret paths are omitted.</figcaption>
+        </figure>
       </section>
 
       <section class="block">
