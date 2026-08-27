@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,8 +141,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Proxmox VE - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run a <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox VE high-availability cluster as the compute foundation of AutomationLab.">
+  <title>Active Directory - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I run on-prem Active Directory in AutomationLab - a fully automated user lifecycle with disable-first offboarding and a delayed cleanup sweep, synced to the cloud directory.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,10 +150,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/proxmox">
+  <link rel="canonical" href="https://billgernert.com/capabilities/active-directory">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -179,58 +179,69 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Proxmox VE</span>
+      <span class="here">Active Directory</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
-      <h1>Proxmox VE</h1>
-      <p class="descriptor">The <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node high-availability cluster that every VM in the lab is provisioned onto - the metal underneath the whole platform.</p>
+      <span class="badge" data-accent="cyan">Security &amp; Identity</span>
+      <h1>Active Directory</h1>
+      <p class="descriptor">On-prem identity and the full user lifecycle as automation, spread across 4 automation-owned roles - provision, sync, and a careful offboarding that disables first and deletes later, never the other way round.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>In action</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Proxmox VE is an open-source virtualization platform that combines KVM virtual
-          machines and LXC containers with clustering, high availability, and software-defined
-          storage under one API. I chose it as the base layer for AutomationLab because it gives
-          me a real, API-driven hypervisor cluster - the same primitives a production platform
-          team works with - without a per-socket licensing model getting in the way of
-          experimentation.</p>
-        <p>The point of the lab is to treat infrastructure as something you <b>declare and
-          automate</b>, not something you click together. Proxmox exposes everything through a
-          REST API, which is exactly what lets Terraform stand VMs up from code instead of from
-          a wizard.</p>
+        <p>Active Directory is the identity source of truth for AutomationLab. It holds the users,
+          groups, and service accounts the rest of the platform authorizes against, and it is the
+          <b>authoritative</b> half of a hybrid setup: on-prem AD is where identities are born and
+          changed, and those changes flow up to the cloud directory - not the reverse.</p>
+        <p>I run the whole <b>user lifecycle as code</b>: joining, group membership, and leaving
+          are pipeline actions with approval gates, not a checklist someone follows by hand in a
+          management console. Identity is too important - and too easy to get subtly wrong - to be
+          a manual process.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes, clustered.</b> The cluster runs as a single management plane with a
-            shared quorum, so I administer all nodes as one system rather than <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> separate
-            hosts.</li>
-          <li><b>High availability.</b> Selected VMs are enrolled in HA groups; if a node fails,
-            the cluster restarts those guests elsewhere automatically. Enrollment is the final,
-            deliberate step of provisioning - not the default - so I control exactly what is
-            allowed to migrate.</li>
-          <li><b>Terraform-driven.</b> Each VM gets its own Terraform workspace using the
-            <code>bpg/proxmox</code> provider. A pipeline plans and applies against the cluster
-            API; there is no hand-built VM anywhere in the lab.</li>
-          <li><b>Dynamic load balancing.</b> The cluster rebalances running guests across nodes
-            based on load, so no single node becomes a hotspot as the lab grows.</li>
-          <li><b>Clean decommission.</b> The provisioning flow reverses cleanly - HA
-            de-registration, then destroy - so tearing a VM down is as automated as building it.</li>
+          <li><b>Structured, automation-owned objects.</b> Automation-managed users, groups, and
+            service accounts live in a dedicated organizational-unit tree, so what the automation
+            owns is clearly separated from everything else.</li>
+          <li><b>Provisioning by pipeline.</b> Creating a user creates the account, sets group
+            membership, and lets the change sync to the cloud directory - one flow, repeatable,
+            with the sensitive values pulled from the secrets manager at run time.</li>
+          <li><b>Hybrid sync to the cloud.</b> An identity-sync bridge keeps on-prem AD and the
+            cloud directory aligned, with on-prem as the source of authority.</li>
+          <li><b>Disable-first offboarding.</b> Leaving is the highest-stakes action, so it is the
+            most guarded: it requires four-eyes approval, disables the account immediately, and
+            defers destructive cleanup to a later sweep.</li>
         </ul>
       </section>
 
       <section class="block">
         <h2>Architecture</h2>
+        <p>The lifecycle that matters most is <b>offboarding</b>, because it is the one that is
+          destructive and hard to undo:</p>
+        <ul>
+          <li><b>Four-eyes approval.</b> A deprovision is requested by one person and approved by
+            a different, explicitly authorized one - the request and approval identities cannot be
+            the same.</li>
+          <li><b>Disable immediately.</b> Access is cut at once by disabling the account, which is
+            instantly reversible if the request was wrong.</li>
+          <li><b>Delete on a delay.</b> A later cleanup sweep performs the irreversible removal,
+            leaving a recovery window between "access revoked" and "gone for good."</li>
+        </ul>
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Cluster topology: <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> HA nodes, the shared quorum and storage
-            layer, and where the Terraform provider plugs into the cluster API. Rendered as a
-            scrubbed diagram - no addresses or node hostnames.</span>
+          <span class="sub">Lifecycle flow: provision -&gt; sync -&gt; (offboard) four-eyes -&gt;
+            disable now -&gt; delayed cleanup sweep. Scrubbed of domain names, OU paths, and
+            addresses.</span>
         </div>
       </section>
 
@@ -239,29 +250,36 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Screenshot coming</span>
-          <span class="sub">Cluster summary view with all nodes healthy and an HA-managed guest
-            mid-migration. Captured with hostnames and addresses cropped or redacted per the
-            publishing checklist.</span>
+          <span class="sub">An offboarding run showing the account disabled and the cleanup
+            scheduled, with the approver recorded. Captured per the publishing checklist -
+            usernames, domain, and addresses redacted.</span>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha</span>
-          Quorum is not optional. In a small cluster it is tempting to run an even node count,
-          but you want a reliable majority for the quorum to survive a single-node loss without
-          the whole cluster going read-only. Plan the vote layout before you need it, not during
-          an outage.
+          <span class="tag">Gotcha - in hybrid identity, the source of authority wins silently</span>
+          When on-prem AD is the authority and the cloud directory is a synced replica, editing an
+          attribute <b>in the cloud</b> is a trap: the next sync cycle overwrites it with the
+          on-prem value and your change vanishes with no error. The mental model has to be "change
+          it where it is authoritative, then let it flow" - not "change it wherever the UI is
+          convenient." Half the confusing identity issues I chased came down to editing on the
+          wrong side of the sync.
         </div>
         <ul>
-          <li><b>HA is a promise you have to mean.</b> Enrolling a guest in HA means the cluster
-            will happily restart it on another node - including after a transient blip. Anything
-            with node-local state has to be designed for that before you enroll it, or you will
-            be surprised at the worst time.</li>
-          <li><b>The API is the contract.</b> Once every VM comes from Terraform against the API,
-            drift shows up as a plan diff instead of a mystery. Clicking a change in the UI just
-            means the next apply wants to undo it - so I stopped doing that.</li>
+          <li><b>Disable before you delete - always.</b> Immediate deletion on offboarding has no
+            undo; a fat-fingered or malicious request is permanent. Disable-now / delete-later
+            turns a mistake into a recoverable event and still cuts access instantly.</li>
+          <li><b>Four-eyes belongs on the destructive action, in code.</b> The rule that the
+            requester cannot be the approver is only real when a pipeline enforces it - a policy in
+            a document is not a control.</li>
+          <li><b>Separate what automation owns.</b> Keeping automation-managed objects in their own
+            OU tree means a bulk action can never accidentally reach into identities it was never
+            meant to touch.</li>
+          <li><b>Service accounts are identities too.</b> They need the same lifecycle discipline
+            as users - scoped, tracked, and revocable - or they become the forgotten keys nobody
+            rotates.</li>
         </ul>
       </section>
 
@@ -269,28 +287,29 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num"><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--></div>
-            <div class="label">HA nodes, one plane</div>
+            <div class="num">2 people</div>
+            <div class="label">to offboard an identity</div>
           </div>
           <div class="stat">
-            <div class="num">100%</div>
-            <div class="label">VMs from code</div>
+            <div class="num">Instant</div>
+            <div class="label">access revocation</div>
           </div>
           <div class="stat">
-            <div class="num">0</div>
-            <div class="label">hand-built guests</div>
+            <div class="num">Delayed</div>
+            <div class="label">irreversible cleanup</div>
           </div>
         </div>
-        <p>Proxmox turned "the lab" from a pile of machines into a single programmable substrate.
-          Everything above it - GitOps, monitoring, identity - assumes it can ask for a VM and
-          get one, reliably, from code. That assumption is what makes the rest of the platform
-          possible.</p>
+        <p>Active Directory is where the lab's identity discipline lives. Automating the lifecycle
+          makes joins and leaves repeatable and reviewable; disable-first offboarding makes the
+          riskiest action safe to get wrong; and treating on-prem as the single source of authority
+          keeps hybrid identity from quietly drifting out of sync. Identity done carefully is what
+          everything else gets to trust.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://www.proxmox.com/en/proxmox-virtual-environment/overview" rel="noopener">Proxmox VE</a>
+          <a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/active-directory-domain-services" rel="noopener">AD DS overview</a>
         </div>
       </section>
     </div>
@@ -307,7 +326,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -328,7 +347,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

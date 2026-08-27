@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,8 +141,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zabbix - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run Zabbix in AutomationLab - API-driven registration, per-host encrypted keys, and a classify-and-heal engine that fixes common failures automatically.">
+  <title>Ansible - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I use Ansible to configure and harden every host in AutomationLab - role-based, idempotent, and ordered so a firewall change never locks the box out.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,10 +150,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/zabbix">
+  <link rel="canonical" href="https://billgernert.com/capabilities/ansible">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -179,42 +179,47 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Zabbix</span>
+      <span class="here">Ansible</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge" data-accent="green">Observability</span>
-      <h1>Zabbix</h1>
-      <p class="descriptor">The lab's monitoring brain - hosts register themselves through the API with a unique encrypted key, and a classify-and-heal engine that recognizes 5 distinct failure classes turns common failures into auditable, automatic fixes.</p>
+      <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
+      <h1>Ansible</h1>
+      <p class="descriptor">Post-provision configuration and hardening for every host, split across 28 roles - idempotent, applied in a deliberate order, because the order is what keeps a firewall change from locking the box out.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>In action</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Zabbix is the monitoring backbone of AutomationLab. Every provisioned host is registered
-          into it automatically as the last step of the pipeline, so "monitored" is not a thing
-          someone remembers to do later - it is part of what "provisioned" means. Beyond
-          collecting metrics, it is the trigger source for the lab's <b>self-healing</b>.</p>
-        <p>I use it because it has a first-class API. That lets registration, templating, and
-          remediation all be <b>driven from code</b> rather than clicked in a UI, which is the
-          only way monitoring keeps up with infrastructure that is itself built from code.</p>
+        <p>Ansible is the configuration-management layer of AutomationLab. Terraform brings a VM
+          into existence; Ansible turns that bare VM into a configured, hardened, monitored host.
+          It runs as the <b>configure</b> stage of the provisioning pipeline, after the machine
+          exists and before it is handed over as ready.</p>
+        <p>I use it because configuration should be <b>declarative and idempotent</b>: the same
+          play run twice leaves the host in the same state, so "converge the host to what the
+          role says" replaces a pile of one-off setup commands nobody can reproduce.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>API-driven registration.</b> The pipeline creates the host via the API, places
-            it in the right host group, and attaches the standard agent template - no manual
-            host creation.</li>
-          <li><b>Unique encrypted key per host.</b> Each host gets its own pre-shared key,
-            generated at registration and stored in the secrets manager; agent traffic is
-            PSK-encrypted and required in both directions, so no host shares another's key.</li>
-          <li><b>Classify-and-heal engine.</b> Triggers feed an engine that classifies a failure
-            and applies an OS-aware remediation - for example, restarting a stuck service - and
-            records every attempt and outcome so heals are auditable, not magic.</li>
-          <li><b>Tiered response.</b> A fast Tier-1 path restarts common stuck services within
-            minutes; anything it cannot safely fix escalates to an operator with the context already
-            gathered.</li>
+          <li><b>Roles, not scripts.</b> Each concern is a role with documented defaults - a
+            firewall role, a time-sync role, a monitoring-agent role - composed into a single
+            host-configuration play.</li>
+          <li><b>Runs from the pipeline, as an unprivileged user.</b> The configure stage runs
+            Ansible from the CI agent under a dedicated automation user, not root, with the
+            collection path pinned so runs are reproducible regardless of which agent picks up
+            the job.</li>
+          <li><b>Secrets pulled at runtime.</b> Anything sensitive a role needs comes from the
+            secrets manager during the run - nothing sensitive is stored in inventory or vars in
+            the repo.</li>
+          <li><b>Deliberate role order.</b> The play applies firewall, then time-sync, then the
+            monitoring agent - and that order is load-bearing, not cosmetic (see the gotcha).</li>
         </ul>
       </section>
 
@@ -223,9 +228,9 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Register -&gt; monitor -&gt; trigger -&gt; classify -&gt; heal -&gt;
-            record, with per-host keys drawn from the secrets manager. Scrubbed of addresses,
-            hostnames, and key material.</span>
+          <span class="sub">Configure stage: pipeline -&gt; automation user -&gt; ordered roles
+            (firewall -&gt; time-sync -&gt; monitoring agent) converging the host. Scrubbed of
+            addresses and hostnames.</span>
         </div>
       </section>
 
@@ -234,35 +239,33 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Screenshot coming</span>
-          <span class="sub">The heal log showing a classified failure, the remediation applied,
-            and the recorded outcome. Captured per the publishing checklist - no addresses,
-            hostnames, or key identities.</span>
+          <span class="sub">A play recap showing an idempotent second run with zero changed
+            tasks. Captured per the publishing checklist - hostnames and addresses redacted.</span>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - the API is a machine door, not the front door</span>
-          The monitoring UI sits behind an identity-aware SSO proxy, which is correct for interactive users.
-          But a script calling the API cannot complete an interactive SSO challenge - so
-          automation has to reach the API endpoint <b>directly</b>, on the internal service path,
-          rather than through the public, SSO-fronted hostname. Point a registration script at the
-          pretty public URL and it gets an auth redirect page instead of JSON, and fails in a way
-          that looks like a broken token. Machine-to-machine and browser sign-in are two different
-          doors on purpose.
+          <span class="tag">Gotcha - firewall ordering can lock you out</span>
+          The firewall role has to ensure the <b>SSH allow rule is in place before</b> the
+          default zone flips to DROP. Get that backwards and the play sets a default-deny policy
+          while it still needs SSH to finish - and it severs its own connection mid-run, leaving
+          a half-configured, unreachable host. The fix is baked into the role order: firewall
+          first, and within it, permit management access before tightening the default. Never let
+          "deny by default" land before "allow the thing you are connected over."
         </div>
         <ul>
-          <li><b>A unique key per host is worth the bookkeeping.</b> Sharing one PSK across hosts
-            is easier on day one and a disaster the day one host is compromised. Generating and
-            storing a key per host at registration keeps a key leak scoped to a single machine.</li>
-          <li><b>A heal you cannot audit is a liability.</b> Auto-remediation that does not record
-            what it did, and whether it worked, erodes trust fast. Every heal writes an outcome, so
-            the engine is accountable and I can see when it is masking a recurring problem instead
-            of fixing it.</li>
-          <li><b>Register at the end, but never optionally.</b> Making monitoring the mandatory
-            final provisioning step is what prevents the classic "that box was never in
-            monitoring" outage.</li>
+          <li><b>Idempotence is a feature you have to test.</b> A role is only trustworthy once a
+            second run reports zero changes. A task that keeps reporting "changed" is usually
+            lying about convergence and will fight you later.</li>
+          <li><b>Pin the collection path.</b> If roles depend on collections, the path they load
+            from must be fixed and owned by the run user - not left to whatever happens to be
+            installed on a given agent - or the same play behaves differently on different
+            runners.</li>
+          <li><b>Run as a real service account, not root.</b> Least privilege applies to
+            configuration management too; a role that needs elevation should ask for it
+            explicitly, so "what can this play change?" stays answerable.</li>
         </ul>
       </section>
 
@@ -270,29 +273,28 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">Auto</div>
-            <div class="label">host registration</div>
+            <div class="num">1 play</div>
+            <div class="label">bare VM to ready host</div>
           </div>
           <div class="stat">
-            <div class="num">1 key</div>
-            <div class="label">per host, encrypted</div>
+            <div class="num">0</div>
+            <div class="label">changed tasks on re-run</div>
           </div>
           <div class="stat">
-            <div class="num">Minutes</div>
-            <div class="label">Tier-1 auto-recovery</div>
+            <div class="num">Order</div>
+            <div class="label">enforced, not hoped</div>
           </div>
         </div>
-        <p>Zabbix is where the lab stops just watching itself and starts fixing itself. The
-          combination that matters is automatic registration (nothing escapes monitoring),
-          per-host keys (a leak stays contained), and audited self-healing (the automation is
-          accountable). Together they turn monitoring from a dashboard you check into a control
-          loop that keeps the platform healthy on its own.</p>
+        <p>Ansible is what makes "provisioned" mean "actually configured and hardened," every
+          time, the same way. The firewall-ordering lesson is the one I keep closest: automation
+          that can lock itself out of the very host it is configuring is a trap, and the defense
+          is encoding the safe order into the roles so it cannot be got wrong by accident.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://www.zabbix.com/documentation/current/en/manual/api" rel="noopener">Zabbix API</a>
+          <a href="https://docs.ansible.com/ansible/latest/playbook_guide/index.html" rel="noopener">Ansible playbooks</a>
         </div>
       </section>
     </div>
@@ -309,7 +311,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -330,7 +332,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

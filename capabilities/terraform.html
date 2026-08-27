@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,8 +141,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Active Directory - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run on-prem Active Directory in AutomationLab - a fully automated user lifecycle with disable-first offboarding and a delayed cleanup sweep, synced to the cloud directory.">
+  <title>Terraform - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I use Terraform to provision the lab - per-VM workspaces to keep blast radius small, roll-forward on partial failure, and pinned, verified tool versions.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,10 +150,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/active-directory">
+  <link rel="canonical" href="https://billgernert.com/capabilities/terraform">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -179,64 +179,57 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Active Directory</span>
+      <span class="here">Terraform</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge" data-accent="cyan">Security &amp; Identity</span>
-      <h1>Active Directory</h1>
-      <p class="descriptor">On-prem identity and the full user lifecycle as automation, spread across 4 automation-owned roles - provision, sync, and a careful offboarding that disables first and deletes later, never the other way round.</p>
+      <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
+      <h1>Terraform</h1>
+      <p class="descriptor">Infrastructure from declared state, built through the bpg/proxmox provider pinned to version 0.111.1 - one workspace per VM so a mistake blasts one machine, not the fleet, and a pipeline that rolls forward cleanly when a step fails.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>In action</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Active Directory is the identity source of truth for AutomationLab. It holds the users,
-          groups, and service accounts the rest of the platform authorizes against, and it is the
-          <b>authoritative</b> half of a hybrid setup: on-prem AD is where identities are born and
-          changed, and those changes flow up to the cloud directory - not the reverse.</p>
-        <p>I run the whole <b>user lifecycle as code</b>: joining, group membership, and leaving
-          are pipeline actions with approval gates, not a checklist someone follows by hand in a
-          management console. Identity is too important - and too easy to get subtly wrong - to be
-          a manual process.</p>
+        <p>Terraform is how VMs come into existence in AutomationLab. The hypervisor is driven
+          entirely through the <code>bpg/proxmox</code> provider - there is no hand-built guest
+          anywhere in the lab. Terraform owns the "make the machine exist and match what the code
+          says" half of provisioning; configuration management takes it from there.</p>
+        <p>I use it because infrastructure should be <b>declarative and diffable</b>. A plan shows
+          exactly what will change before anything does, and drift surfaces as a diff instead of a
+          surprise - which is the whole reason to treat infrastructure as code rather than as a
+          sequence of console clicks.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>Structured, automation-owned objects.</b> Automation-managed users, groups, and
-            service accounts live in a dedicated organizational-unit tree, so what the automation
-            owns is clearly separated from everything else.</li>
-          <li><b>Provisioning by pipeline.</b> Creating a user creates the account, sets group
-            membership, and lets the change sync to the cloud directory - one flow, repeatable,
-            with the sensitive values pulled from the secrets manager at run time.</li>
-          <li><b>Hybrid sync to the cloud.</b> An identity-sync bridge keeps on-prem AD and the
-            cloud directory aligned, with on-prem as the source of authority.</li>
-          <li><b>Disable-first offboarding.</b> Leaving is the highest-stakes action, so it is the
-            most guarded: it requires four-eyes approval, disables the account immediately, and
-            defers destructive cleanup to a later sweep.</li>
+          <li><b>One workspace per VM.</b> Each machine has its own workspace and state rather
+            than one giant shared state for the whole lab. A bad apply can only touch the one VM
+            it owns.</li>
+          <li><b>Driven by the pipeline.</b> Terraform runs as the provision stage of the Jenkins
+            flow, after IP allocation and before configuration - plan, gated apply, then hand off.</li>
+          <li><b>Roll-forward on partial failure.</b> If a later stage fails, the pipeline cleans
+            up forward to a consistent state rather than leaving a half-built VM lying around, and
+            a decommission path reverses what was created.</li>
+          <li><b>Pinned provider and tool versions.</b> The provider and the Terraform binary are
+            pinned to explicit versions so a run is reproducible and does not silently change
+            behavior when an upstream release lands.</li>
         </ul>
       </section>
 
       <section class="block">
         <h2>Architecture</h2>
-        <p>The lifecycle that matters most is <b>offboarding</b>, because it is the one that is
-          destructive and hard to undo:</p>
-        <ul>
-          <li><b>Four-eyes approval.</b> A deprovision is requested by one person and approved by
-            a different, explicitly authorized one - the request and approval identities cannot be
-            the same.</li>
-          <li><b>Disable immediately.</b> Access is cut at once by disabling the account, which is
-            instantly reversible if the request was wrong.</li>
-          <li><b>Delete on a delay.</b> A later cleanup sweep performs the irreversible removal,
-            leaving a recovery window between "access revoked" and "gone for good."</li>
-        </ul>
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Lifecycle flow: provision -&gt; sync -&gt; (offboard) four-eyes -&gt;
-            disable now -&gt; delayed cleanup sweep. Scrubbed of domain names, OU paths, and
-            addresses.</span>
+          <span class="sub">Per-VM workspace model: allocate -&gt; plan -&gt; gated apply -&gt;
+            hand off, each VM isolated in its own state. Scrubbed of addresses and hostnames.</span>
         </div>
       </section>
 
@@ -245,36 +238,32 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Screenshot coming</span>
-          <span class="sub">An offboarding run showing the account disabled and the cleanup
-            scheduled, with the approver recorded. Captured per the publishing checklist -
-            usernames, domain, and addresses redacted.</span>
+          <span class="sub">A plan output for a single VM workspace ahead of a gated apply.
+            Captured per the publishing checklist - addresses, hostnames, and IDs redacted.</span>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - in hybrid identity, the source of authority wins silently</span>
-          When on-prem AD is the authority and the cloud directory is a synced replica, editing an
-          attribute <b>in the cloud</b> is a trap: the next sync cycle overwrites it with the
-          on-prem value and your change vanishes with no error. The mental model has to be "change
-          it where it is authoritative, then let it flow" - not "change it wherever the UI is
-          convenient." Half the confusing identity issues I chased came down to editing on the
-          wrong side of the sync.
+          <span class="tag">Gotcha - a version in the listing is not a downloadable artifact</span>
+          When pinning a tool version, "the version appears in the releases directory" is not the
+          same as "the release exists." A version can be listed while the specific artifact you
+          need returns a 404. So I verify the actual <b>artifact URL returns 200</b> before pinning
+          to it - not just that the version number shows up in a directory listing. Skip that and a
+          pipeline that passed yesterday breaks on a fresh agent that has to download the pinned
+          binary for the first time.
         </div>
         <ul>
-          <li><b>Disable before you delete - always.</b> Immediate deletion on offboarding has no
-            undo; a fat-fingered or malicious request is permanent. Disable-now / delete-later
-            turns a mistake into a recoverable event and still cuts access instantly.</li>
-          <li><b>Four-eyes belongs on the destructive action, in code.</b> The rule that the
-            requester cannot be the approver is only real when a pipeline enforces it - a policy in
-            a document is not a control.</li>
-          <li><b>Separate what automation owns.</b> Keeping automation-managed objects in their own
-            OU tree means a bulk action can never accidentally reach into identities it was never
-            meant to touch.</li>
-          <li><b>Service accounts are identities too.</b> They need the same lifecycle discipline
-            as users - scoped, tracked, and revocable - or they become the forgotten keys nobody
-            rotates.</li>
+          <li><b>Per-VM state is worth the extra files.</b> One monolithic state for everything is
+            tidy until a single bad apply or a lock left behind takes the whole lab's provisioning
+            hostage. Small, isolated states keep the blast radius to one machine.</li>
+          <li><b>The plan is the review, so gate the apply.</b> Applying straight from a push
+            defeats the point of a plan. An approval-gated apply in the pipeline means the diff is
+            actually looked at before infrastructure moves.</li>
+          <li><b>Roll-forward beats leaving wreckage.</b> A failed provision that cleans up to a
+            known state is recoverable; a half-built VM with orphaned state is a manual mess. Write
+            the failure path, do not just hope for the happy one.</li>
         </ul>
       </section>
 
@@ -282,29 +271,29 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">2 people</div>
-            <div class="label">to offboard an identity</div>
+            <div class="num">1 VM</div>
+            <div class="label">per workspace / state</div>
           </div>
           <div class="stat">
-            <div class="num">Instant</div>
-            <div class="label">access revocation</div>
+            <div class="num">100%</div>
+            <div class="label">guests from code</div>
           </div>
           <div class="stat">
-            <div class="num">Delayed</div>
-            <div class="label">irreversible cleanup</div>
+            <div class="num">200</div>
+            <div class="label">verified before pinning</div>
           </div>
         </div>
-        <p>Active Directory is where the lab's identity discipline lives. Automating the lifecycle
-          makes joins and leaves repeatable and reviewable; disable-first offboarding makes the
-          riskiest action safe to get wrong; and treating on-prem as the single source of authority
-          keeps hybrid identity from quietly drifting out of sync. Identity done carefully is what
-          everything else gets to trust.</p>
+        <p>Terraform is what makes the lab reproducible from the metal up: every VM is described in
+          code, isolated in its own state, and created through a gated, roll-forward pipeline. The
+          version-pinning lesson is a small one that saves a whole class of "worked yesterday,
+          broken today" failures - proof that in IaC the boring details are exactly where
+          reliability lives.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/active-directory-domain-services" rel="noopener">AD DS overview</a>
+          <a href="https://registry.terraform.io/providers/bpg/proxmox/latest/docs" rel="noopener">bpg/proxmox provider</a>
         </div>
       </section>
     </div>
@@ -321,7 +310,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -342,7 +331,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

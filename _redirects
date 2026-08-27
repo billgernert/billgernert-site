@@ -20,6 +20,9 @@
 /projects/platform-map /projects/platform-map/ 301
 /projects/automation-lab-map /projects/platform-map/ 301
 /projects/automation-lab-map/ /projects/platform-map/ 301
+/skills /capabilities/ 301
+/skills/ /capabilities/ 301
+/skills/* /capabilities/:splat 301
 /fleet /fleet/ 301
 /claude-code /fleet/legacy 302
 /claude-code/ /fleet/legacy 302

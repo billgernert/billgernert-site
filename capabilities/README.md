@@ -1,17 +1,17 @@
-# Skills portfolio (`site/skills/`)
+# Capabilities portfolio (`site/capabilities/`)
 
-A static, multi-page skills portfolio for parsec-lab.com. The index groups every
+A static, multi-page capabilities portfolio for billgernert.com. The index groups every
 capability I operate in AutomationLab into six categories; each capability links to its
 own writeup page. Plain HTML + one shared stylesheet - no framework, no build step, no
 JavaScript. It deploys as-is with the rest of `site/` on Cloudflare Pages.
 
 This is **additive**: it does not touch `site/index.html`. The parent site links here when
-ready; until then these pages stand on their own under `/skills/`.
+ready; until then these pages stand on their own under `/capabilities/`.
 
 ## Files
 
 ```
-site/skills/
+site/capabilities/
   style.css                 shared stylesheet (palette + type inherited from site/index.html)
   index.html                category grid; every skill is a clickable card
   <skill>.html              one page per skill, all from the same template
@@ -72,7 +72,7 @@ matching its category:
 
 ## Design
 
-Palette and type are inherited verbatim from `site/index.html` so the skills area reads as one
+Palette and type are inherited verbatim from `site/index.html` so the capabilities area reads as one
 continuation of the site, not a bolt-on: dark navy `#0a0e1a` ground, cyan `#00d4ff` primary,
 green `#00ff96` accent, slate `#4a6080` muted, pale `#e0e8ff` text; Share Tech Mono for labels
 and data, Exo 2 for prose. Single committed dark theme, matching the parent site.

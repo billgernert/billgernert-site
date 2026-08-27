@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,19 +141,20 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Terraform - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I use Terraform to provision the lab - per-VM workspaces to keep blast radius small, roll-forward on partial failure, and pinned, verified tool versions.">
+  <title>Kubernetes / K3s - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I run a lightweight K3s cluster as the service plane of AutomationLab - deliberate tradeoffs, and the client-config gotchas that make kubectl lie to you.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
+  <script src="/assets/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/terraform">
+  <link rel="canonical" href="https://billgernert.com/capabilities/kubernetes-k3s">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -179,42 +180,48 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Terraform</span>
+      <span class="here">Kubernetes / K3s</span>
     </nav>
 
     <header class="skill-head">
       <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
-      <h1>Terraform</h1>
-      <p class="descriptor">Infrastructure from declared state, built through the bpg/proxmox provider pinned to version 0.111.1 - one workspace per VM so a mistake blasts one machine, not the fleet, and a pipeline that rolls forward cleanly when a step fails.</p>
+      <h1>Kubernetes / K3s</h1>
+      <p class="descriptor">A <!--LIVE:KUBERNETES_NODE_COUNT:START-->3<!--LIVE:KUBERNETES_NODE_COUNT:END-->-node K3s cluster, one control plane and two workers, running the platform's own services - a real Kubernetes, sized for the lab, with tradeoffs made on purpose rather than by accident.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>Live Kubernetes evidence</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Terraform is how VMs come into existence in AutomationLab. The hypervisor is driven
-          entirely through the <code>bpg/proxmox</code> provider - there is no hand-built guest
-          anywhere in the lab. Terraform owns the "make the machine exist and match what the code
-          says" half of provisioning; configuration management takes it from there.</p>
-        <p>I use it because infrastructure should be <b>declarative and diffable</b>. A plan shows
-          exactly what will change before anything does, and drift surfaces as a diff instead of a
-          surprise - which is the whole reason to treat infrastructure as code rather than as a
-          sequence of console clicks.</p>
+        <p>K3s is a lightweight, fully conformant Kubernetes distribution. It is the <b>service
+          plane</b> of AutomationLab: the CI controller, the GitOps engine, ingress, and the
+          lab's own applications all run as workloads on it. Terraform makes VMs; Kubernetes is
+          where the things that run <i>on</i> those VMs live.</p>
+        <p>I chose K3s over full upstream Kubernetes because it gives me the same API and the same
+          mental model with a fraction of the operational weight - the right size for a lab that
+          needs to be <b>real Kubernetes</b>, not a toy, without a control plane that dwarfs the
+          workloads it runs.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>One workspace per VM.</b> Each machine has its own workspace and state rather
-            than one giant shared state for the whole lab. A bad apply can only touch the one VM
-            it owns.</li>
-          <li><b>Driven by the pipeline.</b> Terraform runs as the provision stage of the Jenkins
-            flow, after IP allocation and before configuration - plan, gated apply, then hand off.</li>
-          <li><b>Roll-forward on partial failure.</b> If a later stage fails, the pipeline cleans
-            up forward to a consistent state rather than leaving a half-built VM lying around, and
-            a decommission path reverses what was created.</li>
-          <li><b>Pinned provider and tool versions.</b> The provider and the Terraform binary are
-            pinned to explicit versions so a run is reproducible and does not silently change
-            behavior when an upstream release lands.</li>
+          <li><b>The platform's services run here.</b> The automation controller, GitOps
+            reconciler, ingress, and lab applications are all Kubernetes workloads, deployed and
+            reconciled from git.</li>
+          <li><b>Control plane plus spread workers.</b> A control-plane node runs the API and
+            scheduler; worker nodes carry the workloads and are spread across separate physical
+            hosts so a single machine failure does not take everything with it.</li>
+          <li><b>Declarative, GitOps-managed.</b> What runs on the cluster is declared in git and
+            reconciled continuously - the cluster is cattle, described in code, not a hand-tended
+            pet.</li>
+          <li><b>Secrets and ingress wired in.</b> Secrets come from the secrets manager and
+            traffic arrives through the ingress behind the zero-trust edge - the cluster is a
+            citizen of the wider platform, not an island.</li>
         </ul>
       </section>
 
@@ -223,42 +230,52 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Per-VM workspace model: allocate -&gt; plan -&gt; gated apply -&gt;
-            hand off, each VM isolated in its own state. Scrubbed of addresses and hostnames.</span>
+          <span class="sub">Control-plane node plus workers spread across hosts, workloads
+            reconciled from git, ingress behind the edge. Scrubbed of node addresses and
+            hostnames.</span>
         </div>
       </section>
 
-      <section class="block">
-        <h2>In action</h2>
-        <div class="frame">
-          <div class="glyph" aria-hidden="true"></div>
-          <span class="cap">Screenshot coming</span>
-          <span class="sub">A plan output for a single VM workspace ahead of a gated apply.
-            Captured per the publishing checklist - addresses, hostnames, and IDs redacted.</span>
+      <section class="block" data-public-noc>
+        <h2>Live Kubernetes evidence</h2>
+        <p>The public dashboard shows component availability, running workload counts, and CPU and
+          memory use by purpose. Pod hashes, namespaces, node names, images, addresses, and management
+          links are removed before Grafana can query the public series.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the public Kubernetes dashboard.</p>
+        <p class="links"><a href="https://billgernert.com/noc/open/kubernetes">Open Kubernetes full screen &#8594;</a></p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126"
+          title="Public Kubernetes dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live Kubernetes dashboard is unavailable. No cached workload state is presented as current.</p>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - a version in the listing is not a downloadable artifact</span>
-          When pinning a tool version, "the version appears in the releases directory" is not the
-          same as "the release exists." A version can be listed while the specific artifact you
-          need returns a 404. So I verify the actual <b>artifact URL returns 200</b> before pinning
-          to it - not just that the version number shows up in a directory listing. Skip that and a
-          pipeline that passed yesterday breaks on a fresh agent that has to download the pinned
-          binary for the first time.
+          <span class="tag">Gotcha - a stale kubeconfig makes every command fail identically</span>
+          One of the most time-wasting failures is not in the cluster at all - it is in the
+          <b>client config</b>. When a kubeconfig points at a control-plane endpoint that no longer
+          exists (a rebuilt or re-addressed control node), every <code>kubectl</code> and every
+          tool that shells out to it fails with the same timeout, and it looks like the cluster is
+          down when the cluster is fine. The tell is that <i>everything</i> fails the same way at
+          once. The fix is to point the client at the live API endpoint - I keep an explicit API
+          server override handy so tooling can reach the real control plane even when a config on
+          disk is stale.
         </div>
         <ul>
-          <li><b>Per-VM state is worth the extra files.</b> One monolithic state for everything is
-            tidy until a single bad apply or a lock left behind takes the whole lab's provisioning
-            hostage. Small, isolated states keep the blast radius to one machine.</li>
-          <li><b>The plan is the review, so gate the apply.</b> Applying straight from a push
-            defeats the point of a plan. An approval-gated apply in the pipeline means the diff is
-            actually looked at before infrastructure moves.</li>
-          <li><b>Roll-forward beats leaving wreckage.</b> A failed provision that cleans up to a
-            known state is recoverable; a half-built VM with orphaned state is a manual mess. Write
-            the failure path, do not just hope for the happy one.</li>
+          <li><b>The single control plane is a deliberate SPOF.</b> Spreading workers buys
+            resilience for workloads, but <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control-plane node means losing it stops scheduling
+            and API access. That is an accepted lab tradeoff - the point is that it was
+            <i>chosen</i> and documented, so nobody mistakes it for high availability it does not
+            have.</li>
+          <li><b>Distinguish "cluster down" from "I cannot reach it."</b> Client-side, DNS, and
+            edge problems all masquerade as an outage. Before declaring the cluster broken, prove
+            you can actually reach the API from a known-good client.</li>
+          <li><b>Lightweight is a feature, not a compromise.</b> Because the distribution is the
+            same API, everything learned here transfers to full Kubernetes - the smaller footprint
+            just removes weight the lab does not need.</li>
         </ul>
       </section>
 
@@ -266,29 +283,28 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">1 VM</div>
-            <div class="label">per workspace / state</div>
+            <div class="num">1</div>
+            <div class="label">service plane for the lab</div>
           </div>
           <div class="stat">
-            <div class="num">100%</div>
-            <div class="label">guests from code</div>
+            <div class="num">Spread</div>
+            <div class="label">workers across hosts</div>
           </div>
           <div class="stat">
-            <div class="num">200</div>
-            <div class="label">verified before pinning</div>
+            <div class="num">GitOps</div>
+            <div class="label">managed workloads</div>
           </div>
         </div>
-        <p>Terraform is what makes the lab reproducible from the metal up: every VM is described in
-          code, isolated in its own state, and created through a gated, roll-forward pipeline. The
-          version-pinning lesson is a small one that saves a whole class of "worked yesterday,
-          broken today" failures - proof that in IaC the boring details are exactly where
-          reliability lives.</p>
+        <p>K3s is the substrate everything user-facing runs on. The lasting lesson is less about
+          Kubernetes and more about honesty: name your single points of failure out loud, and
+          learn to tell a real outage from a client that is simply pointed at the wrong place -
+          because those two look identical right up until you check.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://registry.terraform.io/providers/bpg/proxmox/latest/docs" rel="noopener">bpg/proxmox provider</a>
+          <a href="https://docs.k3s.io/" rel="noopener">K3s docs</a>
         </div>
       </section>
     </div>
@@ -305,7 +321,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -326,7 +342,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

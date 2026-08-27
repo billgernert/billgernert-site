@@ -3,6 +3,24 @@
   <url><loc>https://billgernert.com/</loc></url>
   <url><loc>https://billgernert.com/about/</loc></url>
   <url><loc>https://billgernert.com/ai/</loc></url>
+  <url><loc>https://billgernert.com/capabilities/</loc></url>
+  <url><loc>https://billgernert.com/capabilities/active-directory</loc></url>
+  <url><loc>https://billgernert.com/capabilities/ad-cs-pki</loc></url>
+  <url><loc>https://billgernert.com/capabilities/ansible</loc></url>
+  <url><loc>https://billgernert.com/capabilities/devsecops</loc></url>
+  <url><loc>https://billgernert.com/capabilities/entra-id</loc></url>
+  <url><loc>https://billgernert.com/capabilities/grafana</loc></url>
+  <url><loc>https://billgernert.com/capabilities/incident-postmortem</loc></url>
+  <url><loc>https://billgernert.com/capabilities/jenkins</loc></url>
+  <url><loc>https://billgernert.com/capabilities/kubernetes-k3s</loc></url>
+  <url><loc>https://billgernert.com/capabilities/netbox-ipam</loc></url>
+  <url><loc>https://billgernert.com/capabilities/pipelines</loc></url>
+  <url><loc>https://billgernert.com/capabilities/prometheus</loc></url>
+  <url><loc>https://billgernert.com/capabilities/proxmox</loc></url>
+  <url><loc>https://billgernert.com/capabilities/python-tooling</loc></url>
+  <url><loc>https://billgernert.com/capabilities/terraform</loc></url>
+  <url><loc>https://billgernert.com/capabilities/vault</loc></url>
+  <url><loc>https://billgernert.com/capabilities/zabbix</loc></url>
   <url><loc>https://billgernert.com/dead-man-monitoring/</loc></url>
   <url><loc>https://billgernert.com/diagram/</loc></url>
   <url><loc>https://billgernert.com/dr-restore-verify/</loc></url>
@@ -27,24 +45,6 @@
   <url><loc>https://billgernert.com/projects/template-factory/</loc></url>
   <url><loc>https://billgernert.com/roadmap/</loc></url>
   <url><loc>https://billgernert.com/security/</loc></url>
-  <url><loc>https://billgernert.com/skills/</loc></url>
-  <url><loc>https://billgernert.com/skills/active-directory</loc></url>
-  <url><loc>https://billgernert.com/skills/ad-cs-pki</loc></url>
-  <url><loc>https://billgernert.com/skills/ansible</loc></url>
-  <url><loc>https://billgernert.com/skills/devsecops</loc></url>
-  <url><loc>https://billgernert.com/skills/entra-id</loc></url>
-  <url><loc>https://billgernert.com/skills/grafana</loc></url>
-  <url><loc>https://billgernert.com/skills/incident-postmortem</loc></url>
-  <url><loc>https://billgernert.com/skills/jenkins</loc></url>
-  <url><loc>https://billgernert.com/skills/kubernetes-k3s</loc></url>
-  <url><loc>https://billgernert.com/skills/netbox-ipam</loc></url>
-  <url><loc>https://billgernert.com/skills/pipelines</loc></url>
-  <url><loc>https://billgernert.com/skills/prometheus</loc></url>
-  <url><loc>https://billgernert.com/skills/proxmox</loc></url>
-  <url><loc>https://billgernert.com/skills/python-tooling</loc></url>
-  <url><loc>https://billgernert.com/skills/terraform</loc></url>
-  <url><loc>https://billgernert.com/skills/vault</loc></url>
-  <url><loc>https://billgernert.com/skills/zabbix</loc></url>
   <url><loc>https://billgernert.com/vault/</loc></url>
   <url><loc>https://billgernert.com/windows-identity/</loc></url>
 </urlset>

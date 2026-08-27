@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,20 +141,19 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kubernetes / K3s - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run a lightweight K3s cluster as the service plane of AutomationLab - deliberate tradeoffs, and the client-config gotchas that make kubectl lie to you.">
+  <title>Proxmox VE - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I run a <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox VE high-availability cluster as the compute foundation of AutomationLab.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
-  <script src="/assets/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/kubernetes-k3s">
+  <link rel="canonical" href="https://billgernert.com/capabilities/proxmox">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -180,43 +179,52 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Kubernetes / K3s</span>
+      <span class="here">Proxmox VE</span>
     </nav>
 
     <header class="skill-head">
       <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
-      <h1>Kubernetes / K3s</h1>
-      <p class="descriptor">A <!--LIVE:KUBERNETES_NODE_COUNT:START-->3<!--LIVE:KUBERNETES_NODE_COUNT:END-->-node K3s cluster, one control plane and two workers, running the platform's own services - a real Kubernetes, sized for the lab, with tradeoffs made on purpose rather than by accident.</p>
+      <h1>Proxmox VE</h1>
+      <p class="descriptor">The <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node high-availability cluster that every VM in the lab is provisioned onto - the metal underneath the whole platform.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>In action</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>K3s is a lightweight, fully conformant Kubernetes distribution. It is the <b>service
-          plane</b> of AutomationLab: the CI controller, the GitOps engine, ingress, and the
-          lab's own applications all run as workloads on it. Terraform makes VMs; Kubernetes is
-          where the things that run <i>on</i> those VMs live.</p>
-        <p>I chose K3s over full upstream Kubernetes because it gives me the same API and the same
-          mental model with a fraction of the operational weight - the right size for a lab that
-          needs to be <b>real Kubernetes</b>, not a toy, without a control plane that dwarfs the
-          workloads it runs.</p>
+        <p>Proxmox VE is an open-source virtualization platform that combines KVM virtual
+          machines and LXC containers with clustering, high availability, and software-defined
+          storage under one API. I chose it as the base layer for AutomationLab because it gives
+          me a real, API-driven hypervisor cluster - the same primitives a production platform
+          team works with - without a per-socket licensing model getting in the way of
+          experimentation.</p>
+        <p>The point of the lab is to treat infrastructure as something you <b>declare and
+          automate</b>, not something you click together. Proxmox exposes everything through a
+          REST API, which is exactly what lets Terraform stand VMs up from code instead of from
+          a wizard.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>The platform's services run here.</b> The automation controller, GitOps
-            reconciler, ingress, and lab applications are all Kubernetes workloads, deployed and
-            reconciled from git.</li>
-          <li><b>Control plane plus spread workers.</b> A control-plane node runs the API and
-            scheduler; worker nodes carry the workloads and are spread across separate physical
-            hosts so a single machine failure does not take everything with it.</li>
-          <li><b>Declarative, GitOps-managed.</b> What runs on the cluster is declared in git and
-            reconciled continuously - the cluster is cattle, described in code, not a hand-tended
-            pet.</li>
-          <li><b>Secrets and ingress wired in.</b> Secrets come from the secrets manager and
-            traffic arrives through the ingress behind the zero-trust edge - the cluster is a
-            citizen of the wider platform, not an island.</li>
+          <li><b><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes, clustered.</b> The cluster runs as a single management plane with a
+            shared quorum, so I administer all nodes as one system rather than <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> separate
+            hosts.</li>
+          <li><b>High availability.</b> Selected VMs are enrolled in HA groups; if a node fails,
+            the cluster restarts those guests elsewhere automatically. Enrollment is the final,
+            deliberate step of provisioning - not the default - so I control exactly what is
+            allowed to migrate.</li>
+          <li><b>Terraform-driven.</b> Each VM gets its own Terraform workspace using the
+            <code>bpg/proxmox</code> provider. A pipeline plans and applies against the cluster
+            API; there is no hand-built VM anywhere in the lab.</li>
+          <li><b>Dynamic load balancing.</b> The cluster rebalances running guests across nodes
+            based on load, so no single node becomes a hotspot as the lab grows.</li>
+          <li><b>Clean decommission.</b> The provisioning flow reverses cleanly - HA
+            de-registration, then destroy - so tearing a VM down is as automated as building it.</li>
         </ul>
       </section>
 
@@ -225,52 +233,40 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Control-plane node plus workers spread across hosts, workloads
-            reconciled from git, ingress behind the edge. Scrubbed of node addresses and
-            hostnames.</span>
+          <span class="sub">Cluster topology: <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> HA nodes, the shared quorum and storage
+            layer, and where the Terraform provider plugs into the cluster API. Rendered as a
+            scrubbed diagram - no addresses or node hostnames.</span>
         </div>
       </section>
 
-      <section class="block" data-public-noc>
-        <h2>Live Kubernetes evidence</h2>
-        <p>The public dashboard shows component availability, running workload counts, and CPU and
-          memory use by purpose. Pod hashes, namespaces, node names, images, addresses, and management
-          links are removed before Grafana can query the public series.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the public Kubernetes dashboard.</p>
-        <p class="links"><a href="https://billgernert.com/noc/open/kubernetes">Open Kubernetes full screen &#8594;</a></p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126"
-          title="Public Kubernetes dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live Kubernetes dashboard is unavailable. No cached workload state is presented as current.</p>
+      <section class="block">
+        <h2>In action</h2>
+        <div class="frame">
+          <div class="glyph" aria-hidden="true"></div>
+          <span class="cap">Screenshot coming</span>
+          <span class="sub">Cluster summary view with all nodes healthy and an HA-managed guest
+            mid-migration. Captured with hostnames and addresses cropped or redacted per the
+            publishing checklist.</span>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - a stale kubeconfig makes every command fail identically</span>
-          One of the most time-wasting failures is not in the cluster at all - it is in the
-          <b>client config</b>. When a kubeconfig points at a control-plane endpoint that no longer
-          exists (a rebuilt or re-addressed control node), every <code>kubectl</code> and every
-          tool that shells out to it fails with the same timeout, and it looks like the cluster is
-          down when the cluster is fine. The tell is that <i>everything</i> fails the same way at
-          once. The fix is to point the client at the live API endpoint - I keep an explicit API
-          server override handy so tooling can reach the real control plane even when a config on
-          disk is stale.
+          <span class="tag">Gotcha</span>
+          Quorum is not optional. In a small cluster it is tempting to run an even node count,
+          but you want a reliable majority for the quorum to survive a single-node loss without
+          the whole cluster going read-only. Plan the vote layout before you need it, not during
+          an outage.
         </div>
         <ul>
-          <li><b>The single control plane is a deliberate SPOF.</b> Spreading workers buys
-            resilience for workloads, but <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control-plane node means losing it stops scheduling
-            and API access. That is an accepted lab tradeoff - the point is that it was
-            <i>chosen</i> and documented, so nobody mistakes it for high availability it does not
-            have.</li>
-          <li><b>Distinguish "cluster down" from "I cannot reach it."</b> Client-side, DNS, and
-            edge problems all masquerade as an outage. Before declaring the cluster broken, prove
-            you can actually reach the API from a known-good client.</li>
-          <li><b>Lightweight is a feature, not a compromise.</b> Because the distribution is the
-            same API, everything learned here transfers to full Kubernetes - the smaller footprint
-            just removes weight the lab does not need.</li>
+          <li><b>HA is a promise you have to mean.</b> Enrolling a guest in HA means the cluster
+            will happily restart it on another node - including after a transient blip. Anything
+            with node-local state has to be designed for that before you enroll it, or you will
+            be surprised at the worst time.</li>
+          <li><b>The API is the contract.</b> Once every VM comes from Terraform against the API,
+            drift shows up as a plan diff instead of a mystery. Clicking a change in the UI just
+            means the next apply wants to undo it - so I stopped doing that.</li>
         </ul>
       </section>
 
@@ -278,28 +274,28 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">1</div>
-            <div class="label">service plane for the lab</div>
+            <div class="num"><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--></div>
+            <div class="label">HA nodes, one plane</div>
           </div>
           <div class="stat">
-            <div class="num">Spread</div>
-            <div class="label">workers across hosts</div>
+            <div class="num">100%</div>
+            <div class="label">VMs from code</div>
           </div>
           <div class="stat">
-            <div class="num">GitOps</div>
-            <div class="label">managed workloads</div>
+            <div class="num">0</div>
+            <div class="label">hand-built guests</div>
           </div>
         </div>
-        <p>K3s is the substrate everything user-facing runs on. The lasting lesson is less about
-          Kubernetes and more about honesty: name your single points of failure out loud, and
-          learn to tell a real outage from a client that is simply pointed at the wrong place -
-          because those two look identical right up until you check.</p>
+        <p>Proxmox turned "the lab" from a pile of machines into a single programmable substrate.
+          Everything above it - GitOps, monitoring, identity - assumes it can ask for a VM and
+          get one, reliably, from code. That assumption is what makes the rest of the platform
+          possible.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://docs.k3s.io/" rel="noopener">K3s docs</a>
+          <a href="https://www.proxmox.com/en/proxmox-virtual-environment/overview" rel="noopener">Proxmox VE</a>
         </div>
       </section>
     </div>
@@ -316,7 +312,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -337,7 +333,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

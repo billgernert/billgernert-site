@@ -1,5 +1,5 @@
-/* skills portfolio - shared stylesheet
-   Palette + type inherited verbatim from site/index.html so the skills area
+/* capabilities portfolio - shared stylesheet
+   Palette + type inherited verbatim from site/index.html so the capabilities area
    reads as one continuation of parsec-lab.com, not a bolt-on. Single neon-dark
    theme is a deliberate commitment, matching the parent site's color-scheme: dark. */
 
@@ -968,4 +968,170 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
 
 @media (max-width: 900px) {
   .sitemap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Capabilities index and writeup treatment. The topic rail gives each page one restrained
+   moving system cue. The content cards carry the hierarchy, with a reduced-motion fallback. */
+:root {
+  --cap-panel: rgba(9, 20, 35, 0.84);
+  --cap-line: rgba(0, 212, 255, 0.22);
+  --cap-line-hot: rgba(0, 212, 255, 0.68);
+  --cap-copy: #c9d3e5;
+}
+
+.capability-rail {
+  margin: 2rem 0 2.7rem;
+  padding: 1rem 1.15rem 1.15rem;
+  overflow: hidden;
+  border: 1px solid var(--cap-line);
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(0, 212, 255, 0.055), rgba(0, 255, 150, 0.025));
+}
+.capability-rail-labels {
+  display: grid;
+  grid-template-columns: repeat(var(--rail-count), minmax(0, 1fr));
+  gap: 0.65rem;
+  color: #a9b8d0;
+  font: 0.68rem/1.2 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.capability-rail-labels span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.capability-rail-labels span:not(:first-child):not(:last-child) { text-align: center; }
+.capability-rail-labels span:last-child { text-align: right; }
+.capability-track {
+  position: relative;
+  height: 3px;
+  margin-top: 0.85rem;
+  background: rgba(0, 212, 255, 0.17);
+}
+.capability-node {
+  position: absolute;
+  top: -4px;
+  left: var(--node-left);
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  background: #07111f;
+  transform: translateX(-50%);
+}
+.capability-node:first-child { transform: none; }
+.capability-node:last-child { transform: translateX(-100%); }
+.capability-track::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 14px rgba(0, 255, 150, 0.9);
+  animation: capability-pass 7s ease-in-out infinite;
+}
+@keyframes capability-pass {
+  0%, 8% { left: 0; opacity: 0; }
+  12%, 88% { opacity: 1; }
+  92%, 100% { left: calc(100% - 11px); opacity: 0; }
+}
+
+.capability-detail .skill-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.capability-detail .skill-body > * { grid-column: 1 / -1; }
+.capability-detail .skill-body > .block {
+  grid-column: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 1.45rem;
+  border: 1px solid var(--cap-line);
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(0, 212, 255, 0.04), transparent 42%), var(--cap-panel);
+  animation: capability-arrive 0.5s ease both;
+}
+.capability-detail .skill-body > .block:first-of-type,
+.capability-detail .skill-body > .block:has(figure),
+.capability-detail .skill-body > .block:has(table),
+.capability-detail .skill-body > .block:has(pre),
+.capability-detail .skill-body > .block:has(.frame) { grid-column: 1 / -1; }
+.capability-detail .skill-body > .block h2 {
+  margin-top: 0;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  line-height: 1.15;
+}
+.capability-detail .skill-body > .block p,
+.capability-detail .skill-body > .block li { color: var(--cap-copy); }
+.capability-detail .skill-body > .block .note,
+.capability-detail .skill-body > .block .callout { border-left-color: var(--green); }
+
+.capabilities-index .index-hero { max-width: 800px; }
+.capabilities-index .category {
+  margin-top: 1.2rem;
+  padding: 1.35rem;
+  border: 1px solid var(--cap-line);
+  border-radius: 10px;
+  background: rgba(7, 17, 31, 0.62);
+}
+.capabilities-index .category h2 {
+  margin-top: 0;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+}
+.capabilities-index .skill-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.capabilities-index .skill-card {
+  min-height: 185px;
+  padding: 1.3rem;
+  border-color: var(--cap-line);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(0, 212, 255, 0.045), transparent 45%), var(--cap-panel);
+  animation: capability-arrive 0.5s ease both;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+.capabilities-index .skill-card:hover,
+.capabilities-index .skill-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--cap-line-hot);
+  outline: none;
+}
+.capabilities-index .skill-card .name {
+  color: #fff;
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  line-height: 1.15;
+}
+.capabilities-index .skill-card .desc {
+  color: var(--cap-copy);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+.capabilities-index .skill-card .arrow {
+  margin-top: auto;
+  color: var(--cyan);
+}
+
+@keyframes capability-arrive {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 780px) {
+  .capability-detail .skill-body,
+  .capabilities-index .skill-grid { grid-template-columns: 1fr; }
+  .capability-detail .skill-body > .block { grid-column: auto; }
+  .capability-rail-labels { font-size: 0.56rem; letter-spacing: 0.035em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capability-track::after,
+  .capability-detail .skill-body > .block,
+  .capabilities-index .skill-card { animation: none; }
+  .capabilities-index .skill-card { transition: none; }
 }

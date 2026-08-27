@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <!-- BEGIN generated: motion (generate-site-pages.py) -->
   <script src="/assets/motion.js"></script>
-  <script defer src="/assets/skill-diagrams.js"></script>
+  <script defer src="/assets/capability-diagrams.js"></script>
   <style>
     /* GENERATED. Edit MOTION_TARGETS in scripts/generate-site-pages.py, never this block. */
   html.m-on .site-header:not(.m-in),
@@ -141,8 +141,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Argo CD - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run Argo CD in AutomationLab - GitOps reconciliation with self-heal, so git is the only lever that moves the cluster.">
+  <title>HashiCorp Vault - Engineering capabilities - Bill Gernert</title>
+  <meta name="description" content="How I use HashiCorp Vault as the secrets backbone of AutomationLab - AppRole auth, least-privilege scoping, and Vault-backed credential helpers.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -150,10 +150,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=architecture-flows-2">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
-  <link rel="canonical" href="https://billgernert.com/skills/argo-cd">
+  <link rel="canonical" href="https://billgernert.com/capabilities/vault">
   <!-- END generated: canonical -->
 </head>
-<body>
+<body class="capability-detail">
   <main class="page-narrow">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
@@ -179,54 +179,71 @@
       <span class="sep">/</span>
       <a href="index.html">Engineering capabilities</a>
       <span class="sep">/</span>
-      <span class="here">Argo CD</span>
+      <span class="here">HashiCorp Vault</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge" data-accent="green">CI/CD &amp; GitOps</span>
-      <h1>Argo CD</h1>
-      <p class="descriptor">GitOps reconciliation across 6 Application and ApplicationSet definitions, keeping the cluster matching git - continuously, and by force. Git is the desired state; anything else is drift to be corrected.</p>
+      <span class="badge" data-accent="cyan">Security &amp; Identity</span>
+      <h1>HashiCorp Vault</h1>
+      <p class="descriptor">The secrets backbone of the lab, reached through 19 committed runtime credential-fetch scripts - every pipeline and service authenticates with a scoped AppRole and reads only the paths it needs, nothing more.</p>
     </header>
-
+    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
+    <div class="capability-rail" aria-label="Page topics">
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>In action</span><span>Lessons learned and gotchas</span><span>Impact</span></div>
+      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
+    </div>
+    <!-- END generated: capability-rail -->
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Argo CD is the GitOps engine for the cluster. It continuously compares what is
-          <b>declared in git</b> against what is <b>running</b>, and reconciles the two so the
-          live state converges on the committed state. The repo is not a suggestion or a record
-          after the fact - it is the control input.</p>
-        <p>I use it because it makes the cluster <b>auditable and reproducible</b>: every change is
-          a commit, every rollback is a revert, and "what is supposed to be running?" has one
-          answer that lives in version control rather than in someone's memory of what they last
-          applied by hand.</p>
+        <p>Vault is the single source of truth for secrets in AutomationLab: API tokens,
+          per-host monitoring keys, service credentials, and the personal access tokens that
+          automation uses to open pull requests. Nothing sensitive lives in a repo, a pipeline
+          definition, or a container image - it lives in Vault and is fetched at the moment it is
+          needed.</p>
+        <p>The reason it matters is not "encryption at rest" - it is <b>identity and scope</b>.
+          Every consumer proves who it is, gets a short-lived token, and is authorized to read a
+          deliberately narrow slice of the secret tree. A leaked credential is then a bounded
+          problem, not a master key.</p>
       </section>
 
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>Declared apps, reconciled continuously.</b> Cluster workloads are defined
-            declaratively in git; Argo CD watches the repo and the cluster and keeps them in
-            step.</li>
-          <li><b>Auto-sync with self-heal.</b> Approved changes roll out automatically, and
-            out-of-band drift is actively corrected back to the committed state rather than just
-            flagged.</li>
-          <li><b>Change is a pull request.</b> Because the repo is the control plane, a change to
-            the running cluster is a reviewed PR - the same guardrails as any other code lands on
-            infrastructure.</li>
-          <li><b>Visible drift and health.</b> The sync/health view makes it obvious when
-            something has diverged or a rollout is unhealthy, so problems surface instead of
-            hiding.</li>
+          <li><b>AppRole for machines.</b> Pipelines and services authenticate with the AppRole
+            method - a role ID plus a secret ID - rather than a person logging in. The credentials
+            are injected as environment or mounted secrets, never baked into an image.</li>
+          <li><b>KV v2 for secret storage.</b> Secrets live in a versioned key-value store under
+            a consistent <code>&lt;service&gt;/...</code> path convention, so every secret has an
+            obvious, predictable home and a version history to roll back to.</li>
+          <li><b>Least-privilege policies.</b> Each role is bound to a policy that grants read on
+            exactly the paths that role needs. A monitoring agent cannot read PR tokens; the PR
+            helper cannot read monitoring keys.</li>
+          <li><b>Vault-backed credential helpers.</b> Small scripts fetch a secret at runtime and
+            hand it straight to the tool that needs it - the secret is never written to disk and
+            never printed. The PR-opening helper is the clearest example (below).</li>
         </ul>
       </section>
 
       <section class="block">
         <h2>Architecture</h2>
+        <p>A concrete, scrubbed example: the <b>portable PR-token AppRole</b> that lets the
+          automation open pull requests from any box without a token file on disk.</p>
+        <ul>
+          <li>A dedicated read-only <b>policy</b> grants <code>read</code> on a <b>single</b>
+            KV path - the one holding the PR token - and nothing else.</li>
+          <li>A dedicated <b>AppRole</b> is bound to that one policy. Its role ID and secret ID
+            are themselves stored as a cluster secret, so a pipeline can bootstrap an AppRole
+            login over Vault's HTTP API using only its in-cluster identity.</li>
+          <li>The helper logs in, reads the one path, hands the token to the PR tool in memory,
+            and exits. <b>No secret is written to disk</b> at any step.</li>
+        </ul>
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Architecture flow</span>
-          <span class="sub">Reconcile loop: git desired state -&gt; Argo CD diff -&gt; sync /
-            self-heal -&gt; cluster, with drift corrected back to git. Scrubbed of cluster
-            addresses and hostnames.</span>
+          <span class="sub">The AppRole login path: cluster identity -&gt; bootstrap login -&gt;
+            scoped policy -&gt; one KV read -&gt; token used in memory. Scrubbed of addresses and
+            real secret paths.</span>
         </div>
       </section>
 
@@ -235,36 +252,39 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Screenshot coming</span>
-          <span class="sub">The application view showing synced/healthy status and a drift being
-            reconciled away. Captured per the publishing checklist - hostnames and addresses
-            redacted.</span>
+          <span class="sub">The credential helper logging in via AppRole and reporting a
+            successful read, with no secret material shown. Captured per the publishing
+            checklist - no tokens, paths, or addresses.</span>
         </div>
       </section>
 
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - self-heal will undo your emergency hotfix</span>
-          The first time you fix something live - a quick edit straight to the cluster to stop
-          the bleeding - and watch Argo CD calmly <b>revert it</b> on the next reconcile, the
-          lesson lands hard. With self-heal on, the cluster is not the source of truth; git is. A
-          hand-applied change is drift by definition, and drift is exactly what self-heal exists
-          to erase. The fix is not to fight it or disable it in a panic - it is to make the change
-          <b>in git</b>, even in an incident, so the emergency fix and the desired state are the
-          same thing. GitOps means the repo is the steering wheel; touching the cluster directly
-          is grabbing the tyre.
+          <span class="tag">Gotcha - KV v2 hides a "data" segment</span>
+          On a KV <b>v2</b> mount, the CLI path and the API path are not the same. You read
+          <code>kv get &lt;mount&gt;/foo</code> on the command line, but the HTTP API path is
+          <code>&lt;mount&gt;/data/foo</code> - and the JSON response wraps the secret one level
+          deep under <code>.data.data</code>. Every hand-rolled API client I wrote hit this: a
+          403 or an empty result that looks like a policy problem is often just the missing
+          <code>data/</code> segment. Worse, a policy written for <code>&lt;mount&gt;/foo</code>
+          will not authorize the API call to <code>&lt;mount&gt;/data/foo</code>.
         </div>
         <ul>
-          <li><b>Decide what self-heal is allowed to prune.</b> Reconciliation that removes
-            resources not in git is powerful and unforgiving - be deliberate about scope so a
-            reconcile never deletes something you meant to keep but forgot to declare.</li>
-          <li><b>Argo syncs manifests, not everything.</b> It reconciles what is declared as
-            Kubernetes state; out-of-band concerns it does not own (for example, a database schema
-            behind an app) still need their own apply step. Do not assume a green sync means the
-            whole world is in the desired state.</li>
-          <li><b>Drift is information, not just noise.</b> A resource that keeps drifting is often
-            telling you something is changing it out of band - chase the cause instead of only
-            re-syncing the symptom.</li>
+          <li><b>Scope the policy to one path, then prove it.</b> It is tempting to grant a role a
+            broad wildcard "so it just works." The discipline that pays off is granting exactly
+            one path and then testing that the role <b>can</b> read it and <b>cannot</b> read a
+            neighbour. Least privilege you have not tested is just a hope.</li>
+          <li><b>Policy paths must match the auth method's real request path.</b> Because KV v2
+            inserts <code>data/</code>, the metadata and data planes are separate capabilities.
+            Granting read on the data path does not let you list versions, and vice versa - decide
+            which the consumer actually needs.</li>
+          <li><b>Keep secrets out of argv.</b> A token passed on a command line leaks into process
+            listings and shell history. Helpers fetch and pipe in memory; the token never becomes
+            a visible argument or a file.</li>
+          <li><b>Separate role per consumer.</b> One shared "automation" role that can read
+            everything defeats the point. A role per job means revocation and rotation are
+            surgical, and an incident stays contained to one blast radius.</li>
         </ul>
       </section>
 
@@ -272,28 +292,30 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">Git</div>
-            <div class="label">single source of truth</div>
+            <div class="num">0</div>
+            <div class="label">secrets in git or images</div>
           </div>
           <div class="stat">
-            <div class="num">Auto</div>
-            <div class="label">drift correction</div>
+            <div class="num">1 path</div>
+            <div class="label">the PR role can read</div>
           </div>
           <div class="stat">
-            <div class="num">Revert</div>
-            <div class="label">= rollback</div>
+            <div class="num">0</div>
+            <div class="label">tokens written to disk</div>
           </div>
         </div>
-        <p>Argo CD is what makes the cluster honest: the running state cannot quietly diverge from
-          what is committed, because divergence gets corrected on sight. The self-heal lesson is
-          the whole philosophy in one bruise - once the repo is the control plane, the discipline
-          is to always steer from there, especially under pressure, not to reach past it.</p>
+        <p>Vault is what lets the rest of the platform be config-as-code without being
+          secret-as-code. Pipelines run from public definitions, yet still reach real
+          credentials at runtime - each one scoped so tightly that "what could this leak reach?"
+          has a short, boring answer. That is the whole goal of a secrets manager, and wiring it
+          up per-consumer is where the real work lives.</p>
       </section>
 
       <section class="block">
         <h2>Further reading</h2>
         <div class="links">
-          <a href="https://argo-cd.readthedocs.io/en/stable/" rel="noopener">Argo CD docs</a>
+          <a href="https://developer.hashicorp.com/vault/docs/auth/approle" rel="noopener">Vault AppRole</a>
+          <a href="https://developer.hashicorp.com/vault/docs/secrets/kv/kv-v2" rel="noopener">KV v2</a>
         </div>
       </section>
     </div>
@@ -310,7 +332,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
-          <a href="/skills/">Capabilities</a>
+          <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
         </div>
@@ -331,7 +353,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

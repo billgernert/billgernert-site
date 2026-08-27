@@ -15,7 +15,7 @@ Knowing which class a file is in tells you what is actually protecting it.
 The `sync-public-site` pipeline in the private repo owns these paths. It stages the exact publish set,
 runs a **fail-closed scrub gate** over it (any internal IP, internal hostname, internal domain, Vault
 port, private key, or fingerprint fails the build and nothing is cloned or pushed), and only then
-mirrors. `skills/`, `roadmap/`, `ai/`, `projects/`, and `platform/` are mirrored **with deletion**: a
+mirrors. `capabilities/`, `roadmap/`, `ai/`, `projects/`, and `platform/` are mirrored **with deletion**: a
 page deleted in the private repo is deleted here.
 
 | Path | What it is |
@@ -24,7 +24,7 @@ page deleted in the private repo is deleted here.
 | `_headers` | response headers (CSP + security headers) |
 | `_redirects` | the mirror redirect map (added to the gate with the new page dirs, 2026-07-27) |
 | `.well-known/` | the public security contact document |
-| `skills/` | the capability pages + the shared `style.css` |
+| `capabilities/` | the capability pages + the shared `style.css` |
 | `roadmap/` | the public roadmap (its facts block is generated) |
 | `public-roadmap/` | the born-generated milestone roadmap page |
 | `ai/` | how AI is used |
