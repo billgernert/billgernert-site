@@ -209,6 +209,7 @@
       <p class="lead">A red monitoring host becomes a classified repair plan. Safe server-side drift can be corrected directly, but host changes wait for an operator.</p>
       <div class="box"><strong>How it is built, in one paragraph</strong><p>A weekly Jenkins pipeline starts a short-lived provisioner pod in Kubernetes. A Python engine reads unhealthy hosts and interface evidence from the Zabbix API, resolves each managed system against the committed Ansible inventory, infers Linux or Windows from its monitoring templates, and writes a report plus generated repair inventories. Jenkins emails the complete plan and waits at a bounded approval gate. Approval lets the engine apply narrow Zabbix-side corrections and lets Ansible reconcile the selected Linux and Windows agents. No approval means report-only: the evidence is archived and no host is changed.</p></div>
       <p>Measured by Jenkins on 2026-08-24: the latest successful report-only run took 1,821 seconds, including its bounded approval window.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/self-healing-monitoring">View the code &#8594;</a></div>
     </header>
 
     <div class="skill-body">

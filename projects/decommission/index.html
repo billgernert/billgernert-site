@@ -253,6 +253,7 @@
       <h1>Decommission, with the gate that says no</h1>
       <p class="descriptor lede">A decommission request removes the selected virtual machine, releases its address, stops monitoring it, removes its name records, clears its infrastructure state, and updates the durable inventory. The job will not ask for approval unless the saved Terraform plan proves that it contains a deletion. If the plan is empty, unreadable, or aimed at a workspace that does not exist, the workflow stops instead of reporting a successful teardown that changed nothing. The plan validator is proven by offline fixtures; a verified live decommission run is still owed.</p>
       <p class="source-note">Built from the current Linux and Windows decommission Jenkinsfiles, their runbooks, the destroy-plan validator, regression fixtures, and the incident record that explains why the content check exists.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/safe-decommission">View the code &#8594;</a></div>
     </header>
 
     <div class="skill-body">

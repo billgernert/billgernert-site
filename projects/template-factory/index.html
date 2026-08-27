@@ -207,6 +207,7 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
 <p class="lead">The template factory rebuilds Windows golden images without taking the current provisioning image out of service.</p>
 <div class="box"><strong>How it is built, in one paragraph</strong><p>A weekly Jenkins pipeline starts an ephemeral Packer agent in Kubernetes. For each supported Windows release, it chooses the inactive template slot, builds and patches a new image there, verifies the result against Proxmox, and only then moves the live tag. Provisioning resolves that tag instead of a fixed virtual-machine ID, so a failed build leaves the last verified image in place.</p></div>
 <p>Measured from the generated project inventory at publish: <span class="token"><!--LIVE:TEMPLATE_VARIANT_COUNT:START-->3<!--LIVE:TEMPLATE_VARIANT_COUNT:END--></span> managed Windows variants. The successful build measured on 2026-08-25 took 6,422 seconds, about 107 minutes.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/windows-template-factory">View the code &#8594;</a></div>
     </header>
 
     <div class="skill-body">

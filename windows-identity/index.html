@@ -200,6 +200,7 @@
       <p class="descriptor lede">A reviewed request creates the person in Active Directory, waits for that directory-owned identity to appear in Entra, adds the cloud access defined by the person’s role, and hands the first password through Vault. Windows servers join the same domain, enroll for internal certificates, inherit policy, and enforce Duo MFA on remote desktop. Offboarding disables access first and keeps a restore snapshot before deletion.</p>
       <p class="descriptor lede">The result is one lifecycle rather than separate on-premises and cloud accounts. The same written role drives directory groups, application assignments, mapped storage, and later removal. A failure stops at the boundary that could not be verified, and a rerun reconciles what already exists.</p>
       <p class="source-note">Built from the provisioning, deprovisioning, certificate-enrollment, Duo, Group Policy, directory-sync, and WinRM migration paths tracked in the repository.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/identity-lifecycle">View the code &#8594;</a></div>
     </header>
     <nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#person">One person</a><span class="sep">/</span><a href="#server">One server</a><span class="sep">/</span><a href="#transport">Transport</a><span class="sep">/</span><a href="#running">How it runs</a><span class="sep">/</span><a href="#limits">Limits</a></nav>
 

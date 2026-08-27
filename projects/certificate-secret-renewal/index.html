@@ -247,6 +247,7 @@
       <p class="descriptor lede">Every public certificate renews itself and reaches every consumer that serves it. Every registered secret rotates on a 60-day cycle with a seven-day overlap. A real login proves each change, nobody touches any of it, and the dashboard below shows the current state.</p>
       <p class="descriptor lede">This started with a wildcard certificate that could renew in Kubernetes but still had to reach web servers and appliances outside the cluster. I built the distribution and verification path first. I then used the same sequence for credentials: create a replacement, store it in Vault, update the application that uses it, test the application, and keep the previous credential long enough to recover from a bad change.</p>
       <p class="source-note">Built from the cert-manager configuration, Jenkins certificate synchronization pipeline, credential rotation registries, Vault lifecycle policy, and Prometheus exporters in the repository.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a></div>
     </header>
 
     <div class="skill-body">

@@ -208,6 +208,7 @@
       <p class="lead">Scheduled AI work uses subscription capacity only when there is measured room for it. If the measurement is stale or the reserve is reached, the work waits.</p>
       <div class="box"><strong>How it is built, in one paragraph</strong><p>A usage exporter runs as a Kubernetes pod in the monitoring namespace and refreshes the remaining short-window and weekly allowance for two existing subscriptions about once an hour. Prometheus scrapes the cached observation every minute and keeps the history. When a Jenkins job reaches a hard reasoning task, a shared Python router reads that observation, rejects stale or incomplete data, protects a reserve for interactive work, and selects the provider with more weekly headroom. A Vault-backed wrapper exposes subscription OAuth only to the chosen child process. The agent runs without tools, without session persistence, in a read-only sandbox, and must return the requested JSON schema. There is no model API key and no metered fallback.</p></div>
       <p>Measured from the AIOps spend ledger on 2026-08-24: 10 metered calls had cost about $0.11 before the routing boundary changed.</p>
+      <div class="links story-code-action"><a href="https://github.com/billgernert/ai-usage-routing">View the code &#8594;</a></div>
     </header>
 
     <div class="skill-body">
