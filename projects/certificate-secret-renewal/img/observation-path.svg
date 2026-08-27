@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 920" role="img" aria-labelledby="title desc">
+  <title id="title">Certificate and credential observation path</title>
+  <desc id="desc">Live TLS endpoints, cert-manager, Microsoft Graph, and Vault lifecycle metadata feed exporters, Prometheus, and private and public Grafana views.</desc>
+  <defs><style>.bg{fill:#090e18}.zone{fill:#0e1522;stroke:#24324a;stroke-width:2}.box{fill:#131d2d;stroke:#00d4ff;stroke-width:2}.safe{fill:#10231f;stroke:#00ff96;stroke-width:2}.h{fill:#eef4fb;font:600 19px Arial,sans-serif}.p{fill:#aebbd0;font:15px Arial,sans-serif}.z{fill:#00d4ff;font:700 14px Arial,sans-serif;letter-spacing:1.4px}.diagramTitle{fill:#eef4fb;font:700 28px Arial,sans-serif}.footerText{fill:#d8e2ee;font:16px Arial,sans-serif}.legendText{fill:#aebbd0;font:14px Arial,sans-serif}.arrow{fill:none;stroke:#00d4ff;stroke-width:3;marker-end:url(#a)}.green{stroke:#00ff96;marker-end:url(#b)}.lane{fill:#0b111d;stroke:#31415d}.laneText{fill:#aebbd0;font:15px Arial,sans-serif}</style><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#00d4ff"/></marker><marker id="b" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#00ff96"/></marker></defs>
+  <rect class="bg" width="1440" height="920"/>
+  <text class="diagramTitle" x="720" y="40" text-anchor="middle">How live services and metadata become the dashboard</text>
+  <g transform="translate(0,60)">
+  <text class="z" x="50" y="40">INDEPENDENT SOURCES</text><rect class="zone" x="35" y="56" width="350" height="560" rx="14"/>
+  <rect class="box" x="70" y="100" width="280" height="88" rx="10"/><text class="h" x="210" y="134" text-anchor="middle">Live TLS endpoints</text><text class="p" x="210" y="161" text-anchor="middle">served certificate and trust</text>
+  <rect class="box" x="70" y="220" width="280" height="88" rx="10"/><text class="h" x="210" y="254" text-anchor="middle">cert-manager</text><text class="p" x="210" y="281" text-anchor="middle">source readiness and expiry</text>
+  <rect class="box" x="70" y="340" width="280" height="88" rx="10"/><text class="h" x="210" y="374" text-anchor="middle">Microsoft Graph</text><text class="p" x="210" y="401" text-anchor="middle">credential metadata only</text>
+  <rect class="box" x="70" y="460" width="280" height="110" rx="10"/><text class="h" x="210" y="494" text-anchor="middle">Vault</text><text class="p" x="210" y="521" text-anchor="middle">KV metadata + safe</text><text class="p" x="210" y="544" text-anchor="middle">rotation-state records</text>
+
+  <text class="z" x="440" y="40">COLLECTORS</text><rect class="zone" x="425" y="56" width="350" height="560" rx="14"/>
+  <rect class="box" x="460" y="100" width="280" height="88" rx="10"/><text class="h" x="600" y="134" text-anchor="middle">Blackbox exporter</text><text class="p" x="600" y="161" text-anchor="middle">real TLS handshake</text>
+  <rect class="box" x="460" y="220" width="280" height="88" rx="10"/><text class="h" x="600" y="254" text-anchor="middle">Controller metrics</text><text class="p" x="600" y="281" text-anchor="middle">managed source state</text>
+  <rect class="box" x="460" y="340" width="280" height="88" rx="10"/><text class="h" x="600" y="374" text-anchor="middle">Entra exporter</text><text class="p" x="600" y="401" text-anchor="middle">read-only application inventory</text>
+  <rect class="box" x="460" y="460" width="280" height="110" rx="10"/><text class="h" x="600" y="494" text-anchor="middle">Lifecycle exporter</text><text class="p" x="600" y="521" text-anchor="middle">metadata-only AppRole</text><text class="p" x="600" y="544" text-anchor="middle">classification and coverage</text>
+  <path class="arrow" d="M350 144H460"/><path class="arrow" d="M350 264H460"/><path class="arrow" d="M350 384H460"/><path class="arrow" d="M350 515H460"/>
+
+  <text class="z" x="830" y="40">STORAGE AND EXPLANATION</text><rect class="zone" x="815" y="56" width="590" height="560" rx="14"/>
+  <rect class="box" x="860" y="150" width="215" height="110" rx="10"/><text class="h" x="967" y="190" text-anchor="middle">Prometheus</text><text class="p" x="967" y="218" text-anchor="middle">time series, alerts,</text><text class="p" x="967" y="240" text-anchor="middle">coverage dead-man switches</text>
+  <rect class="box" x="1130" y="105" width="230" height="110" rx="10"/><text class="h" x="1245" y="145" text-anchor="middle">Private Grafana</text><text class="p" x="1245" y="173" text-anchor="middle">full operational detail</text><text class="p" x="1245" y="195" text-anchor="middle">for troubleshooting</text>
+  <rect class="safe" x="1130" y="285" width="230" height="130" rx="10"/><text class="h" x="1245" y="325" text-anchor="middle">Public projection</text><text class="p" x="1245" y="353" text-anchor="middle">descriptive labels only</text><text class="p" x="1245" y="375" text-anchor="middle">no paths, addresses,</text><text class="p" x="1245" y="397" text-anchor="middle">subjects, or provider IDs</text>
+  <path class="arrow" d="M740 144H815V205H860"/><path class="arrow" d="M740 264H815V205H860"/><path class="arrow" d="M740 384H815V205H860"/><path class="arrow" d="M740 515H815V205H860"/><path class="arrow" d="M1075 185H1100V160H1130"/><path class="arrow green" d="M1075 225H1100V350H1130"/>
+  <rect class="lane" x="860" y="470" width="500" height="90" rx="10"/><text class="laneText" x="1110" y="501" text-anchor="middle">Dashboard questions: Is coverage complete?</text><text class="laneText" x="1110" y="526" text-anchor="middle">What expires next? Is rotation automatic?</text><text class="laneText" x="1110" y="551" text-anchor="middle">Did the replacement reach the live consumer?</text>
+  </g>
+  <rect class="lane" x="35" y="740" width="1370" height="155" rx="10"/>
+  <text class="footerText" x="65" y="770">Exporters observe live TLS, cert-manager, Microsoft Graph, and Vault without carrying secret values into metrics.</text>
+  <text class="footerText" x="65" y="796">Prometheus stores and evaluates the measurements. Grafana presents full detail privately and scrubbed labels publicly.</text>
+  <line x1="65" y1="824" x2="97" y2="824" stroke="#00d4ff" stroke-width="4"/><text class="legendText" x="112" y="828">Cyan. Metric collection and storage path.</text>
+  <line x1="65" y1="846" x2="97" y2="846" stroke="#00ff96" stroke-width="4"/><text class="legendText" x="112" y="850">Green. Public-safe projection after identifier removal.</text>
+  <rect x="65" y="860" width="32" height="16" rx="5" fill="#131d2d" stroke="#00d4ff"/><text class="legendText" x="112" y="872">Rounded box. Source, exporter, time-series store, or dashboard.</text>
+  <line x1="65" y1="892" x2="97" y2="892" stroke="#00d4ff" stroke-width="3" marker-end="url(#a)"/><text class="legendText" x="112" y="896">Arrow. Direction of metric collection.</text>
+</svg>
+

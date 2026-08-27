@@ -148,6 +148,231 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../skills/style.css">
+  <style>
+    :root {
+      --live-panel: rgba(9, 20, 35, 0.84);
+      --live-line: rgba(0, 212, 255, 0.22);
+      --live-line-hot: rgba(0, 212, 255, 0.7);
+      --live-cyan: #00d4ff;
+      --live-green: #00ff96;
+      --live-copy: #c9d3e5;
+    }
+
+    .live-intro { max-width: 780px; }
+
+    .evidence-rail {
+      position: relative;
+      margin: 2rem 0 2.7rem;
+      padding: 1rem 1.15rem 1.15rem;
+      overflow: hidden;
+      border: 1px solid var(--live-line);
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 212, 255, 0.055), rgba(0, 255, 150, 0.025));
+    }
+
+    .rail-labels {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      color: #a9b8d0;
+      font: 0.76rem/1.2 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .rail-labels span:nth-child(2) { text-align: center; }
+    .rail-labels span:last-child { text-align: right; }
+
+    .rail-track {
+      position: relative;
+      height: 3px;
+      margin-top: 0.85rem;
+      background: rgba(0, 212, 255, 0.17);
+    }
+
+    .rail-track::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 0;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--live-green);
+      box-shadow: 0 0 14px rgba(0, 255, 150, 0.9);
+      animation: evidence-pass 6.5s ease-in-out infinite;
+    }
+
+    .rail-node {
+      position: absolute;
+      top: -4px;
+      width: 11px;
+      height: 11px;
+      border: 2px solid var(--live-cyan);
+      border-radius: 50%;
+      background: #07111f;
+    }
+
+    .rail-node:nth-child(1) { left: 0; }
+    .rail-node:nth-child(2) { left: calc(50% - 5px); }
+    .rail-node:nth-child(3) { right: 0; }
+
+    @keyframes evidence-pass {
+      0%, 8% { left: 0; opacity: 0; }
+      12% { opacity: 1; }
+      88% { opacity: 1; }
+      92%, 100% { left: calc(100% - 11px); opacity: 0; }
+    }
+
+    .view-heading {
+      max-width: 720px;
+      margin-bottom: 1.4rem;
+    }
+
+    .view-heading h2 { margin-bottom: 0.55rem; }
+    .view-heading p { margin: 0; color: var(--live-copy); }
+
+    .view-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .view-card {
+      position: relative;
+      display: flex;
+      min-height: 320px;
+      flex-direction: column;
+      padding: 1.35rem 1.35rem 1.25rem;
+      overflow: hidden;
+      border: 1px solid var(--live-line);
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(0, 212, 255, 0.055), transparent 45%), var(--live-panel);
+      color: inherit;
+      text-decoration: none;
+      animation: view-arrive 0.5s ease both;
+      animation-delay: calc(var(--view-order) * 80ms);
+      transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+    }
+
+    .view-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--live-cyan), var(--live-green));
+      transform: scaleX(0.18);
+      transform-origin: left;
+      transition: transform 220ms ease;
+    }
+
+    .view-card:hover,
+    .view-card:focus-visible {
+      transform: translateY(-3px);
+      border-color: var(--live-line-hot);
+      background-color: rgba(10, 25, 42, 0.95);
+      outline: none;
+    }
+
+    .view-card:hover::after,
+    .view-card:focus-visible::after { transform: scaleX(1); }
+
+    @keyframes view-arrive {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .view-type {
+      margin-bottom: 1.2rem;
+      color: #91a5c2;
+      font: 0.7rem/1 var(--mono);
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .view-card h2 {
+      margin: 0 0 0.9rem;
+      color: #fff;
+      font-size: clamp(1.45rem, 2vw, 1.8rem);
+      line-height: 1.12;
+    }
+
+    .view-question {
+      margin: 0 0 0.8rem;
+      color: var(--live-green);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .view-card p:not(.view-question) {
+      margin: 0;
+      color: var(--live-copy);
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+
+    .view-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-top: auto;
+      padding-top: 1.35rem;
+      color: var(--live-cyan);
+      font: 0.76rem/1 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .view-cta .arrow { transition: transform 180ms ease; }
+    .view-card:hover .arrow,
+    .view-card:focus-visible .arrow { transform: translateX(4px); }
+
+    .boundary-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.75fr);
+      gap: 1rem;
+      margin: 0 0 3.5rem;
+    }
+
+    .boundary,
+    .postmortems {
+      border: 1px solid var(--live-line);
+      border-radius: 10px;
+      background: rgba(7, 17, 31, 0.7);
+      padding: 1.45rem;
+    }
+
+    .boundary h2,
+    .postmortems h2 { margin-top: 0; }
+    .boundary p,
+    .postmortems p { color: var(--live-copy); }
+
+    .boundary ul {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1.2rem 0 0;
+      padding-left: 1.25rem;
+    }
+
+    .boundary li::marker { color: var(--live-cyan); }
+    .postmortems { display: flex; flex-direction: column; }
+    .postmortems .links { margin-top: auto; padding-top: 1rem; }
+    .follow-block { margin-bottom: 1rem; }
+
+    @media (max-width: 860px) {
+      .view-grid { grid-template-columns: 1fr; }
+      .view-card { min-height: 245px; }
+      .boundary-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rail-track::after,
+      .view-card { animation: none; }
+      .view-card,
+      .view-card::after,
+      .view-cta .arrow { transition: none; }
+    }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/live/">
   <!-- END generated: canonical -->
@@ -180,73 +405,83 @@
       <span class="here">Live</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge" data-accent="green">Live</span>
+    <header class="skill-head live-intro">
+      <span class="badge">Live</span>
       <h1>Running evidence</h1>
-      <p class="descriptor">Live is the public operating view of the lab: an <a href="/map/">interactive
-        topology map</a>, an architecture diagram, and the <a href="/noc/">NOC</a>, where Grafana serves
-        dashboards from the running lab. Each view answers a different operating question.</p>
-      <div class="links">
-        <a href="/map/">Open the live map</a>
-        <a href="/diagram/">Open the diagram</a>
-        <a href="/noc/">Open the NOC</a>
-      </div>
+      <p class="descriptor">Three public views answer three different questions about the running lab. Start with current health in the Platform map, use the architecture diagram to understand the intended structure, or open the NOC for the measurements behind the status.</p>
     </header>
 
-    <div class="skill-body">
-      <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
-      <p class="note">Also in <b>Live</b>:</p>
-      <ol class="project-list">
-        <li><b>Live map.</b> The live topology atlas, with health and drill-down to individual components. <a href="/map/">Read more &#8594;</a></li>
-        <li><b>Architecture diagram.</b> The map of the lab's shape and the pages that explain each region. <a href="/diagram/">Read more &#8594;</a></li>
-        <li><b>NOC.</b> The live dashboards, interactive, where no data never reads as green. <a href="/noc/">Read more &#8594;</a></li>
-        <li><b>Postmortems.</b> Long-form failure writeups and the follow-on work they produced. <a href="/postmortems-index/">Read more &#8594;</a></li>
-      </ol>
+    <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <!-- END generated: group-hub -->
-      <section class="block" id="views">
-        <h2>Three views, <!--LIVE:JOB_VIEW_COUNT:START-->3<!--LIVE:JOB_VIEW_COUNT:END--> jobs</h2>
-        <p>Live is a hub because the three pages answer different questions. The map follows current
-          health from the whole estate to an individual component. The diagram explains the intended
-          structure. The NOC answers the glance question: what is being measured right now, and where
-          should a deeper look start.</p>
-        <ol class="project-list">
-          <li><b>Live map.</b> The same layers and display names as the private operating atlas, with
-            addresses, raw alerts, exact capacity, and administration links removed before publication.
-            <a href="/map/">Open the live map &#8594;</a></li>
-          <li><b>Diagram.</b> A sanitized platform map: network segments, compute layers, core
-            services, and the pages that explain them. It is about running shape, not private wiring.
-            <a href="/diagram/">Open the diagram &#8594;</a></li>
-          <li><b>NOC.</b> The live Grafana boards: one overview hub, curated drilldowns,
-            and a rule that no data never reads as green. <a href="/noc/">Open the NOC &#8594;</a></li>
-        </ol>
-      </section>
 
-      <section class="block" id="boundary">
-        <h2>What is left out, and why</h2>
-        <p>The live map keeps the reviewed display names because they are the vocabulary that makes its
-          drill-down useful. It replaces internal IDs, addresses, domain suffixes, raw alerts, exact
-          capacity, and administration links before the feed leaves the lab. The diagram and NOC apply
-          their own narrower publication boundaries. The <a href="/noc/">NOC page</a> explains exactly
-          what that costs and what it keeps. Two
-          other rules hold here. A subsystem that is designed but not deployed stays described as
-          designed on its own page and is never promoted to running proof. And a surface that is not
-          measured stays visibly unmeasured, because a green tile with no data behind it is the one
-          thing this page must never show.</p>
-      </section>
-
-      <section class="block" id="follow">
-        <h2>Follow the evidence back to the system</h2>
-        <p>Use the map when the question is where a current state comes from. Use the diagram when the
-          question is structure. Use the NOC when the question is current signal. From any view, follow
-          through to the subsystem writeups for the design, limits, and planned work.</p>
-        <div class="links">
-          <a href="/platform/">Platform</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-      </section>
+    <div class="evidence-rail" aria-label="Evidence views">
+      <div class="rail-labels" aria-hidden="true"><span>Current state</span><span>System shape</span><span>Measured signal</span></div>
+      <div class="rail-track" aria-hidden="true"><span class="rail-node"></span><span class="rail-node"></span><span class="rail-node"></span></div>
     </div>
+
+    <section aria-labelledby="choose-view">
+      <header class="view-heading">
+        <h2 id="choose-view">Choose the view by the question</h2>
+        <p>Each surface has a distinct job. The cards below are the navigation and the explanation, so the same links do not need to be repeated farther down the page.</p>
+      </header>
+
+      <div class="view-grid">
+        <a class="view-card" style="--view-order: 1" href="/map/">
+          <span class="view-type">Interactive topology</span>
+          <h2>Platform map</h2>
+          <p class="view-question">Where does this current state come from?</p>
+          <p>Follow health from the whole platform through operating areas, systems, workloads, and individual components. Public names and fields pass through a fail-closed projection before they leave the lab.</p>
+          <span class="view-cta">Open the Platform map <span class="arrow" aria-hidden="true">&#8594;</span></span>
+        </a>
+
+        <a class="view-card" style="--view-order: 2" href="/diagram/">
+          <span class="view-type">Architecture reference</span>
+          <h2>Architecture diagram</h2>
+          <p class="view-question">How is the platform intended to fit together?</p>
+          <p>See the sanitized shape of the lab: network segments, compute layers, core services, and the pages that explain each region. It describes structure, not private wiring.</p>
+          <span class="view-cta">Open the diagram <span class="arrow" aria-hidden="true">&#8594;</span></span>
+        </a>
+
+        <a class="view-card" style="--view-order: 3" href="/noc/">
+          <span class="view-type">Grafana dashboards</span>
+          <h2>NOC</h2>
+          <p class="view-question">What is being measured right now?</p>
+          <p>Start at the overview board, then move into curated drill-downs. Missing data stays visible as missing instead of being presented as healthy.</p>
+          <span class="view-cta">Open the NOC <span class="arrow" aria-hidden="true">&#8594;</span></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="boundary-grid">
+      <div class="boundary">
+        <h2>What crosses the public boundary</h2>
+        <p>The public views preserve enough context to explain the system without publishing its private wiring.</p>
+        <ul>
+          <li>The Platform map keeps reviewed functional names and drill-down relationships. It removes internal identifiers, addresses, domain suffixes, raw alerts, exact capacity, and administration links.</li>
+          <li>The architecture diagram shows operating shape and points to the pages that explain each region.</li>
+          <li>The NOC publishes curated measurements and makes missing data explicit.</li>
+          <li>A designed but undeployed subsystem stays labeled as designed. It does not become running evidence.</li>
+        </ul>
+      </div>
+
+      <aside class="postmortems">
+        <span class="view-type">Failure record</span>
+        <h2>Postmortems</h2>
+        <p>The live surfaces show current evidence. The postmortems explain the failures that changed the system and the follow-on work they produced.</p>
+        <div class="links"><a href="/postmortems-index/">Read the postmortems &#8594;</a></div>
+      </aside>
+    </section>
+
+    <section class="block follow-block">
+      <h2>Follow the evidence back to the system</h2>
+      <p>Use a live view to find the signal, then use the subsystem pages for the design, limits, and planned work.</p>
+      <div class="links">
+        <a href="/platform/">Platform</a>
+        <a href="/security/">Security</a>
+        <a href="/ai/">AI</a>
+        <a href="/dead-man-monitoring/">Watchdog</a>
+      </div>
+    </section>
 
     <footer>
       <!-- BEGIN generated: sitemap (generate-site-pages.py) -->

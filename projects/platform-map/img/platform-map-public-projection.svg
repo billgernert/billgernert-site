@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">How the public graph crosses the boundary</title>
+  <desc id="desc">The topology server projects the private graph, a denylist gate validates it, a publisher pod sends it to Cloudflare, and the browser reads the Durable Object.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 9 5 1 9" fill="none" stroke="#00ff96" stroke-width="1.5"/></marker>
+    <style>.bg{fill:#08111f}.box{fill:#0d1d31;stroke:#2c5373;stroke-width:2}.gate{fill:#2a2111;stroke:#ffb84d;stroke-width:2}.public{fill:#08243a;stroke:#00d4ff;stroke-width:2}.wire{fill:none;stroke:#00ff96;stroke-width:3;marker-end:url(#arrow)}.title{fill:#e8f3ff;font:600 24px 'Exo 2',sans-serif}.head{fill:#e8f3ff;font:600 16px 'Exo 2',sans-serif}.copy{fill:#91a8bc;font:12px 'Share Tech Mono',monospace}.tag{fill:#00d4ff;font:10px 'Share Tech Mono',monospace;letter-spacing:.8px}.warn{fill:#ffb84d;font:10px 'Share Tech Mono',monospace;letter-spacing:.8px}</style>
+  </defs>
+  <rect class="bg" width="1200" height="430" rx="14"/>
+  <text class="title" x="42" y="48">How the public graph crosses the boundary</text>
+  <path class="wire" d="M205 220 H235"/><path class="wire" d="M405 220 H435"/><path class="wire" d="M605 220 H635"/><path class="wire" d="M805 220 H835"/><path class="wire" d="M1005 220 H1035"/>
+  <rect class="box" x="35" y="155" width="170" height="130" rx="10"/><text class="tag" x="120" y="186" text-anchor="middle">MAP SERVER</text><text class="head" x="120" y="218" text-anchor="middle">Private snapshot</text><text class="copy" x="120" y="244" text-anchor="middle">full operating graph</text>
+  <rect class="box" x="235" y="155" width="170" height="130" rx="10"/><text class="tag" x="320" y="186" text-anchor="middle">ALLOWLIST</text><text class="head" x="320" y="218" text-anchor="middle">Public projector</text><text class="copy" x="320" y="244" text-anchor="middle">roles + opaque IDs</text>
+  <rect class="gate" x="435" y="155" width="170" height="130" rx="10"/><text class="warn" x="520" y="186" text-anchor="middle">FAIL CLOSED</text><text class="head" x="520" y="218" text-anchor="middle">Whole-document gate</text><text class="copy" x="520" y="244" text-anchor="middle">schema + denylist</text>
+  <rect class="public" x="635" y="155" width="170" height="130" rx="10"/><text class="tag" x="720" y="186" text-anchor="middle">K3S PUBLISHER POD</text><text class="head" x="720" y="218" text-anchor="middle">Outbound POST</text><text class="copy" x="720" y="244" text-anchor="middle">every 15 seconds</text>
+  <rect class="public" x="835" y="155" width="170" height="130" rx="10"/><text class="tag" x="920" y="186" text-anchor="middle">CLOUDFLARE</text><text class="head" x="920" y="218" text-anchor="middle">Durable Object</text><text class="copy" x="920" y="244" text-anchor="middle">last accepted JSON</text>
+  <rect class="public" x="1035" y="155" width="130" height="130" rx="10"/><text class="tag" x="1100" y="186" text-anchor="middle">SITE</text><text class="head" x="1100" y="218" text-anchor="middle">Browser</text><text class="copy" x="1100" y="244" text-anchor="middle">GET only</text>
+  <text class="copy" x="600" y="350" text-anchor="middle">No public request reaches the private Service. A rejected candidate leaves the accepted object unchanged.</text>
+</svg>

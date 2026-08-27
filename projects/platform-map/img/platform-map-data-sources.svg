@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 610" role="img" aria-labelledby="title desc">
+  <title id="title">What Prometheus gives the map</title>
+  <desc id="desc">Kubernetes, infrastructure, and operations exporters write metrics to Prometheus. The topology server queries Prometheus and builds the graph.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 9 5 1 9" fill="none" stroke="#00ff96" stroke-width="1.5"/></marker>
+    <style>.bg{fill:#08111f}.box{fill:#0d1d31;stroke:#2c5373;stroke-width:2}.core{fill:#08243a;stroke:#00d4ff;stroke-width:2}.wire{fill:none;stroke:#00ff96;stroke-width:3;marker-end:url(#arrow)}.title{fill:#e8f3ff;font:600 24px 'Exo 2',sans-serif}.head{fill:#e8f3ff;font:600 17px 'Exo 2',sans-serif}.copy{fill:#91a8bc;font:13px 'Share Tech Mono',monospace}.tag{fill:#00d4ff;font:11px 'Share Tech Mono',monospace;letter-spacing:1px}</style>
+  </defs>
+  <rect class="bg" width="1120" height="610" rx="14"/>
+  <text class="title" x="42" y="48">What Prometheus gives the map</text>
+  <path class="wire" d="M420 155 H540 V300 H610"/><path class="wire" d="M420 310 H610"/><path class="wire" d="M420 465 H540 V320 H610"/><path class="wire" d="M820 310 H885"/>
+  <rect class="box" x="40" y="95" width="380" height="120" rx="10"/>
+  <text class="tag" x="65" y="126">KUBERNETES</text><text class="head" x="65" y="156">kube-state-metrics + container metrics</text><text class="copy" x="65" y="182">objects · owners · replicas · CPU · memory</text>
+  <rect class="box" x="40" y="250" width="380" height="120" rx="10"/>
+  <text class="tag" x="65" y="281">INFRASTRUCTURE</text><text class="head" x="65" y="311">Proxmox exporter + Zabbix bridge</text><text class="copy" x="65" y="337">hosts · guests · storage · guest memory</text>
+  <rect class="box" x="40" y="405" width="380" height="120" rx="10"/>
+  <text class="tag" x="65" y="436">OPERATIONS</text><text class="head" x="65" y="466">Jenkins + blackbox + service exporters</text><text class="copy" x="65" y="492">jobs · probes · TLS · security · mail · AI</text>
+  <rect class="core" x="610" y="240" width="210" height="140" rx="10"/>
+  <text class="tag" x="715" y="273" text-anchor="middle">ONE READ INTERFACE</text><text class="head" x="715" y="306" text-anchor="middle">Prometheus HTTP API</text><text class="copy" x="715" y="334" text-anchor="middle">instant PromQL queries</text>
+  <rect class="core" x="885" y="240" width="200" height="140" rx="10"/>
+  <text class="tag" x="985" y="273" text-anchor="middle">PYTHON</text><text class="head" x="985" y="306" text-anchor="middle">Topology builders</text><text class="copy" x="985" y="334" text-anchor="middle">nodes + relationships</text>
+  <text class="copy" x="560" y="575" text-anchor="middle">No direct Kubernetes, Proxmox, Jenkins, or Zabbix credentials are added to the map pod.</text>
+</svg>

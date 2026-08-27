@@ -140,14 +140,63 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Safe decommission - Bill Gernert</title>
-  <meta name="description" content="How the decommission path in AutomationLab refuses an empty destroy plan, tears infrastructure down in a safe order, and keeps the one secret a restored VM still needs.">
+  <title>Safe server decommissioning - Bill Gernert</title>
+  <meta name="description" content="How a server decommission request proves the destroy plan, waits for approval, removes the machine, and cleans every system that described it.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <style>
+    :root { --panel:rgba(14,21,34,.84); --line:rgba(0,212,255,.28); --muted:#aebbd0; --good:#00ff96; --warn:#ffd166; --bad:#ff5c7a; }
+
+        .lede { max-width:78ch; font-size:1.16rem; }
+        .source-note { margin:.9rem 0 0; padding:.7rem .85rem; border-left:3px solid #00d4ff; background:rgba(0,212,255,.055); color:var(--muted); font-size:.9rem; }
+        .shot { margin:1.5rem 0 2.5rem; }
+        .shot img { display:block; width:100%; height:auto; border:1px solid var(--line); background:#090e18; }
+        figcaption { margin-top:.7rem; color:var(--muted); font-size:.92rem; line-height:1.55; }
+        .gate { margin:1.4rem 0 2.2rem; padding:1.25rem; border:1px solid rgba(255,209,102,.48); background:#090e18; }
+        .gate h3 { margin-top:0; }
+        .gate-flow { display:grid; grid-template-columns:1.15fr .8fr 1fr; gap:.8rem; align-items:stretch; margin:1.1rem 0; }
+        .gate-node { position:relative; padding:1rem; border-top:3px solid #00d4ff; background:rgba(0,212,255,.07); }
+        .gate-node.check { border-color:var(--warn); background:rgba(255,209,102,.08); }
+        .gate-branches { display:grid; gap:.6rem; }
+        .branch { padding:.8rem; border-left:3px solid var(--good); background:rgba(0,255,150,.07); }
+        .branch.stop { border-color:var(--bad); background:rgba(255,92,122,.08); }
+        .label { display:block; margin-bottom:.35rem; color:var(--warn); font:.75rem 'Share Tech Mono',monospace; letter-spacing:.06em; text-transform:uppercase; }
+        .diagram-foot { margin:0; padding-top:1rem; border-top:1px solid rgba(174,187,208,.18); color:var(--muted); }
+        .phase-map { margin:1.4rem 0 2.2rem; padding:1.25rem; border:1px solid var(--line); background:#090e18; }
+        .phase-map h3 { margin-top:0; }
+        .phase-line { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.55rem; align-items:stretch; margin:1.1rem 0; }
+        .phase { position:relative; min-height:9.4rem; padding:.9rem .75rem; border-top:3px solid #00d4ff; background:rgba(0,212,255,.07); }
+        .phase:not(:last-child)::after { content:"→"; position:absolute; top:3.5rem; right:-.55rem; z-index:2; color:var(--warn); font-size:1.15rem; }
+        .phase .num { display:block; color:var(--warn); font:.76rem 'Share Tech Mono',monospace; letter-spacing:.06em; text-transform:uppercase; }
+        .phase strong { display:block; margin:.45rem 0; color:#eef4fb; }
+        .phase small { color:var(--muted); line-height:1.45; }
+        .sequence { counter-reset:step; margin:1.2rem 0 2rem; padding:0; list-style:none; }
+        .sequence li { position:relative; margin:0; padding:.35rem 0 1.55rem 4rem; }
+        .sequence li:not(:last-child)::after { content:""; position:absolute; left:1.25rem; top:2.7rem; bottom:.15rem; width:1px; background:rgba(0,212,255,.32); }
+        .sequence li::before { counter-increment:step; content:counter(step); position:absolute; left:.15rem; top:.2rem; display:grid; place-items:center; width:2.2rem; height:2.2rem; border:1px solid #00d4ff; border-radius:50%; color:#00d4ff; font:700 1rem 'Share Tech Mono',monospace; }
+        .sequence strong { color:#eef4fb; }
+        .compare { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin:1.4rem 0 2rem; }
+        .lane { padding:1.1rem; border-top:3px solid #00d4ff; background:rgba(14,21,34,.68); }
+        .lane.windows { border-color:var(--good); }
+        .lane h3 { margin-top:0; }
+        .table-wrap { overflow-x:auto; margin:1.2rem 0 2rem; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:.8rem; border-bottom:1px solid rgba(174,187,208,.18); text-align:left; vertical-align:top; }
+        th { color:#00d4ff; font:.78rem 'Share Tech Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
+        td:first-child { color:#eef4fb; font-weight:600; }
+        .warning { margin:1.2rem 0; padding:1rem; border-left:4px solid var(--warn); background:rgba(255,209,102,.07); }
+        .failure { margin:1.2rem 0; padding:1.2rem; border:1px solid rgba(255,92,122,.36); background:rgba(43,23,32,.38); }
+        .failure h3 { color:#eef4fb; }
+        .failure time { margin-right:.45rem; color:var(--warn); font:.8rem 'Share Tech Mono',monospace; }
+        code { white-space:normal; overflow-wrap:anywhere; }
+        @media (max-width:980px) { .phase-line { grid-template-columns:repeat(2,minmax(0,1fr)); } .phase:not(:last-child)::after { display:none; } }
+        @media (max-width:760px) { .compare,.gate-flow,.phase-line { grid-template-columns:1fr; } }
+        .diagram img { display:block; width:100%; height:auto; }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/decommission/">
   <!-- END generated: canonical -->
@@ -178,59 +227,131 @@
       <span class="sep">/</span>
       <a href="/projects/">Projects</a>
       <span class="sep">/</span>
-      <span class="here">Safe decommission</span>
+      <span class="here">Safe server decommissioning</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span>
+      <span class="badge">Technical project walkthrough</span>
       <h1>Decommission, with the gate that says no</h1>
-      <p class="descriptor">A destroy path is only useful when it can prove it is destroying the thing
-        you asked for. This one stops if the plan is empty, tears the stack down in the safe order, and
-        keeps the one credential a restored machine still needs later.</p>
+      <p class="descriptor lede">A decommission request removes the selected virtual machine, releases its address, stops monitoring it, removes its name records, clears its infrastructure state, and updates the durable inventory. The job will not ask for approval unless the saved Terraform plan proves that it contains a deletion. If the plan is empty, unreadable, or aimed at a workspace that does not exist, the workflow stops instead of reporting a successful teardown that changed nothing. The plan validator is proven by offline fixtures; a verified live decommission run is still owed.</p>
+      <p class="source-note">Built from the current Linux and Windows decommission Jenkinsfiles, their runbooks, the destroy-plan validator, regression fixtures, and the incident record that explains why the content check exists.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block">
-        <h2>The key guard is against false success</h2>
-        <p>The dangerous decommission is not the obviously broken one. It is the one that reports
-          success after touching nothing. An empty destroy plan looks clean in an email and leaves the
-          machine right where it was, which is why this path treats "nothing to destroy" as a stop
-          condition rather than a green exit.</p>
-        <p>That gate sits in front of the rest of the teardown because the rest of the teardown is real.
-          Once the pipeline starts releasing addresses, removing monitoring, and deleting state, the
-          machine needs to be on an actual destruction path instead of on a polite no-op.</p>
+      <section class="block" id="request">
+        <h2>One name starts a bounded teardown</h2>
+        <p>The operator supplies the machine name because that name is also the Terraform workspace. A workspace is the isolated state record for one machine. Selecting it tells Terraform which infrastructure record to read and prevents a request for one server from silently drifting into another server’s state.</p>
         <figure class="shot">
-          <img src="img/jenkins-decommission-form.png" alt="The decommission pipeline's parameter form: a single hostname field and a build button.">
-          <figcaption>The whole front door: one field. Everything that keeps this safe happens inside the run, not in the form. Captured 2026-08-23.</figcaption>
+          <img src="img/jenkins-decommission-form.png" alt="Jenkins decommission form with one machine-name field and a build button.">
+          <figcaption>The Linux decommission form. Its small surface is deliberate: the workflow derives the address and every cleanup target from the selected machine’s recorded state. Captured from the running Jenkins job on 2026-08-22.</figcaption>
         </figure>
+        <p>The first stages validate the name, check out the reviewed automation, select the matching workspace, and read the machine’s recorded address. Terraform then creates a saved destroy plan. Nothing has been deleted yet. The plan is a reviewable description of what Terraform intends to remove, and the same saved file is applied after approval so the request cannot be approved against one plan and executed against another.</p>
+        <p>Linux and Windows use the same control path. Windows adds two cleanup responsibilities because the machine also has an Active Directory computer object and a per-host monitoring key.</p>
       </section>
 
-      <section class="block">
-        <h2>The teardown order is deliberate</h2>
-        <p>The machine is torn down in the reverse order the provisioning story created it. The VM has to
-          be genuinely gone before its IP address goes back to the pool, or the pool starts shrinking in
-          a way the next build only discovers later. Monitoring is cleaned up as part of the same path,
-          so a retired machine does not keep reporting as a live one by accident.</p>
-        <p>This is the same design rule as provisioning. The repository path tells the truth about the
-          world only if destroy steps are as explicit as create steps.</p>
+      <section class="block" id="gate">
+        <h2>The destroy plan has to prove there is work</h2>
+        <p>This is the gate that says no. Terraform can exit successfully when a destroy plan contains no changes. That behavior is useful for some automation, but it is dangerous here because a green decommission could leave the requested machine running. The pipeline therefore converts the saved plan to structured JSON and checks its contents before it sends an approval request.</p>
+        <div class="gate" role="img" aria-label="Destroy-plan gate that allows approval only when the selected workspace exists, the saved plan is readable, and at least one delete action is present.">
+          <h3>The plan must contain a real deletion</h3>
+          <div class="gate-flow">
+            <div class="gate-node"><span class="label">Input</span><strong>Selected machine workspace</strong><p>The machine name selects one isolated Terraform state record. A missing workspace fails here.</p></div>
+            <div class="gate-node check"><span class="label">Content check</span><strong>Read the saved plan</strong><p>The validator scans the plan’s action list for a delete, including replacement actions that delete and recreate.</p></div>
+            <div class="gate-branches"><div class="branch"><span class="label">Delete found</span><strong>Ask for approval</strong><p>The exact saved plan can continue to the human gate.</p></div><div class="branch stop"><span class="label">Empty or unreadable</span><strong>Stop the build</strong><p>No approval email, no apply, and no cleanup that could dismantle the wrong records.</p></div></div>
+          </div>
+          <p class="diagram-foot">The workspace proves which machine is targeted. The plan validator proves that Terraform intends to delete something from that machine’s state. Both checks must pass. A successful command exit by itself is not enough.</p>
+        </div>
+        <p>The validator has three outcomes. A readable plan containing a delete passes. A readable plan with no delete reports that the destroy plan is empty. A missing, truncated, or malformed plan reports that the evidence cannot be trusted. Both non-passing outcomes stop the stage.</p>
+        <p>The human gate comes after this machine check. Jenkins emails the machine name and recorded address, then waits for an explicit destroy action. The wait is bounded. Rejecting the request or letting the approval expire stops before Terraform applies the plan. The human decides whether the requested destruction is appropriate; the code proves there is an actual destruction to review.</p>
       </section>
 
-      <section class="block">
-        <h2>The useful lesson came from restore, not destroy</h2>
-        <p>The credential I deliberately keep is the per-host local-admin password. Early on I removed it
-          when a machine was decommissioned, then restored a VM from backup and could not log in because
-          the machine came back but the one secret tied to that machine did not. The decommission path
-          now keeps that password in Vault so a restored VM is still reachable.</p>
-        <p>That is the kind of edge case only shows up when the decommission path and the recovery path
-          are both real. The fix is small, but it is the difference between "destroyed cleanly" and
-          "restored usefully."</p>
+      <section class="block" id="order">
+        <h2>The cleanup order protects the record</h2>
+        <p>Destroying the VM is only the middle of the job. A provisioned server is represented in Git, Terraform state, the hypervisor, address management, monitoring, DNS, and sometimes Active Directory. Decommissioning has to reverse those records without making an address or machine identifier reusable too early.</p>
+        <div class="phase-map" role="img" aria-label="Decommission sequence from validation through record removal, approval, VM destruction, service cleanup, and state cleanup.">
+          <h3>One reviewed request reverses every system that described the server</h3>
+          <div class="phase-line">
+            <div class="phase"><span class="num">Phase 1</span><strong>Resolve</strong><small>Validate the name, select its state workspace, recover the recorded address, and build a saved destroy plan.</small></div>
+            <div class="phase"><span class="num">Phase 2</span><strong>Prove and approve</strong><small>Reject an empty or unreadable plan. Present the verified request to a person and wait for an explicit destroy decision.</small></div>
+            <div class="phase"><span class="num">Phase 3</span><strong>Retire the record</strong><small>Remove the host manifest through a checked pull request before the machine or address can be reused.</small></div>
+            <div class="phase"><span class="num">Phase 4</span><strong>Destroy</strong><small>Apply the exact saved plan. The virtual machine is gone after this boundary.</small></div>
+            <div class="phase"><span class="num">Phase 5</span><strong>Disconnect</strong><small>Release the address, remove monitoring, delete name records, and remove the Windows directory object when present.</small></div>
+            <div class="phase"><span class="num">Phase 6</span><strong>Close state</strong><small>Select the default workspace and delete the now-empty per-machine workspace. A non-empty workspace refuses deletion.</small></div>
+          </div>
+          <p class="diagram-foot">The durable host record is retired before scarce resources are released. The VM is destroyed before integrations are removed. The final workspace delete is another refusal gate: Terraform will not erase a workspace that still contains resources.</p>
+        </div>
+
+        <h3>Why the host record goes first</h3>
+        <p>The host manifest is the reviewed inventory record stored in Git. Removing it requires a small pull request whose checks must pass and whose merge must be visible on the main branch. If that merge fails, the workflow stops while the VM and its address still exist. This prevents another provisioning run from reusing an address or machine identifier while the old record remains current.</p>
+
+        <h3>Why the integrations go after the VM</h3>
+        <p>Once Terraform applies the destroy plan, the machine no longer needs an address reservation, a Zabbix host, or DNS records. Windows also no longer needs an Active Directory computer object. These operations are keyed on the same machine name and are written to tolerate a record that is already absent. That makes a rerun the recovery mechanism after a partial failure.</p>
+
+        <div class="compare">
+          <article class="lane"><h3>Linux cleanup</h3><p>Release the address, remove the Zabbix host, remove forward and reverse DNS records, then delete the empty Terraform workspace.</p></article>
+          <article class="lane windows"><h3>Windows cleanup</h3><p>Perform the Linux cleanup, remove the Active Directory computer object, and delete the per-host Zabbix key. Keep the local administrator credential so a restored backup remains accessible.</p></article>
+        </div>
       </section>
 
-      <div class="links">
-        <a href="/projects/server-provisioning/">Server provisioning &#8594;</a>
-        <a href="/security/">Security &#8594;</a>
-        <a href="/skills/netbox-ipam.html">NetBox IPAM &#8594;</a>
-      </div>
+      <section class="block" id="systems">
+        <h2>What the workflow touches and why</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>System</th><th>What it owns</th><th>What decommission does</th><th>How failure is handled</th></tr></thead>
+          <tbody>
+            <tr><td>Jenkins</td><td>The request form, ordered stages, approval gate, run log, and result notification</td><td>Coordinates the teardown and records the stage where it stopped.</td><td>A failed stage prevents later stages from running. The next run starts from the same machine name.</td></tr>
+            <tr><td>Git and Gitea</td><td>The reviewed host manifest and automation</td><td>Removes the machine record through a checked pull request before releasing the VM or address.</td><td>An unmerged record removal stops the destructive path while the machine is still intact.</td></tr>
+            <tr><td>Terraform and PostgreSQL</td><td>The per-machine infrastructure state and saved destroy plan</td><td>Selects the machine workspace, proves the plan contains a deletion, applies that plan, then deletes the empty workspace.</td><td>A missing workspace, empty plan, unreadable plan, failed apply, or non-empty final workspace stops loudly.</td></tr>
+            <tr><td>Proxmox</td><td>The virtual machine and its disks</td><td>Receives the approved delete through the Terraform provider.</td><td>A lock or provider error leaves later cleanup untouched so records still describe the surviving machine.</td></tr>
+            <tr><td>NetBox</td><td>The address reservation</td><td>Returns the recorded address to the available pool after the VM is gone.</td><td>A failed release leaves the address reserved. A rerun can safely try again.</td></tr>
+            <tr><td>Zabbix</td><td>The monitored host and its per-host identity</td><td>Deletes the host so a retired machine does not page as down. Windows also removes its stored monitoring key.</td><td>An already-absent host is a safe no-op. A service failure leaves a visible cleanup stage to rerun.</td></tr>
+            <tr><td>DNS and Active Directory</td><td>Forward and reverse name records, plus the Windows computer object</td><td>Removes the records that made the machine reachable and removes the Windows directory object when applicable.</td><td>Missing records are skipped. An unreachable directory service fails the stage and preserves the remaining cleanup for a rerun.</td></tr>
+            <tr><td>Vault</td><td>Runtime credentials and per-host secrets</td><td>Supplies narrowly scoped credentials to the stages that call each owning system.</td><td>A credential read failure stops the stage. Secret values never enter Git or the public run description.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <p>The path is manual and destructive, so it runs only from a named request and an explicit approval. Recovery is completion, not rollback. Once a machine is destroyed, recreating it automatically would be a new provisioning decision.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead>
+          <tbody>
+            <tr><td>On request</td><td>The job validates the machine name, selects its workspace, reads the recorded address, and creates the destroy plan.</td><td>A missing or malformed target stops before an approval request is sent.</td></tr>
+            <tr><td>When the plan is empty or unreadable</td><td>The content validator returns a refusal result.</td><td>The job fails loudly. It does not ask a person to approve a no-op and it does not remove surrounding records.</td></tr>
+            <tr><td>On approval</td><td>The host-manifest removal is merged, then Terraform applies the exact saved plan.</td><td>After the VM is gone, the job releases its address and removes monitoring, directory, DNS, secret, and workspace records as applicable.</td></tr>
+            <tr><td>On failure before destruction</td><td>The stage log records the failed gate, merge, provider, or approval step.</td><td>The VM and its supporting records remain. Correct the named dependency and rerun.</td></tr>
+            <tr><td>On failure after destruction</td><td>The VM stays gone and completed cleanup steps stay complete.</td><td>The remaining records are intentionally left visible. Rerunning the idempotent stages finishes the reversal.</td></tr>
+            <tr><td>On rerun</td><td>The job repeats the same name-based checks and no-ops on records already removed.</td><td>The first incomplete cleanup stage does the remaining work. There is no automatic reconstruction of a destroyed machine.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="broke">
+        <h2>What broke while I was building it</h2>
+        <div class="failure">
+          <h3><time datetime="2026-07-14">2026-07-14</time>A green job could destroy nothing</h3>
+          <p>The pipeline selected a workspace, tolerated an expected missing legacy-image state entry, and then accepted Terraform’s successful empty plan. Applying that plan also exited successfully, so Jenkins sent a decommissioned message even though no resource had been removed. Two live runs exposed the false-success path.</p>
+
+          <h3><time datetime="2026-07-15">2026-07-15</time>The visible error was a symptom, not the cause</h3>
+          <p>The first suspicion was a bad destroy target. The Jenkinsfile did not use a destroy target. The message came from a legacy state-cleanup command whose error was intentionally tolerated. The real defect was that nothing asserted the resulting plan contained a delete. I added the plan-content validator instead of hiding the message more neatly.</p>
+
+          <h3><time datetime="2026-07-15">2026-07-15</time>A second tolerated read could leak an address reservation</h3>
+          <p>The address lookup also discarded its error and converted any failure into an empty value. Later cleanup interpreted that as no address to release. The revised path preserves the reason in the log and makes the skipped release visible instead of presenting a fully clean result.</p>
+        </div>
+        <div class="warning"><strong>What is still honest about the proof:</strong> the validator is covered by offline fixtures for real deletes, no-op plans, replacement actions, invalid JSON, and missing files. The repository incident record still marks the original live cases as operator verification work. The walkthrough does not turn offline proof into a live-run claim.</div>
+      </section>
+
+      <section class="block" id="recreate">
+        <h2>If I were recreating this</h2>
+        <ol class="sequence">
+          <li><strong>Start with the state boundary.</strong> Give each machine an isolated workspace and make the request select that workspace by a validated name.</li>
+          <li><strong>Inspect the plan, not just the exit code.</strong> A destructive workflow needs evidence that its saved plan contains a destructive action.</li>
+          <li><strong>Put approval after machine checks.</strong> A person should review a plan the system has already proven is readable, non-empty, and tied to the selected state.</li>
+          <li><strong>Retire the durable record before reuse.</strong> Do not free an address or machine identifier while its reviewed inventory record is still current.</li>
+          <li><strong>Design every cleanup step for reruns.</strong> Deleting an already-absent monitoring host or DNS record should be a safe no-op, while an unreachable owning system should remain a visible failure.</li>
+          <li><strong>Keep the one credential a restore still needs.</strong> Secret cleanup should follow recovery requirements, not a blanket rule that every value associated with a retired machine must disappear.</li>
+        </ol>
+      </section>
     </div>
 
     <footer>
@@ -266,7 +387,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-22</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

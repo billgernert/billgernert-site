@@ -148,6 +148,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
+  <style>
+    body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif}.page{max-width:1100px;margin:auto;padding:28px}.note,.box,.diagram,.failure{border:1px solid #24445f;border-radius:10px;background:#0b1728;padding:22px}.badge{font:12px "Share Tech Mono";letter-spacing:.13em;text-transform:uppercase;color:#00ff96}h1{font-size:58px;line-height:1.02;margin:.3em 0}h2{font-size:34px;margin-top:2.2em}h3{font-size:23px}.lead{font-size:23px;color:#b7c9d8}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards div{border:1px solid #24445f;border-radius:8px;padding:18px;background:#0b1728}.cards b{display:block;color:#fff;margin-bottom:8px}.sequence{list-style:none;padding:0;counter-reset:step}.sequence li{position:relative;padding:0 0 28px 64px;counter-increment:step}.sequence li:before{content:counter(step);position:absolute;left:0;top:0;width:36px;height:36px;border:1px solid #00d4ff;border-radius:50%;display:grid;place-items:center;color:#00d4ff;font:700 16px "Share Tech Mono"}.sequence li:not(:last-child):after{content:"";position:absolute;left:18px;top:38px;bottom:0;border-left:1px solid #24445f}.sequence strong{color:#fff}.table-wrap{overflow:auto;border:1px solid #24445f;border-radius:9px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:14px;border-bottom:1px solid #24445f;vertical-align:top}th{color:#00d4ff;font:12px "Share Tech Mono";text-transform:uppercase;letter-spacing:.08em}.diagram{padding:18px;margin:22px 0}.diagram svg{display:block;width:100%;height:auto}.diagram figcaption{font:13px "Share Tech Mono";color:#91a8bc;margin-top:12px}.wire{stroke:#00ff96;stroke-width:3;fill:none}.branch{stroke:#ffb84d;stroke-width:3;fill:none}.node{fill:#10233a;stroke:#2e5879;stroke-width:2}.hot{fill:#08243a;stroke:#00d4ff;stroke-width:2}.warn{fill:#2a2111;stroke:#ffb84d;stroke-width:2}.t{fill:#e8f3ff;font:600 17px "Exo 2"}.s{fill:#91a8bc;font:12px "Share Tech Mono"}.edge{fill:#91a8bc;font:12px "Share Tech Mono"}.footer{margin-top:60px;border-top:1px solid #24445f;padding-top:20px;color:#91a8bc}.token{border:1px dashed #00d4ff;padding:2px 7px;color:#00d4ff;font:14px "Share Tech Mono"}a{color:#00d4ff}@media(max-width:760px){.cards{grid-template-columns:1fr}h1{font-size:42px}}
+        .diagram img { display:block; width:100%; height:auto; }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/api-to-usage/">
   <!-- END generated: canonical -->
@@ -174,69 +178,30 @@
       </nav>
     </header>
     <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">billgernert.com</a><span class="sep">/</span>
-      <a href="/projects/">Projects</a><span class="sep">/</span>
+      <a href="/">billgernert.com</a>
+      <span class="sep">/</span>
+      <a href="/projects/">Projects</a>
+      <span class="sep">/</span>
       <span class="here">API to usage-based pipelines</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span>
-      <h1>From API calls to usage-aware pipelines</h1>
-      <p class="descriptor">Two scheduled AI workloads were paying an incremental token charge while
-        subscription capacity was already available. I replaced the API path with a small router that
-        measures headroom, protects a reserve, and launches a headless Codex or Claude agent.</p>
+      <span class="badge">Project story</span><h1>API to usage-based AI pipelines</h1>
+      <p class="lead">Scheduled AI work uses subscription capacity only when there is measured room for it. If the measurement is stale or the reserve is reached, the work waits.</p>
+      <div class="box"><strong>How it is built, in one paragraph</strong><p>A usage exporter runs as a Kubernetes pod in the monitoring namespace and refreshes the remaining short-window and weekly allowance for two existing subscriptions about once an hour. Prometheus scrapes the cached observation every minute and keeps the history. When a Jenkins job reaches a hard reasoning task, a shared Python router reads that observation, rejects stale or incomplete data, protects a reserve for interactive work, and selects the provider with more weekly headroom. A Vault-backed wrapper exposes subscription OAuth only to the chosen child process. The agent runs without tools, without session persistence, in a read-only sandbox, and must return the requested JSON schema. There is no model API key and no metered fallback.</p></div>
+      <p>Measured from the AIOps spend ledger on 2026-08-24: 10 metered calls had cost about $0.11 before the routing boundary changed.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block">
-        <h2>The cost problem was architectural</h2>
-        <p>The first version of both pipelines used the familiar server pattern: keep an API key in the
-          secrets system, call a model, record tokens, and stop at a monthly budget. That was defensible,
-          but it meant unattended work created a second bill beside subscriptions I already used for
-          engineering work.</p>
-        <p>The AIOps ledger showed ten metered calls totaling about $0.11 as of August 24, 2026. That is
-          not a dramatic invoice. It is useful evidence of a repeated cost path. Job scoring used the same
-          pattern at higher volume, so I fixed the routing boundary instead of tuning another budget cap.</p>
-      </section>
-
-      <section class="block">
-        <h2>One hourly observation decides the provider</h2>
-        <p>An exporter samples the remaining short and weekly allowance for both subscriptions once an
-          hour. Before a headless call, the router rejects failed, incomplete, or stale observations. It
-          also holds back a provider-specific reserve so scheduled work does not consume the capacity I
-          need for an interactive session.</p>
-        <p>If both providers are eligible, the router chooses the one with more weekly headroom and uses
-          the short window as the tie-breaker. If neither is safe, it fails closed. Job scoring remains
-          queued, while AIOps keeps the local classification and marks the escalation unavailable.</p>
-      </section>
-
-      <section class="block">
-        <h2>The headless process keeps the old safety boundary</h2>
-        <p>The selected agent runs without tools, without session persistence, in a read-only sandbox,
-          and against a strict JSON schema. Subscription credentials exist only inside the child process
-          wrapper. The pipeline does not read a model API key and there is no silent fallback to metered
-          billing.</p>
-        <p>This is a cost saving, not free AI. The subscriptions still have a fixed cost, and capacity is
-          finite. The saving is the incremental API charge avoided by placing scheduled work into paid
-          headroom that would otherwise expire.</p>
-      </section>
-
-      <section class="block">
-        <h2>The same router now serves two different workloads</h2>
-        <p>The job-search pipeline uses it for scoring and resume work. The AIOps morning chain remains
-          local-first and invokes it only for hard classifications. Both workloads share the usage
-          observation, freshness rules, reserves, provider choice, structured output contract, and
-          fail-closed behavior.</p>
-        <p>That shared mechanism is the useful result. Adding another scheduled AI consumer no longer
-          starts with a new API key and a new spend ledger. It starts by deciding whether the work fits
-          the existing usage envelope.</p>
-      </section>
-
-      <div class="links">
-        <a href="/projects/job-reporting/">Job reporting pipeline &#8594;</a>
-        <a href="/projects/aiops-triage/">AIOps morning triage &#8594;</a>
-        <a href="/ai/">Applied AI &#8594;</a>
-      </div>
+      <section class="block"><h2>How to read it in thirty seconds</h2><div class="cards"><div><b>The exporter answers whether capacity exists</b>It turns provider usage windows into one fresh Prometheus observation.</div><div><b>The router decides whether this work may run</b>It protects the committed reserve before comparing the eligible providers.</div><div><b>The caller owns the safe no</b>Job scoring stays queued. AIOps keeps its local result and records that escalation was unavailable.</div></div></section>
+      <section class="block"><h2>Where the routing system runs</h2><p>The observer and its Prometheus scrape live in Kubernetes monitoring. The consumers run as short-lived Jenkins agent pods. They share one router module and the same Vault-backed Codex and Claude wrappers, so provider choice and credential handling are not reimplemented by each pipeline.</p>
+<figure class="diagram"><img src="img/usage-routing-system.svg" alt="Subscription usage flows through a Kubernetes exporter and shared router to two Jenkins workloads"><figcaption>Figure 1. Capacity is observed once and consumed by both pipelines. The exporter does not launch model work, and the workloads do not guess their own quota.</figcaption></figure></section>
+      <section class="block"><h2>The seven-step admission path</h2><ol class="sequence"><li><strong>The exporter samples both subscriptions.</strong><p>It records the remaining weekly and short-window allowance, whether the poll succeeded, and when the last successful observation occurred.</p></li><li><strong>Prometheus keeps the routing evidence.</strong><p>It scrapes the cached observation every minute. The exporter refreshes the upstream provider data about once an hour, so dashboard history does not increase provider polling.</p></li><li><strong>A Jenkins workload reaches a hard reasoning task.</strong><p>Deterministic parsing and local inference run first. The shared router is used only for work that still needs a stronger agent.</p></li><li><strong>The router validates the observation.</strong><p>A failed, incomplete, future-dated, or more-than-two-hours-old sample is ineligible. Missing data never becomes permission to spend.</p></li><li><strong>The router protects interactive capacity.</strong><p>It holds back each provider's committed weekly reserve and requires more than five percent remaining in the short window.</p></li><li><strong>The eligible provider with more headroom runs.</strong><p>Weekly headroom decides first and the short window breaks a tie. The wrapper gives the child process temporary subscription access and nothing resembling a model API key.</p></li><li><strong>The result must satisfy the caller's schema.</strong><p>Invalid output is rejected. When no provider is safe, scoring remains queued and AIOps retains its local classification instead of silently buying an API call.</p></li></ol></section>
+      <section class="block"><h2>The safe answer can be no</h2><p>The important behavior is not which provider wins. It is that every route to a remote agent passes the same freshness, reserve, and output checks, and that both callers have an explicit way to defer work.</p>
+<figure class="diagram"><img src="img/fail-closed-admission.svg" alt="The router fails closed when usage evidence is invalid or capacity is unsafe"><figcaption>Figure 2. Failed evidence and exhausted capacity converge on the same result: leave the work recoverable and spend nothing incrementally.</figcaption></figure></section>
+      <section class="block"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>Every minute</td><td>Prometheus scrapes the exporter's cached observation. The exporter refreshes both provider responses about once an hour.</td><td>A failed provider poll retains the last value for visibility, but freshness and success metrics make that provider ineligible.</td></tr><tr><td>During job enrichment</td><td>Deterministic parsing and local extraction run before one bounded scoring batch asks the router for admission.</td><td>Deferred scoring remains in PostgreSQL for the next scheduled run.</td></tr><tr><td>During AIOps triage</td><td>Local classification handles the common path. Only hard cases request a headless agent.</td><td>An unavailable escalation leaves the local result intact and records the limitation.</td></tr><tr><td>At provider selection</td><td>The router compares safe weekly headroom, then uses the short window as the tie-breaker.</td><td>No eligible provider is a normal capacity decision, not a reason to use a metered API.</td></tr><tr><td>Inside the child process</td><td>The selected CLI receives temporary subscription OAuth and a strict output schema.</td><td>Credentials disappear with the process, and malformed output changes no pipeline state.</td></tr></tbody></table></div></section>
+      <section class="block"><h2>What the first design got wrong</h2><div class="failure"><h3>Scheduled inference was being bought twice</h3><p>The original pipelines used metered model APIs while paid subscription capacity was already available and expiring. The AIOps ledger made that repeated path visible on 2026-08-24: 10 calls had accumulated about $0.11 in incremental cost.</p><h3>The replacement</h3><p>Job scoring moved to the shared usage-aware router on 2026-08-23. AIOps triage followed on 2026-08-24. Both retained their workload-specific fallback behavior while sharing observation, reserve, provider choice, credential scoping, and schema validation.</p><h3>The prevention built into the route</h3><p>The consumers no longer receive model API keys. Stale telemetry, exhausted reserves, wrapper failure, and invalid output all fail closed, and there is no code path that converts those failures into a metered call.</p></div></section>
+      <section class="block"><h2>What I would do differently</h2><p>I would build admission control before adding the first unattended model consumer. The hard part was not invoking an agent. It was defining what counts as safe capacity, who owns the reserve, how credentials reach only one process, and what each workload does when the correct answer is not now.</p></section>
     </div>
 
     <footer>
@@ -272,7 +237,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-24</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

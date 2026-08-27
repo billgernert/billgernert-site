@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 540" role="img" aria-labelledby="title desc">
+  <title id="title">Different evidence, one health contract</title>
+  <desc id="desc">Kubernetes readiness, infrastructure resources, pipeline results, and probes produce leaf states. The strongest leaf state rolls into the parent.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 9 5 1 9" fill="none" stroke="#7f96aa" stroke-width="1.5"/></marker>
+    <style>.bg{fill:#08111f}.box{fill:#0d1d31;stroke:#2c5373;stroke-width:2}.wire{fill:none;stroke:#7f96aa;stroke-width:2.5;marker-end:url(#arrow)}.title{fill:#e8f3ff;font:600 24px 'Exo 2',sans-serif}.head{fill:#e8f3ff;font:600 16px 'Exo 2',sans-serif}.copy{fill:#91a8bc;font:12px 'Share Tech Mono',monospace}.tag{font:11px 'Share Tech Mono',monospace;letter-spacing:1px}.healthy{fill:#00ff96}.warning{fill:#ffb84d}.critical{fill:#ff5d73}.parent{fill:#2b1420;stroke:#ff5d73;stroke-width:3}</style>
+  </defs>
+  <rect class="bg" width="1120" height="540" rx="14"/>
+  <text class="title" x="42" y="48">Different evidence, one health contract</text>
+  <path class="wire" d="M160 230 V320 H560 V365"/><path class="wire" d="M425 230 V320 H560 V365"/><path class="wire" d="M695 230 V320 H560 V365"/><path class="wire" d="M960 230 V320 H560 V365"/>
+  <rect class="box" x="35" y="100" width="250" height="130" rx="10"/><text class="head" x="160" y="134" text-anchor="middle">Kubernetes workload</text><text class="copy" x="160" y="162" text-anchor="middle">desired vs ready replicas</text><text class="tag warning" x="160" y="197" text-anchor="middle">WARNING</text>
+  <rect class="box" x="305" y="100" width="240" height="130" rx="10"/><text class="head" x="425" y="134" text-anchor="middle">Container</text><text class="copy" x="425" y="162" text-anchor="middle">ready · restarts · CPU · RAM</text><text class="tag critical" x="425" y="197" text-anchor="middle">CRITICAL</text>
+  <rect class="box" x="575" y="100" width="240" height="130" rx="10"/><text class="head" x="695" y="134" text-anchor="middle">Proxmox guest</text><text class="copy" x="695" y="162" text-anchor="middle">power · CPU · guest RAM</text><text class="tag healthy" x="695" y="197" text-anchor="middle">HEALTHY</text>
+  <rect class="box" x="835" y="100" width="250" height="130" rx="10"/><text class="head" x="960" y="134" text-anchor="middle">Job or endpoint</text><text class="copy" x="960" y="162" text-anchor="middle">latest build or probe result</text><text class="tag healthy" x="960" y="197" text-anchor="middle">HEALTHY</text>
+  <rect class="parent" x="405" y="365" width="310" height="110" rx="10"/><text class="head" x="560" y="405" text-anchor="middle">Owning branch: critical</text><text class="copy" x="560" y="433" text-anchor="middle">strongest child state wins</text><text class="copy" x="560" y="455" text-anchor="middle">click down to the critical container</text>
+</svg>

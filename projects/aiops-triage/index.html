@@ -140,8 +140,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AIOps triage - Bill Gernert</title>
-  <meta name="description" content="How AIOps morning triage collects four operational sources, correlates findings in code, uses a local-first model path, and blocks model output from executing changes.">
+  <title>AIOps morning triage - Bill Gernert</title>
+  <meta name="description" content="How a read-only morning triage workflow collects operational evidence, distinguishes quiet from broken, groups related findings, and sends one actionable report.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,6 +149,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
   <script src="../../assets/live-dashboard.js" defer></script>
+  <style>
+    :root { --panel:rgba(14,21,34,.84); --line:rgba(0,212,255,.28); --muted:#aebbd0; --good:#00ff96; --warn:#ffd166; --bad:#ff5c7a; }
+
+        .lede { max-width:78ch; font-size:1.16rem; }
+        .measured-line { margin:.7rem 0 1rem; color:var(--good); font:700 .9rem 'Share Tech Mono',monospace; letter-spacing:.025em; }
+        .source-note { margin:.9rem 0 0; padding:.7rem .85rem; border-left:3px solid #00d4ff; background:rgba(0,212,255,.055); color:var(--muted); font-size:.9rem; }
+        .shot { margin:1.5rem 0 2.5rem; }
+        .shot img { display:block; width:100%; height:auto; border:1px solid var(--line); background:#090e18; }
+        figcaption { margin-top:.7rem; color:var(--muted); font-size:.92rem; line-height:1.55; }
+        .state-key { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem; margin:1.2rem 0 2rem; }
+        .state { padding:1rem; border-top:3px solid var(--good); background:rgba(0,255,150,.06); }
+        .state.info { border-color:var(--warn); background:rgba(255,209,102,.07); }
+        .state.action { border-color:var(--bad); background:rgba(255,92,122,.07); }
+        .state h3 { margin:.2rem 0 .45rem; }
+        .state p { margin-bottom:0; color:var(--muted); }
+        .phase-map { margin:1.4rem 0 2.2rem; padding:1.25rem; border:1px solid var(--line); background:#090e18; }
+        .phase-map h3 { margin-top:0; }
+        .phase-line { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.55rem; align-items:stretch; margin:1.1rem 0; }
+        .phase { position:relative; min-height:9.2rem; padding:.9rem .75rem; border-top:3px solid #00d4ff; background:rgba(0,212,255,.07); }
+        .phase:not(:last-child)::after { content:"→"; position:absolute; top:3.5rem; right:-.55rem; z-index:2; color:var(--warn); font-size:1.15rem; }
+        .phase .num { display:block; color:var(--warn); font:.76rem 'Share Tech Mono',monospace; letter-spacing:.06em; text-transform:uppercase; }
+        .phase strong { display:block; margin:.45rem 0; color:#eef4fb; }
+        .phase small { color:var(--muted); line-height:1.45; }
+        .diagram-foot { margin:0; padding-top:1rem; border-top:1px solid rgba(174,187,208,.18); color:var(--muted); }
+        .source-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; margin:1.2rem 0 2rem; }
+        .source-card { padding:1rem; border-left:3px solid #00d4ff; background:rgba(14,21,34,.68); }
+        .source-card h3 { margin:.1rem 0 .45rem; }
+        .source-card p { margin-bottom:0; color:var(--muted); }
+        .safety { display:grid; grid-template-columns:1fr auto 1fr; gap:.85rem; align-items:center; margin:1.4rem 0 2.2rem; padding:1.25rem; border:1px solid rgba(255,209,102,.4); background:#090e18; }
+        .safety-side { padding:1rem; background:rgba(0,212,255,.06); }
+        .safety-side.denied { border:1px solid rgba(255,92,122,.38); background:rgba(255,92,122,.06); }
+        .safety-arrow { color:var(--warn); font-size:1.5rem; }
+        .sequence { counter-reset:step; margin:1.2rem 0 2rem; padding:0; list-style:none; }
+        .sequence li { position:relative; margin:0; padding:.35rem 0 1.55rem 4rem; }
+        .sequence li:not(:last-child)::after { content:""; position:absolute; left:1.25rem; top:2.7rem; bottom:.15rem; width:1px; background:rgba(0,212,255,.32); }
+        .sequence li::before { counter-increment:step; content:counter(step); position:absolute; left:.15rem; top:.2rem; display:grid; place-items:center; width:2.2rem; height:2.2rem; border:1px solid #00d4ff; border-radius:50%; color:#00d4ff; font:700 1rem 'Share Tech Mono',monospace; }
+        .sequence strong { color:#eef4fb; }
+        .table-wrap { overflow-x:auto; margin:1.2rem 0 2rem; }
+        table { width:100%; border-collapse:collapse; }
+        th,td { padding:.8rem; border-bottom:1px solid rgba(174,187,208,.18); text-align:left; vertical-align:top; }
+        th { color:#00d4ff; font:.78rem 'Share Tech Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
+        td:first-child { color:#eef4fb; font-weight:600; }
+        .failure { margin:1.2rem 0; padding:1.2rem; border:1px solid rgba(255,92,122,.36); background:rgba(43,23,32,.38); }
+        .failure h3 { color:#eef4fb; }
+        .failure time { margin-right:.45rem; color:var(--warn); font:.8rem 'Share Tech Mono',monospace; }
+        .live-frame { display:block; width:100%; min-height:980px; border:1px solid var(--line); background:#090e18; }
+        .live-note { margin:1rem 0 1.4rem; padding:.9rem 1rem; border-left:3px solid var(--good); background:rgba(0,255,150,.055); }
+        code { white-space:normal; overflow-wrap:anywhere; }
+        @media (max-width:980px) { .phase-line { grid-template-columns:repeat(2,minmax(0,1fr)); } .phase:not(:last-child)::after { display:none; } }
+        @media (max-width:760px) { .state-key,.source-grid,.phase-line,.safety { grid-template-columns:1fr; } .safety-arrow { transform:rotate(90deg); text-align:center; } .live-frame { min-height:760px; } }
+        .diagram img { display:block; width:100%; height:auto; }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/aiops-triage/">
   <!-- END generated: canonical -->
@@ -179,98 +231,151 @@
       <span class="sep">/</span>
       <a href="/projects/">Projects</a>
       <span class="sep">/</span>
-      <span class="here">AIOps triage</span>
+      <span class="here">AIOps morning triage</span>
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span>
-      <h1>AIOps morning triage</h1>
-      <p class="descriptor">I built this because the first hour of an incident was being spent opening
-        four consoles and reconstructing the same timeline by hand. The morning job now brings
-        Alertmanager, Zabbix, Jenkins, and Proxmox Backup Server into one finding model, preserves the
-        source evidence, and sends me a short list of what deserves attention.</p>
+      <span class="badge">Technical project walkthrough</span>
+      <h1>How I turned the first hour of triage into one morning report</h1>
+      <p class="measured-line">Last run <!--LIVE:AIOPS_LAST_RUN_DATE:START-->2026-08-26<!--LIVE:AIOPS_LAST_RUN_DATE:END--> &middot; <!--LIVE:AIOPS_LAST_FINDINGS_COUNT:START-->122<!--LIVE:AIOPS_LAST_FINDINGS_COUNT:END--> findings &middot; <!--LIVE:AIOPS_LAST_ACTIONABLE_COUNT:START-->28<!--LIVE:AIOPS_LAST_ACTIONABLE_COUNT:END--> actionable &middot; <!--LIVE:AIOPS_LAST_NEEDS_INFO_COUNT:START-->94<!--LIVE:AIOPS_LAST_NEEDS_INFO_COUNT:END--> needs info &middot; <!--LIVE:AIOPS_LAST_KNOWN_NOISE_COUNT:START-->0<!--LIVE:AIOPS_LAST_KNOWN_NOISE_COUNT:END--> known noise</p>
+      <p class="descriptor lede">Before I start work, one read-only job checks alerting, monitoring, failed automation, and backups, then sends a report that separates work to do, questions to investigate, and noise already understood. The report names any source it could not read, keeps the evidence that produced each decision, and cannot make a change to the environment. The result is a short attention list instead of a morning spent opening consoles and reconstructing the same timeline by hand.</p>
+      <p>AIOps is the use of software and machine-assisted analysis to reduce operational signals into decisions a person can review. In this project it means collecting evidence, applying repeatable rules, asking a language model to explain ambiguous cases, and stopping at a report.</p>
+      <p class="source-note">Built from the current collectors, database migrations, deterministic correlation and disposition code, local-first classification path, Jenkins orchestration, production email template, public Grafana view, and the incident that proved a missing run needs its own alarm.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block">
-        <h2>Four systems become one overnight record</h2>
-        <p>Jenkins starts the chain. One read-only collector asks Alertmanager for firing alerts, one uses
-          the Zabbix API for host and service problems, one walks the Jenkins job tree for failed builds,
-          and one reads Proxmox Backup Server health through the same code that produces the backup
-          digest. Each source is normalized into PostgreSQL with a signature, severity, host when known,
-          source payload, and collection window.</p>
-        <p>Every collector also writes its own run row before it touches the source. That is important:
-          an empty Alertmanager result can mean a quiet night, while a missing collector run means the
-          evidence was never gathered. A freshness check watches those run rows so a silent collector
-          failure cannot produce a reassuring empty email.</p>
-      </section>
-
-      <section class="block">
-        <h2>Correlation is code; language models explain the remainder</h2>
-        <p>Deterministic code groups repeated signatures and same-host findings before a model sees
-          anything. PostgreSQL keeps earlier classifications and my later dispositions, so known
-          maintenance noise does not have to be rediscovered every morning. A local Ollama model handles
-          the common classification path. Critical or low-confidence cases can receive a second opinion,
-          but that opinion is still only advisory text.</p>
-        <p>The second-opinion path no longer uses metered Claude or OpenAI API calls. Prometheus stores an
-          hourly snapshot of subscription consumption. A headless router checks that snapshot, preserves a
-          reserve for interactive work, and selects Codex or Claude only when the measurement is fresh and
-          capacity remains. If neither subscription is safe to use, the local result stands. That removed
-          the incremental token charge and the model API credentials from the scheduled job.</p>
-      </section>
-
-      <section class="block">
-        <h2>The safety boundary is visible in the data flow</h2>
-        <p>Vault supplies the read-only source and mail credentials at run time. Findings land in
-          PostgreSQL. The model can label a finding actionable, known noise, or needing more information,
-          and it can suggest the first diagnostic check. It cannot call Jenkins, Zabbix, Alertmanager,
-          Proxmox, or a shell. A malformed or unavailable model leaves the original severity intact.</p>
-        <p>The result is rendered by the production HTML template and sent through the lab SMTP path. The
-          email carries collector health, correlated incidents, rationale, and the next check. Prometheus
-          and Grafana watch the job result and duration separately, so delivery is evidence, not the only
-          health signal.</p>
-        <figure class="email-preview">
-          <iframe class="email-preview-frame" src="/assets/email-previews/aiops-email.htm"
-            title="Scrollable sanitized AIOps morning triage email" loading="lazy" sandbox></iframe>
-          <figcaption>Rendered by the production email template with public sample findings. The
-            scrollable HTML keeps the real hierarchy and text sharp while replacing hosts, links,
-            commands, and finding details.</figcaption>
+      <section class="block" id="report">
+        <h2>The report is the product</h2>
+        <p>I designed the email first because it is the part a person has to trust. The top line says whether collection and triage ran cleanly. The next line gives the measured finding totals for that run. The body then leads with the item that deserves action, keeps incomplete evidence in a separate needs-info section, and leaves suppressed noise visible enough to audit without letting it dominate the morning.</p>
+        <figure class="shot">
+          <img src="/assets/email-previews/aiops-morning-triage.png" alt="Dark AIOps morning triage email with health, actionable, needs-info, and known-noise sections.">
+          <figcaption>Sample findings in the production email template. This public rendering is dated 2026-08-24 and shows one actionable item, one needs-info item, one suppressed-noise item, and a clean status for every configured collector. Host identities, source links, and diagnostic commands are replaced.</figcaption>
         </figure>
-      </section>
 
-      <section class="block">
-        <h2>Where I am taking it next</h2>
-        <p>The next useful improvement is better cross-source correlation through time proximity, deployment
-          context, and a shared incident signature. Grouping currently relies mainly on host. The real-time
-          Alertmanager receiver already uses the same finding and disposition store, so the morning digest
-          and an active incident can converge on one shared memory.</p>
-        <p>Automated remediation remains behind a deliberate gate. Before I let an actionable finding
-          draft even a review-only change, I want a measured run of digest quality, a low false-actionable
-          rate, working disposition overrides, and bounded model usage. The destination is a draft pull
-          request that still requires reviewer approval, not an agent with permission to operate the lab.</p>
-      </section>
-
-      <section class="block" id="live" data-public-noc>
-        <h2>Live AIOps and alerting evidence</h2>
-        <p>This public dashboard shows shared AI capacity, service health, component capacity, the
-          latest triage result, triage activity, and aggregate alert severity. Findings, prompts, model
-          responses, host identities, and internal management links stay private.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live AIOps dashboard.</p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f"
-          title="Public AIOps and alerting dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live AIOps dashboard is unavailable. No cached triage state is presented as current.</p>
+        <div class="state-key">
+          <article class="state action"><h3>Actionable</h3><p>The evidence supports a concrete next step. The report explains why it matters and gives a diagnostic starting point. It still does not execute the step.</p></article>
+          <article class="state info"><h3>Needs info</h3><p>The signal may matter, but a source is stale, context is missing, or the classification is not trustworthy enough to recommend action.</p></article>
+          <article class="state"><h3>Known noise</h3><p>History or an operator ruling identifies a recurring non-actionable condition. Critical new evidence can override that suppression and return the item to view.</p></article>
         </div>
-        <noscript><p>The live AIOps dashboard requires JavaScript.</p></noscript>
+        <p>The three outcomes are not model moods. They are stored classifications with a rationale, confidence, engine, prompt version, source finding, and run identifier. That history makes a later report explain whether the same signature has appeared before and whether a person has already ruled on it.</p>
       </section>
 
-      <div class="links">
-        <a href="/projects/api-to-usage/">API to usage-based pipelines &#8594;</a>
-        <a href="/ai/">Applied AI &#8594;</a>
-        <a href="/ai-guardrails/">AI guardrails &#8594;</a>
-        <a href="/platform/#aiops">Platform overview &#8594;</a>
-      </div>
+      <section class="block" id="dashboard">
+        <h2>The dashboard proves the chain is alive</h2>
+        <p>The email is useful evidence that a report was delivered, but delivery alone does not prove every source was collected or every classifier ran. The public Grafana view keeps the operating evidence beside the story: current service health, model-capacity observations, the latest triage result, triage activity, and aggregate alert severity. Internal finding text, prompts, host identities, and management links remain private.</p>
+        <p class="live-note"><strong>How to read it:</strong> begin with the latest triage result, then check that activity is current and that no shared service is down. Capacity panels explain whether a hard case could receive a second opinion. Alert-severity panels describe the wider environment; they do not prove the triage job itself ran.</p>
+        <div data-public-noc>
+          <p class="live-status" data-live-status aria-live="polite">Checking the live AIOps dashboard.</p>
+          <iframe class="live-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f" title="Public AIOps and alerting dashboard" loading="lazy" referrerpolicy="no-referrer" hidden></iframe>
+          <div class="live-fallback" data-live-fallback hidden><p>The live AIOps dashboard is unavailable. No cached triage state is presented as current.</p></div>
+          <noscript><p>The live AIOps dashboard requires JavaScript.</p></noscript>
+        </div>
+        <p>The private health path goes one step deeper. Each collector writes a run heartbeat before it asks its source for findings. A current heartbeat with zero findings means the source was reached and the period was quiet. A missing or stale heartbeat means the evidence was never gathered. That distinction cannot be inferred from an empty chart.</p>
+      </section>
+
+      <section class="block" id="pipeline">
+        <h2>The morning run follows one evidence path</h2>
+        <p>Jenkins, the automation server, starts the job on a daily schedule after the backup window and before the workday. It launches an ephemeral Kubernetes agent, a short-lived container with the Python libraries and runtime identity the chain needs. The agent checks out the reviewed repository, reads narrowly scoped credentials from Vault, reaches the source systems, and writes the normalized result to PostgreSQL.</p>
+        <div class="phase-map" role="img" aria-label="AIOps morning triage flow from source collection through normalization, correlation, classification, report rendering, and health monitoring.">
+          <h3>Operational evidence becomes one read-only morning decision list</h3>
+          <div class="phase-line">
+            <div class="phase"><span class="num">Phase 1</span><strong>Collect</strong><small>Read each operational source and open a run heartbeat before the source call begins.</small></div>
+            <div class="phase"><span class="num">Phase 2</span><strong>Normalize</strong><small>Convert source-specific events into one finding shape with identity, severity, status, time, and host when known.</small></div>
+            <div class="phase"><span class="num">Phase 3</span><strong>Correlate</strong><small>Deduplicate repeated signatures, group same-host findings, and load earlier classifications and operator rulings.</small></div>
+            <div class="phase"><span class="num">Phase 4</span><strong>Classify</strong><small>Apply a ruling when one matches, otherwise use the local model and reserve second opinions for hard cases.</small></div>
+            <div class="phase"><span class="num">Phase 5</span><strong>Explain</strong><small>Build actionable, needs-info, and known-noise sections with rationale, source health, and the first diagnostic check.</small></div>
+            <div class="phase"><span class="num">Phase 6</span><strong>Deliver and watch</strong><small>Send the email, record a digest heartbeat, and expose job, collector, and triage health to monitoring.</small></div>
+          </div>
+          <p class="diagram-foot">Every arrow moves data, not authority. The job can read source systems, write its own evidence store, and send a report. It has no path back from a classification to an operational change.</p>
+        </div>
+
+        <h3>Each source keeps its own meaning</h3>
+        <div class="source-grid">
+          <article class="source-card"><h3>Alertmanager</h3><p>The Prometheus alert router supplies alerts that are firing now. Its fingerprint becomes the stable identity. It does not claim to reconstruct alerts that fired and resolved before collection.</p></article>
+          <article class="source-card"><h3>Zabbix</h3><p>The infrastructure monitoring system supplies problem events and whether each one is still active. The collector maps source severity into the common vocabulary and keeps the original tags as evidence.</p></article>
+          <article class="source-card"><h3>Jenkins</h3><p>The automation server exposes failed, unstable, or aborted builds in the reporting window. The collector walks jobs and nested folders. A build is recorded as work awaiting triage, not as a live infrastructure alert.</p></article>
+          <article class="source-card"><h3>Backup</h3><p>The backup platform supplies stale and failed guest results through the same code used by the backup report. Healthy guests do not become findings.</p></article>
+        </div>
+        <p>A normalized finding keeps the source-native identifier and a trimmed raw payload. Normalization makes the records comparable without pretending they are identical. A failed build and an active host alert can share a host and a time window, but the original source evidence remains available when the report needs to explain the difference.</p>
+      </section>
+
+      <section class="block" id="decisions">
+        <h2>Code narrows the work before a model explains it</h2>
+        <p>The pipeline does not send an unfiltered event dump to a model. Deterministic code creates a signature from the source identity, updates an existing finding when the same event is collected again, and groups findings that share a host. It also loads classification history and active operator dispositions before any inference runs.</p>
+        <ol class="sequence">
+          <li><strong>Use a human ruling first.</strong> A matching disposition can mark a recurring signature, title and host, or entire host as actionable, needs-info, or known noise. The most specific active ruling wins. The decision is versioned and can expire or be revoked.</li>
+          <li><strong>Protect critical evidence.</strong> A general known-noise ruling does not hide a new critical finding unless the operator deliberately created that stronger exception. The report calls out the conflict between the old ruling and the new severity.</li>
+          <li><strong>Use the local model for the common path.</strong> Ollama, a language-model runner on my own hardware, receives one finding, its group context, and its history. The response must match a strict JSON shape with a valid classification, rationale, and confidence.</li>
+          <li><strong>Escalate only the hard cases.</strong> Invalid local output, low confidence, or a high-stakes actionable result can receive one provider-neutral second opinion when recent subscription measurements show capacity above the protected reserve.</li>
+          <li><strong>Fail closed when the explanation path is weak.</strong> If a second opinion is unavailable, a valid local result remains. If the local output itself is invalid, the finding becomes needs-info rather than disappearing.</li>
+        </ol>
+
+        <div class="safety" role="img" aria-label="Safety boundary showing read-only operational sources feeding an evidence store and report, with no route from model output back to operational systems.">
+          <div class="safety-side"><span class="label">Allowed</span><strong>Sources → evidence store → report</strong><p>Read alerts, problems, builds, and backup health. Write findings, run records, classifications, dispositions, and digest heartbeats to the AIOps database. Send HTML mail.</p></div>
+          <div class="safety-arrow" aria-hidden="true">⛔</div>
+          <div class="safety-side denied"><span class="label">Not present</span><strong>Report → operational change</strong><p>No shell, deploy, restart, acknowledge, delete, ticket-closing, or pull-request action is reachable from a model classification. Suggestions remain text for a person to review.</p></div>
+          <p class="diagram-foot" style="grid-column:1/-1">The model is inside the analysis path, not the control path. Vault policies and the job design give collectors read access to their sources. The only writes are to the dedicated evidence database and the mail system.</p>
+        </div>
+      </section>
+
+      <section class="block" id="systems">
+        <h2>What runs where</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Component</th><th>Where it runs</th><th>Responsibility</th><th>Failure posture</th></tr></thead>
+          <tbody>
+            <tr><td>Jenkins</td><td>Kubernetes controller and an ephemeral job agent</td><td>Schedules the run, orders collection, triage, and digest stages, keeps logs, and marks partial source failures unstable.</td><td>Collector or triage failures do not block the digest. A digest failure fails the job because a missing report is the alarm.</td></tr>
+            <tr><td>Collectors</td><td>Python processes in the job agent</td><td>Use read-only APIs to gather alerts, monitoring events, CI results, and backup health, then normalize them.</td><td>Each records its own running, ok, or error row. An unreachable source cannot look like a quiet source.</td></tr>
+            <tr><td>PostgreSQL</td><td>A dedicated AIOps database</td><td>Stores findings, collector runs, classifications, triage runs, digest runs, operator dispositions, and retained history.</td><td>A database failure makes the evidence chain untrustworthy and prevents a normal digest.</td></tr>
+            <tr><td>Vault</td><td>Central secrets manager</td><td>Issues the job’s runtime identity and supplies read-only source credentials plus the mail credential.</td><td>A missing credential fails the source that needs it. Values are not placed in the repository or the report.</td></tr>
+            <tr><td>Ollama</td><td>A local inference host</td><td>Classifies the common path without a metered API credential.</td><td>If it is unavailable, triage records its own failure finding and the digest reports that triage did not run.</td></tr>
+            <tr><td>Headless second-opinion router</td><td>The same job agent, using installed subscription-backed clients</td><td>Reads fresh usage observations, protects interactive reserves, and selects an available provider only for a hard case.</td><td>Stale or exhausted measurements fail closed. There is no automatic metered API fallback.</td></tr>
+            <tr><td>Mail service</td><td>The existing authenticated SMTP path</td><td>Sends the rendered report after collection and triage state have been assessed.</td><td>A send failure fails the digest stage. The absent morning email is intentionally treated as a signal.</td></tr>
+            <tr><td>Prometheus and Grafana</td><td>The monitoring stack</td><td>Track job status, activity, source freshness, shared service health, and public aggregate evidence.</td><td>Freshness alerts catch a chain that goes silent even when no Jenkins failure notification was produced.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>When</th><th>What runs</th><th>What a person sees</th></tr></thead>
+          <tbody>
+            <tr><td>On the daily schedule</td><td>The source collectors run in sequence, triage classifies new evidence, and the digest renders and sends.</td><td>One email arrives before the workday with collector health and the prioritized findings.</td></tr>
+            <tr><td>When one source fails</td><td>That collector records an error and the Jenkins build becomes unstable, but the remaining collectors and digest continue.</td><td>The report is marked degraded and names the missing source. Existing evidence is not presented as a fully healthy run.</td></tr>
+            <tr><td>When the local model fails</td><td>The triage run records an error and creates a stable finding about the triage engine. The job still proceeds to the digest.</td><td>The report says triage did not run. It does not reinterpret an empty classification table as no work.</td></tr>
+            <tr><td>When report delivery fails</td><td>The digest stage fails instead of being softened to unstable.</td><td>No report arrives, and the normal Jenkins failure notification becomes the signal to investigate the reporting path.</td></tr>
+            <tr><td>When a source heartbeat becomes stale</td><td>A separate freshness check compares the latest run record for every expected collector with the daily-run threshold.</td><td>An attention alert names the stale or absent source. This catches silence even if the job history itself looks inconclusive.</td></tr>
+            <tr><td>On a manual preview</td><td>The job renders the report from existing database state and archives the HTML without collecting, classifying, or sending.</td><td>A reviewer can inspect the exact template and data grouping without changing source or evidence state.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="broke">
+        <h2>What broke while I was building it</h2>
+        <div class="failure">
+          <h3><time datetime="2026-07-20">2026-07-20</time>The entire collection chain went quiet</h3>
+          <p>Every configured collector stopped writing run records at the same timestamp. Because they failed together, the evidence pointed to one chain-level problem rather than independent source failures. The daily job produced no new collection evidence for nineteen days, and nothing alerted on the silence.</p>
+
+          <h3><time datetime="2026-08-09">2026-08-09</time>A different audit found the missing reports</h3>
+          <p>The gap was discovered while reading the live database for another task. That exposed the larger design failure: monitoring the Jenkins build was not enough. The system needed to ask whether each collector had written a recent run record, because a healthy quiet run still writes one.</p>
+
+          <h3><time datetime="2026-08-09">2026-08-09</time>The fix moved the alarm to the evidence boundary</h3>
+          <p>A source-by-source freshness check now reads the latest collector-run timestamp. It distinguishes current, stale, absent, and unreadable states and sends an attention report when the evidence is old. One fresh source cannot hide the others. The original incident record remains honest that the historical stop’s exact Jenkins-side cause was not proven from repository evidence alone.</p>
+        </div>
+      </section>
+
+      <section class="block" id="recreate">
+        <h2>If I were recreating this</h2>
+        <ol class="sequence">
+          <li><strong>Design the human report before the model prompt.</strong> Decide what a person needs to know, what evidence belongs beside it, and how missing evidence will look.</li>
+          <li><strong>Give every collector a heartbeat.</strong> Store run status and finding count before treating an empty result as a quiet system.</li>
+          <li><strong>Normalize without flattening provenance.</strong> Use one finding shape for comparison, but keep source identifiers and trimmed raw evidence for explanation.</li>
+          <li><strong>Make correlation deterministic first.</strong> Deduplicate signatures and group obvious shared-host events in code. Use models for explanation and ambiguous classification, not for operations that can be reproduced exactly.</li>
+          <li><strong>Let human rulings outrank model history.</strong> Store scoped, expiring dispositions and keep critical-severity exceptions visible.</li>
+          <li><strong>Separate analysis from authority.</strong> The scheduled job should have no credential or code path that can turn text into a change.</li>
+          <li><strong>Monitor the product and its ingredients.</strong> Watch report delivery, collector freshness, triage runs, and the services they depend on. A missing email and a stale source are different failures.</li>
+        </ol>
+      </section>
     </div>
 
     <footer>
@@ -306,7 +411,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

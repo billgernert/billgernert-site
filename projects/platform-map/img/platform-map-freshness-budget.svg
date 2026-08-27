@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 500" role="img" aria-labelledby="title desc">
+  <title id="title">The freshness budget</title>
+  <desc id="desc">The server generates and caches a graph for 15 seconds, the publisher sends every 15 seconds, the edge caches for 30 seconds, and rejects storage older than 120 seconds. The browser may show a last-known local copy.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 9 5 1 9" fill="none" stroke="#00ff96" stroke-width="1.5"/></marker>
+    <marker id="warnarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 9 5 1 9" fill="none" stroke="#ffb84d" stroke-width="1.5"/></marker>
+    <style>.bg{fill:#08111f}.box{fill:#0d1d31;stroke:#2c5373;stroke-width:2}.public{fill:#08243a;stroke:#00d4ff;stroke-width:2}.warn{fill:#2a2111;stroke:#ffb84d;stroke-width:2}.wire{fill:none;stroke:#00ff96;stroke-width:3;marker-end:url(#arrow)}.warnwire{fill:none;stroke:#ffb84d;stroke-width:3;marker-end:url(#warnarrow)}.title{fill:#e8f3ff;font:600 24px 'Exo 2',sans-serif}.head{fill:#e8f3ff;font:600 16px 'Exo 2',sans-serif}.copy{fill:#91a8bc;font:12px 'Share Tech Mono',monospace}.tag{fill:#00d4ff;font:11px 'Share Tech Mono',monospace;letter-spacing:1px}.warntag{fill:#ffb84d;font:11px 'Share Tech Mono',monospace;letter-spacing:1px}</style>
+  </defs>
+  <rect class="bg" width="1120" height="500" rx="14"/>
+  <text class="title" x="42" y="48">The freshness budget</text>
+  <path class="wire" d="M250 180 H310"/><path class="wire" d="M520 180 H580"/><path class="wire" d="M790 180 H850"/>
+  <path class="warnwire" d="M685 245 V330 H760"/><path class="warnwire" d="M950 245 V330 H1010"/>
+  <rect class="box" x="40" y="115" width="210" height="130" rx="10"/><text class="tag" x="145" y="148" text-anchor="middle">MAP SERVER</text><text class="head" x="145" y="180" text-anchor="middle">Generate + cache</text><text class="copy" x="145" y="208" text-anchor="middle">15 seconds</text>
+  <rect class="box" x="310" y="115" width="210" height="130" rx="10"/><text class="tag" x="415" y="148" text-anchor="middle">PUBLISHER</text><text class="head" x="415" y="180" text-anchor="middle">Read + validate + send</text><text class="copy" x="415" y="208" text-anchor="middle">every 15 seconds</text>
+  <rect class="public" x="580" y="115" width="210" height="130" rx="10"/><text class="tag" x="685" y="148" text-anchor="middle">EDGE</text><text class="head" x="685" y="180" text-anchor="middle">Serve accepted JSON</text><text class="copy" x="685" y="208" text-anchor="middle">cache up to 30 seconds</text>
+  <rect class="public" x="850" y="115" width="210" height="130" rx="10"/><text class="tag" x="955" y="148" text-anchor="middle">BROWSER</text><text class="head" x="955" y="180" text-anchor="middle">Render current graph</text><text class="copy" x="955" y="208" text-anchor="middle">save local last known</text>
+  <rect class="warn" x="760" y="320" width="210" height="120" rx="10"/><text class="warntag" x="865" y="352" text-anchor="middle">OLDER THAN 120 S</text><text class="head" x="865" y="383" text-anchor="middle">Worker returns error</text><text class="copy" x="865" y="409" text-anchor="middle">stale is not live</text>
+  <rect class="warn" x="1010" y="320" width="90" height="120" rx="10"/><text class="warntag" x="1055" y="352" text-anchor="middle">UI</text><text class="head" x="1055" y="383" text-anchor="middle">Offline</text><text class="copy" x="1055" y="409" text-anchor="middle">last known</text>
+</svg>

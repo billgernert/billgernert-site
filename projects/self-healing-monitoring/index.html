@@ -149,6 +149,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../skills/style.css">
   <script src="../../assets/live-dashboard.js" defer></script>
+  <style>
+    body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif}.page{max-width:1100px;margin:auto;padding:28px}.note,.box,.diagram,.failure{border:1px solid #24445f;border-radius:10px;background:#0b1728;padding:22px}.badge{font:12px "Share Tech Mono";letter-spacing:.13em;text-transform:uppercase;color:#00ff96}h1{font-size:58px;line-height:1.02;margin:.3em 0}h2{font-size:34px;margin-top:2.2em}h3{font-size:23px}.lead{font-size:23px;color:#b7c9d8}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards div{border:1px solid #24445f;border-radius:8px;padding:18px;background:#0b1728}.cards b{display:block;color:#fff;margin-bottom:8px}.sequence{list-style:none;padding:0;counter-reset:step}.sequence li{position:relative;padding:0 0 28px 64px;counter-increment:step}.sequence li:before{content:counter(step);position:absolute;left:0;top:0;width:36px;height:36px;border:1px solid #00d4ff;border-radius:50%;display:grid;place-items:center;color:#00d4ff;font:700 16px "Share Tech Mono"}.sequence li:not(:last-child):after{content:"";position:absolute;left:18px;top:38px;bottom:0;border-left:1px solid #24445f}.sequence strong{color:#fff}.table-wrap{overflow:auto;border:1px solid #24445f;border-radius:9px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:14px;border-bottom:1px solid #24445f;vertical-align:top}th{color:#00d4ff;font:12px "Share Tech Mono";text-transform:uppercase;letter-spacing:.08em}.diagram{padding:18px;margin:22px 0}.diagram svg{display:block;width:100%;height:auto}.diagram figcaption{font:13px "Share Tech Mono";color:#91a8bc;margin-top:12px}.wire{stroke:#00ff96;stroke-width:3;fill:none}.branch{stroke:#ffb84d;stroke-width:3;fill:none}.node{fill:#10233a;stroke:#2e5879;stroke-width:2}.hot{fill:#08243a;stroke:#00d4ff;stroke-width:2}.warn{fill:#2a2111;stroke:#ffb84d;stroke-width:2}.t{fill:#e8f3ff;font:600 17px "Exo 2"}.s{fill:#91a8bc;font:12px "Share Tech Mono"}.edge{fill:#91a8bc;font:12px "Share Tech Mono"}.footer{margin-top:60px;border-top:1px solid #24445f;padding-top:20px;color:#91a8bc}.token{border:1px dashed #00d4ff;padding:2px 7px;color:#00d4ff;font:14px "Share Tech Mono"}a{color:#00d4ff}@media(max-width:760px){.cards{grid-template-columns:1fr}h1{font-size:42px}}
+        .diagram img { display:block; width:100%; height:auto; }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/self-healing-monitoring/">
   <!-- END generated: canonical -->
@@ -183,68 +187,30 @@
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span>
-      <h1>Self-healing monitoring</h1>
-      <p class="descriptor">The monitoring path in this lab does more than alert. It decides whether the
-        failure is safe to repair directly, whether it needs an operator-held plan, or whether it should
-        stop and escalate with context instead of pretending a guess counts as recovery.</p>
+      <span class="badge">Project story</span><h1>Self-healing monitoring</h1>
+      <p class="lead">A red monitoring host becomes a classified repair plan. Safe server-side drift can be corrected directly, but host changes wait for an operator.</p>
+      <div class="box"><strong>How it is built, in one paragraph</strong><p>A weekly Jenkins pipeline starts a short-lived provisioner pod in Kubernetes. A Python engine reads unhealthy hosts and interface evidence from the Zabbix API, resolves each managed system against the committed Ansible inventory, infers Linux or Windows from its monitoring templates, and writes a report plus generated repair inventories. Jenkins emails the complete plan and waits at a bounded approval gate. Approval lets the engine apply narrow Zabbix-side corrections and lets Ansible reconcile the selected Linux and Windows agents. No approval means report-only: the evidence is archived and no host is changed.</p></div>
+      <p>Measured by Jenkins on 2026-08-24: the latest successful report-only run took 1,821 seconds, including its bounded approval window.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block">
-        <h2>Classify first, then split the work</h2>
-        <p>A broken host does not get one generic "self-heal" action. The engine reads the failure and
-          separates the safe drift from the risky drift. If the issue is something like a moved address
-          or a stale monitoring key, the fix can be applied at the server side directly. If the repair
-          needs a touch on the host itself, the engine writes the full plan and sends it for approval
-          before anything runs.</p>
-        <p>That split is OS-aware. Linux and Windows do not get the same remediation path, and the
-          roles that run here are the monitoring repair roles only. The provisioning roles are kept out
-          of this path on purpose, because "self-heal" is not permission to rebuild a live machine.</p>
-      </section>
-
-      <section class="block">
-        <h2>The approval boundary is load-bearing</h2>
-        <p>The full remediation plan is emailed before any host-level change happens, and it waits at an
-          operator gate. If nobody approves it, the plan times out untouched. That makes the automation
-          useful without letting it quietly cross from proposing into doing.</p>
-        <p>One narrow path is fully automatic today: restarting a single stateless service. It is fenced
-          by a maintenance-window guard, a hard two-attempt cap so it cannot loop forever, and an
-          allowlist on the host that permits exactly one command and nothing else.</p>
-      </section>
-
-      <section class="block">
-        <h2>The record says only what the engine can prove</h2>
-        <p>The audit trail does not claim a magical green end state. Each run records whether the engine
-          applied a direct fix, dispatched a host plan, or escalated. It does not claim the host is
-          healthy afterwards, because that verification loop is not in place yet and inventing that
-          verdict would make the log worse than useless.</p>
-        <p>That is the useful limit to name. The platform can explain what it attempted and why. It is
-          honest about the fact that "attempted" and "confirmed healthy afterwards" are still different
-          statements.</p>
-      </section>
-
+      <section class="block"><h2>How to read it in thirty seconds</h2><div class="cards"><div><b>A red host is evidence, not permission</b>The detector explains the likely failure and writes the proposed action before anything changes.</div><div><b>The repair boundary depends on ownership</b>Zabbix-side drift can be fixed through its API. Agent configuration requires an approved Ansible plan.</div><div><b>Report-only is a successful outcome</b>If the approval window closes, Jenkins archives the plan and skips every healing stage.</div></div></section>
+      <section class="block"><h2>Where the monitoring repair runs</h2><p>Zabbix supplies the current failure evidence. Jenkins owns the weekly schedule and approval state. Detection and remediation run in a disposable provisioner pod, with Vault supplying only the credentials required for the Zabbix API and the selected Ansible targets. PostgreSQL records outcomes as applied, dispatched, or escalated, but it does not claim a host is healthy until a separate verification loop exists.</p>
+<figure class="diagram"><img src="img/monitoring-repair-path.svg" alt="Zabbix evidence becomes a plan in Jenkins and approved repairs split into three narrow paths"><figcaption>Figure 1. The detector produces one plan, but approval opens only the repair paths named in that plan. An expired gate never reaches a host.</figcaption></figure></section>
+      <section class="block"><h2>The seven-step monitoring repair</h2><ol class="sequence"><li><strong>Jenkins starts the weekly detection run.</strong><p>The working stages use a disposable provisioner pod. The top-level pipeline owns no long-running executor.</p></li><li><strong>The engine reads every unhealthy Zabbix host.</strong><p>It requests interface availability, error text, and parent templates so the classification is based on current monitoring evidence rather than the alert title alone.</p></li><li><strong>The engine resolves a trusted target.</strong><p>The committed Ansible inventory is authoritative for managed hosts. DNS is only a fallback, and the result must pass the expected private-range check.</p></li><li><strong>The failure is classified and split by operating system.</strong><p>TLS drift, allowlist drift, network reachability, and unknown errors take different paths. Monitoring templates determine whether a host belongs in the Linux or Windows queue.</p></li><li><strong>Report mode writes evidence and changes nothing.</strong><p>The engine creates the human-readable report, JSON queues, and exact generated Ansible inventories. Jenkins archives and stashes all of them before the gate.</p></li><li><strong>The full plan goes to the operator.</strong><p>The email links directly to the Jenkins input page and includes the report. The gate waits up to 30 minutes, then closes safely if approval is not granted.</p></li><li><strong>Approval dispatches only the planned repairs.</strong><p>The engine can update narrow Zabbix-side drift. Linux and Windows agent fixes run through their own Ansible roles and generated inventories. Without approval, both stages are skipped.</p></li></ol></section>
+      <section class="block"><h2>Healing is narrower than restarting everything</h2><p>The main pipeline is approval-gated because agent configuration and firewall state are live-host changes. One separate automatic path exists for a stateless service restart. Its monitoring action is fenced to one named command, limited to two attempts, and suppressed during maintenance windows.</p>
+<figure class="diagram"><img src="img/bounded-healing-path.svg" alt="Monitoring failures follow either an approval-gated configuration repair or a tightly bounded service restart"><figcaption>Figure 2. Self-healing is a set of narrow permissions. Configuration repair requires a person; the automatic lane can do one reversible action under explicit bounds.</figcaption></figure></section>
+      <section class="block"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What the result proves</th></tr></thead><tbody><tr><td>Weekly</td><td>Jenkins detects unhealthy hosts, classifies the failures, and archives the proposed plan.</td><td>A successful detection proves the evidence was read and the plan was produced. It does not prove a host changed.</td></tr><tr><td>At the approval gate</td><td>The operator receives the complete plan and may approve or leave it report-only.</td><td>No approval means every host-level stage was skipped.</td></tr><tr><td>After approval</td><td>Narrow Zabbix-side corrections run, followed by the generated Linux and Windows Ansible inventories.</td><td>The outcome records applied or dispatched work. It does not yet claim post-repair health.</td></tr><tr><td>For the allowlisted service</td><td>Zabbix may request one stateless restart when the problem is not maintenance-suppressed, with a hard two-attempt cap.</td><td>The action cannot become arbitrary remote execution or an unbounded restart loop.</td></tr><tr><td>Continuously</td><td>Zabbix observes the fleet and PostgreSQL retains the self-heal outcome record.</td><td>The system can explain what it saw and attempted while keeping verification distinct from dispatch.</td></tr></tbody></table></div></section>
+      <section class="block"><h2>What broke</h2><div class="failure"><h3>An expected timeout looked like a failed repair</h3><p>By 2026-08-09, three consecutive weekly runs had detected normally, emailed their plans, and then ended as aborted when nobody approved within 30 minutes. No host had been changed, but the red build history made a safe report-only outcome look like a broken pipeline, and the reported drift went unread for three weeks.</p><h3>The correction</h3><p>The gate now catches the timeout and leaves the run successful with healing skipped. The report remains archived and emailed. Only a real detection or remediation error turns the job red.</p><h3>The lesson kept in the design</h3><p>Safety and status semantics are separate controls. The timeout already prevented an unapproved change. Jenkins also needed to describe that safe stop truthfully so operators could distinguish no approval from no report.</p></div></section>
+      <section class="block"><h2>What I would do differently</h2><p>I would separate detection and remediation into two linked runs. Detection could finish immediately with an immutable plan artifact, while approval would start a second job against that exact plan. That would keep the weekly health signal short, make approval age explicit, and avoid using a 30-minute waiting build to represent work that may never be authorized.</p></section>
       <section class="block" id="live" data-public-noc>
         <h2>Live alerting evidence</h2>
-        <p>This public dashboard shows evaluator health, firing severity, silences, notification
-          delivery, and latency. Alert names, hosts, incident text, recipients, and management links
-          stay private. The project story explains remediation; this view shows whether the alerting
-          path itself is working now.</p>
+        <p>This public dashboard shows evaluator health, firing severity, silences, notification delivery, and latency. Alert names, hosts, incident text, recipients, and management links stay private. The project story explains remediation; this view shows whether the alerting path itself is working now.</p>
         <p class="live-status" data-live-status aria-live="polite">Checking the live alerting dashboard.</p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/6bb0747444d3425fa238a4627b928439"
-          title="Public alerting dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live alerting dashboard is unavailable. No cached alert count is presented as current.</p>
-        </div>
+        <iframe class="live-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/6bb0747444d3425fa238a4627b928439" title="Public alerting dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden><p>The live alerting dashboard is unavailable. No cached alert count is presented as current.</p></div>
         <noscript><p>The live alerting dashboard requires JavaScript.</p></noscript>
       </section>
-
-      <div class="links">
-        <a href="/skills/zabbix.html">Zabbix &#8594;</a>
-        <a href="/ai-guardrails/">AI guardrails &#8594;</a>
-        <a href="/platform/#self-healing">Platform overview &#8594;</a>
-      </div>
     </div>
 
     <footer>
@@ -280,7 +246,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-25</p>
+      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

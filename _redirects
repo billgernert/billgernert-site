@@ -17,7 +17,9 @@
 /projects/job-reporting /projects/job-reporting/ 301
 /projects/job-reporting/open/dashboard https://status.billgernert.com/public-dashboards/955bfc15d4dd49ccb0a20df7e68e6c68 302
 /map /map/ 301
-/projects/automation-lab-map /projects/automation-lab-map/ 301
+/projects/platform-map /projects/platform-map/ 301
+/projects/automation-lab-map /projects/platform-map/ 301
+/projects/automation-lab-map/ /projects/platform-map/ 301
 /fleet /fleet/ 301
 /claude-code /fleet/legacy 302
 /claude-code/ /fleet/legacy 302

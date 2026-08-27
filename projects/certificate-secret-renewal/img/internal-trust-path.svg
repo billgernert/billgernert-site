@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 870" role="img" aria-labelledby="title desc">
+  <title id="title">Public and internal certificate trust paths</title>
+  <desc id="desc">Let’s Encrypt serves public browser names while Active Directory Certificate Services serves internal Windows and Linux identities. Both are observed by live TLS probes.</desc>
+  <defs><style>.bg{fill:#090e18}.zone{fill:#0e1522;stroke:#24324a;stroke-width:2}.public{fill:#131d2d;stroke:#00d4ff;stroke-width:2}.internal{fill:#182016;stroke:#00ff96;stroke-width:2}.observe{fill:#221d12;stroke:#ffd166;stroke-width:2}.h{fill:#eef4fb;font:600 21px Arial,sans-serif}.p{fill:#aebbd0;font:16px Arial,sans-serif}.z{fill:#00d4ff;font:700 15px Arial,sans-serif;letter-spacing:1.5px}.diagramTitle{fill:#eef4fb;font:700 28px Arial,sans-serif}.footerText{fill:#d8e2ee;font:16px Arial,sans-serif}.legendText{fill:#aebbd0;font:14px Arial,sans-serif}.lane{fill:#0b111d;stroke:#31415d}.arrow{fill:none;stroke:#00d4ff;stroke-width:3;marker-end:url(#a)}.arrow2{fill:none;stroke:#00ff96;stroke-width:3;marker-end:url(#b)}</style><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#00d4ff"/></marker><marker id="b" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#00ff96"/></marker></defs>
+  <rect class="bg" width="1440" height="870"/>
+  <text class="diagramTitle" x="720" y="40" text-anchor="middle">Why public and internal certificates use different authorities</text>
+  <g transform="translate(0,60)">
+  <text class="z" x="50" y="42">PUBLIC BROWSER TRUST</text><rect class="zone" x="35" y="58" width="660" height="390" rx="14"/>
+  <rect class="public" x="75" y="105" width="180" height="100" rx="10"/><text class="h" x="165" y="145" text-anchor="middle">Let’s Encrypt</text><text class="p" x="165" y="175" text-anchor="middle">public root chain</text>
+  <rect class="public" x="295" y="105" width="180" height="100" rx="10"/><text class="h" x="385" y="145" text-anchor="middle">cert-manager</text><text class="p" x="385" y="175" text-anchor="middle">ACME renewal</text>
+  <rect class="public" x="515" y="105" width="145" height="100" rx="10"/><text class="h" x="587" y="145" text-anchor="middle">Public TLS</text><text class="p" x="587" y="175" text-anchor="middle">wildcard source</text>
+  <path class="arrow" d="M255 155H295"/><path class="arrow" d="M475 155H515"/>
+  <rect class="public" x="150" y="280" width="430" height="105" rx="10"/><text class="h" x="365" y="320" text-anchor="middle">Browsers and public clients</text><text class="p" x="365" y="350" text-anchor="middle">Already trust the public certificate chain</text><path class="arrow" d="M587 205V245H365V280"/>
+
+  <text class="z" x="745" y="42">ENTERPRISE AND PRIVATE TRUST</text><rect class="zone" x="730" y="58" width="675" height="390" rx="14"/>
+  <rect class="internal" x="770" y="105" width="210" height="100" rx="10"/><text class="h" x="875" y="145" text-anchor="middle">AD CS</text><text class="p" x="875" y="175" text-anchor="middle">enterprise root + templates</text>
+  <rect class="internal" x="1020" y="105" width="165" height="100" rx="10"/><text class="h" x="1102" y="145" text-anchor="middle">Windows</text><text class="p" x="1102" y="175" text-anchor="middle">auto-enrollment</text>
+  <rect class="internal" x="1225" y="105" width="145" height="100" rx="10"/><text class="h" x="1297" y="145" text-anchor="middle">Linux</text><text class="p" x="1297" y="175" text-anchor="middle">CSR + install</text>
+  <path class="arrow2" d="M980 135H1020"/><path class="arrow2" d="M980 175H1195V155H1225"/>
+  <rect class="internal" x="845" y="280" width="440" height="105" rx="10"/><text class="h" x="1065" y="320" text-anchor="middle">Domain and private-service clients</text><text class="p" x="1065" y="350" text-anchor="middle">Trust the enterprise root distributed to their stores</text><path class="arrow2" d="M1102 205V245H1065V280"/><path class="arrow2" d="M1297 205V245H1065V280"/>
+
+  <rect class="observe" x="260" y="505" width="920" height="78" rx="12"/><text class="h" x="720" y="538" text-anchor="middle">Same external check for both paths</text><text class="p" x="720" y="565" text-anchor="middle">Open a real TLS connection, validate hostname and trust, and record the earliest served expiry</text>
+  <path class="arrow" d="M365 385V485H590V505"/><path class="arrow2" d="M1065 385V485H850V505"/>
+  </g>
+  <rect class="lane" x="35" y="690" width="1370" height="155" rx="10"/>
+  <text class="footerText" x="65" y="720">Let’s Encrypt serves names that public clients must trust. AD CS serves identities trusted inside the managed environment.</text>
+  <text class="footerText" x="65" y="746">They share the same outside TLS check, but the issuers, enrollment methods, and trust stores remain separate.</text>
+  <line x1="65" y1="774" x2="97" y2="774" stroke="#00d4ff" stroke-width="4"/><text class="legendText" x="112" y="778">Cyan. Public certificate and trust path.</text>
+  <line x1="65" y1="796" x2="97" y2="796" stroke="#00ff96" stroke-width="4"/><text class="legendText" x="112" y="800">Green. Enterprise certificate and trust path. Amber box. External TLS observation shared by both paths.</text>
+  <rect x="65" y="810" width="32" height="16" rx="5" fill="#131d2d" stroke="#00d4ff"/><text class="legendText" x="112" y="822">Rounded box. Authority, enrollment method, client group, or observer.</text>
+  <line x1="65" y1="842" x2="97" y2="842" stroke="#00d4ff" stroke-width="3" marker-end="url(#a)"/><text class="legendText" x="112" y="846">Arrow. Direction of trust or issuance.</text>
+</svg>
+
