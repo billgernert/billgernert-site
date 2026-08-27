@@ -66,8 +66,19 @@ h1 { margin: 0; font-size: clamp(20px, 3vw, 30px); font-weight: 500; letter-spac
 .node .icon-plate { fill: #0c1420; stroke: rgba(131,145,164,.28); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .service-icon { fill: none; stroke: #b7c6db; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .service-icon .icon-letter { fill: #e8edf5; stroke: none; font-size: 14px; font-weight: 800; text-anchor: middle; }
-.icon-prometheus path:first-child { fill: rgba(255,111,64,.22); stroke: #ff7849; }
-.icon-kubernetes { stroke: #6da8ff; }.icon-jenkins { stroke: #d7dde7; }.icon-argocd { stroke: #ffad66; }.icon-gitea { stroke: #7bd88f; }.icon-vault { stroke: #f4d35e; }
+.service-icon .brand-disc { stroke-width: 1.15; }
+.service-icon .brand-letter { stroke: none; font-size: 13px; font-weight: 800; }
+.service-icon .logo-stroke { stroke-linecap: round; stroke-linejoin: round; }
+.icon-kubernetes, .icon-jenkins, .icon-prometheus, .icon-argocd, .icon-gitea, .icon-vault,
+.icon-proxmox, .icon-pbs, .icon-wazuh, .icon-netbox, .icon-grafana, .icon-opnsense,
+.icon-zabbix, .icon-delivery, .icon-identity, .icon-cloudflare, .icon-github,
+.icon-postgresql, .icon-letsencrypt, .icon-ansible, .icon-terraform, .icon-microsoft,
+.icon-directory { filter: drop-shadow(0 0 4px rgba(112,167,255,.22)); }
+.icon-network { stroke: #43e7dc; }.icon-server { stroke: #70a7ff; }.icon-pipeline { stroke: #b68cff; }
+.icon-key, .icon-certificate { stroke: #ffd166; }.icon-shield { stroke: #45d483; }.icon-backup { stroke: #33c3b8; }
+.icon-mail { stroke: #b9a3ff; }.icon-ai { stroke: #8b5cf6; }.icon-queue, .icon-clock { stroke: #ffb340; }
+.icon-metrics, .icon-capacity { stroke: #00d4ff; }.icon-registry, .icon-catalog { stroke: #7bd88f; }
+.icon-folder, .icon-workload, .icon-layers, .icon-pod, .icon-container, .icon-route, .icon-storage, .icon-job { stroke: #9eb6d4; }
 .service-icon .brand-outline { fill: none; stroke: #00d4ff; stroke-width: 1.5; }
 .service-icon .brand-inner { fill: rgba(0,212,255,.06); stroke: rgba(0,212,255,.48); stroke-width: .8; }
 .service-icon .brand-cyan { stroke: rgba(0,212,255,.65); stroke-width: .8; }.service-icon .brand-green { stroke: rgba(0,255,150,.65); stroke-width: .8; }

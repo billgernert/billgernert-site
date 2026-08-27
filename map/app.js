@@ -11,9 +11,9 @@
   const state = { snapshot: null, byId: new Map(), focus: null, path: [], selected: null, scale: 1, x: 0, y: 0, dragging: false, routeLive: false };
   const NS = "http://www.w3.org/2000/svg";
   const ICONS = {
-    lab: "brand", network: "network", compute: "server", kubernetes: "kubernetes",
-    platform: "pipeline", identity: "key", security: "shield", certificates: "certificate",
-    backup: "backup", edge: "mail", "ai-operations": "ai", "kube-control": "kubernetes",
+    lab: "brand", "automation-lab": "brand", network: "network", compute: "proxmox", kubernetes: "kubernetes",
+    platform: "delivery", identity: "identity", security: "shield", certificates: "certificate",
+    backup: "pbs", edge: "mail", "ai-operations": "ai", "kube-control": "kubernetes",
     "worker-a": "server", "worker-b": "server", jenkins: "jenkins", argocd: "argocd",
     prometheus: "prometheus", "jenkins-controller": "jenkins", "jenkins-queue": "queue",
     "jenkins-agents": "metrics", "gitea-trigger": "gitea", "vault-creds": "vault",
@@ -24,6 +24,48 @@
     "vault-service": "vault", "credential-lifecycle": "cycle", "rotation-overdue": "clock",
     "lifecycle-classification": "catalog", "rotation-automation": "automation"
   };
+  const ICON_RULES = [
+    [/^network\b/i, "network"],
+    [/^infrastructure\b/i, "proxmox"],
+    [/^mail\b/i, "mail"],
+    [/^ai operations?\b/i, "ai"],
+    [/\bdelivery pipelines?\b|\bsoftware delivery\b/i, "delivery"],
+    [/\bidentity\s*(?:&|and)\s*pki\b/i, "identity"],
+    [/proxmox backup server|\bpbs\b/i, "pbs"],
+    [/\bproxmox\b/i, "proxmox"],
+    [/\bkubernetes\b|\bk3s\b/i, "kubernetes"],
+    [/\bjenkins\b|\bci controller\b/i, "jenkins"],
+    [/\bwazuh\b|\bsiem\b/i, "wazuh"],
+    [/\bnetbox\b|\bipam\b/i, "netbox"],
+    [/\bgrafana\b|\bdashboard service\b/i, "grafana"],
+    [/\bgitea\b/i, "gitea"],
+    [/hashicorp vault|\bvault\b/i, "vault"],
+    [/\bopnsense\b/i, "opnsense"],
+    [/\bzabbix\b/i, "zabbix"],
+    [/\bargo\s*cd\b|\bdeployment console\b/i, "argocd"],
+    [/\bprometheus\b/i, "prometheus"],
+    [/\bmicrosoft entra\b|\bentra id\b/i, "microsoft"],
+    [/\bactive directory\b|\bwindows identity platform\b/i, "directory"],
+    [/\bcloudflare\b/i, "cloudflare"],
+    [/\bgithub\b/i, "github"],
+    [/\bpostgres(?:ql)?\b/i, "postgresql"],
+    [/let'?s encrypt|\bacme\b/i, "letsencrypt"],
+    [/\bansible\b/i, "ansible"],
+    [/\bterraform\b/i, "terraform"],
+    [/^control plane\b/i, "kubernetes"],
+    [/^worker(?:-|\s)|\bworker capacity\b/i, "server"],
+    [/^controller\b/i, "jenkins"],
+    [/\bbuild queue\b|\bwaiting builds\b/i, "queue"],
+    [/\boldest wait\b|\boverdue rotations?\b/i, "clock"],
+    [/\b(?:agent|k3s) capacity\b/i, "capacity"],
+    [/\bci metrics\b|\bcredential inventory\b/i, "metrics"],
+    [/\btrigger intake\b/i, "gitea"],
+    [/\bcredential lookup\b/i, "vault"],
+    [/\bcredential expiry\b/i, "certificate"],
+    [/\bldaps\b/i, "lock"],
+    [/\bclassification gaps?\b/i, "catalog"],
+    [/\brotation automation\b/i, "automation"]
+  ];
 
   if (publicView) {
     if (!endpointMeta) document.title = "AutomationLab platform map";
@@ -38,7 +80,15 @@
 
   function iconForNode(node) {
     if (ICONS[node.id]) return ICONS[node.id];
+    const name = String(node.name || "");
     const kind = String(node.details?.kind || "").toLowerCase();
+    const identity = `${name} ${kind}`;
+    const vendor = ICON_RULES.find(([pattern]) => pattern.test(identity));
+    if (vendor) return vendor[1];
+    if (/\bidentity\b|\bpki\b/i.test(identity)) return "identity";
+    if (/\bcertificates?\b/i.test(identity)) return "certificate";
+    if (/\bbackups?\b|\brestore\b/i.test(identity)) return "backup";
+    if (/\bsecurity\b|\bcredentials?\b/i.test(identity)) return "shield";
     if (kind === "lab" || kind.includes("automationlab")) return "brand";
     if (kind.includes("namespace")) return "folder";
     if (kind.includes("deployment") || kind.includes("statefulset") || kind.includes("daemonset") || kind.includes("controller")) return "workload";
@@ -50,15 +100,16 @@
     if (kind.includes("volume") || kind.includes("storage")) return "storage";
     if (kind.includes("firewall")) return "shield";
     if (kind.includes("dns") || kind.includes("segment") || kind.includes("network")) return "network";
-    if (kind.includes("ipam") || kind.includes("source of truth")) return "catalog";
+    if (kind.includes("ipam") || kind.includes("source of truth")) return "netbox";
     if (kind.includes("source control")) return "gitea";
     if (kind.includes("deployment console")) return "argocd";
-    if (kind.includes("jenkins") || kind.includes("pipeline")) return "pipeline";
+    if (kind.includes("jenkins")) return "jenkins";
+    if (kind.includes("pipeline")) return "delivery";
     if (kind.includes("entra application credential")) return "certificate";
     if (kind.includes("entra application")) return "microsoft";
     if (kind.includes("domain controller") || kind.includes("directory")) return "directory";
     if (kind.includes("vault")) return "vault";
-    if (kind.includes("siem")) return "shield";
+    if (kind.includes("siem")) return "wazuh";
     if (kind.includes("certificate")) return "certificate";
     if (kind.includes("backup") || kind.includes("datastore")) return "backup";
     if (kind.includes("mail") || kind.includes("messaging") || kind.includes("notification")) return "mail";
@@ -85,7 +136,13 @@
     const icon = iconForNode(node);
     const group = element("g", {class: `service-icon icon-${icon}`, transform: `scale(${size / 24})`});
     const add = (name, attrs) => { const child = element(name, attrs); group.appendChild(child); return child; };
-    const path = d => add("path", {d});
+    const path = (d, attrs = {}) => add("path", {d, ...attrs});
+    const disc = (fill, stroke = fill) => add("circle", {class: "brand-disc", r: 10.5, fill, stroke});
+    const logoStroke = (d, color = "#fff", width = 1.7) => path(d, {class: "logo-stroke", fill: "none", stroke: color, "stroke-width": width});
+    const brandText = (value, attrs = {}) => {
+      const text = add("text", {class: "brand-letter", y: 4.5, fill: "#fff", "text-anchor": "middle", ...attrs});
+      text.textContent = value; return text;
+    };
     if (icon === "brand") {
       add("polygon", {class: "brand-outline", points: "0,-11 9.5,-5.5 9.5,5.5 0,11 -9.5,5.5 -9.5,-5.5"});
       add("polygon", {class: "brand-inner", points: "0,-7 6,-3.5 6,3.5 0,7 -6,3.5 -6,-3.5"});
@@ -95,38 +152,122 @@
       });
       add("circle", {class: "brand-core", r: 2.1});
     } else if (icon === "kubernetes") {
-      add("circle", {r: 8.5}); add("circle", {r: 2.2});
-      for (let angle = 0; angle < 360; angle += 60) add("line", {x1: 0, y1: -2.5, x2: 0, y2: -8.5, transform: `rotate(${angle})`});
-      add("polygon", {points: "0,-11 9.5,-5.5 9.5,5.5 0,11 -9.5,5.5 -9.5,-5.5"});
+      add("polygon", {points: "0,-11 9.5,-5.5 9.5,5.5 0,11 -9.5,5.5 -9.5,-5.5", fill: "#326ce5", stroke: "#9fc0ff"});
+      add("circle", {r: 6.6, fill: "none", stroke: "#fff", "stroke-width": 1.55});
+      add("circle", {r: 1.7, fill: "#fff", stroke: "none"});
+      for (let angle = 0; angle < 360; angle += 60) add("line", {x1: 0, y1: -2.2, x2: 0, y2: -6.8, stroke: "#fff", "stroke-width": 1.35, transform: `rotate(${angle})`});
     } else if (icon === "jenkins") {
-      add("circle", {r: 9}); const letter = add("text", {class: "icon-letter", y: 5}); letter.textContent = "J";
+      disc("#f4e6d2", "#d24939");
+      add("circle", {cx: 0, cy: -1.5, r: 5.4, fill: "#d9b894", stroke: "#70483a"});
+      brandText("J", {y: 2.5, fill: "#3a2924", "font-size": 11});
+      add("polygon", {points: "-1,6 -7,3 -7,9 -1,7.3", fill: "#d24939", stroke: "none"});
+      add("polygon", {points: "1,6 7,3 7,9 1,7.3", fill: "#d24939", stroke: "none"});
+      add("circle", {cy: 6.6, r: 1.7, fill: "#7c2f28", stroke: "none"});
     } else if (icon === "prometheus") {
-      path("M0,-11 C5,-6 7,-2 4,2 C3,0 2,-1 1,-2 C2,3 -1,5 -4,3 C-8,0 -5,-5 0,-11 Z");
-      add("path", {d: "M-6,6 H6 M-4,9 H4"});
+      disc("#e6522c", "#ff9b79");
+      path("M0,-8 C4,-4 5,-1 3,2 C2,0 1,-1 1,-2 C1,2 -1,4 -4,2 C-6,0 -4,-4 0,-8 Z", {fill: "#fff", stroke: "none"});
+      logoStroke("M-6,5 H6 M-4,8 H4", "#fff", 1.5);
     } else if (icon === "argocd") {
-      add("circle", {r: 9}); path("M0,-7 L3,0 L0,7 L-3,0 Z"); add("circle", {r: 1.4});
+      disc("#ef7b4d", "#ffc0a7");
+      path("M0,-7 L4,0 L0,7 L-4,0 Z", {fill: "#fff", stroke: "none"});
+      add("circle", {cx: -1.2, cy: -1, r: .8, fill: "#1f5061", stroke: "none"});
+      add("circle", {cx: 1.2, cy: -1, r: .8, fill: "#1f5061", stroke: "none"});
+      logoStroke("M-2,2 Q0,4 2,2", "#1f5061", 1);
     } else if (icon === "gitea") {
-      path("M-6,-8 V3 C-6,7 -1,8 2,5 L6,1"); add("circle", {cx: -6, cy: -8, r: 2}); add("circle", {cx: 6, cy: 1, r: 2}); add("circle", {cx: 0, cy: -3, r: 2}); path("M-6,-2 L0,-3");
+      disc("#609926", "#a6d47a");
+      logoStroke("M-6,-7 V3 C-6,7 -1,8 2,5 L6,1 M-6,-1 L0,-2", "#fff", 1.8);
+      [[-6,-7],[6,1],[0,-2]].forEach(([cx, cy]) => add("circle", {cx, cy, r: 2, fill: "#dff2ca", stroke: "#fff"}));
     } else if (icon === "vault") {
-      add("polygon", {points: "0,-10 10,-3 6,8 -6,8 -10,-3"}); path("M-5,-3 L0,5 L5,-3");
+      disc("#ffd814", "#fff0a0");
+      add("polygon", {points: "0,-8 8,-3 5,7 -5,7 -8,-3", fill: "#1f242a", stroke: "none"});
+      logoStroke("M-4,-3 L0,4 L4,-3", "#fff", 1.7);
+    } else if (icon === "proxmox") {
+      disc("#2b211b", "#e57000");
+      path("M-10,-7 L-6,-10 L0,-3 L6,-10 L10,-7 L3,0 L10,7 L6,10 L0,3 L-6,10 L-10,7 L-3,0 Z", {fill: "#e57000", stroke: "none"});
+      add("circle", {r: 2.3, fill: "#fff", stroke: "none"});
+    } else if (icon === "pbs") {
+      disc("#241f1a", "#e57000");
+      path("M-9,-7 L-6,-9 L-1,-4 L4,-9 L7,-7 L1,-1 L-5,-1 Z", {fill: "#e57000", stroke: "none"});
+      add("ellipse", {cx: 3, cy: 2, rx: 6, ry: 2.2, fill: "#33c3b8", stroke: "#bdfaf5"});
+      path("M-3,2 V7 C-3,10 9,10 9,7 V2 M-3,5 C-3,8 9,8 9,5", {fill: "#126b67", stroke: "#bdfaf5", "stroke-width": 1.15});
+    } else if (icon === "wazuh") {
+      disc("#1686f0", "#8dc7ff");
+      add("path", {d: "M-8,-5 L-4,7 L0,1 L4,7 L8,-5 L4,-7 L0,-1 L-4,-7 Z", fill: "#fff", stroke: "none"});
+      add("path", {d: "M-4,-7 L0,5 L4,-7 L0,-2 Z", fill: "#82d7ff", stroke: "none"});
+    } else if (icon === "netbox") {
+      disc("#00a6a6", "#81eeee");
+      [[-4,-5],[4,-1],[-4,4]].forEach(([x, y], index) => {
+        const fill = ["#fff", "#b8ffff", "#63e1df"][index];
+        add("rect", {x: x - 3.5, y: y - 3, width: 7, height: 6, rx: 1, fill, stroke: "#075f62", "stroke-width": .7});
+      });
+      logoStroke("M-1,-5 H1 M0,-4 V-1 M0,2 V4", "#fff", 1);
+    } else if (icon === "grafana") {
+      disc("#f46800", "#ffb15f");
+      logoStroke("M-7,4 C-8,-3 -2,-8 4,-6 C9,-4 9,3 5,6 C2,8 -2,7 -3,4 C-4,1 -1,-2 2,-1 C5,0 5,4 2,5", "#fff", 1.8);
+      add("circle", {cx: 2, cy: 5, r: 1.3, fill: "#ffd166", stroke: "none"});
+    } else if (icon === "opnsense") {
+      disc("#e44a20", "#ff9c7d");
+      path("M-8,-8 H2 L8,-2 V2 H3 V-3 H-3 V3 H3 V8 H-2 L-8,2 Z", {fill: "#fff", stroke: "none"});
+    } else if (icon === "zabbix") {
+      add("rect", {x: -10, y: -8, width: 20, height: 16, rx: 4, fill: "#d40000", stroke: "#ff8a8a"});
+      brandText("Z", {y: 5.2, "font-size": 15, "font-weight": 900});
+    } else if (icon === "delivery") {
+      logoStroke("M-7,-6 C-1,-6 -1,0 5,0 M5,0 C-1,0 -1,7 -7,7", "#dbe7f5", 1.5);
+      [[-8,-6,"#609926"],[7,0,"#d24939"],[-8,7,"#ef7b4d"]].forEach(([cx, cy, fill]) => add("circle", {cx, cy, r: 3, fill, stroke: "#fff", "stroke-width": .8}));
+    } else if (icon === "identity") {
+      [[-8,-8,"#f25022"],[-3,-8,"#7fba00"],[-8,-3,"#00a4ef"],[-3,-3,"#ffb900"]].forEach(([x, y, fill]) => add("rect", {x, y, width: 4, height: 4, fill, stroke: "none"}));
+      add("circle", {cx: 3, cy: 2, r: 4.2, fill: "none", stroke: "#ffd45a", "stroke-width": 2});
+      logoStroke("M6,5 L10,9 M8,7 L10,5", "#ffd45a", 2);
+    } else if (icon === "cloudflare") {
+      disc("#f38020", "#ffc078");
+      path("M-9,4 C-9,0 -6,-2 -3,-1 C-2,-5 2,-7 6,-5 C8,-4 9,-2 9,1 C11,1 12,3 11,5 H-9 Z", {fill: "#fff", stroke: "none"});
+      path("M-9,5 H11", {stroke: "#ffd04a", "stroke-width": 2});
+    } else if (icon === "github") {
+      disc("#53366f", "#a98bc4");
+      add("circle", {r: 6.4, fill: "#fff", stroke: "none"});
+      path("M-5,-4 L-3,-8 L0,-6 L3,-8 L5,-4 V2 C5,6 2,8 0,8 C-2,8 -5,6 -5,2 Z", {fill: "#181717", stroke: "none"});
+    } else if (icon === "postgresql") {
+      disc("#4169e1", "#91a9ff");
+      logoStroke("M-6,-3 C-5,-8 5,-8 7,-2 C8,2 5,7 1,6 C-1,6 -1,2 1,1 C3,0 5,2 3,4 M-4,-2 V5", "#fff", 1.6);
+    } else if (icon === "letsencrypt") {
+      disc("#003a70", "#6fbaff");
+      add("rect", {x: -5, y: -1, width: 10, height: 8, rx: 1.5, fill: "#fff", stroke: "none"});
+      logoStroke("M-3,-1 V-4 A3,3 0 0 1 3,-4 V-1", "#fff", 1.6);
+      [[0,-10],[7,-7],[-7,-7]].forEach(([x, y]) => add("line", {x1: x*.65, y1: y*.65, x2: x, y2: y, stroke: "#f9c74f", "stroke-width": 1.8}));
+      add("circle", {cy: 3, r: 1.3, fill: "#003a70", stroke: "none"});
+    } else if (icon === "ansible") {
+      disc("#ee0000", "#ff8b8b");
+      logoStroke("M-6,7 L0,-8 L7,7 L0,1 L-3,7", "#fff", 2);
+    } else if (icon === "terraform") {
+      disc("#844fba", "#c29ce8");
+      [[-7,-7],[0,-3],[-7,1],[0,5]].forEach(([x, y], index) => add("polygon", {points: `${x},${y} ${x+5},${y+3} ${x+5},${y+9} ${x},${y+6}`, fill: index === 3 ? "#d9c2ef" : "#fff", stroke: "none"}));
     } else if (icon === "network") {
-      add("circle", {cx: 0, cy: -8, r: 2.2}); add("circle", {cx: -8, cy: 6, r: 2.2}); add("circle", {cx: 8, cy: 6, r: 2.2}); path("M0,-6 L-7,4 M0,-6 L7,4 M-6,6 H6");
+      [[0,-8,"#00d4ff"],[-8,6,"#00ff96"],[8,6,"#70a7ff"]].forEach(([cx, cy, fill]) => add("circle", {cx, cy, r: 2.8, fill, stroke: "#dffcff", "stroke-width": .7}));
+      logoStroke("M0,-5 L-7,3 M0,-5 L7,3 M-5,6 H5", "#8fe9ff", 1.5);
     } else if (icon === "server") {
-      add("rect", {x: -9, y: -9, width: 18, height: 7, rx: 1}); add("rect", {x: -9, y: 2, width: 18, height: 7, rx: 1}); add("circle", {cx: -6, cy: -5.5, r: 1}); add("circle", {cx: -6, cy: 5.5, r: 1});
+      add("rect", {x: -9, y: -9, width: 18, height: 7, rx: 1, fill: "#19324a", stroke: "#70a7ff"});
+      add("rect", {x: -9, y: 2, width: 18, height: 7, rx: 1, fill: "#19324a", stroke: "#70a7ff"});
+      add("circle", {cx: -6, cy: -5.5, r: 1.2, fill: "#00ff96", stroke: "none"});
+      add("circle", {cx: -6, cy: 5.5, r: 1.2, fill: "#00d4ff", stroke: "none"});
     } else if (icon === "pipeline") {
       add("circle", {cx: -8, cy: -6, r: 2}); add("circle", {cx: 8, cy: 0, r: 2}); add("circle", {cx: -8, cy: 7, r: 2}); path("M-6,-6 H-2 C3,-6 3,0 6,0 M6,0 C3,0 3,7 -6,7");
     } else if (icon === "key") {
-      add("circle", {cx: -4, cy: -3, r: 5}); path("M0,1 L8,9 M4,5 L7,2 M6,7 L9,4");
+      add("circle", {cx: -4, cy: -3, r: 5, fill: "#3d3218", stroke: "#ffd45a"}); logoStroke("M0,1 L8,9 M4,5 L7,2 M6,7 L9,4", "#ffd45a", 2);
     } else if (icon === "shield") {
-      path("M0,-10 L9,-6 V0 C9,6 5,9 0,11 C-5,9 -9,6 -9,0 V-6 Z"); path("M-4,0 L-1,3 L5,-4");
+      path("M0,-10 L9,-6 V0 C9,6 5,9 0,11 C-5,9 -9,6 -9,0 V-6 Z", {fill: "#12384a", stroke: "#45d483"}); logoStroke("M-4,0 L-1,3 L5,-4", "#a5ffd0", 2);
     } else if (icon === "certificate") {
-      add("rect", {x: -8, y: -10, width: 16, height: 17, rx: 1}); path("M-4,-5 H4 M-4,-1 H3"); add("circle", {cx: 4, cy: 6, r: 3}); path("M2,8 L1,11 M6,8 L7,11");
+      add("rect", {x: -8, y: -10, width: 16, height: 17, rx: 1.5, fill: "#f4e6b0", stroke: "#ffd166"});
+      logoStroke("M-4,-5 H4 M-4,-1 H3", "#7f6326", 1.3);
+      add("circle", {cx: 4, cy: 6, r: 3.2, fill: "#00a6a6", stroke: "#9afff6"});
+      path("M2,8 L1,11 M6,8 L7,11", {stroke: "#00a6a6", "stroke-width": 1.6});
     } else if (icon === "backup") {
-      add("ellipse", {cx: 0, cy: -7, rx: 8, ry: 3}); path("M-8,-7 V5 C-8,9 8,9 8,5 V-7 M-8,-1 C-8,3 8,3 8,-1"); path("M-3,6 L0,9 L4,5");
+      add("ellipse", {cx: 0, cy: -7, rx: 8, ry: 3, fill: "#33c3b8", stroke: "#bdfaf5"});
+      path("M-8,-7 V5 C-8,9 8,9 8,5 V-7 M-8,-1 C-8,3 8,3 8,-1", {fill: "#126b67", stroke: "#bdfaf5"});
+      logoStroke("M-3,6 L0,9 L4,5", "#fff", 1.7);
     } else if (icon === "mail") {
-      add("rect", {x: -10, y: -7, width: 20, height: 14, rx: 2}); path("M-9,-5 L0,2 L9,-5");
+      add("rect", {x: -10, y: -7, width: 20, height: 14, rx: 2, fill: "#6246a8", stroke: "#c7b5ff"}); logoStroke("M-9,-5 L0,2 L9,-5", "#fff", 1.5);
     } else if (icon === "ai") {
-      path("M0,-11 L2,-3 L9,0 L2,3 L0,11 L-2,3 L-9,0 L-2,-3 Z"); add("circle", {r: 2});
+      path("M0,-11 L2,-3 L9,0 L2,3 L0,11 L-2,3 L-9,0 L-2,-3 Z", {fill: "#8b5cf6", stroke: "#d8c6ff"}); add("circle", {r: 2.2, fill: "#00ff96", stroke: "none"});
     } else if (icon === "queue") {
       add("rect", {x: -9, y: -9, width: 18, height: 5, rx: 1}); add("rect", {x: -9, y: -2, width: 18, height: 5, rx: 1}); add("rect", {x: -9, y: 5, width: 18, height: 5, rx: 1});
     } else if (icon === "clock") {
@@ -138,12 +279,14 @@
     } else if (icon === "capacity") {
       path("M-10,7 A10,10 0 0 1 10,7"); path("M0,4 L6,-3"); add("circle", {cy: 4, r: 2});
     } else if (icon === "directory") {
-      add("circle", {cy: -6, r: 3}); add("circle", {cx: -7, cy: 5, r: 2.5}); add("circle", {cx: 7, cy: 5, r: 2.5});
-      path("M0,-3 V1 M-7,2 H7 M-7,2 V3 M7,2 V3");
+      add("circle", {cy: -6, r: 3.3, fill: "#00a4ef", stroke: "#fff"});
+      add("circle", {cx: -7, cy: 5, r: 2.8, fill: "#7fba00", stroke: "#fff"});
+      add("circle", {cx: 7, cy: 5, r: 2.8, fill: "#f25022", stroke: "#fff"});
+      logoStroke("M0,-2.5 V1 M-7,2 H7 M-7,2 V2.5 M7,2 V2.5", "#cbe8ff", 1.5);
     } else if (icon === "lock") {
       add("rect", {x: -8, y: -2, width: 16, height: 12, rx: 2}); path("M-5,-2 V-5 A5,5 0 0 1 5,-5 V-2"); add("circle", {cy: 3, r: 1.5}); path("M0,4 V7");
     } else if (icon === "microsoft") {
-      add("rect", {x: -9, y: -9, width: 8, height: 8}); add("rect", {x: 1, y: -9, width: 8, height: 8}); add("rect", {x: -9, y: 1, width: 8, height: 8}); add("rect", {x: 1, y: 1, width: 8, height: 8});
+      [[-9,-9,"#f25022"],[1,-9,"#7fba00"],[-9,1,"#00a4ef"],[1,1,"#ffb900"]].forEach(([x, y, fill]) => add("rect", {x, y, width: 8, height: 8, fill, stroke: "none"}));
     } else if (icon === "cycle") {
       path("M-8,-1 A8,8 0 0 1 6,-6 L8,-9 M6,-6 L3,-8 M8,1 A8,8 0 0 1 -6,6 L-8,9 M-6,6 L-3,8");
     } else if (icon === "catalog") {
@@ -207,7 +350,8 @@
     viewport.appendChild(path);
   }
   function addNode(node, point, role) {
-    const group = element("g", {class: `node ${node.state} ${role}`, transform: `translate(${point.x} ${point.y})`, role: "button", tabindex: "0", "aria-label": `${node.name}, ${node.state}, ${node.metric}`});
+    const icon = iconForNode(node);
+    const group = element("g", {class: `node ${node.state} ${role}`, transform: `translate(${point.x} ${point.y})`, role: "button", tabindex: "0", "data-icon": icon, "aria-label": `${node.name}, ${node.state}, ${node.metric}`});
     const title = element("title"); title.textContent = `${node.name} · ${node.metric}`; group.appendChild(title);
     const radius = role === "center" ? 31 : 22;
     group.appendChild(element("circle", {class: "halo", r: radius + 10}));
