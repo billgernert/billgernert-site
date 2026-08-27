@@ -276,9 +276,9 @@
           Six rows are active in the seed today. The rest sit in the same file, commented and ready,
           waiting their turn. A big-bang cutover of all of them would be faster and would prove nothing.</p>
         <div class="links">
-          <a href="/capabilities/jenkins.html">Jenkins &#8594;</a>
+          <a href="/capabilities/jenkins">Jenkins &#8594;</a>
           <a href="/everything-as-code/">Everything as code &#8594;</a>
-          <a href="/capabilities/pipelines.html">Pipelines &#8594;</a>
+          <a href="/capabilities/pipelines">Pipelines &#8594;</a>
         </div>
       </section>
 
@@ -369,25 +369,25 @@
             <text x="32" y="702" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">issues every credential at run time and takes it back;</text>
             <text x="32" y="718" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">nothing is stored on the build agent or in the repo</text></a>
 
-          <a href="/capabilities/netbox-ipam.html"><title>NetBox, the IP address management system: the record of which address belongs to which machine.</title>
+          <a href="/capabilities/netbox-ipam"><title>NetBox, the IP address management system: the record of which address belongs to which machine.</title>
             <rect x="460" y="658" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
             <text x="476" y="682" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">NETBOX &#8594;</text>
             <text x="476" y="702" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">decides which address a new machine gets,</text>
             <text x="476" y="718" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">and takes it back when the machine is destroyed</text></a>
 
-          <a href="/capabilities/terraform.html"><title>Terraform and Proxmox: the plan and apply that actually creates the virtual machine.</title>
+          <a href="/capabilities/terraform"><title>Terraform and Proxmox: the plan and apply that actually creates the virtual machine.</title>
             <rect x="16" y="738" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
             <text x="32" y="762" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">TERRAFORM, THEN PROXMOX &#8594;</text>
             <text x="32" y="782" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">one workspace per machine, so a bad apply is</text>
             <text x="32" y="798" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">scoped to that machine and not the fleet</text></a>
 
-          <a href="/capabilities/ansible.html"><title>Ansible: configures the machine Terraform built.</title>
+          <a href="/capabilities/ansible"><title>Ansible: configures the machine Terraform built.</title>
             <rect x="460" y="738" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
             <text x="476" y="762" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">ANSIBLE &#8594;</text>
             <text x="476" y="782" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">configures what Terraform built: roles,</text>
             <text x="476" y="798" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">firewall rules, and the monitoring agent</text></a>
 
-          <a href="/capabilities/zabbix.html"><title>Zabbix: monitoring, registered at build time with a key unique to that host.</title>
+          <a href="/capabilities/zabbix"><title>Zabbix: monitoring, registered at build time with a key unique to that host.</title>
             <rect x="16" y="818" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
             <text x="32" y="842" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">ZABBIX &#8594;</text>
             <text x="32" y="862" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">every machine is registered for monitoring during</text>
@@ -511,7 +511,7 @@
           itself.</p>
         <div class="links">
           <a href="/projects/server-provisioning/">The provisioning pipeline in full &#8594;</a>
-          <a href="/capabilities/pipelines.html">Pipelines &#8594;</a>
+          <a href="/capabilities/pipelines">Pipelines &#8594;</a>
         </div>
       </section>
 
@@ -535,10 +535,10 @@
           no golden-template dependency. Each VM getting its own state workspace is the point: a bad
           apply is scoped to one machine instead of the fleet.</p>
         <div class="links">
-          <a href="/capabilities/terraform.html">Terraform &#8594;</a>
-          <a href="/capabilities/netbox-ipam.html">NetBox IPAM &#8594;</a>
-          <a href="/capabilities/ansible.html">Ansible &#8594;</a>
-          <a href="/capabilities/proxmox.html">Proxmox &#8594;</a>
+          <a href="/capabilities/terraform">Terraform &#8594;</a>
+          <a href="/capabilities/netbox-ipam">NetBox IPAM &#8594;</a>
+          <a href="/capabilities/ansible">Ansible &#8594;</a>
+          <a href="/capabilities/proxmox">Proxmox &#8594;</a>
         </div>
       </section>
 
@@ -559,8 +559,8 @@
           maintenance-window guard, a hard two-attempt cap so it can never loop, and an allowlist on the
           host permitting exactly one command and nothing else.</p>
         <div class="links">
-          <a href="/capabilities/zabbix.html">Zabbix &#8594;</a>
-          <a href="/capabilities/ansible.html">Ansible &#8594;</a>
+          <a href="/capabilities/zabbix">Zabbix &#8594;</a>
+          <a href="/capabilities/ansible">Ansible &#8594;</a>
         </div>
       </section>
 
@@ -586,9 +586,9 @@
           every path reaches the gate with a name attached. A control nobody audits is a control nobody
           has.</p>
         <div class="links">
-          <a href="/capabilities/active-directory.html">Active Directory &#8594;</a>
-          <a href="/capabilities/entra-id.html">Entra ID &#8594;</a>
-          <a href="/capabilities/ad-cs-pki.html">AD CS and PKI &#8594;</a>
+          <a href="/capabilities/active-directory">Active Directory &#8594;</a>
+          <a href="/capabilities/entra-id">Entra ID &#8594;</a>
+          <a href="/capabilities/ad-cs-pki">AD CS and PKI &#8594;</a>
         </div>
       </section>
 
@@ -609,7 +609,7 @@
           line, and the boundary between proposing and doing is hard.</p>
         <div class="links">
           <a href="/ai/">How I use AI &#8594;</a>
-          <a href="/capabilities/devsecops.html">DevSecOps &#8594;</a>
+          <a href="/capabilities/devsecops">DevSecOps &#8594;</a>
         </div>
       </section>
 
@@ -629,9 +629,9 @@
           means "I have no idea" is worse than no light at all. Alerting is deliberately email only,
           through one auditable path.</p>
         <div class="links">
-          <a href="/capabilities/grafana.html">Grafana &#8594;</a>
-          <a href="/capabilities/prometheus.html">Prometheus &#8594;</a>
-          <a href="/capabilities/zabbix.html">Zabbix &#8594;</a>
+          <a href="/capabilities/grafana">Grafana &#8594;</a>
+          <a href="/capabilities/prometheus">Prometheus &#8594;</a>
+          <a href="/capabilities/zabbix">Zabbix &#8594;</a>
         </div>
       </section>
 
@@ -666,8 +666,8 @@
           exercise also did what a good game day should, surfacing real defects that became tracked work
           rather than a clean write-up.</p>
         <div class="links">
-          <a href="/capabilities/vault.html">Vault &#8594;</a>
-          <a href="/capabilities/incident-postmortem.html">Incidents and postmortems &#8594;</a>
+          <a href="/capabilities/vault">Vault &#8594;</a>
+          <a href="/capabilities/incident-postmortem">Incidents and postmortems &#8594;</a>
         </div>
       </section>
 
