@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -154,7 +153,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -174,6 +174,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -193,42 +194,43 @@
 <section class="block" id="broke"><h2>What broke and what remains limited</h2><div class="failure"><h3>The old auto-unseal weakened the backup boundary</h3><p>The single server read its unseal key from the same disk that held Vault data. Nightly image backups captured both. The correction moved cryptographic unseal authority to the separate Transit service and kept operator recovery material offline.</p><h3>A live host could still be a dead Vault endpoint</h3><p>The first address design centered on node availability. A sealed process left the machine reachable, so a machine-level election could keep the address on a useless node. The current check asks Vault directly and makes a failed service surrender the address.</p><h3>The unseal-service loss procedure is still unmeasured</h3><p>The written operator path has not been rehearsed. The next useful recovery exercise is to remove Transit during a controlled cluster restart, follow the offline procedure, and record the result without exposing recovery material.</p></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Inventory every caller before changing storage.</strong> Record each authentication method, policy, and consumer so migration validation can compare complete path lists without printing secret values.</li><li><strong>Place the voting nodes before building them.</strong> A majority must survive the physical failure the cluster is meant to cover.</li><li><strong>Build and restrict Transit first.</strong> Give the cluster nodes only the encrypt and decrypt operations required for auto-unseal.</li><li><strong>Create the Raft cluster and stable address.</strong> Test service health, not host reachability, in the address election.</li><li><strong>Migrate with before-and-after inventory comparison.</strong> Do not retire the old server until the path sets match and known consumers authenticate through the new address.</li><li><strong>Test a sealed-but-running node.</strong> Power-off tests miss the failure that a ping check cannot see.</li><li><strong>Exercise recovery outside the cluster.</strong> Back up, restore, and rehearse loss of the unseal dependency as separate tests.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

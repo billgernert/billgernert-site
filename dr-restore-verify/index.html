@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -155,7 +154,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -175,6 +175,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -194,42 +195,43 @@
 <section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody><tr><td>On the weekly schedule</td><td>Jenkins selects the next manifest entry and eligible backup source.</td><td>Preflight must pass before a scratch guest is created.</td></tr><tr><td>On restore</td><td>PBS supplies the snapshot and Proxmox creates the isolated guest.</td><td>Boot and assertion phases begin under the scoped identity.</td></tr><tr><td>On an assertion failure</td><td>The verifier records the failed check and safe reason.</td><td>The run is red and still enters cleanup.</td></tr><tr><td>On cleanup</td><td>Proxmox deletes the scratch guest; the verifier queries for absence.</td><td>Notification distinguishes verified teardown from leaked state.</td></tr><tr><td>On rerun</td><td>Preflight checks that no previous scratch guest remains.</td><td>The same manifest entry can be exercised without manual state repair.</td></tr><tr><td>Between runs</td><td>Prometheus evaluates freshness, outcome, duration, coverage, and missing heartbeat.</td><td>An old or absent result cannot remain green.</td></tr></tbody></table></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Write a recovery manifest.</strong> Name the protected classes, backup sources, scratch constraints, and useful service assertions.</li><li><strong>Reserve and fence the scratch environment.</strong> Prove that it cannot join the production network before booting a restored copy.</li><li><strong>Create the scoped identity before the pipeline.</strong> Test effective permissions through the exact code path that will restore and delete.</li><li><strong>Make every assertion return a reason.</strong> A boolean is not enough for a scheduled recovery failure.</li><li><strong>Audit assertion execution.</strong> Record which planned checks ran so a skipped branch cannot produce an empty green stage.</li><li><strong>Put cleanup in the unconditional path.</strong> Query for absence after deletion and report cleanup independently from application verification.</li><li><strong>Add freshness monitoring.</strong> A passing run expires as evidence when the next expected run does not arrive.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -155,7 +154,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -175,6 +175,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -197,42 +198,43 @@
 <section class="block" id="broke"><h2>What broke and what remains limited</h2><div class="failure"><h3>The documented content filter was wrong</h3><p>An operational verification observed Amavis quarantine behavior and no Rspamd verdicts in the live mail log. The architecture record was corrected. This page names Amavis because it is the component making the backend content decision.</p><h3>Implicit LDAPS was configured like StartTLS</h3><p>The backend attempted to negotiate StartTLS on a port that expects TLS immediately. Directory authentication failed until the connection mode matched the server.</p><h3>Receive still has one edge and one backend</h3><p>The cloud relay separates public transport from mailbox storage, but each role currently has one active instance. A managed backup MX and a rebuilt, code-owned relay path are the next steps if mail becomes load-bearing.</p><h3>The edge rebuild path is incomplete</h3><p>The relay is documented and monitored, but the complete cloud-host provisioning manifest is still being brought under the same repository-controlled rebuild standard as the rest of the lab.</p></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Choose where public SMTP terminates.</strong> Use a stable, reputable address and decide which connection filtering belongs there.</li><li><strong>Keep mailbox storage behind the private boundary.</strong> Define the encrypted relay path before publishing the MX record.</li><li><strong>Separate inbound, outbound, client, and webmail paths.</strong> Each has different TLS, authentication, and monitoring requirements.</li><li><strong>Build directory trust before account cutover.</strong> Install the internal CA, verify LDAPS, and test the exact bind and search behavior.</li><li><strong>Publish sender-authentication DNS together.</strong> SPF, DKIM, and DMARC should describe the outbound route that actually sends.</li><li><strong>Test with a new message and a fresh login.</strong> Check inbound delivery, outbound delivery, IMAP, webmail, and message authentication from outside.</li><li><strong>Record the single-instance limits.</strong> Monitoring a single edge is useful; it does not turn it into a redundant edge.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -166,7 +165,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow page-wide">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -186,6 +186,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow page-wide">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -206,42 +207,43 @@
 <section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a reader sees</th></tr></thead><tbody><tr><td>Continuously</td><td>Exporters, Prometheus, recording rules, and Grafana refresh domain state and detail panels.</td><td>Interactive live views with public service classes.</td></tr><tr><td>When data is missing</td><td>Coverage and no-data rules override ordinary threshold coloring.</td><td>No signal or a named observer failure, never an empty green.</td></tr><tr><td>On repository change</td><td>Generator and public-dashboard tests rebuild and validate the hub.</td><td>New domains and panels appear only after their public contract passes.</td></tr><tr><td>Nightly</td><td>The reconciler compares generated intent with live Grafana.</td><td>Unreviewed live drift becomes an alert.</td></tr><tr><td>When the public route fails</td><td>The portfolio’s embed check reports the unavailable live source.</td><td>The written page remains available without presenting stale state as current.</td></tr></tbody></table></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Define operational domains before building panels.</strong> Each domain needs one primary state and one drill-down destination.</li><li><strong>Create the public metric contract.</strong> List the measurements and labels the public data source may store. Drop identifiers before Grafana.</li><li><strong>Model no signal explicitly.</strong> Test an empty query, a failed exporter, and a stale series before adding colors.</li><li><strong>Generate the hub from the domain registry.</strong> Do not hand-copy tiles and links.</li><li><strong>Keep detail in domain dashboards.</strong> The hub should answer where to look, then open the evidence.</li><li><strong>Validate the served dashboard.</strong> Compare live Grafana with the generated definition on a schedule and monitor the reconciler.</li><li><strong>Test the observer outage.</strong> Stop a shared exporter and confirm that the hub identifies coverage loss without declaring every service dead.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

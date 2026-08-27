@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -173,7 +172,8 @@
      eyeballed the real render and flips it. Do not add it to the nav, a hub, or the footer site map in
      this change. Every publish-time gate applies unchanged: staged means unlisted, never private. -->
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -193,6 +193,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -407,6 +408,7 @@
         <a href="/fleet/">How the fleet works &#8594;</a>
       </div>
     </div>
+    </main>
 
     <footer>
       <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
@@ -441,9 +443,8 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
-  </main>
+  </div>
 </body>
 </html>

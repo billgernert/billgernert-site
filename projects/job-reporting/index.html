@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -157,7 +156,8 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -177,6 +177,7 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -209,6 +210,7 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
 <h2>What broke</h2><div class="failure"><h3>Code and schema moved at different speeds on 2026-07-09</h3><p>A fresh-database run reached code that expected the postings relation before the live schema had been migrated. The pipeline was healthy enough to start and still unable to complete the work it had checked out.</p><h3>The correction</h3><p>Migration now runs before any stage that trusts a changed schema. Source control describes the intended state, PostgreSQL reports the applied state, and Jenkins makes them converge before enrichment or reporting continues.</p><h3>The other lesson</h3><p>A single giant collection-and-model job would have hidden whether the source, database, model, or report failed. The <!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END-->-job split keeps those failures attributable and recoverable.</p></div>
 <h2>What I would do differently</h2><p>I would establish the run ledger and schema migration contract before adding the first enrichment model. The valuable part is not producing a score. It is being able to explain which source produced the record, which run changed it, which evidence produced the score, and why a quiet report is trustworthy.</p>
     </div>
+    </main>
 
     <footer>
       <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
@@ -243,9 +245,8 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
-  </main>
+  </div>
 </body>
 </html>

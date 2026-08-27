@@ -1,6 +1,6 @@
 /* capabilities portfolio - shared stylesheet
    Palette + type inherited verbatim from site/index.html so the capabilities area
-   reads as one continuation of parsec-lab.com, not a bolt-on. Single neon-dark
+   reads as one continuation of billgernert.com, not a bolt-on. Single neon-dark
    theme is a deliberate commitment, matching the parent site's color-scheme: dark. */
 
 :root {
@@ -40,16 +40,31 @@ body {
   background-attachment: fixed;
 }
 
-main {
+.page {
   width: min(1080px, calc(100% - 40px));
   margin: 0 auto;
   padding: 0 0 72px;
 }
+main { width: 100%; margin: 0 auto; }
 .page-narrow { max-width: 860px; }
 
 a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
 :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 4px; }
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+  transform: translateY(-150%);
+  padding: 8px 12px;
+  color: #001018;
+  background: var(--cyan);
+  border-radius: 6px;
+  font-family: var(--mono);
+}
+.skip-link:focus { transform: translateY(0); }
 
 /* ---- breadcrumb / back nav ---- */
 .crumbs {
@@ -112,6 +127,7 @@ a:hover { text-decoration: underline; }
    primary row (styled by the plain `.topnav a` rule above), pointing at that group's hub page. */
 @media (max-width: 860px) { .topnav .topnav-spacer { display: none; } }
 @media (max-width: 620px) {
+  .page { width: min(100% - 28px, 1080px); }
   .site-header {
     align-items: flex-start;
     flex-direction: column;
@@ -941,7 +957,6 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
 @media (max-width: 480px) {
   h1 { font-size: 1.9rem; }
   .skill-grid { grid-template-columns: 1fr; }
-  main { width: min(1080px, calc(100% - 24px)); }
   .sitemap { grid-template-columns: 1fr; }
 }
 

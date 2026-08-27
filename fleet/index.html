@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -229,7 +228,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow page-wide">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -249,6 +249,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow page-wide">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -270,42 +271,43 @@
 <section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody><tr><td>On a spawner tick</td><td>Local gates and Gitea state select at most one eligible tasking per free lane.</td><td>A worker starts in its worktree or the spawner records why it exited.</td></tr><tr><td>During build</td><td>The worker follows one tasking, edits one branch, tests, pushes, opens a PR, and exits.</td><td>The pull request becomes the durable result and consumption signal.</td></tr><tr><td>When review is eligible</td><td>The other-vendor reviewer reads task, diff, CI, and current PR state.</td><td>It leaves one approval or change request tied to the commit.</td></tr><tr><td>At merge time</td><td>Deterministic gates reread conflicts, checks, verdict freshness, and authority.</td><td>The narrow executor merges or records the blocking fact.</td></tr><tr><td>On new signals</td><td>The pickup guard can request tasking review after cooldown.</td><td>Recent work is noticed before the deep-cycle backstop.</td></tr><tr><td>Every four hours</td><td>The deep cycle reviews queues, rulings, backlog, and current lane state.</td><td>It writes bounded new taskings when the board supports them.</td></tr></tbody></table></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Write the authority model first.</strong> Separate who may task, build, review, merge, and make operator decisions.</li><li><strong>Make the tasking a durable file.</strong> Include scope, evidence, stop conditions, and the expected output object.</li><li><strong>Give each worker an isolated worktree.</strong> Do not share one checkout among simultaneous model processes.</li><li><strong>Use live pull-request state for remote facts.</strong> Consumption, current head, review, CI, conflict, and merge state belong to Gitea.</li><li><strong>Keep local process facts local.</strong> PID locks, worktree slots, and launcher ledgers should not be inferred from the pull request.</li><li><strong>Cross the reviewer boundary.</strong> A different model vendor should judge the branch, and scripts should enforce exact policy facts.</li><li><strong>Test starvation and stale-state cases.</strong> Future timestamps, DNS loss, slow review, duplicate dispatch, and an already-running worker need explicit outcomes.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

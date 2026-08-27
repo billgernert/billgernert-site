@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -154,7 +153,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -174,6 +174,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -201,42 +202,43 @@
 <section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What coordinates the work</th><th>What changes</th></tr></thead><tbody><tr><td>On a browser request</td><td>DNS, edge policy, tunnel, ingress, and application identity.</td><td>No infrastructure change; the request reaches one registered service.</td></tr><tr><td>On a reviewed infrastructure request</td><td>Jenkins or Gitea Actions with NetBox, Terraform, Proxmox, Ansible, and Vault.</td><td>Compute, configuration, inventory, monitoring, and repository state.</td></tr><tr><td>Continuously in Kubernetes</td><td>K3s controllers and Argo CD compare desired and running resources.</td><td>Missing or drifted workloads are reconciled within declared authority.</td></tr><tr><td>Continuously in monitoring</td><td>Exporters, Prometheus, Zabbix, and Grafana update state and alerts.</td><td>Evidence changes; the monitored services are not mutated by the dashboard.</td></tr><tr><td>On a lifecycle schedule</td><td>Certificate and credential workers evaluate renewal, overlap, and retirement.</td><td>Registered trust material is replaced and consumers reload.</td></tr><tr><td>On recovery schedule</td><td>PBS, Proxmox, Jenkins, guest verifiers, and cleanup checks.</td><td>A fenced scratch guest is created, tested, and removed.</td></tr></tbody></table></div></section>
 <section class="block" id="recreate"><h2>If I were recreating this map</h2><ol class="sequence"><li><strong>Start with three journeys.</strong> Trace a browser request, an infrastructure change, and a recovery run from beginning to end.</li><li><strong>Name the owner at each handoff.</strong> The coordinator, source of truth, executor, credential source, and verifier should be distinct.</li><li><strong>Draw network and trust boundaries before product boxes.</strong> Show which paths are public, private, identity-protected, or fenced.</li><li><strong>Add observation beside execution.</strong> Every important change needs evidence from outside the process that made it.</li><li><strong>Mark shared dependencies.</strong> Secrets, identity, DNS, certificate authority, storage, and Git should be visible where several paths depend on them.</li><li><strong>Generate counts and labels that drift.</strong> The site build should read current topology facts rather than preserving a hand-drawn fleet size.</li></ol></section>
 </div>
-<footer>
-  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-  <nav class="sitemap" aria-label="Site map">
-    <div class="sitemap-group">
-      <span class="sitemap-label">Projects</span>
-      <a href="/projects/">Project stories</a>
-      <a href="/projects/server-provisioning/">Server provisioning</a>
-      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Platform</span>
-      <a href="/platform/">How it works</a>
-      <a href="/capabilities/">Capabilities</a>
-      <a href="/roadmap/">Roadmap</a>
-      <a href="/vault/">Vault</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Engineering</span>
-      <a href="/fleet/">Fleet</a>
-      <a href="/security/">Security</a>
-      <a href="/ai/">Applied AI</a>
-      <a href="/dead-man-monitoring/">Watchdog</a>
-    </div>
-    <div class="sitemap-group">
-      <span class="sitemap-label">Live and about</span>
-      <a href="/live/">Live evidence</a>
-      <a href="/diagram/">Architecture diagram</a>
-      <a href="/noc/">NOC</a>
-      <a href="/about/">About Bill</a>
-    </div>
-  </nav>
-  <!-- END generated: sitemap -->
-  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-  <p class="verified-line">Verified against the lab on 2026-08-27</p>
-  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-</footer>
-  </main>
+    </main>
+
+    <footer>
+      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+      <nav class="sitemap" aria-label="Site map">
+        <div class="sitemap-group">
+          <span class="sitemap-label">Projects</span>
+          <a href="/projects/">Project stories</a>
+          <a href="/projects/server-provisioning/">Server provisioning</a>
+          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Platform</span>
+          <a href="/platform/">How it works</a>
+          <a href="/capabilities/">Capabilities</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/vault/">Vault</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Engineering</span>
+          <a href="/fleet/">Fleet</a>
+          <a href="/security/">Security</a>
+          <a href="/ai/">Applied AI</a>
+          <a href="/dead-man-monitoring/">Watchdog</a>
+        </div>
+        <div class="sitemap-group">
+          <span class="sitemap-label">Live and about</span>
+          <a href="/live/">Live evidence</a>
+          <a href="/diagram/">Architecture diagram</a>
+          <a href="/noc/">NOC</a>
+          <a href="/about/">About Bill</a>
+        </div>
+      </nav>
+      <!-- END generated: sitemap -->
+      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+    </footer>
+  </div>
 </body>
 </html>

@@ -109,7 +109,6 @@
   html.m-on footer {
     --m-from: none;
   }
-  .verified-line { margin: 0; }
   html.m-on .m-in {
     animation: m-enter 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--m-delay, 0s);
@@ -157,7 +156,8 @@
   <!-- END generated: canonical -->
 </head>
 <body>
-  <main class="page-narrow">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
     <header class="site-header">
       <a class="brand" href="/" aria-label="billgernert.com home">
         <svg class="brand-mark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -177,6 +177,7 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
+    <main id="main" class="page-narrow">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
@@ -203,6 +204,7 @@
       <section class="block"><h2>What the first design got wrong</h2><div class="failure"><h3>Scheduled inference was being bought twice</h3><p>The original pipelines used metered model APIs while paid subscription capacity was already available and expiring. The AIOps ledger made that repeated path visible on 2026-08-24: 10 calls had accumulated about $0.11 in incremental cost.</p><h3>The replacement</h3><p>Job scoring moved to the shared usage-aware router on 2026-08-23. AIOps triage followed on 2026-08-24. Both retained their workload-specific fallback behavior while sharing observation, reserve, provider choice, credential scoping, and schema validation.</p><h3>The prevention built into the route</h3><p>The consumers no longer receive model API keys. Stale telemetry, exhausted reserves, wrapper failure, and invalid output all fail closed, and there is no code path that converts those failures into a metered call.</p></div></section>
       <section class="block"><h2>What I would do differently</h2><p>I would build admission control before adding the first unattended model consumer. The hard part was not invoking an agent. It was defining what counts as safe capacity, who owns the reserve, how credentials reach only one process, and what each workload does when the correct answer is not now.</p></section>
     </div>
+    </main>
 
     <footer>
       <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
@@ -237,9 +239,8 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
-  </main>
+  </div>
 </body>
 </html>
