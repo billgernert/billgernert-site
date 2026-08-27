@@ -250,6 +250,16 @@
     </header>
 
     <div class="skill-body">
+      <section class="block" id="glance">
+        <h2>At a glance</h2>
+        <dl class="at-a-glance">
+          <div><dt>Outcome</dt><dd>Public certificate copies renew ahead of expiry, and registered secrets rotate on a 60-day cycle with a seven-day recovery overlap.</dd></div>
+          <div><dt>Operating scope</dt><dd>The certificate source fans out to Kubernetes, servers, and appliances. Credential workers update Vault and the applications that consume each registered value.</dd></div>
+          <div><dt>Evidence</dt><dd>The live dashboard measures source and served expiry, rotation state, and coverage. Fresh TLS handshakes and real authentication requests test what consumers use.</dd></div>
+          <div><dt>Primary lesson</dt><dd>Issuance or provider success is supporting evidence. The job verifies the live consumer before it retires the working predecessor.</dd></div>
+        </dl>
+      </section>
+
       <section class="block" id="result">
         <h2>The certificate could renew while its copies grew old</h2>
         <div class="story-opening">

@@ -523,6 +523,28 @@ section.block ul { margin: 14px 0; padding-left: 20px; }
 section.block li { margin: 8px 0; font-weight: 300; }
 section.block li::marker { color: var(--cyan); }
 
+.at-a-glance {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 18px 0;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.at-a-glance div { padding: 16px 18px; background: var(--panel); }
+.at-a-glance dt {
+  margin-bottom: 7px;
+  color: var(--cyan);
+  font: 0.72rem var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.at-a-glance dd { margin: 0; color: var(--muted); line-height: 1.6; }
+
+@media (max-width: 700px) {
+  .at-a-glance { grid-template-columns: 1fr; }
+}
+
 /* Public-safe Grafana evidence embedded on project and platform pages. */
 .live-status {
   font-family: "Share Tech Mono", monospace;

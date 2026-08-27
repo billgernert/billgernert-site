@@ -256,6 +256,16 @@
     </header>
 
     <div class="skill-body">
+      <section class="block" id="glance">
+        <h2>At a glance</h2>
+        <dl class="at-a-glance">
+          <div><dt>Outcome</dt><dd>A reviewed request removes a virtual machine and its supporting records in a bounded order that can resume after a partial failure.</dd></div>
+          <div><dt>Operating scope</dt><dd>The Linux and Windows paths coordinate Terraform state, Proxmox, address management, monitoring, DNS, Git, and the Windows directory record.</dd></div>
+          <div><dt>Evidence</dt><dd>Offline fixtures prove delete, empty-plan, and unreadable-plan behavior, and the page shows the running job form. A verified live decommission run is still owed.</dd></div>
+          <div><dt>Primary lesson</dt><dd>A successful Terraform exit cannot prove that anything will be deleted. The saved plan must contain a real delete before the approval gate opens.</dd></div>
+        </dl>
+      </section>
+
       <section class="block" id="request">
         <h2>One name starts a bounded teardown</h2>
         <p>The operator supplies the machine name because that name is also the Terraform workspace. A workspace is the isolated state record for one machine. Selecting it tells Terraform which infrastructure record to read and prevents a request for one server from silently drifting into another server’s state.</p>

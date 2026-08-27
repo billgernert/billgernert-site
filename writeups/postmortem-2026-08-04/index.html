@@ -139,26 +139,25 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Postmortem: the 2026-08-04 outage - Bill Gernert</title>
-  <meta name="description" content="<!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> node in a <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox cluster stopped answering and took routing, DNS, the git server and the control plane with it, while I was hundreds of miles away. The honest account: timeline, impact, what survived, what failed, and the two sections that cannot be written until recovery.">
+  <title>Postmortem: the 2026-08-04 power event - Bill Gernert</title>
+  <meta name="description" content="A power event dropped three of five Proxmox nodes. Recovery exposed shared-fate placement, stale declared network state, four HA services in error, and monitoring that could not report its own loss.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
-  <meta property="og:title" content="Postmortem: the 2026-08-04 outage - Bill Gernert">
-  <meta property="og:description" content="1 node in a 5-node Proxmox cluster stopped answering and took routing, DNS, the git server and the control plane with it, while I was hundreds of miles away. The honest account: timeline, impact, what survived, what failed, and the two sections that cannot be written until recovery.">
+  <meta property="og:title" content="Postmortem: the 2026-08-04 power event - Bill Gernert">
+  <meta property="og:description" content="A power event dropped three of five Proxmox nodes. Recovery exposed shared-fate placement, stale declared network state, four HA services in error, and monitoring that could not report its own loss.">
   <meta property="og:url" content="https://billgernert.com/writeups/postmortem-2026-08-04/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Postmortem: the 2026-08-04 outage - Bill Gernert">
-  <meta name="twitter:description" content="1 node in a 5-node Proxmox cluster stopped answering and took routing, DNS, the git server and the control plane with it, while I was hundreds of miles away. The honest account: timeline, impact, what survived, what failed, and the two sections that cannot be written until recovery.">
+  <meta name="twitter:title" content="Postmortem: the 2026-08-04 power event - Bill Gernert">
+  <meta name="twitter:description" content="A power event dropped three of five Proxmox nodes. Recovery exposed shared-fate placement, stale declared network state, four HA services in error, and monitoring that could not report its own loss.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
 
-  <meta name="robots" content="noindex">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,10 +173,6 @@
   <link rel="canonical" href="https://billgernert.com/writeups/postmortem-2026-08-04/">
   <!-- END generated: canonical -->
 </head>
-<!-- STAGED (drop entry 76): this page is live at its real URL, carries noindex, and is linked from
-     nothing until the operator has eyeballed the real render and flips it. Do not add it to the nav,
-     a hub, or the footer site map in this change. Every publish-time gate applies to it unchanged:
-     staged means unlisted, never private. -->
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="page">
@@ -209,12 +204,12 @@
 
     <header class="skill-head">
       <span class="badge">Incident</span>
-      <h1>The node that took the platform with it</h1>
-      <p class="descriptor">On 2026-08-04 <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> node in a <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox cluster stopped answering, and it
-        took routing, internal DNS, the git server and the control plane down with it. I was hundreds of
-        miles away with no way in. This page is the account: the timeline as the logs recorded it, what
-        survived, what failed, and what changes. Two sections cannot honestly be written yet, so they say
-        so instead of guessing.</p>
+      <h1>The power event that took the platform with it</h1>
+      <p class="descriptor">On 2026-08-04 a power event dropped three of five Proxmox nodes. The node
+        carrying routing, one domain controller, the repository, and the control host was among them,
+        and four HA-managed services later remained in an error state. I was hundreds of miles away with
+        no out-of-band path to the hardware. This account keeps the first remote evidence, the recovery
+        completed on 2026-08-09, and the physical power-domain question that remains open.</p>
     </header>
 
     <nav class="crumbs" aria-label="On this page">
@@ -225,6 +220,8 @@
       <a href="#worked">What worked</a>
       <span class="sep">/</span>
       <a href="#failed">What failed</a>
+      <span class="sep">/</span>
+      <a href="#resolution">Resolution</a>
       <span class="sep">/</span>
       <a href="#cause">Root cause</a>
       <span class="sep">/</span>
@@ -261,29 +258,32 @@
           <li><b>2026-08-05 onward</b> The lab stays down. I am away from the hardware with no out-of-band
             path to it. Work continues against an offline copy of the repository, which turned out to be a
             story of its own.</li>
-          <li><b>2026-08-08</b> This page is written. The lab is still down and nobody has touched the
-            hardware yet, which is why two sections below are unfinished rather than filled in.</li>
+          <li><b>2026-08-08</b> The first version of this page is written while the lab is still down. Its
+            root-cause and recovery sections stay open because the hardware has not been reached.</li>
+          <li><b>2026-08-09</b> On-site recovery shows that the power event dropped three nodes. Cold boots
+            reapply stale declared network settings, and four HA-managed services, including both domain
+            controllers, remain in an error state until they are reset. Routing, DNS, the repository,
+            the control path, and the secrets service return after those conditions are corrected.</li>
         </ul>
       </section>
 
       <section class="block" id="impact">
         <h2>Impact</h2>
-        <p>The failed node was carrying four things at once: the firewall running OPNsense, which is all
-          routing and the VPN; one of the two Active Directory domain controllers, which is internal name
-          resolution; the Gitea server, which holds the repository every pipeline and every agent reads;
-          and the Ansible control host. Losing <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> node removed routing, name resolution, source control
-          and the control plane in a single stroke.</p>
-        <p>High availability did not help, and the reason is the whole lesson of the incident. Proxmox HA
-          restarts a guest elsewhere in the cluster when the node it was running on fails, and it can only
-          do that over a network. The network was one of the guests on the node that died. The mechanism
-          meant to rescue the guests was itself one of them.</p>
+        <p>The first remote symptom looked like one failed node because that node carried the firewall,
+          one domain controller, the repository, and the control host. Recovery established a wider event:
+          three nodes had dropped. The concentrated node still made the blast radius immediate by removing
+          routing, source control, and the control path together.</p>
+        <p>High availability did not return the estate on its own. Four managed services remained in an
+          error state after the nodes returned, and both domain controllers were in that set. The cold boots
+          also reapplied stale declared network settings on several virtual machines. Restored power was
+          therefore the start of recovery, not the end.</p>
         <p>Nothing a reader of this site would notice was lost. The public site is served by Cloudflare
           Pages from a mirror repository and has no runtime dependency on the lab, so it stayed up for the
           entire outage, checked from outside the failed network. That was not luck. It is the reason the
           site is built that way, and this is the first time the design has been under real load.</p>
-        <p class="note">No data loss has been observed so far, and "so far" is doing real work in that
-          sentence. Backup integrity, database state, and whether the four dispatched worker sessions left
-          uncommitted work behind are all things I can only confirm once the hardware is back.</p>
+        <p class="note">This page was first written from remote evidence while the hardware was still
+          unreachable. The timeline keeps that initial view, while the resolution uses what the on-site
+          recovery established. The difference is part of the incident record.</p>
       </section>
 
       <section class="block" id="worked">
@@ -313,19 +313,19 @@
 
       <section class="block" id="failed">
         <h2>What failed</h2>
-        <p>Three designs failed. Each is written below in the shape the lab uses for any failure mode: what
-          it looked like, what it actually was, how you get out of it, and what stops it happening again.
-          Where a recovery step has not been walked yet, it says so rather than implying it has.</p>
+        <p>Three designs failed. Each is written below in the shape the lab uses for a failure mode: what
+          it looked like, what it actually was, how recovery worked, and which control now carries the gap.</p>
 
         <h3 class="eyebrow">Placement: <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> node held the front door</h3>
         <ul>
-          <li><b>Symptoms.</b> A single node stopped answering and four unrelated services went with it.
-            Cluster HA, which exists precisely for a node loss, did nothing.</li>
+          <li><b>Symptoms.</b> The power event dropped three nodes. The node holding routing, source control,
+            one domain controller, and the control host made the wider failure look like one concentrated
+            platform loss.</li>
           <li><b>Diagnosis.</b> Routing, one domain controller, the repository and the control host had all
             been placed on the same node. The concentration was known and had never been examined. HA
             cannot move a guest across a network the dead node was providing.</li>
-          <li><b>Recovery.</b> There is none that does not involve standing in the room, which is failure
-            two. Once routing is back, HA settles on its own.</li>
+          <li><b>Recovery.</b> On-site work restored the nodes and routing, then corrected stale network
+            state and explicitly reset the HA-managed services that remained in error.</li>
           <li><b>Prevention.</b> A placement rule, written as an acceptance criterion so it can be tested
             rather than admired: no single node's loss may remove routing, repository, DNS and control at
             the same time.</li>
@@ -340,9 +340,9 @@
             routing that had just gone away.</li>
           <li><b>Recovery.</b> Travel to the hardware. That is the honest answer, and it is why this outage
             is measured in days rather than minutes.</li>
-          <li><b>Prevention.</b> Console access that survives the network being gone, and a heartbeat out to
-            an external service so silence pages me instead of waiting to be noticed. Both are designed and
-            neither is built, so neither is claimed here as working.</li>
+          <li><b>Prevention.</b> Internal dead-man checks now make missing scheduled work visible. Console
+            access and a watcher outside the lab remain open because they must survive the lab network and
+            power domain being unavailable.</li>
         </ul>
 
         <h3 class="eyebrow">Sight: the monitoring was inside the blast radius, and so was my browser</h3>
@@ -357,69 +357,87 @@
           <li><b>Recovery.</b> Check from a network that owes the lab nothing before believing what your own
             machine tells you. A phone on mobile data settled the question in seconds, once I thought to
             ask it.</li>
-          <li><b>Prevention.</b> A watcher that shares no fate with the lab, and resolver settings on my own
-            devices that fall back to public DNS when the lab path is dead, so a dead lab can never again
-            impersonate a dead internet from my own chair.</li>
+          <li><b>Prevention.</b> Client resolver fallback and an outside watcher are separate controls. The
+            internal dead-man path can catch a stopped job, but it cannot report the loss of the estate that
+            runs it.</li>
         </ul>
+      </section>
+
+      <section class="block" id="resolution">
+        <h2>Resolution</h2>
+        <p><b>Confirmed cause.</b> A power event dropped three of five cluster nodes. The outage expanded
+          through shared-fate placement, stale declared network settings applied during cold boot, and four
+          HA-managed services that stayed in an error state. The UPS engaged, but the physical reason three
+          nodes still lost power remains open pending outlet and load verification.</p>
+        <p><b>Recovery.</b> On 2026-08-09 I restored the nodes and routing, corrected stale network state,
+          reset the HA error services, restored internal DNS, and verified the repository, control path,
+          tunnel, and secrets service before normal automation resumed.</p>
+        <p><b>Corrective actions.</b> The follow-on work now covers declared network-state drift, HA error
+          alerting, sealed or unreachable secrets-service alerting, placement, dead-man monitoring, outside
+          console access, and the UPS power domain. Several checks exist in code; the external hardware path
+          and physical power review remain open.</p>
       </section>
 
       <section class="block" id="cause">
         <h2>Root cause</h2>
-        <p class="coming">This section completes after recovery, per the house rule</p>
-        <p>The honest answer today is that I do not know. The node stopped answering on every interface
-          inside a 29 second window, between 19:16:46 and 19:17:15. A hardware failure, a power event and
-          an operating system panic are all consistent with the evidence available from outside the
-          building, and nothing available from outside the building can tell them apart. Guessing further
-          would be writing fiction, so this section waits for the hardware.</p>
+        <p>The initiating event was power loss, not an isolated operating-system or network failure. Three
+          nodes dropped while the UPS engaged. The remaining physical question has two credible answers:
+          the connected load exceeded what the battery could carry, or the affected nodes were not on
+          protected outlets. The current evidence does not distinguish them, so the outlet and load review
+          stays open.</p>
+        <p>The service outage lasted longer than the power event because the recovered estate did not match
+          its intended state. Cold boots applied stale network declarations, and four HA-managed services
+          stayed in an error state until they were reset. Both domain controllers were in that group, which
+          kept internal name resolution down and made the remaining services harder to diagnose.</p>
       </section>
 
       <section class="block" id="recovery">
         <h2>Recovery</h2>
-        <p>The order below was written during the outage and has not been walked. Under the rule this whole
-          site runs on, that makes it a plan and not a procedure, and it stays labelled as one until the day
-          it is executed.</p>
+        <p>The order drafted during the outage was directionally right, but it missed the two conditions
+          that consumed most of the recovery: stale declared network settings and HA services parked in an
+          error state.</p>
         <ol class="project-list">
-          <li>Reach the failed node's console and diagnose before touching anything. The evidence dies the
-            moment the machine is power-cycled.</li>
-          <li>Routing first. Nothing else can be reached until the firewall is back.</li>
-          <li>Name resolution next. The second domain controller lives on a different node and should have
-            survived, so verify that rather than assume it. Internal DNS has to be sound before any service
-            that depends on it comes up.</li>
-          <li>Let cluster HA settle, then verify quorum and storage instead of trusting that they
-            settled.</li>
-          <li>The git server and the tunnel last, once the platform underneath them is confirmed sane.</li>
-          <li>Check my own workstation's VPN client and resolver before trusting a single thing it reports,
-            because it already lied once during this incident.</li>
+          <li>Inspect the hardware on site and establish that the event affected three cluster nodes.</li>
+          <li>Restore routing first so the surviving and recovered systems can be reached.</li>
+          <li>Compare running and declared network state. Correct stale settings before another reboot can
+            reapply them.</li>
+          <li>Inspect HA state explicitly. Reset the four services in error, including both domain
+            controllers, then verify internal DNS.</li>
+          <li>Restore and verify the repository, control path, tunnel, and secrets service after the
+            platform underneath them is stable.</li>
+          <li>Audit the remaining virtual machines and the golden template. That pass found more stale
+            resolver declarations that had not yet caused an outage.</li>
         </ol>
-        <p class="coming">This section completes after recovery, per the house rule</p>
-        <p>Once the recovery is walked, this section records the three things it cannot record now: what the
-          plan missed, what order was actually needed, and how long each service took to come back.</p>
+        <p>The recovery changed the runbook in two places. Declared configuration now needs an assurance
+          check before a reboot exposes drift, and HA error state must be queried directly because it does
+          not clear itself or appear as healthy silence.</p>
       </section>
 
       <section class="block" id="actions">
         <h2>Action items</h2>
-        <p>Each of these is tracked as a work item in the backlog, and this page will link the records as
-          they close. None of them is described here as done, because none of them is.</p>
+        <p>Each item below is tracked separately. The status here distinguishes code that exists from a
+          control that has been applied and tested against the running environment.</p>
         <ol class="project-list">
-          <li><b>Placement review, then a live-fire drill.</b> Check the estate against the acceptance
-            criterion above, then take the same node down deliberately, with me standing next to it, and
-            prove the criterion holds. A failure mode you have only met by accident is not one you
-            understand.</li>
-          <li><b>An out-of-band dead-man switch that shares no fate with the lab.</b> The lab heartbeats out
-            to an external service and silence pages me. The design is chosen. It is not built, and this
-            page will not claim it works until it has fired in a drill or in anger.</li>
-          <li><b>Resolver settings that fail open to public DNS</b> on my own devices when the lab path is
-            dead.</li>
-          <li><b>Console access that survives the network being gone.</b></li>
+          <li><b>Declared-state assurance.</b> An offline checker compares virtual-machine network
+            declarations with inventory. Live collection and the address-management comparison remain to
+            be completed.</li>
+          <li><b>HA and secrets-service alerting.</b> The checks distinguish HA error, sealed, and
+            unreachable states. Applying them and proving delivery from a real fault remain operator work.</li>
+          <li><b>Placement and live-fire review.</b> The acceptance criterion remains that one node loss
+            cannot remove routing, repository, DNS, and control together. A deliberate drill still has to
+            prove the resulting placement.</li>
+          <li><b>Outside observation and console access.</b> Internal dead-man monitoring is live for
+            scheduled work. Hardware-independent alerting and console access remain open.</li>
+          <li><b>UPS power-domain review.</b> Physically verify protected outlets, connected load, runtime,
+            and the UPS event record before assigning the initiating failure to battery capacity or wiring.</li>
         </ol>
       </section>
 
       <section class="block">
         <h2>The one-sentence version</h2>
-        <p>The platform's first total outage proved the two designs I most needed to be true, the site's
-          independence from the lab and the fleet's refusal to act on what it cannot verify, and it exposed
-          the one assumption I had never written down: that the node holding the front door would not be the
-          one to die.</p>
+        <p>A power event dropped three cluster nodes, and shared placement, stale declared network state,
+          HA error services, and monitoring inside the same blast radius turned that event into a
+          multi-day platform outage.</p>
       </section>
 
       <div class="links">

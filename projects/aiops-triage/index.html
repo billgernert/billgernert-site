@@ -262,6 +262,16 @@
     </header>
 
     <div class="skill-body">
+      <section class="block" id="glance">
+        <h2>At a glance</h2>
+        <dl class="at-a-glance">
+          <div><dt>Outcome</dt><dd>One daily report separates actionable work, incomplete evidence, and known noise before the workday starts.</dd></div>
+          <div><dt>Operating scope</dt><dd>The live job reads alerting, monitoring, CI, and backup evidence, stores its own history, uses bounded model analysis, and stops at a report.</dd></div>
+          <div><dt>Evidence</dt><dd>The page injects the latest run totals from live facts. A public dashboard and per-source heartbeats show whether collection and triage actually ran.</dd></div>
+          <div><dt>Primary lesson</dt><dd>A quiet source and a collector that stopped are different states. Each collector records a heartbeat before an empty result can be treated as quiet.</dd></div>
+        </dl>
+      </section>
+
       <section class="block" id="report">
         <h2>The report is the product</h2>
         <p>I designed the email first because it is the part a person has to trust. The top line says whether collection and triage ran cleanly. The next line gives the measured finding totals for that run. The body then leads with the item that deserves action, keeps incomplete evidence in a separate needs-info section, and leaves suppressed noise visible enough to audit without letting it dominate the morning.</p>

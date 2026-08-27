@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Postmortems - Bill Gernert</title>
-  <meta name="description" content="Three infrastructure incidents from the lab, written up honestly: a backup datastore that corrupted itself when thin provisioning hit its cap, a one-word commit message that silently switched off all CI for a pull request, and a build-toolchain vulnerability caught and fixed in the pipeline.">
+  <meta name="description" content="Four AutomationLab incident reviews covering a cluster power event, backup datastore corruption, CI that silently skipped every check, and a build-toolchain vulnerability caught in the pipeline.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Postmortems - Bill Gernert">
-  <meta property="og:description" content="Three infrastructure incidents from the lab, written up honestly: a backup datastore that corrupted itself when thin provisioning hit its cap, a one-word commit message that silently switched off all CI for a pull request, and a build-toolchain vulnerability caught and fixed in the pipeline.">
+  <meta property="og:description" content="Four AutomationLab incident reviews covering a cluster power event, backup datastore corruption, CI that silently skipped every check, and a build-toolchain vulnerability caught in the pipeline.">
   <meta property="og:url" content="https://billgernert.com/postmortems-index/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Postmortems - Bill Gernert">
-  <meta name="twitter:description" content="Three infrastructure incidents from the lab, written up honestly: a backup datastore that corrupted itself when thin provisioning hit its cap, a one-word commit message that silently switched off all CI for a pull request, and a build-toolchain vulnerability caught and fixed in the pipeline.">
+  <meta name="twitter:description" content="Four AutomationLab incident reviews covering a cluster power event, backup datastore corruption, CI that silently skipped every check, and a build-toolchain vulnerability caught in the pipeline.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -200,13 +200,14 @@
     <header class="skill-head">
       <span class="badge">Incidents</span>
       <h1>Postmortems</h1>
-      <p class="descriptor">Three infrastructure incidents from the lab, written up the way I would want to
-        read them: what broke, why it broke, and what changed so it cannot break the same way again. No blame,
-        no polish, just the mechanism and the fix. A lab that only publishes its wins is not telling you how it
-        actually runs.</p>
+      <p class="descriptor">Four incidents from AutomationLab, with the evidence, failure mechanism,
+        recovery, and follow-on controls kept together. The unresolved power-domain question remains open,
+        and fixes that still need a live apply are labeled that way.</p>
     </header>
 
     <nav class="crumbs" aria-label="On this page">
+      <a href="#power">The power event that took the platform with it</a>
+      <span class="sep">/</span>
       <a href="#datastore">Backup datastore corruption</a>
       <span class="sep">/</span>
       <a href="#skip">The commit that switched off CI</a>
@@ -215,6 +216,15 @@
     </nav>
 
     <div class="skill-body">
+      <section class="block" id="power">
+        <h2>The power event that took the platform with it</h2>
+        <p>A power event dropped three of five cluster nodes. The first remote symptom looked like one
+          failed node because it held routing, one domain controller, the repository, and the control
+          host. On-site recovery exposed stale declared network state and four HA-managed services stuck
+          in an error state, including both domain controllers. The physical UPS and outlet question is
+          still open. <a href="/writeups/postmortem-2026-08-04/">Read the full postmortem &#8594;</a></p>
+      </section>
+
       <section class="block" id="datastore">
         <h2>Backup datastore corruption</h2>
         <p>A backup datastore was thin provisioned, meaning it was told it had more space than physically
@@ -261,12 +271,12 @@
       </section>
 
       <section class="block">
-        <h2>What these three share</h2>
-        <p>Each one is a variant of the same failure: a system that looked fine while something underneath was
-          not. The datastore reported free space it did not have. The pull request reported success it had not
-          earned. The image would have reported a clean build while carrying a known flaw. The fixes are all
-          the same move in different clothes, which is to make the true state visible and to refuse to treat an
-          unknown or an un-run check as a pass.</p>
+        <h2>What these four share</h2>
+        <p>Each incident began with visible state that hid the operating state underneath it. The remote
+          outage looked like one failed node when three had dropped. The datastore reported space the pool
+          could not supply. The pull request reported success without running its checks, and the image could
+          have carried a known flaw behind a clean build. The corrective controls expose the underlying state
+          and keep missing or unreadable evidence from becoming a pass.</p>
       </section>
 
       <div class="links">

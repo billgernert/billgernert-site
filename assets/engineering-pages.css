@@ -51,6 +51,7 @@ td:first-child { color: #eef4fb; font-weight: 600; }
 .project-card::after { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, #00d4ff, #0066ff); }
 .project-card:hover, .project-card:focus-visible { transform: translateY(-2px); border-color: rgba(0, 212, 255, .58); background: rgba(17, 28, 45, .94); box-shadow: 0 0 20px rgba(0, 212, 255, .13); text-decoration: none; }
 .project-name { color: #fff; font: 600 1.08rem 'Share Tech Mono', monospace; letter-spacing: .035em; line-height: 1.35; }
+.project-state { color: #00ff96; font: .7rem 'Share Tech Mono', monospace; letter-spacing: .1em; text-transform: uppercase; }
 .project-desc { color: var(--muted); line-height: 1.55; }
 .project-arrow { margin-top: auto; color: #8fa8c8; font: .72rem 'Share Tech Mono', monospace; letter-spacing: .12em; text-transform: uppercase; transition: color .18s ease; }
 .project-card:hover .project-arrow, .project-card:focus-visible .project-arrow { color: #00d4ff; }
