@@ -147,216 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
-  <style>
-    :root {
-      --project-panel: rgba(9, 20, 35, 0.84);
-      --project-line: rgba(0, 212, 255, 0.22);
-      --project-line-hot: rgba(0, 212, 255, 0.68);
-      --project-green: #00ff96;
-      --project-cyan: #00d4ff;
-      --project-copy: #c9d3e5;
-    }
-
-    .projects-intro { max-width: 760px; }
-
-    .project-signal {
-      position: relative;
-      margin: 2rem 0 2.5rem;
-      padding: 1rem 1.15rem 1.1rem;
-      overflow: hidden;
-      border: 1px solid var(--project-line);
-      border-radius: 10px;
-      background: linear-gradient(90deg, rgba(0, 212, 255, 0.055), rgba(0, 255, 150, 0.025));
-    }
-
-    .signal-labels {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      color: #a9b8d0;
-      font: 0.76rem/1.2 var(--mono);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .signal-labels span:nth-child(2),
-    .signal-labels span:nth-child(3) { text-align: center; }
-    .signal-labels span:last-child { text-align: right; }
-
-    .signal-track {
-      position: relative;
-      height: 3px;
-      margin-top: 0.85rem;
-      background: rgba(0, 212, 255, 0.17);
-    }
-
-    .signal-track::before {
-      content: "";
-      position: absolute;
-      inset: -4px auto auto 0;
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: var(--project-green);
-      box-shadow: 0 0 14px rgba(0, 255, 150, 0.9);
-      animation: signal-pass 7s ease-in-out infinite;
-    }
-
-    .signal-node {
-      position: absolute;
-      top: -4px;
-      width: 11px;
-      height: 11px;
-      border: 2px solid var(--project-cyan);
-      border-radius: 50%;
-      background: #07111f;
-    }
-
-    .signal-node:nth-child(1) { left: 0; }
-    .signal-node:nth-child(2) { left: 33.333%; }
-    .signal-node:nth-child(3) { left: 66.666%; }
-    .signal-node:nth-child(4) { right: 0; }
-
-    @keyframes signal-pass {
-      0%, 8% { left: 0; opacity: 0; }
-      12% { opacity: 1; }
-      88% { opacity: 1; }
-      92%, 100% { left: calc(100% - 11px); opacity: 0; }
-    }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      counter-reset: project;
-    }
-
-    .project-grid li { min-width: 0; counter-increment: project; }
-
-    .project-card {
-      position: relative;
-      display: flex;
-      min-height: 250px;
-      height: 100%;
-      flex-direction: column;
-      padding: 1.35rem 1.45rem 1.25rem;
-      overflow: hidden;
-      border: 1px solid var(--project-line);
-      border-radius: 10px;
-      background: linear-gradient(145deg, rgba(0, 212, 255, 0.045), transparent 42%), var(--project-panel);
-      color: inherit;
-      text-decoration: none;
-      box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
-      animation: card-arrive 0.5s ease both;
-      animation-delay: calc(var(--card-order) * 55ms);
-      transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
-    }
-
-    .project-card::after {
-      content: "";
-      position: absolute;
-      inset: auto 0 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--project-cyan), var(--project-green));
-      transform: scaleX(0.18);
-      transform-origin: left;
-      transition: transform 220ms ease;
-    }
-
-    .project-card:hover,
-    .project-card:focus-visible {
-      transform: translateY(-3px);
-      border-color: var(--project-line-hot);
-      background-color: rgba(10, 25, 42, 0.95);
-      outline: none;
-    }
-
-    .project-card:hover::after,
-    .project-card:focus-visible::after { transform: scaleX(1); }
-
-    @keyframes card-arrive {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .project-topline {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.15rem;
-    }
-
-    .project-number {
-      color: var(--project-cyan);
-      font: 0.9rem/1 var(--mono);
-      letter-spacing: 0.08em;
-    }
-
-    .project-number::before { content: counter(project, decimal-leading-zero); }
-
-    .project-kind {
-      color: #91a5c2;
-      font: 0.69rem/1 var(--mono);
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-    }
-
-    .project-card h2 {
-      max-width: 18ch;
-      margin: 0 0 0.85rem;
-      color: #fff;
-      font-size: clamp(1.4rem, 2.1vw, 1.82rem);
-      line-height: 1.12;
-    }
-
-    .project-card p {
-      margin: 0;
-      color: var(--project-copy);
-      font-size: 1rem;
-      line-height: 1.55;
-    }
-
-    .project-cta {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      margin-top: auto;
-      padding-top: 1.35rem;
-      color: var(--project-cyan);
-      font: 0.76rem/1 var(--mono);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .project-cta .arrow { font-size: 1.05rem; transition: transform 180ms ease; }
-    .project-card:hover .arrow,
-    .project-card:focus-visible .arrow { transform: translateX(4px); }
-    .project-grid li:last-child { grid-column: 1 / -1; }
-    .project-grid li:last-child .project-card { min-height: 205px; }
-    .project-grid li:last-child .project-card h2 { max-width: none; }
-    .project-grid li:last-child .project-card p { max-width: 70ch; }
-    .code-block { margin-top: 3.5rem; }
-
-    @media (max-width: 760px) {
-      .project-grid { grid-template-columns: 1fr; }
-      .project-grid li:last-child { grid-column: auto; }
-      .project-card { min-height: 230px; }
-      .signal-labels { font-size: 0.62rem; letter-spacing: 0.06em; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .signal-track::before,
-      .project-card { animation: none; }
-      .project-card,
-      .project-card::after,
-      .project-cta .arrow { transition: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/">
   <!-- END generated: canonical -->
@@ -388,158 +180,94 @@
       <span class="here">Projects</span>
     </nav>
 
-    <header class="skill-head projects-intro">
-      <span class="badge">Pipelines</span>
-      <h1>Projects</h1>
-      <p class="descriptor">Pipelines I built and run. Each write-up covers the problem, the stages that run, what broke, what I changed, and the code that fixed it. The bugs stay in because that is where the engineering decisions become visible. For the systems underneath them, see <a href="/platform/">Platform</a>.</p>
-    </header>
-
-    <div class="project-signal" aria-label="Project operating loop">
-      <div class="signal-labels" aria-hidden="true">
-        <span>Build</span><span>Observe</span><span>Repair</span><span>Explain</span>
-      </div>
-      <div class="signal-track" aria-hidden="true">
-        <span class="signal-node"></span><span class="signal-node"></span><span class="signal-node"></span><span class="signal-node"></span>
-      </div>
-    </div>
-
-    <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
+    <header class="skill-head"><span class="badge">Engineering project index</span><h1>Projects grouped by the problem they solve</h1><p class="descriptor lede">These projects are not grouped by product. Jenkins, Vault, Terraform, Ansible, Kubernetes, monitoring, and AI appear in several stories because each tool owns one part of a larger result. The four domains below answer what the work was for: building the platform, keeping it recoverable, managing trust, or moving changes through a controlled delivery path.</p><p class="descriptor lede">Each project page starts with the result, follows the workflow through the systems it changes, shows the evidence, and keeps the failures that changed the design. The same project may touch several disciplines, but it appears once under its primary engineering problem so this page stays useful while skimming.</p><p class="source-note">Generated from the registered project catalog. Project titles and routes stay in repository data so the site build can update this index without duplicating them by hand.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#platform">Platform</a><span class="sep">/</span><a href="#reliability">Reliability / DR</a><span class="sep">/</span><a href="#identity">Identity / Security</a><span class="sep">/</span><a href="#delivery">Automation / Delivery</a></nav>
+<div class="skill-body">
+<!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <!-- END generated: group-hub -->
-
-    <section aria-label="Project stories">
       <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
-      <ol class="project-grid">
-        <li id="server-provisioning">
-          <a class="project-card" style="--card-order: 1" href="/projects/server-provisioning/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 1"></span><span class="project-kind">Provisioning</span></span>
-            <h2>Automated server provisioning</h2>
-            <p>Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="certificate-secret-renewal">
-          <a class="project-card" style="--card-order: 2" href="/projects/certificate-secret-renewal/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 2"></span><span class="project-kind">PKI and secrets</span></span>
-            <h2>Automated certificate and secret renewal</h2>
-            <p>Renews certificates and secrets across the platform ahead of expiry, instead of waiting for a fire drill.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="template-factory">
-          <a class="project-card" style="--card-order: 3" href="/projects/template-factory/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 3"></span><span class="project-kind">Image lifecycle</span></span>
-            <h2>The Windows template factory</h2>
-            <p>Rebuilds golden Windows images from code on a schedule and verifies each build before it is promoted for provisioning.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="job-reporting">
-          <a class="project-card" style="--card-order: 4" href="/projects/job-reporting/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 4"></span><span class="project-kind">Reporting</span></span>
-            <h2>The job reporting pipeline</h2>
-            <p>Runs job search as a pipeline: ingest, enrich, score, and report, with a truthfulness constraint built into the model prompt.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="api-to-usage">
-          <a class="project-card" style="--card-order: 5" href="/projects/api-to-usage/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 5"></span><span class="project-kind">AI routing</span></span>
-            <h2>API to usage-based AI pipelines</h2>
-            <p>Routes unattended AI work through existing subscription headroom, protects reserves, and fails closed when neither provider is safe.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="self-healing-monitoring">
-          <a class="project-card" style="--card-order: 6" href="/projects/self-healing-monitoring/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 6"></span><span class="project-kind">Monitoring</span></span>
-            <h2>Self-healing monitoring</h2>
-            <p>Classifies monitoring failures into a repair plan, restarts one allowlisted service on its own, and waits for approval on the rest.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="decommission">
-          <a class="project-card" style="--card-order: 7" href="/projects/decommission/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 7"></span><span class="project-kind">Decommissioning</span></span>
-            <h2>Decommission, with the gate that says no</h2>
-            <p>Destroys a VM only after proving the plan deletes something, so an empty plan cannot pass as a successful teardown.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="aiops-triage">
-          <a class="project-card" style="--card-order: 8" href="/projects/aiops-triage/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 8"></span><span class="project-kind">AIOps</span></span>
-            <h2>AIOps morning triage</h2>
-            <p>Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a model.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-        <li id="platform-map">
-          <a class="project-card" style="--card-order: 9" href="/projects/platform-map/">
-            <span class="project-topline"><span class="project-number" aria-label="Project 9"></span><span class="project-kind">Live topology</span></span>
-            <h2>The platform map</h2>
-            <p>Turns live monitoring and inventory into a health-aware atlas that drills from the whole lab to the running component behind an alert.</p>
-            <span class="project-cta">Read the project <span class="arrow" aria-hidden="true">&#8594;</span></span>
-          </a>
-        </li>
-      </ol>
-      <!-- END generated: projects-index -->
-    </section>
-
-      <section class="block code-block">
-        <h2>Code on GitHub</h2>
-        <p>The project pages include scrubbed excerpts where they help explain a control or failure. The
-          AutomationLab repository stays private because it contains live configuration and network
-          detail. Public pages cross a fail-closed scrub gate before publication.</p>
-        <div class="links">
-          <a href="https://github.com/billgernert" rel="me">Profile &#8594;</a>
-          <a href="https://github.com/billgernert/production-automation">production-automation &#8594;</a>
-        </div>
-        <p class="note"><b>production-automation</b> is de-identified professional work predating the
-          lab. Each script documents its story, failsafes, and setup.</p>
+      <section class="block" id="platform">
+        <span class="badge">Platform</span>
+        <h2>Build a consistent foundation and keep it describable</h2>
+        <p>These projects create the compute, operating-system, and inventory base that other automation assumes.</p>
+        <ol class="project-domain">
+          <li id="server-provisioning" class="project-row"><h3><a href="/projects/server-provisioning/">Automated server provisioning</a></h3><p>Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident.</p></li>
+          <li id="template-factory" class="project-row"><h3><a href="/projects/template-factory/">The template factory</a></h3><p>Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live.</p></li>
+          <li id="platform-map" class="project-row"><h3><a href="/projects/platform-map/">The platform map</a></h3><p>Combines inventory structure with monitoring state, then publishes a sanitized projection. Its postmortem follows the identifier leak that reached that public projection.</p></li>
+        </ol>
       </section>
-
-      <div class="links">
-        <a href="/platform/">How the platform works &#8594;</a>
-        <a href="/capabilities/">Explore the capabilities &#8594;</a>
-        <a href="/roadmap/">Read the roadmap &#8594;</a>
-      </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+      <section class="block" id="reliability">
+        <span class="badge">Reliability / DR</span>
+        <h2>Find failure early and leave a path back</h2>
+        <p>These projects deal with unhealthy systems, destructive cleanup, and the evidence needed before a backup or remediation can be trusted.</p>
+        <ol class="project-domain">
+          <li id="restore-verification" class="project-row"><h3><a href="/dr-restore-verify/">Restore verification</a></h3><p>Restores a protected guest into a fenced network, runs operating-system and service assertions, then destroys the copy and verifies that it is gone.</p></li>
+          <li id="dead-man-monitoring" class="project-row"><h3><a href="/dead-man-monitoring/">Dead-man monitoring</a></h3><p>Pushes completion age into Zabbix and uses separate alarms for missed work and a stopped sender.</p></li>
+          <li id="self-healing-monitoring" class="project-row"><h3><a href="/projects/self-healing-monitoring/">Self-healing monitoring</a></h3><p>Classifies a broken host, gathers the evidence, prepares the exact remediation plan, and performs only the action the operator approved. A separate monitoring-side verification loop is still needed before the pipeline can claim the host recovered.</p></li>
+          <li id="decommission" class="project-row"><h3><a href="/projects/decommission/">Decommission, with the gate that says no</a></h3><p>Destroys a VM only after asserting the plan actually deletes something, so an empty plan can never pass as a successful teardown.</p></li>
+          <li id="aiops-triage" class="project-row"><h3><a href="/projects/aiops-triage/">AIOps morning triage</a></h3><p>Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a paid model.</p></li>
+        </ol>
+      </section>
+      <section class="block" id="identity">
+        <span class="badge">Identity / Security</span>
+        <h2>Renew trust before people or services feel the expiry</h2>
+        <p>These projects manage the identities and trust relationships used by people, machines, and public services.</p>
+        <ol class="project-domain">
+          <li id="identity-lifecycle" class="project-row"><h3><a href="/windows-identity/">Identity lifecycle</a></h3><p>Drives directory account creation, group membership, disablement, and removal from definitions in code, with a reversible snapshot before destructive cleanup.</p></li>
+          <li id="certificate-secret-renewal" class="project-row"><h3><a href="/projects/certificate-secret-renewal/">Automated certificate and secret renewal</a></h3><p>Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill.</p></li>
+        </ol>
+      </section>
+      <section class="block" id="delivery">
+        <span class="badge">Automation / Delivery</span>
+        <h2>Move requests and model work through recorded gates</h2>
+        <p>These projects turn a request or data set into a reviewed output. Their main problem is orchestration: where evidence is collected, where judgment happens, which gate owns the decision, and how the result is recorded.</p>
+        <ol class="project-domain">
+          <li id="unattended-fleet" class="project-row"><h3><a href="/fleet/">The unattended fleet</a></h3><p>Moves written taskings through isolated worktrees, cross-vendor review, deterministic gates, and operator-held merge authority.</p></li>
+          <li id="job-reporting" class="project-row"><h3><a href="/projects/job-reporting/">The job reporting pipeline</a></h3><p>Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt.</p></li>
+          <li id="api-to-usage" class="project-row"><h3><a href="/projects/api-to-usage/">API to usage-based AI pipelines</a></h3><p>Routes unattended AI work through existing subscription headroom, with hourly provider selection, reserve thresholds, and a fail-closed path when neither provider is safe.</p></li>
+        </ol>
+      </section>
+      <!-- END generated: projects-index -->
+<div class="decision"><strong>Why Security and Vault are not duplicated here.</strong> They are platform-wide engineering pages rather than bounded project stories. This index links projects with a start, implemented workflow, evidence, and failure narrative. The Security and Vault pages explain the standing controls those projects use.</div>
+<section class="block" id="relationships"><h2>How the domains meet in one provisioning request</h2><p>A server request is a useful example because it crosses all four groups without belonging to all four.</p><ol class="sequence"><li><strong>Automation / Delivery receives the request.</strong> Jenkins or Backstage records the inputs, obtains approval, and keeps the run log.</li><li><strong>Platform allocates and creates the server.</strong> NetBox assigns the address, Terraform changes infrastructure state, Proxmox creates the VM, and Ansible configures the operating system.</li><li><strong>Identity / Security establishes trust.</strong> Vault supplies credentials at run time, Active Directory joins Windows where requested, Duo protects remote access, and machine identities limit each automation step.</li><li><strong>Reliability / DR observes the result.</strong> Zabbix begins monitoring, backup policy includes the new guest, and the generated map and NOC show its current state.</li></ol><p>The project remains in Platform because the durable result is the recorded server. The domain labels describe the reader’s entry point, not walls between the systems.</p></section>
+<section class="block" id="code"><h2>What can be published</h2><p>The complete operations repository remains private because it contains live configuration and network detail. A fail-closed publication check scans the finished public tree before it is mirrored. The exported repositories below carry bounded implementations that can stand on their own without the private inventory.</p><div class="links"><a href="https://github.com/billgernert/fleet-control-plane">fleet-control-plane</a><a href="https://github.com/billgernert/restore-verify">restore-verify</a><a href="https://github.com/billgernert/production-automation">production-automation</a></div></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

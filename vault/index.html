@@ -147,7 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/vault/">
   <!-- END generated: canonical -->
@@ -179,214 +180,55 @@
       <span class="here">Secrets cluster</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Secrets and availability</span>
-      <h1>Rebuilding the secrets server into a cluster</h1>
-      <p class="descriptor">Vault stores every secret in the lab. Passwords, API tokens, certificates,
-        encryption keys. For a long time it ran as a single server, which meant a single point of failure
-        with a lot of things behind it. This page walks through the rebuild into a <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END-->-node cluster that
-        keeps serving when a node dies, unseals itself after a reboot with nobody typing a key, and answers
-        on one stable address no matter which node is currently healthy. The migration moved every secret
-        with a before-and-after comparison showing nothing was lost.</p>
-    </header>
-
-    <div class="skill-body">
-      <nav class="anchors" aria-label="On this page">
-        <a href="#what">What a secrets manager does here</a>
-        <a href="#old">The old design, and what was actually wrong with it</a>
-        <a href="#raft"><!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes instead of one</a>
-        <a href="#unseal">The locked safe problem</a>
-        <a href="#address">One address that follows the healthy node</a>
-        <a href="#tls">Certificates from the lab's own authority</a>
-        <a href="#backups">Backups and failure domains</a>
-        <a href="#proof">What was proven on the night</a>
-      </nav>
-
-      <section class="block" id="what">
-        <h2>What a secrets manager does here</h2>
-        <p>Nothing in the lab has a password typed into it. Every pipeline, every monitoring check, every
-          scheduled job asks the secrets server for what it needs at the moment it runs, proves who it is,
-          and gets back a short-lived credential. That is the whole point: a password that lives in one
-          place can be rotated in one place, and a job that has to ask for its credential can have that
-          permission taken away later.</p>
-        <p>The cost of that design is concentration. If the secrets server is down, the backup job cannot
-          log in to the backup system, the certificate renewal cannot talk to the certificate authority, and
-          the build pipelines cannot pull anything. It is the most important machine in the lab by a wide
-          margin, and for a long time there was exactly one of it.</p>
-      </section>
-
-      <section class="block" id="old">
-        <h2>The old design, and what was actually wrong with it</h2>
-        <p>One virtual machine. Its data lived in a directory on that machine's own disk. When Vault starts
-          it comes up sealed, meaning it holds the encrypted data but cannot read it until someone provides
-          the key that opens it, so a small service on the same machine read the key from a file on that same disk
-          and unsealed it automatically at boot.</p>
-        <p>That worked, and it is worth being honest about why it was replaced rather than dressing it up.
-          Two problems, and the second is the interesting one.</p>
-        <p>The obvious problem is that one machine is one machine. Reboot it and everything that needed a
-          credential during those two minutes failed.</p>
-        <p>The subtler problem is that the unseal key sat in a plain file on the same disk the backups
-          imaged every night. That meant every backup of that machine contained the key to its own contents,
-          so the security of the backup store had quietly become the security of the secrets store. Nobody
-          decided that. It was the natural consequence of automating the unseal the easy way, and it is the
-          kind of thing you only notice when you sit down and ask what a stolen backup would actually give
-          someone.</p>
-      </section>
-
-      <section class="block" id="raft">
-        <h2><!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes instead of one</h2>
-        <p>The cluster now stores its data using Raft, which is a way for several machines to agree on the
-          same list of changes even when they cannot all talk to each other. Every write goes to a leader,
-          the leader tells the others, and a write only counts once a majority have written it down. Because
-          a majority has it, any survivor can become the new leader without losing anything.</p>
-        <p>Three is the smallest number that gives you that. With two machines there is no majority: split
-          them and neither side can safely claim to be in charge. With three, one can fail and the remaining
-          two still form a majority, elect a leader among themselves, and carry on. Lose two and the cluster
-          deliberately stops accepting writes rather than risk two halves disagreeing about what is true.</p>
-        <p>The <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes are placed on different physical hosts on purpose, with a placement rule that
-          keeps them apart. Three copies on one hypervisor is one power supply away from zero copies.</p>
-      </section>
-
-      <section class="block" id="unseal">
-        <h2>The locked safe problem</h2>
-        <p>Vault starts sealed and needs a key to open. If you automate that by leaving the key next to the
-          door, you have a lock that does not lock. If you do not automate it, every reboot needs an operator
-          with the key, at whatever hour the reboot happens.</p>
-        <p>The way out is to have something else hold the key. A second, much smaller Vault runs on its own
-          machine, running only Vault's Transit secrets engine: it holds an encryption key and will encrypt
-          or decrypt small pieces of data for callers it trusts, never storing them itself. This is Vault's
-          own transit auto-unseal pattern. The cluster stores its own unseal material in a form only that
-          second server's Transit engine can decrypt. On boot, each node asks it to decrypt, gets what it
-          needs, and unseals itself. Nobody types anything, and no readable key sits on any of the <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END-->
-          nodes.</p>
-        <p>This is a real improvement and it is not free, so here is the honest version of the trade. The
-          cluster now depends on that small server being up. If it is down when a node boots, that node
-          comes up sealed and stays sealed, and getting it open is a manual recovery using the operator key
-          that is kept offline. That path is written down step by step. It has not been rehearsed yet, and
-          until it has, it is a documented procedure rather than a proven one. The distinction matters
-          enough to print: a procedure nobody has walked is a plan, and this page will say something
-          different once it has been walked.</p>
-        <p>The operator key itself is held offline, away from the machines it opens. That is all this page
-          will say about it, which is deliberate.</p>
-      </section>
-
-      <section class="block" id="address">
-        <h2>One address that follows the healthy node</h2>
-        <p><!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes is not much use if everything in the lab has to know which of the three to talk to
-          today. So the cluster answers on a single address that is not permanently tied to any node. The
-          nodes run keepalived, using VRRP (virtual router id 51) to decide among themselves who currently
-          owns that address. Each node carries a different priority, one at 150 and the other two at 140 and
-          130, so ties always resolve the same way. If the owner goes quiet the others hold an election and
-          the highest remaining priority takes it over. To the rest of the lab, nothing changed: the same
-          address still answers.</p>
-        <p>The interesting failure is not a node that dies. It is a node that stays perfectly alive and
-          stops being useful. A machine whose Vault process has sealed itself is still pingable, still
-          answering on the network, still winning the election, and serving nothing. Every host-level health
-          check stays green while the service behind it is dead.</p>
-        <p>So the election is not decided by whether the machine is up. Each node runs a check against its
-          own Vault asking whether it is actually unsealed and answering, and a node that fails that check
-          drops its own priority and loses the address on purpose. The check runs every five seconds and
-          gives up after two consecutive failures, so a node that seals itself hands the address over in
-          about ten seconds without anyone watching. The check also records why it stepped aside, sealed
-          versus not running at all, because those two look identical from outside and want different
-          fixes.</p>
-      </section>
-
-      <section class="block" id="tls">
-        <h2>Certificates from the lab's own authority</h2>
-        <p>Every endpoint in the cluster is served over TLS with a certificate issued by AD CS, Active
-          Directory Certificate Services, the lab's own internal certificate authority, not a self-signed
-          certificate generated on the box.</p>
-        <p>The difference is who decides to trust it. A self-signed certificate has to be trusted one
-          machine at a time, which in practice means someone eventually passes the flag that turns
-          verification off, and from then on nothing is being verified anywhere. With AD CS as a shared
-          authority, machines are told once to trust it, and every certificate it issues is trusted
-          automatically. Rotating a certificate stops being a fleet-wide errand.</p>
-        <p>These certificates are issued by hand and expire after a year, which is a quiet trap: nothing
-          fails until the day it does, and then everything that verifies fails at once. So every endpoint,
-          the shared address, all <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes, and the small Transit server, is watched by the blackbox
-          exporter, which reads the certificate each server is actually presenting rather than trusting a
-          config file. Prometheus turns that into two alarms: a warning at 30 days from expiry and a louder
-          one at 7. A fifth alarm watches that all five endpoints are still reporting at all, so the watcher
-          itself going quiet does not read as a clean bill of health.</p>
-      </section>
-
-      <section class="block" id="backups">
-        <h2>Backups and failure domains</h2>
-        <p>PBS, Proxmox Backup Server, takes a nightly backup of every VM in the lab, the secrets cluster and
-          the small Transit server included. That is the ordinary path, and it means no single machine's own
-          disk is where the fleet's protection actually lives.</p>
-        <p>The backup store itself is not the last line either. It gets mirrored every night onto a second,
-          separate Synology, so a bad day for the primary backup store does not also take out its own
-          backups. That mirror covers the whole fleet, not one server carved out for special treatment; the
-          failure it closes is a shared backup store and the thing it backs up going down together.</p>
-        <p>Separately, the weekly restore test that already existed for the old single server still runs.
-          A backup nobody has restored is a hope, not a backup.</p>
-      </section>
-
-      <section class="block" id="proof">
-        <h2>What was proven on the night</h2>
-        <p>The migration ran in one sitting and each claim below was tested rather than assumed.</p>
-        <p>Nothing was lost in the move. Before starting, every secret path in the old server was listed and
-          a set of known values recorded. After the cluster was up, the same listing was taken again and
-          compared. The comparison came back empty, which is the only evidence that actually answers "did we
-          lose anything" without reading every secret out loud.</p>
-        <p>Failover works, and it was tested the awkward way. A node was sealed deliberately while staying
-          up and reachable, which is the case a simple up-or-down check cannot see. The address moved to a
-          healthy node and callers kept getting answers through it. That test was chosen because a setup
-          that only survives a node being switched off looks identical, right up until the day a node fails
-          in a more interesting way.</p>
-        <p>Self-unsealing works. A node was restarted and came back unsealed on its own, with nobody
-          entering anything.</p>
-        <p>Both of the machines that keep the cluster honest were also checked: the certificate on every
-          endpoint, and the placement rule that keeps the <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes on different hosts.</p>
-        <p>One thing is deliberately not claimed here. The recovery path for the case where the unseal-key
-          server itself is gone has been written but not rehearsed, so it is not on this list.</p>
-      </section>
-
-      <div class="links">
-        <a href="/dr-restore-verify/">See the weekly restore proof &#8594;</a>
-        <a href="/security/">See the security posture &#8594;</a>
-        <a href="/noc/">See how it is monitored &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Technical platform walkthrough</span><h1>How I removed the secrets server as a single point of failure</h1><p class="descriptor lede">The lab now asks one stable Vault address for credentials even when a cluster node fails. The cluster copies accepted writes across <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes, unseals itself after a reboot, and moves the service address away from a node that is alive but unable to serve secrets.</p><p class="descriptor lede">This rebuild started because the old server concentrated two risks. Every pipeline stopped during its reboot, and the file that unlocked its encrypted storage lived on the same disk captured by the backup. I moved the data into a Raft cluster, moved unseal authority to a separate Transit service, and tested the failure case that a normal ping check misses.</p><p class="source-note">Built from the Vault HA design, apply record, sizing decision, recovery design, monitoring rules, and the current site source in the repository.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#cluster">Cluster</a><span class="sep">/</span><a href="#unseal">Unseal</a><span class="sep">/</span><a href="#failover">Failover</a><span class="sep">/</span><a href="#recovery">Recovery</a><span class="sep">/</span><a href="#broke">What broke</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>Vault is behind nearly every automated change</h2><div class="story-opening"><p>Provisioning, backups, certificate deployment, monitoring, and identity jobs fetch credentials when they run. A pipeline authenticates with a narrow machine role, reads the fields allowed for that job, and keeps the values in memory. The same password or token does not have to be copied into every Jenkins credential, configuration file, or script.</p><p>That is useful centralization, and it also makes availability matter. When the old single Vault server rebooted, a backup job could not authenticate to the backup API, a certificate job could not read deployment credentials, and provisioning could not reach its infrastructure providers. The pipelines were healthy. Their shared dependency was not.</p><p>The old server automated its own unseal by reading an unlock key from its local disk. Vault data was encrypted, but a full image backup contained both the encrypted data and the material needed to open it. That backup-store dependency was never an explicit design decision. It appeared because local auto-unseal was convenient.</p></div><div class="evidence"><strong>Current result.</strong> The service runs on <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> separately placed nodes. A migration comparison found no missing secret paths. A node sealed while its operating system remained reachable lost the shared address, and another node continued serving requests. A restarted node returned unsealed without an operator entering a key.</div></section>
+<section class="block" id="parts"><h2>Five mechanisms solve five different problems</h2><dl class="responsibilities"><div><dt>Vault</dt><dd>Authenticates people and workloads, enforces path policies, encrypts stored data, and serves the secrets each caller is allowed to read.</dd></div><div><dt>Integrated Raft</dt><dd>Replicates Vault's ordered changes. The active node proposes a write and a majority records it before the write is accepted.</dd></div><div><dt>Transit auto-unseal</dt><dd>A separate, limited Vault service performs the cryptographic operation that opens a cluster node. The unseal key is not stored on the cluster node.</dd></div><div><dt>Keepalived and VRRP</dt><dd>The cluster nodes elect the owner of one shared service address. Health checks lower the priority of a node whose Vault process is sealed or unavailable.</dd></div><div><dt>Prometheus and blackbox exporter</dt><dd>Measure seal state, cluster health, served TLS certificates, and missing endpoints. A stopped observer is reported separately from an unhealthy Vault service.</dd></div></dl></section>
+<section class="block" id="cluster"><h2>Raft lets the surviving majority continue</h2><p>Raft is a consensus protocol built around an ordered log. Vault sends writes to the active node. That node assigns the next log position and asks its peers to record the same entry. Once a majority has it, Vault can acknowledge the change. A surviving majority therefore has the complete accepted history needed to elect another active node.</p><p>The current <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END-->-member cluster is the smallest useful shape for this design. An even pair cannot retain a majority after either member fails. The current shape can lose a member and continue. If it loses its voting majority, the remaining member refuses new writes because it cannot know that another partition is not also acting alone.</p><figure class="architecture"><img src="/assets/engineering-diagrams/vault-cluster-path.svg" alt="Vault request path through a shared service address to a Raft cluster, with monitoring and Transit unseal shown separately"></figure><p>The nodes are spread across physical compute hosts. Raft protects against a node or guest failure; separate placement prevents one hypervisor failure from removing the whole voting majority.</p><h3>What happens to a read and a write</h3><ol class="sequence"><li><strong>A workload authenticates to the stable service address.</strong> Keepalived has placed that address on a node whose local Vault health check passes.</li><li><strong>The receiving node identifies the active cluster member.</strong> Requests reach the active node, directly or through Vault's request forwarding.</li><li><strong>A read is checked against the caller's policy.</strong> Vault returns only the paths and fields granted to that identity.</li><li><strong>A write enters the Raft log.</strong> A majority records the entry before Vault reports success.</li><li><strong>Monitoring checks the service from outside.</strong> It asks whether the endpoint answers, whether it is sealed, and which certificate it serves.</li></ol></section>
+<section class="block" id="unseal"><h2>The key that opens Vault lives somewhere else</h2><p>A Vault process starts sealed. It can see encrypted storage but cannot derive the keys needed to read it. An operator can enter recovery material manually, but that would turn every restart into attended work.</p><p>The cluster uses Vault's Transit secrets engine for auto-unseal. Transit stores an encryption key and performs approved encrypt or decrypt operations for authenticated callers. Each cluster node stores its unseal material in wrapped form. At startup, the node authenticates to Transit and asks it to decrypt that wrapped material. Transit performs the operation without returning its own underlying key.</p><p>The Transit service is smaller than the main cluster and has a narrower job. That separation removes a readable unseal key from the cluster disks and their backups. It also creates a dependency that has to be named: a cluster node that boots while Transit is unavailable stays sealed.</p><div class="decision"><strong>Recovery boundary.</strong> The offline operator recovery procedure can open the cluster when the Transit service is unavailable. The procedure is written. It has not yet been rehearsed, so this page does not attach a recovery time or a successful test claim to it.</div></section>
+<section class="block" id="failover"><h2>The service address follows Vault health</h2><p>Keepalived uses VRRP, a small election protocol, to place one address on the preferred healthy node. Callers do not need to know which cluster member is active or which machine currently owns the address.</p><p>A host-level check would be too weak. A sealed Vault node can keep answering ping and keep its network interface up while every secret request fails. Each node therefore checks its own Vault process. A sealed or unavailable process lowers the node's election priority and causes the address to move.</p><p>The check runs every five seconds and requires consecutive failures before moving the address. The expected handoff is about ten seconds. The check also records whether the process was sealed or unreachable, because those states produce the same external symptom and need different repairs.</p><div class="table-wrap"><table><thead><tr><th>Condition</th><th>Cluster response</th><th>Caller experience</th></tr></thead><tbody><tr><td>Healthy preferred node</td><td>Owns the address and participates in Raft.</td><td>The normal Vault URL answers.</td></tr><tr><td>Vault seals while host stays up</td><td>Local check lowers priority; a healthy peer takes the address.</td><td>Requests resume through the same URL after election.</td></tr><tr><td>A member is powered off</td><td>The remaining members retain a voting majority.</td><td>Reads and writes continue.</td></tr><tr><td>Voting majority is unavailable</td><td>No majority accepts writes.</td><td>The cluster stops rather than risk divergent state.</td></tr><tr><td>Transit unavailable during reboot</td><td>Booted node stays sealed.</td><td>Existing unsealed peers continue; recovery is needed if quorum cannot be restored.</td></tr></tbody></table></div></section>
+<section class="block" id="tls"><h2>Clients verify the cluster they reached</h2><p>The shared address, the cluster members, and the Transit service use certificates issued by the internal Active Directory Certificate Services authority. Managed callers trust that root, which lets them verify both the certificate chain and the name they intended to reach.</p><p>Blackbox exporter performs a TLS handshake against the endpoints that clients use. Prometheus warns when a certificate has 30 days remaining and escalates at 7. A coverage alert counts the endpoints that should report, so a failed scrape cannot disappear from the expiry view.</p><p>The certificate lifecycle project now automates the wider renewal and propagation paths. Vault still needs the same last-mile check as every other consumer: the certificate presented on the network must match the material intended for that endpoint.</p></section>
+<section class="block" id="recovery"><h2>Backup and restore cover different failure domains</h2><p>The backup platform captures the Vault cluster guests and the separate Transit guest. A second storage system receives a nightly mirror, so loss of the primary backup server does not remove the only recovery copy.</p><p>The weekly restore-verification pipeline rotates through protected systems and restores into an isolated scratch network. That path checks whether the backup can produce a booted, usable guest. Vault also received a separate live-fire recovery on 2026-07-12 that reached initialized and unsealed state in 97 seconds. That measurement covered the tested single-server recovery path, not a full loss of both the cluster and Transit service.</p><h3>How it runs now</h3><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>On every client request</td><td>Vault authenticates the caller and enforces its policy.</td><td>The requested field is returned only to the registered role.</td></tr><tr><td>Every five seconds per node</td><td>Keepalived asks whether local Vault is unsealed and answering.</td><td>The healthy owner keeps the shared address.</td></tr><tr><td>Continuously</td><td>Prometheus records service, seal, cluster, and TLS signals.</td><td>Missing evidence is visible as a coverage failure.</td></tr><tr><td>Nightly</td><td>Backup storage captures the guests and mirrors the protected data.</td><td>Both backup layers received current material.</td></tr><tr><td>Weekly rotation</td><td>The recovery pipeline restores the next registered workload.</td><td>Boot, filesystem, service, and teardown checks passed.</td></tr></tbody></table></div></section>
+<section class="block" id="broke"><h2>What broke and what remains limited</h2><div class="failure"><h3>The old auto-unseal weakened the backup boundary</h3><p>The single server read its unseal key from the same disk that held Vault data. Nightly image backups captured both. The correction moved cryptographic unseal authority to the separate Transit service and kept operator recovery material offline.</p><h3>A live host could still be a dead Vault endpoint</h3><p>The first address design centered on node availability. A sealed process left the machine reachable, so a machine-level election could keep the address on a useless node. The current check asks Vault directly and makes a failed service surrender the address.</p><h3>The unseal-service loss procedure is still unmeasured</h3><p>The written operator path has not been rehearsed. The next useful recovery exercise is to remove Transit during a controlled cluster restart, follow the offline procedure, and record the result without exposing recovery material.</p></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Inventory every caller before changing storage.</strong> Record each authentication method, policy, and consumer so migration validation can compare complete path lists without printing secret values.</li><li><strong>Place the voting nodes before building them.</strong> A majority must survive the physical failure the cluster is meant to cover.</li><li><strong>Build and restrict Transit first.</strong> Give the cluster nodes only the encrypt and decrypt operations required for auto-unseal.</li><li><strong>Create the Raft cluster and stable address.</strong> Test service health, not host reachability, in the address election.</li><li><strong>Migrate with before-and-after inventory comparison.</strong> Do not retire the old server until the path sets match and known consumers authenticate through the new address.</li><li><strong>Test a sealed-but-running node.</strong> Power-off tests miss the failure that a ping check cannot see.</li><li><strong>Exercise recovery outside the cluster.</strong> Back up, restore, and rehearse loss of the unseal dependency as separate tests.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

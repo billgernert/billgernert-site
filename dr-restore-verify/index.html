@@ -147,8 +147,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
   <script src="../assets/live-dashboard.js" defer></script>
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/dr-restore-verify/">
   <!-- END generated: canonical -->
@@ -180,193 +181,55 @@
       <span class="here">DR restore verify</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Backup and recovery</span>
-      <h1>Proving the backups actually restore</h1>
-      <p class="descriptor">Proxmox Backup Server can prove that chunks are readable. It cannot prove that
-        a VM boots, its filesystem mounts, or its service starts. I built a weekly Jenkins pipeline that
-        selects the next protected guest, restores it from both backup datastores into a fenced scratch VM,
-        tests the restored operating system, and removes the copy.</p>
-      <p class="descriptor">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> &middot; <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--></p>
-    </header>
-
-    <div class="skill-body">
-      <section class="block">
-        <h2>The scheduled job now rotates through the recovery manifest</h2>
-        <p>Jenkins calculates the weekly rotation index and selects one guest from the recovery manifest.
-          The list covers Vault, both domain controllers, Zabbix, the Kubernetes control plane and workers,
-          Gitea, NetBox, the certificate authority, and Ansible control. Four of those entries had been
-          blocked by missing Proxmox VM IDs, which is why the production job was pinned to one domain controller. I corrected
-          the mappings from the managed inventory and removed that pin, so scheduled runs now use the
-          rotation the code was designed to use.</p>
-        <p>I schedule this weekly because PBS chunk verification and an occasional manual spot check answer
-          different questions. The scheduled restore catches boot, guest-agent, filesystem, service, and
-          teardown failures while the source VM is still healthy and there is time to repair the recovery path.</p>
-      </section>
-
-      <section class="block">
-        <h2>How PBS, Proxmox, and Jenkins divide the work</h2>
-        <p>The first gate asks Proxmox Backup Server whether the selected snapshot passed chunk
-          verification. A red verification result stops the run before a VM is created. For a passing
-          snapshot, the pipeline asks Proxmox to restore into the reserved scratch range on a node with an
-          isolated bridge. That bridge has no uplink, so a restored domain controller or Vault server
-          cannot advertise itself to the production network.</p>
-        <p>The same sequence runs once for the primary PBS datastore and again for the DR datastore. The
-          restored VM must appear in Proxmox, boot, answer through the guest agent, and mount its filesystem.
-          Type-specific checks then cover the service that matters: Vault must unseal and read a known
-          secret, a domain controller runs Windows directory checks, Kubernetes nodes open their local
-          state, and application guests prove the restored OS before deeper service assertions are added.
-          Jenkins records the result and always enters teardown, even when an earlier assertion fails.</p>
-      </section>
-
-      <section class="block">
-        <h2>The daily email is designed to be read</h2>
-        <p>The weekly restore test proves recovery, while the daily backup digest makes the ordinary state
-          easy to scan. The first line answers whether every expected backup arrived. Freshness and local
-          replication are charts, then the per-group table carries the verification result. A stale or
-          failed backup turns red and also sends a separate alert. If the digest itself is missing, the
-          delivery monitor treats that absence as a failure.</p>
-        <figure class="email-preview">
-          <iframe class="email-preview-frame" src="/assets/email-previews/backup-email.htm"
-            title="Scrollable sanitized backup digest email" loading="lazy" sandbox></iframe>
-          <figcaption>Rendered by the production backup email template with public service-group
-            labels. The HTML stays sharp and scrollable; infrastructure names and management links have
-            been replaced.</figcaption>
-        </figure>
-      </section>
-
-      <section class="block">
-        <h2>The 97 second Vault recovery was a separate live-fire test</h2>
-        <p>The 97 second measurement came from the measured Vault run on 2026-07-12 (run record, 2026-07-12), documented in the Vault recovery chronicle: remove the failed VM, restore
-          the latest snapshot, boot it, and confirm Vault is answering. It is not the guest selected every
-          Sunday and it should not be read as the duration of the rotating weekly job. The weekly pipeline
-          uses a scratch VM, tests both PBS datastores, and publishes its own measured duration in the live
-          dashboard below.</p>
-      </section>
-
-      <section class="block">
-        <h2>The chronicle: twelve reruns before the assertions matched the recovery path</h2>
-        <p>The first version went green without exercising every assertion I thought it covered. I reran the
-          pipeline twelve times while fixing permission checks, guest-agent access, guest-specific assertions,
-          and teardown confirmation. The failures below are the changes that made the final result useful.</p>
-      </section>
-
-      <section class="block">
-        <h2>How the platform calculates effective permissions</h2>
-        <p>The restore runs as a service identity that carries a scoped token, not as a full administrator. The
-          first permission tests only ever tried actions that should be <em>denied</em>, saw them denied, and
-          reported success. But a denial proves nothing about what is allowed. The real rule on the
-          virtualization platform is that the effective permission is the <b>intersection</b> of what the user
-          may do and what the token may do. A token can hold a right the user lacks, or the reverse, and the
-          action only succeeds where both agree. The fix was to test allowed actions as well as denied ones. If your
-          test never tries the thing that must work, it is not testing access.</p>
-      </section>
-
-      <section class="block">
-        <h2>The gap you only find by running the real path</h2>
-        <p>The restored machine has a guest agent the automation talks to. In a clean lab it just works, so
-          nobody notices it needs a specific authorization to be reachable. The pipeline found the gap because
-          it ran the real path against a freshly restored machine, starting from the same state as an outage
-          recovery. A lot of failures are invisible until you
-          exercise the exact sequence the outage will exercise, from the exact starting state the outage
-          starts from.</p>
-      </section>
-
-      <section class="block">
-        <h2>The assertion that drifted from the ruling</h2>
-        <p>One check had drifted from what it was supposed to verify. It was asserting that a Linux service was
-          running, on a machine that is a Windows domain controller, which has no such service and never will.
-          Worse, the wrong assertion was hidden behind a 300 second retry loop: it would wait five full minutes
-          for a thing that could never appear, then fail with a timeout that looked like a slow machine rather
-          than a wrong test. Two bugs stacked. The check tested the wrong fact, and the retry masked that it
-          was the wrong fact. The fix was to make each machine assert against its own type, and to fail fast on
-          a "this can never be true" result immediately.</p>
-      </section>
-
-      <section class="block">
-        <h2>Teardown confirms the scratch VM is gone</h2>
-        <p>The last step deletes the test copy. The first version trusted the delete command's exit code and
-          moved on. But an exit code says the command was accepted, not that the machine is gone. The teardown
-          now confirms the machine no longer exists before it reports success. Same principle as the restore
-          itself: check the state you care about, not the return value of the thing that was supposed to change
-          it.</p>
-      </section>
-
-      <section class="block">
-        <h2>The audit that catches a silent check</h2>
-        <p>The thread running through every one of those bugs is the same: a check that passes without actually
-          checking. So I wrote a small audit that reads the pipeline's own assertions and flags the ones that
-          can pass silently, the way the drifted assertion did. It is a test for the tests. The failure mode it
-          guards against is the most dangerous one in all of this, because it does not announce itself. It just
-          tells you everything is fine.</p>
-      </section>
-
-      <section class="block">
-        <h2>The assertion set after twelve reruns</h2>
-        <p>After the twelve reruns, the run went green and 197 of 200 assertions flipped from failing to
-          passing in one pass. The remaining three failures were tracked with their specific causes instead
-          of being hidden behind another retry. The audit now checks that the assertions execute, and teardown
-          verifies that the reserved scratch VM no longer exists.</p>
-      </section>
-
-      <section class="block live-wide" id="live" data-public-noc>
-        <h2>Live backup and recovery evidence</h2>
-        <p>This public dashboard shows backup freshness, datastore capacity, verification results,
-          and the weekly recovery-test outcome. Guest and datastore names are descriptive aliases;
-          infrastructure identifiers and management links stay private.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live backup dashboard.</p>
-        <iframe class="live-frame live-frame-tall" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328"
-          title="Public backups and recovery dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live backup dashboard is unavailable. This recovery write-up remains available, and no
-            cached backup state is presented as current.</p>
-        </div>
-        <noscript><p>The live backup dashboard requires JavaScript.</p></noscript>
-      </section>
-
-      <div class="links">
-        <a href="/security/">See the security posture &#8594;</a>
-        <a href="/roadmap/">Read the roadmap &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Disaster recovery walkthrough</span><h1>How I verify that a backup becomes a working server</h1><p class="descriptor lede">The scheduled job rotates through a recovery manifest, restores a protected guest from backup into a fenced scratch network, boots it, runs operating-system and service assertions, removes the temporary copy, and confirms that the copy is gone. The report and dashboard below show the outcome without exposing the systems being recovered.</p><p class="descriptor lede">The path took twelve reruns to reach the intended assertion set. The failures were not variations of one bug. The job bypassed its scoped credential, the runbook assumed missing preconditions, effective permissions collapsed to an empty intersection, TLS verification targeted the wrong identity, and a bare boolean destroyed the reason a restore assertion failed.</p><p class="descriptor">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-25<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_LAST_RUN_SECONDS:START-->689<!--LIVE:RESTORE_LAST_RUN_SECONDS:END--> seconds</p><p class="source-note">Built from the weekly restore design, Jenkins pipeline, restore verifier, dated live-fire result, failure saga, backup digest template, and public recovery dashboard.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#path">Restore path</a><span class="sep">/</span><a href="#email">Email</a><span class="sep">/</span><a href="#saga">What broke</a><span class="sep">/</span><a href="#dashboard">Dashboard</a><span class="sep">/</span><a href="#running">How it runs</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>Backup verification and restore verification answer different questions</h2><div class="story-opening"><p>Proxmox Backup Server can verify that stored chunks and indexes are readable. That is necessary, but it does not show that Proxmox can reconstruct a guest, that the guest boots, or that the application inside it can perform its job.</p><p>The scheduled restore pipeline closes that gap. It chooses the next protected guest, chooses a backup source, creates a temporary guest under a reserved scratch identity, attaches it to a network with no production uplink, and boots it. Common assertions inspect the operating system. A service profile adds the checks that matter for the recovered workload.</p><p>The temporary machine is destroyed after success or failure. Cleanup then asks the platform whether the guest is absent. The delete command returning zero is supporting evidence; the absence check is the teardown result.</p></div><div class="evidence"><strong>Separate live-fire measurement.</strong> On 2026-07-12, a controlled Vault recovery reached initialized and unsealed state in 97 seconds. That was a destructive single-service exercise. The weekly pipeline uses fenced copies so it can keep testing different protected systems without placing duplicates on the production network.</div></section>
+<section class="block" id="owners"><h2>PBS, Proxmox, Jenkins, and the guest each own one part</h2><dl class="responsibilities"><div><dt>Recovery manifest</dt><dd>Names the protected system class, eligible backup sources, required assertions, and scratch constraints. Rotation prevents the easiest guest from being tested forever.</dd></div><div><dt>Proxmox Backup Server</dt><dd>Stores deduplicated backups, verifies stored data, and supplies the selected snapshot for restore.</dd></div><div><dt>Proxmox</dt><dd>Creates the scratch guest, attaches the fenced network, starts and stops it, reports guest state, and removes it.</dd></div><div><dt>Jenkins</dt><dd>Coordinates preflight, selection, restore, boot, verification, evidence, notification, and unconditional cleanup.</dd></div><div><dt>Guest agent and verifier</dt><dd>Expose boot, filesystem, operating-system, identity, and service facts from inside the restored machine.</dd></div><div><dt>Prometheus and Grafana</dt><dd>Record run result, duration, age, coverage, and failure state independently of the email report.</dd></div></dl></section>
+<section class="block" id="path"><h2>The scratch guest can boot without joining production</h2><figure class="architecture"><img src="/assets/engineering-diagrams/restore-verification-path.svg" alt="Weekly restore path from manifest and backup selection through fenced boot, assertions, evidence, and verified teardown"></figure><p>The fenced network is a bridge with no uplink to production. A restored directory server, secrets server, or application can therefore use its original configuration without answering on the live address or contacting production peers.</p><h3>The eight phases of one run</h3><ol class="sequence"><li><strong>Preflight the control path.</strong> Jenkins verifies the manifest entry, backup source, reserved scratch identity, fenced network, scoped credential, and absence of an old scratch guest.</li><li><strong>Select the next protected target.</strong> The rotation record chooses a system and backup datastore according to the manifest rather than operator convenience.</li><li><strong>Resolve the exact backup.</strong> The pipeline records the selected snapshot and asks PBS to verify the stored material used for this run.</li><li><strong>Restore into the reserved scratch identity.</strong> Proxmox reconstructs a new guest. The live guest is never overwritten.</li><li><strong>Attach the fenced network and boot.</strong> The restored machine can initialize and answer its guest agent without reaching the production network.</li><li><strong>Run common and service assertions.</strong> The verifier checks boot, filesystem, operating-system identity, guest-agent response, and the profile-specific service facts.</li><li><strong>Write evidence and send the digest.</strong> Result, duration, target class, datastore class, assertion results, and cleanup state are recorded with public aliases.</li><li><strong>Destroy and verify absence.</strong> Cleanup runs on success and failure, then queries the platform to confirm the scratch guest no longer exists.</li></ol><div class="decision"><strong>Blast-radius rule.</strong> The run must never restore over a live guest, attach the scratch copy to a production uplink, reuse an unreserved identity, or continue when the expected target cannot be determined.</div></section>
+<section class="block" id="assertions"><h2>“Booted” is the first assertion, not the last</h2><p>A hypervisor can mark a guest running while the operating system is stuck, the filesystem is damaged, the guest agent is absent, or the application service cannot read its data. The verifier divides checks into a common set and a registered service profile.</p><div class="table-wrap"><table><thead><tr><th>Assertion group</th><th>What it checks</th><th>Failure it catches</th></tr></thead><tbody><tr><td>Hypervisor state</td><td>The restored guest exists, starts, and reaches the expected runtime state.</td><td>Restore or boot failure before the operating system responds.</td></tr><tr><td>Guest agent</td><td>The agent answers through the platform control channel.</td><td>A running guest that cannot report internal state.</td></tr><tr><td>Operating system</td><td>Expected family, disks, filesystems, and protected paths are present.</td><td>The wrong backup, incomplete disk, or damaged filesystem.</td></tr><tr><td>Identity</td><td>The recovered guest reports the expected system class without joining live peers.</td><td>A restored image that does not match the selected manifest entry.</td></tr><tr><td>Service profile</td><td>Registered processes, ports, files, or data checks succeed inside the fence.</td><td>A machine that boots but cannot perform the workload’s job.</td></tr><tr><td>Teardown</td><td>The reserved scratch guest is absent after deletion.</td><td>A leaked duplicate left behind by a successful command.</td></tr></tbody></table></div><p>The verifier also records whether each planned assertion executed. That audit catches a conditional branch that silently skipped its check while leaving the surrounding stage green.</p></section>
+<section class="block" id="email"><h2>The daily report is designed to be read before the dashboard</h2><p>The email names the selected recovery class, backup source class, result, duration, assertion summary, and teardown result. It carries enough context to decide whether the run was quiet, whether one assertion failed, or whether the pipeline stopped before it created anything.</p><figure class="shot"><img src="https://billgernert.com/assets/email-previews/backup-digest.png" alt="Sanitized backup and restore digest rendered from the production email template"><figcaption>Backup email template rendered with sanitized sample recovery data. The first version embedded an HTML email document that rendered as a blank frame on the public page. The published image keeps the report visible without depending on nested document behavior.</figcaption></figure><p>A separate dead-man monitor watches the age of the latest successful digest. If the report disappears, silence does not read as a healthy recovery week.</p></section>
+<section class="block" id="saga"><h2>Twelve reruns exposed different layers of wrong</h2><p>The recovery path did not turn green by fixing one restore command. Each correction exposed the next assumption.</p><div class="failure"><h3>Attempt 1: the scoped credential was not on the execution path</h3><p>The repository defined a narrow recovery token, but the command that performed the restore still ran through a broader administrative path. The job could pass while bypassing the permission boundary it claimed to test. The execution code was changed to use the scoped identity.</p><h3>Attempt 2: the runbook assumed its preconditions</h3><p>The first live walk found identity creation ordered after the rule that referenced it, a missing custom role, and an endpoint check that assumed failover had already been established. The runbook was rewritten in the order the platform actually requires.</p><h3>Attempt 3: effective permission collapsed to empty</h3><p>The platform calculates a token’s rights from the intersection of user, group, token, path, and role permissions. The configuration looked granted in individual places while the effective result was no permission. The verifier now queries effective access instead of reading one ACL in isolation.</p><h3>Attempt 4: TLS checked an identity the cluster did not present</h3><p>The client reached a cluster endpoint whose certificate names did not satisfy the original assertion. The correction aligned the test with the endpoint identity and trusted chain the recovery client actually uses.</p><h3>Attempt 5: a bare False erased the cause</h3><p>The restore assertion returned only a boolean. Jenkins could report failure but not the provider response that explained it. The verifier now carries a typed result with the failed step, response detail, and safe context.</p><h3>Later reruns: assertions and cleanup had their own drift</h3><p>A missing guest-agent permission stopped internal checks. One operating-system assertion asked for a fact that could never appear and waited through the full retry window. Cleanup trusted command success without verifying absence. Each became a named check with bounded retry and a separate teardown query.</p></div><p>One final development pass recorded 197 of 200 assertions passing. The remaining three stayed in the report as tracked gaps. That number belongs to that dated run and is not presented as a current fleet count.</p></section>
+<section class="block" id="dashboard" data-public-noc><h2>Live backup and recovery evidence</h2><p>The public dashboard shows freshness, result, duration, restore coverage, and active failure state under stable service classes. Guest names, infrastructure identifiers, addresses, backup paths, job parameters, and management links are removed before the public data source.</p><div class="dashboard-shell"><div class="dashboard-head"><p>Live public Grafana view</p><a href="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328" target="_blank" rel="noreferrer">Open full screen</a></div><p class="live-status" data-live-status aria-live="polite">Checking the live backup dashboard.</p><iframe class="dashboard-frame tall" data-live-frame data-src="https://status.billgernert.com/public-dashboards/d0c7ea6bc9124d2487774ef65d93d328" title="Public backups and recovery dashboard" referrerpolicy="no-referrer" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live backup dashboard is unavailable. This recovery write-up remains available, and no cached backup state is presented as current.</p></div><noscript><p>The live backup dashboard requires JavaScript.</p></noscript></div><h3>How to read it</h3><div class="read-grid"><article class="read-card"><p class="question">Did the latest run complete?</p><h3>Start with result and age</h3><p>A pass needs a recent timestamp. An old pass is stale evidence, not current recovery coverage.</p></article><article class="read-card"><p class="question">Which protection layer is behind?</p><h3>Compare backup sources</h3><p>Freshness by datastore shows whether the primary and mirrored paths both contain current recovery material.</p></article><article class="read-card"><p class="question">Did recovery slow down?</p><h3>Use the duration history</h3><p>A longer restore can reveal storage, network, or guest-initialization change before it becomes a timeout.</p></article><article class="read-card"><p class="question">Did the job clean up?</p><h3>Use teardown state</h3><p>The run is incomplete while the scratch guest still exists, even when every application assertion passed.</p></article></div></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody><tr><td>On the weekly schedule</td><td>Jenkins selects the next manifest entry and eligible backup source.</td><td>Preflight must pass before a scratch guest is created.</td></tr><tr><td>On restore</td><td>PBS supplies the snapshot and Proxmox creates the isolated guest.</td><td>Boot and assertion phases begin under the scoped identity.</td></tr><tr><td>On an assertion failure</td><td>The verifier records the failed check and safe reason.</td><td>The run is red and still enters cleanup.</td></tr><tr><td>On cleanup</td><td>Proxmox deletes the scratch guest; the verifier queries for absence.</td><td>Notification distinguishes verified teardown from leaked state.</td></tr><tr><td>On rerun</td><td>Preflight checks that no previous scratch guest remains.</td><td>The same manifest entry can be exercised without manual state repair.</td></tr><tr><td>Between runs</td><td>Prometheus evaluates freshness, outcome, duration, coverage, and missing heartbeat.</td><td>An old or absent result cannot remain green.</td></tr></tbody></table></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Write a recovery manifest.</strong> Name the protected classes, backup sources, scratch constraints, and useful service assertions.</li><li><strong>Reserve and fence the scratch environment.</strong> Prove that it cannot join the production network before booting a restored copy.</li><li><strong>Create the scoped identity before the pipeline.</strong> Test effective permissions through the exact code path that will restore and delete.</li><li><strong>Make every assertion return a reason.</strong> A boolean is not enough for a scheduled recovery failure.</li><li><strong>Audit assertion execution.</strong> Record which planned checks ran so a skipped branch cannot produce an empty green stage.</li><li><strong>Put cleanup in the unconditional path.</strong> Query for absence after deletion and report cleanup independently from application verification.</li><li><strong>Add freshness monitoring.</strong> A passing run expires as evidence when the next expected run does not arrive.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

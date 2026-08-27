@@ -147,7 +147,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
   <style>
     /* Wider column for this page only: a 1600px dashboard capture is unreadable at the 760px body width. */
     main.page-wide { max-width: 1100px; }
@@ -160,6 +160,7 @@
     .live-fallback[hidden], .live-frame[hidden] { display: none; }
   </style>
   <script src="../assets/live-dashboard.js" defer></script>
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/noc/">
   <!-- END generated: canonical -->
@@ -191,153 +192,56 @@
       <span class="here">NOC</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Monitoring</span>
-      <h1>The NOC hub</h1>
-      <p class="descriptor">These are the live dashboards. Grafana serves them from the running lab, and every tile and panel on this page is interactive: click a tile and the domain's own dashboard opens, drag across a graph and it zooms, hover a series and it tells you what it is. Nothing here is a screenshot.</p>
-      <p class="descriptor">They are also the plain versions. The dashboards I run the lab from show hostnames, addresses, alert text and the query behind every panel. These show the shape and the state, under stable aliases, because the public host serves anyone. That trade is deliberate, and the rest of this page explains what is in front of you and what has been left out.</p>
-    </header>
-
-    <nav class="crumbs" aria-label="On this page">
-      <a href="#live">Live status board</a>
-      <span class="sep">/</span>
-      <a href="#tiles">The tiles, and what grey means</a>
-      <span class="sep">/</span>
-      <a href="#facts">The facts row</a>
-      <span class="sep">/</span>
-      <a href="#click">Click through to a domain</a>
-      <span class="sep">/</span>
-      <a href="#budget">The AI budget board</a>
-      <span class="sep">/</span>
-      <a href="#generated">Generated, and it polices itself</a>
-    </nav>
-
-    <div class="skill-body">
-      <section class="block" id="live" data-public-noc>
-        <h2>Live status board</h2>
-        <p>One screen you can glance at and know whether the estate is healthy. <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> tile per operational view, each reduced to one of four states before it leaves the monitoring system: HEALTHY, DEGRADED, CRITICAL, or NO SIGNAL. Every tile is a door. Click one and the domain's public overview opens, so the hub is the starting point and the detail is one click away.</p>
-        <p>The board updates on its own. The badge above it reports whether the public monitoring route answered on the last check and how long ago. If the route fails, the badge says so and the page keeps the last state it received rather than pretending.</p>
-        <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p>
-        <p class="links"><a href="/noc/" data-live-home>&larr; Back to NOC overview</a></p>
-        <p class="noc-badge interaction-cue" data-interaction-cue data-touch-text="Tap any tile to drill into that domain's live dashboard.">Click any tile to drill into that domain's live dashboard.</p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7"
-          title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <strong>Live board offline.</strong> The site remains available independently; the dashboard reconnects
-          automatically when the public monitoring route is healthy.
-        </div>
-        <noscript><p>The live dashboards need JavaScript. Use the public dashboard links below.</p></noscript>
-      </section>
-
-      <section class="block" id="tiles">
-        <h2>The tiles, and what grey means</h2>
-        <p><!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> tile per operational view, each coloured by the worst severity in that view: green is healthy,
-          amber and red escalate, and grey means no data. Grey is the honest one. Some domains are not fully
-          wired yet, so their tiles are grey today, and the page says that plainly rather than hiding it. That
-          matters because of a rule the hub enforces: a tile with no data must never render green. A green
-          tile is a promise that the domain is healthy, and a domain you are not actually measuring cannot
-          make that promise. So it stays grey until real data backs it, which is exactly the bug this rule
-          exists to prevent: a monitoring screen that looks reassuring while measuring nothing.</p>
-      </section>
-
-      <section class="block" id="facts">
-        <h2>The facts row</h2>
-        <p>Under the tiles sit three supporting signals: current alert state, public web-console health, and
-          backup freshness. Each is clickable, and each is backed by a real public data projection rather
-          than a placeholder. Certificate horizon and secrets-service state are combined into the Certificates
-          &amp; PKI tile above, where they can be investigated together.</p>
-      </section>
-
-      <section class="block" id="not-seeing">
-        <h2>What you are not seeing</h2>
-        <p>Before Grafana can query anything on the public host, recording rules rewrite the source series. Hostnames become service names. Guest IDs, pod names and namespaces become stable aliases. Addresses, hypervisor placement, management URLs, alert text and the editable query behind each panel never reach the public series at all. The internal dashboards carry all of that and are richer for it. The public ones give up the identifiers to keep the state, which is the part that proves the lab is running.</p>
-        <p>The public host itself has no login path for anyone. Everything except these dashboards, their data route and the health check goes to Cloudflare Access, where the only policy is block.</p>
-      </section>
-
-      <section class="block" id="click" data-public-noc>
-        <h2>Click through to a domain</h2>
-        <p>A tile is a door, not just a light. Clicking a domain's tile opens that domain's own overview
-          dashboard, so the hub is the starting point and the detail is one click away. This live Infrastructure
-          view shows node state, guest capacity, and resource trends under stable aliases.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live Infrastructure dashboard.</p>
-        <p class="links"><a href="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66">Open Infrastructure full screen &#8594;</a></p>
-        <iframe class="live-frame detail" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
-          title="Public Infrastructure live dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden><strong>Infrastructure view offline.</strong>
-          The hub above still reports the last available public state.</div>
-      </section>
-
-      <section class="block" id="budget" data-public-noc>
-        <h2>The AI usage board</h2>
-        <p>The ChatGPT and Claude tile compares weekly remaining subscription capacity with the ideal pace to
-          the next reset. It opens the provider-neutral usage board, where both services show actual remaining
-          capacity and the time-based ideal line.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live subscription usage dashboard.</p>
-        <p class="links"><a href="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d">Open usage full screen &#8594;</a></p>
-        <iframe class="live-frame detail" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d"
-          title="Public ChatGPT and Claude live usage dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden><strong>Usage view offline.</strong></div>
-      </section>
-
-      <section class="block" id="generated">
-        <h2>Generated, and it polices itself</h2>
-        <p>The part a screenshot cannot show is the part that matters most: the hub is not arranged by hand, it
-          is generated from the backlog, and the generator is the enforcement point. It fails the build if a
-          domain is missing its tag or if a domain has no single primary dashboard to link to, a drift check
-          in CI catches a hub that has fallen out of step, and a nightly job reconciles it against what Grafana
-          is actually serving. That is what keeps the no-data-never-green rule and the <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END-->-tile-per-domain
-          shape true over time, rather than true on the day it was built. A hand-maintained wall drifts; a
-          generated one that fails its own checks does not.</p>
-      </section>
-
-      <div class="links">
-        <a href="/capabilities/grafana.html">Grafana &#8594;</a>
-        <a href="/capabilities/prometheus.html">Prometheus &#8594;</a>
-        <a href="/capabilities/zabbix.html">Zabbix &#8594;</a>
-        <a href="/projects/">The pipelines behind it &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Monitoring walkthrough</span><h1>How the public NOC moves from one state to the evidence behind it</h1><p class="descriptor lede">Each operational domain is reduced to healthy, degraded, critical, or no signal. A tile opens the domain dashboard that produced that state. The panels are live Grafana views from the running lab, but the public data source never receives internal hostnames, addresses, guest IDs, pod names, alert text, management links, or editable queries.</p><p class="descriptor lede">The hub is generated from registered domains and then compared with the Grafana definition that is actually serving. A missing series cannot render green, and a stopped reconciliation job has its own no-data alarm. The page therefore distinguishes a service failure, a missing observer, and dashboard drift.</p><p class="source-note">Built from the public NOC generator, recording rules, scrubbed Grafana dashboards, public-route checks, nightly reconciler, no-data policy tests, and the live dashboard endpoints below.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#live">Live hub</a><span class="sep">/</span><a href="#states">States</a><span class="sep">/</span><a href="#projection">Public data</a><span class="sep">/</span><a href="#drilldown">Drill-down</a><span class="sep">/</span><a href="#reconcile">Reconcile</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>The hub is a starting point, not a wall of tiny graphs</h2><div class="story-opening"><p>The operator dashboards are detailed enough to troubleshoot. They include targets, labels, alert text, management links, and the queries behind each panel. Putting all of that into one overview would create a dense screen and would expose details the public site should not carry.</p><p>The NOC hub answers a smaller first question: where should I look? It has <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> tile per operational view, each reduced to one of four states before it leaves the monitoring system. Click any tile to drill into that domain's live dashboard. The domain view gives expiry, capacity, workload, delivery, or recovery evidence the space it needs.</p><p>Nothing here is a screenshot. A reader can hover a series, change the time range allowed by the dashboard, zoom a graph, and follow the drill-down links. When the public monitoring route is unavailable, the portfolio page remains online and says that the live board could not be reached.</p></div></section>
+<section class="block" id="live" data-public-noc><h2>Live status board</h2><p>The board updates on its own. The badge reports whether the public monitoring route answered on the last check. If the route fails, the written page remains available and the dashboard does not present a cached state as current.</p><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard.</p><p class="links"><a href="/noc/" data-live-home>&larr; Back to NOC overview</a></p><div class="dashboard-shell"><div class="dashboard-head"><p>Live public Grafana hub</p><a href="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" target="_blank" rel="noreferrer">Open full screen</a></div><iframe class="dashboard-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7" title="Public NOC live status dashboard" referrerpolicy="no-referrer" hidden></iframe><div class="live-fallback" data-live-fallback hidden><strong>Live board offline.</strong> The site remains available independently, and the dashboard reconnects when the public monitoring route is healthy.</div></div><h3>How to read the first screen</h3><div class="read-grid"><article class="read-card"><p class="question">Is anything urgent?</p><h3>Start with red and amber</h3><p>The tile state is the worst active condition in that operational view. Open it for the panel and time series behind the severity.</p></article><article class="read-card"><p class="question">Why is a tile grey?</p><h3>No signal is not healthy</h3><p>The registered public series is missing or stale. The domain cannot claim a healthy state until measurement returns.</p></article><article class="read-card"><p class="question">Is the whole service down?</p><h3>Open the domain dashboard</h3><p>A domain can be degraded because one dependency, certificate, backup, or scrape is wrong while the user-facing path still answers.</p></article><article class="read-card"><p class="question">Where are the hostnames?</p><h3>They never reach this Grafana</h3><p>Recording rules replace operational identity with stable service classes before the public data source stores the series.</p></article></div></section>
+<section class="block" id="states"><h2>Four states carry different operating meaning</h2><div class="table-wrap"><table><thead><tr><th>State</th><th>Required evidence</th><th>What a reader should do</th></tr></thead><tbody><tr><td>Healthy</td><td>Current public measurements exist and no warning or critical condition is active.</td><td>No action. Open the tile only for detail or trend.</td></tr><tr><td>Degraded</td><td>Current data shows a warning threshold, reduced redundancy, approaching expiry, or partial failure.</td><td>Open the domain and read the named warning.</td></tr><tr><td>Critical</td><td>Current data shows an outage, failed recovery, urgent expiry, blocked delivery, or another high-severity condition.</td><td>Open the domain immediately and follow the operational evidence.</td></tr><tr><td>No signal</td><td>The public series is missing, stale, or its exporter cannot be confirmed.</td><td>Treat the observer as failed. Do not infer service health.</td></tr></tbody></table></div><p>The no-data rule exists because Prometheus queries over an empty result can look like zero, and zero often maps to green. The generated dashboards and tests require an explicit no-signal state before color thresholds are applied.</p></section>
+<section class="block" id="facts"><h2>The supporting facts answer three cross-domain questions</h2><p>Beneath the domain tiles, the hub carries a small facts row for active alerts, public web-console reachability, and backup freshness. These are cross-domain signals. A single unreachable public console may belong to Identity or Core Services; one stale backup may affect a system whose application remains healthy.</p><p>Certificate horizon and secrets-service state live together in the certificate and secret lifecycle view. That domain can show a healthy portal beside an approaching credential expiry, or a current source wildcard beside a destination still serving an older copy.</p><p>The hub keeps these facts small because the detailed panels already exist. Their purpose is to expose an exception that may not raise the whole domain to critical yet.</p></section>
+<section class="block" id="projection"><h2>The privacy boundary sits before public Grafana</h2><figure class="architecture"><img src="/assets/engineering-diagrams/noc-public-data-path.svg" alt="Monitoring data passes from internal exporters through private Prometheus and public recording rules to a separate public Prometheus and fixed Grafana dashboards"></figure><h3>The five-stage public data path</h3><ol class="sequence"><li><strong>Internal exporters collect full operational data.</strong> Metrics can include target addresses, pod labels, namespaces, guest identities, job names, and other labels needed to troubleshoot.</li><li><strong>Private Prometheus stores and alerts on that full data.</strong> Operator dashboards and alert rules keep the detail required for response.</li><li><strong>Recording rules select approved measurements.</strong> They aggregate or relabel to stable service classes and drop fields that identify the infrastructure.</li><li><strong>A separate public Prometheus exposes the reduced series.</strong> It has no route to query the original internal label set.</li><li><strong>Public Grafana serves fixed dashboards.</strong> Variables, annotations, editable queries, internal links, and management URLs are removed or constrained.</li></ol><h3>What you are not seeing</h3><p>Before Grafana can query anything on the public host, recording rules remove hostnames, guest IDs, pod names, namespaces, addresses, placement, management URLs, alert text, and editable queries. Panel hiding is not the privacy control because the public data source never receives those fields.</p><p>The public host exposes the dashboards, their data route, and the health check. Other requests cross an access policy where the only policy is block.</p></section>
+<section class="block" id="drilldown"><h2>A tile opens the domain where the evidence has room</h2><p>The Infrastructure view shows node state, guest capacity, and resource trends under stable aliases. The AI usage view compares remaining subscription capacity with the time-based ideal line. Other tiles use the same pattern for delivery, Kubernetes, certificates, backups, identity, mail, and core services.</p><div data-public-noc><h3>Infrastructure drill-down</h3><p class="live-status" data-live-status aria-live="polite">Checking the live Infrastructure dashboard.</p><div class="dashboard-shell"><div class="dashboard-head"><p>Live public Infrastructure view</p><a href="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66" target="_blank" rel="noreferrer">Open full screen</a></div><iframe class="dashboard-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66" title="Public Infrastructure live dashboard" referrerpolicy="no-referrer" hidden></iframe><div class="live-fallback" data-live-fallback hidden>The live Infrastructure dashboard is unavailable.</div></div></div><div data-public-noc><h3>AI subscription-capacity drill-down</h3><p class="live-status" data-live-status aria-live="polite">Checking the live subscription usage dashboard.</p><div class="dashboard-shell"><div class="dashboard-head"><p>Live public provider-neutral usage view</p><a href="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d" target="_blank" rel="noreferrer">Open full screen</a></div><iframe class="dashboard-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d" title="Public ChatGPT and Claude live usage dashboard" referrerpolicy="no-referrer" hidden></iframe><div class="live-fallback" data-live-fallback hidden>The live subscription dashboard is unavailable.</div></div></div></section>
+<section class="block" id="reconcile"><h2>The site build generates the hub, and a scheduled job checks the live copy</h2><p>Each operational domain declares its public dashboard role and drill-down destination in the repository. The generator builds the hub from that registry. CI fails when a domain lacks the required tag, has no single primary destination, contains an unsafe link, or produces a panel that violates the public query rules.</p><p>Generation protects the repository version. A nightly Jenkins job then reads the dashboard Grafana is actually serving and compares it with the generated definition. The comparison covers panel identity, query, threshold, color steps, links, variables, annotations, and dashboard settings.</p><p>The reconciler pushes drift state to monitoring and sends its own heartbeat. A live dashboard that differs from Git produces a drift alert. A reconciler that stops running produces a no-data alert.</p><div class="table-wrap"><table><thead><tr><th>Change</th><th>Check</th><th>Failure result</th></tr></thead><tbody><tr><td>Domain added</td><td>Registry must identify one public overview and safe route.</td><td>Site generation fails until the domain is complete.</td></tr><tr><td>Dashboard source edited</td><td>Tests inspect query labels, thresholds, no-data behavior, links, and panel structure.</td><td>The pull request cannot pass public-dashboard CI.</td></tr><tr><td>Grafana edited by hand</td><td>Nightly reconciliation compares the live JSON with generated intent.</td><td>Drift alert names the panel and field.</td></tr><tr><td>Exporter or series disappears</td><td>Coverage and no-signal rules evaluate current data.</td><td>The tile becomes grey or raises a coverage failure.</td></tr><tr><td>Reconciler stops</td><td>Zabbix no-data trigger watches its heartbeat.</td><td>The watcher failure is reported separately from dashboard agreement.</td></tr></tbody></table></div></section>
+<section class="block" id="broke"><h2>What broke</h2><div class="failure"><h3>A dead exporter made many services look down</h3><p>A merge left duplicate YAML keys in the blackbox exporter configuration. The exporter rejected the file and stopped. Prometheus lost the shared probe target, so many application probes failed together even though the applications were still serving.</p><p>The configuration was corrected, the exporter rolled out, and a direct probe plus the Prometheus target returned healthy. CI now uses strict duplicate-key parsing because the previous YAML library silently accepted the last duplicate.</p><h3>The dashboard needed a separate observer-failure state</h3><p>The incident showed that “all probes failed” and “the probe service failed” need different presentation. Coverage signals and no-data handling now prevent one missing observer from reading as a simultaneous application outage or as a clean green state.</p><h3>A hand-edited board can drift while staying online</h3><p>The nightly reconciler exists because HTTP success says only that Grafana served a dashboard. It does not say that the panel queries and links still match the reviewed definition.</p></div></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a reader sees</th></tr></thead><tbody><tr><td>Continuously</td><td>Exporters, Prometheus, recording rules, and Grafana refresh domain state and detail panels.</td><td>Interactive live views with public service classes.</td></tr><tr><td>When data is missing</td><td>Coverage and no-data rules override ordinary threshold coloring.</td><td>No signal or a named observer failure, never an empty green.</td></tr><tr><td>On repository change</td><td>Generator and public-dashboard tests rebuild and validate the hub.</td><td>New domains and panels appear only after their public contract passes.</td></tr><tr><td>Nightly</td><td>The reconciler compares generated intent with live Grafana.</td><td>Unreviewed live drift becomes an alert.</td></tr><tr><td>When the public route fails</td><td>The portfolio’s embed check reports the unavailable live source.</td><td>The written page remains available without presenting stale state as current.</td></tr></tbody></table></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Define operational domains before building panels.</strong> Each domain needs one primary state and one drill-down destination.</li><li><strong>Create the public metric contract.</strong> List the measurements and labels the public data source may store. Drop identifiers before Grafana.</li><li><strong>Model no signal explicitly.</strong> Test an empty query, a failed exporter, and a stale series before adding colors.</li><li><strong>Generate the hub from the domain registry.</strong> Do not hand-copy tiles and links.</li><li><strong>Keep detail in domain dashboards.</strong> The hub should answer where to look, then open the evidence.</li><li><strong>Validate the served dashboard.</strong> Compare live Grafana with the generated definition on a schedule and monitor the reconciler.</li><li><strong>Test the observer outage.</strong> Stop a shared exporter and confirm that the hub identifies coverage loss without declaring every service dead.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

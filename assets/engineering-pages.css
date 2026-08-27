@@ -1,0 +1,58 @@
+:root {
+  --panel: rgba(14, 21, 34, .84);
+  --line: rgba(0, 212, 255, .28);
+  --muted: #aebbd0;
+  --good: #00ff96;
+  --warn: #ffd166;
+  --bad: #ff5c7a;
+}
+.lede { max-width: 76ch; font-size: 1.16rem; }
+.source-note { margin: .9rem 0 0; padding: .7rem .85rem; border-left: 3px solid #00d4ff; background: rgba(0, 212, 255, .055); color: var(--muted); font-size: .9rem; }
+.story-opening { max-width: 78ch; }
+.story-opening p:first-child { font-size: 1.12rem; color: #eef4fb; }
+.architecture { margin: 1.5rem 0 2.25rem; }
+.architecture img, .architecture svg { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #090e18; }
+.responsibilities { margin: 1.5rem 0 2rem; border-top: 1px solid rgba(0, 212, 255, .22); }
+.responsibilities div { display: grid; grid-template-columns: minmax(160px, .7fr) minmax(0, 2fr); gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid rgba(0, 212, 255, .16); }
+.responsibilities dt { color: #00d4ff; font: 600 .85rem 'Share Tech Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
+.responsibilities dd { margin: 0; }
+.sequence { counter-reset: step; margin: 1.2rem 0 2rem; padding: 0; list-style: none; }
+.sequence li { position: relative; margin: 0; padding: .35rem 0 1.45rem 4rem; }
+.sequence li:not(:last-child)::after { content: ""; position: absolute; left: 1.25rem; top: 2.7rem; bottom: .15rem; width: 1px; background: rgba(0, 212, 255, .32); }
+.sequence li::before { counter-increment: step; content: counter(step); position: absolute; left: .15rem; top: .2rem; display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border: 1px solid #00d4ff; border-radius: 50%; color: #00d4ff; font: 700 1rem 'Share Tech Mono', monospace; }
+.sequence strong { color: #eef4fb; }
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: .8rem; border-bottom: 1px solid rgba(174, 187, 208, .18); text-align: left; vertical-align: top; }
+th { color: #00d4ff; font: .78rem 'Share Tech Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
+td:first-child { color: #eef4fb; font-weight: 600; }
+.dashboard-shell { margin: 1.2rem 0; border: 1px solid rgba(0, 212, 255, .38); background: #080d16; overflow: hidden; }
+.dashboard-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; border-bottom: 1px solid rgba(0, 212, 255, .24); }
+.dashboard-head p { margin: 0; color: var(--muted); }
+.dashboard-frame { display: block; width: 100%; min-height: 980px; border: 0; background: #111827; }
+.dashboard-frame.tall { min-height: 1450px; }
+.read-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.read-card { padding: 1.15rem; border: 1px solid var(--line); background: var(--panel); }
+.read-card h3 { margin-top: 0; color: #eef4fb; }
+.read-card .question { color: var(--warn); font: .78rem 'Share Tech Mono', monospace; text-transform: uppercase; letter-spacing: .08em; }
+.failure { padding: 1.2rem; border: 1px solid rgba(255, 92, 122, .36); background: rgba(43, 23, 32, .38); }
+.failure h3 { color: #eef4fb; }
+.decision { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--warn); background: rgba(255, 209, 102, .07); }
+.evidence { margin: 1.25rem 0; padding: 1rem; border-left: 4px solid var(--good); background: rgba(0, 255, 150, .055); }
+.comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+.comparison > div { padding: 1rem; border: 1px solid var(--line); background: var(--panel); }
+.comparison h3 { margin-top: 0; }
+.shot { margin: 1.5rem 0; }
+.shot img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); background: #090e18; }
+.project-domain { margin: 2rem 0; padding: 1rem 0 0; border-top: 1px solid var(--line); list-style: none; }
+.project-row { display: grid; grid-template-columns: minmax(190px, .75fr) minmax(0, 1.6fr); gap: 1.25rem; padding: 1rem 0; border-bottom: 1px solid rgba(174, 187, 208, .18); }
+.project-row h3, .project-row p { margin: .15rem 0; }
+.project-row p { color: var(--muted); }
+figcaption { margin-top: .7rem; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+code { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .read-grid, .comparison { grid-template-columns: 1fr; }
+  .responsibilities div, .project-row { grid-template-columns: 1fr; gap: .35rem; }
+  .dashboard-frame { min-height: 760px; }
+  .dashboard-frame.tall { min-height: 1100px; }
+}

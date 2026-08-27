@@ -147,8 +147,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
   <script src="../assets/live-dashboard.js" defer></script>
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/mail/">
   <!-- END generated: canonical -->
@@ -180,281 +181,58 @@
       <span class="here">Mail</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Mail platform</span>
-      <h1>Running my own mail server</h1>
-      <p class="descriptor">Most people rent email from Google or Microsoft. This lab receives, filters and
-        stores its own. It is not a demo mailbox either: the lab's backup summaries, its alerts and its
-        job-search mail all arrive this way every day. Mail is widely considered the hardest common service
-        to self-host, which is exactly why it belongs on a portfolio site. This page shows the path a
-        message takes in each direction, and the three DNS records that stop everyone else's mail server
-        from treating self-hosted mail as spam.</p>
-    </header>
-
-    <div class="skill-body">
-      <nav class="anchors" aria-label="On this page">
-        <a href="#why">Why self-host mail at all</a>
-        <a href="#flow">The path a message takes</a>
-        <a href="#pieces">The pieces</a>
-        <a href="#identity">One identity everywhere</a>
-        <a href="#spf">SPF, who is allowed to send</a>
-        <a href="#dkim">DKIM, proving it was not altered</a>
-        <a href="#dmarc">DMARC, tying the two together</a>
-        <a href="#clients">Getting mail to a phone</a>
-      </nav>
-
-      <section class="block" id="why">
-        <h2>Why self-host mail at all</h2>
-        <p>Honestly, because it is hard. Running a web server is a solved afternoon. Running mail means
-          being accountable to every other mail operator in the world, most of whom start from the position
-          that a small unknown server is probably a spammer.</p>
-        <p>Nothing about receiving mail is difficult. The difficulty is being believed when you send. A
-          message from a small self-hosted domain has to arrive with proof of who sent it and proof that it
-          was not altered on the way, or it lands in a spam folder and you never find out. That proof is
-          the DNS half of this page, and it is most of the work.</p>
-      </section>
-
-      <section class="block" id="flow">
-        <h2>The path a message takes</h2>
-        <p>Two paths, and they are not mirror images of each other.</p>
-        <figure class="diagram">
-          <svg viewBox="0 0 760 300" role="img" aria-labelledby="flowtitle flowdesc" style="width:100%;height:auto">
-            <title id="flowtitle">Inbound and outbound mail paths</title>
-            <desc id="flowdesc">Inbound: the internet reaches the edge, then the content filter, then
-              delivery, then the mailbox store. Outbound: a mail client submits to the submission service,
-              which hands off to a sending relay that signs the message before it reaches the internet.</desc>
-            <defs>
-              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#00d4ff"></path>
-              </marker>
-              <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#00ff96"></path>
-              </marker>
-            </defs>
-            <text x="8" y="24" fill="#00d4ff" font-family="Share Tech Mono, monospace" font-size="15">Inbound</text>
-            <g font-family="Exo 2, sans-serif" font-size="13" fill="#e6edf6">
-              <rect x="8" y="40" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="68" y="68" text-anchor="middle">Internet</text>
-              <rect x="168" y="40" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="228" y="68" text-anchor="middle">Edge</text>
-              <rect x="328" y="40" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="388" y="62" text-anchor="middle">Content</text>
-              <text x="388" y="78" text-anchor="middle">filter</text>
-              <rect x="488" y="40" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="548" y="68" text-anchor="middle">Delivery</text>
-              <rect x="640" y="40" width="112" height="46" rx="6" fill="none" stroke="#00d4ff"></rect>
-              <text x="696" y="62" text-anchor="middle">Mailbox</text>
-              <text x="696" y="78" text-anchor="middle">store</text>
-            </g>
-            <g stroke="#00d4ff" stroke-width="2" marker-end="url(#ar)" fill="none">
-              <path d="M 130 63 L 164 63"></path>
-              <path d="M 290 63 L 324 63"></path>
-              <path d="M 450 63 L 484 63"></path>
-              <path d="M 610 63 L 636 63"></path>
-            </g>
-            <text x="8" y="168" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="15">Outbound</text>
-            <g font-family="Exo 2, sans-serif" font-size="13" fill="#e6edf6">
-              <rect x="8" y="184" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="68" y="212" text-anchor="middle">Mail client</text>
-              <rect x="168" y="184" width="120" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="228" y="206" text-anchor="middle">Submission</text>
-              <text x="228" y="222" text-anchor="middle">service</text>
-              <rect x="328" y="184" width="150" height="46" rx="6" fill="none" stroke="#3b4a63"></rect>
-              <text x="403" y="206" text-anchor="middle">Sending relay</text>
-              <text x="403" y="222" text-anchor="middle">(signs message)</text>
-              <rect x="518" y="184" width="120" height="46" rx="6" fill="none" stroke="#00ff96"></rect>
-              <text x="578" y="212" text-anchor="middle">Internet</text>
-            </g>
-            <g stroke="#00ff96" stroke-width="2" marker-end="url(#ar2)" fill="none">
-              <path d="M 130 207 L 164 207"></path>
-              <path d="M 290 207 L 324 207"></path>
-              <path d="M 480 207 L 514 207"></path>
-            </g>
-            <text x="8" y="276" font-family="Exo 2, sans-serif" font-size="12" fill="#8fa3bf">Roles, not machines. Boxes may be separate services on one host or several.</text>
-          </svg>
-          <figcaption>Inbound and outbound take different routes, and the DNS records exist to make the
-            outbound one believable.</figcaption>
-        </figure>
-        <p>Inbound is the straightforward direction. A message arrives from the internet at the edge, goes
-          through a content filter that scores it and strips anything dangerous, then to delivery, which
-          decides which mailbox it belongs in and writes it to the store. That whole path is self-hosted.</p>
-        <p>Outbound is where the honesty comes in. A mail client submits the message to the lab's submission
-          service, authenticating first, and it then goes out through a sending relay that signs it on the
-          way. The relay is there for a specific and unglamorous reason: home internet addresses are widely
-          distrusted by receiving mail servers, no matter how correct your configuration is. Sending through
-          a relay with an established reputation is what gets mail delivered rather than silently binned.
-          The DNS records in the next sections are exactly the machine-readable statement of that
-          arrangement, which is why they look the way they do.</p>
-      </section>
-
-      <section class="block" id="pieces">
-        <h2>The pieces</h2>
-        <p>The mail server itself is docker-mailserver, a maintained bundle that packages Postfix, Dovecot
-          and Amavis together as one unit, sized to 4 GB of memory and 2 vCPUs in this lab. Running it as
-          one maintained bundle rather than three separately patched services is what keeps the parts that
-          have to work together pinned to versions known to work together.</p>
-        <p>Postfix moves mail. It is the part that talks to other mail servers, accepts
-          messages for the domain, and hands them onward. If a message is going somewhere, Postfix is
-          moving it.</p>
-        <p>Dovecot stores mail and hands it to you. It owns the mailboxes on disk and
-          serves them to mail clients, so it is the part your phone actually talks to.</p>
-        <p>Amavis sits between the two and inspects. It runs messages through virus and
-          spam scanning, scores them, and passes the verdict along so delivery can act on it.</p>
-      </section>
-
-      <section class="block" id="identity">
-        <h2>One identity everywhere</h2>
-        <p>Mailboxes do not have their own passwords. Authentication goes against Active Directory over
-          LDAPS, the encrypted form of the directory protocol, using a service account scoped only to
-          directory lookups. Active Directory will not hand back a password hash for a lookup like that, so
-          the check works by attempting to bind as the user with the password they typed rather than by
-          comparing hashes, and the bind either succeeds or it does not. A mailbox uses the same account as
-          everything else in the lab this way, and there is no second list of users to keep in step.</p>
-        <p>Webmail is Roundcube, running behind a dedicated proxy with its own database, and it sits behind
-          the same single sign-on as the rest of the lab's web applications: Cloudflare Access, with a
-          policy backed by Entra ID. Reaching mail in a browser uses the same login and the same
-          multi-factor prompt as any other internal service. The certificate the directory presents for that
-          encrypted connection is issued by the lab's own AD CS root, the same authority the secrets cluster
-          uses.</p>
-      </section>
-
-      <section class="block" id="spf">
-        <h2>SPF, who is allowed to send</h2>
-        <p>SPF is a public list of who is permitted to send mail claiming to be from your domain. A
-          receiving server looks up that list and checks whether the message actually came from one of
-          them.</p>
-        <p>The published record, read from DNS on 29 July 2026:</p>
-        <pre><code>v=spf1 include:spf.brevo.com mx ~all</code></pre>
-        <p>Token by token. <code>v=spf1</code> says which version of the rules to apply.
-          <code>include:spf.brevo.com</code> means "also accept anything the sending relay is allowed to
-          send from", which is what authorises the outbound path above without having to list addresses
-          that the relay may change. <code>mx</code> means "the servers that receive mail for this domain
-          may also send for it", which covers mail sent directly by the lab.</p>
-        <p><code>~all</code> is the interesting one and it is the part people get wrong. It means anything
-          not covered above is a soft fail: treat it as suspicious, but do not reject it outright. The
-          stricter option is <code>-all</code>, a hard fail. Soft fail is the honest setting while you are
-          still confirming you have found every legitimate sending path, because the failure mode of being
-          too strict too early is that your own mail disappears and you do not get told. Tightening it is a
-          deliberate later step, taken once the reports below show nothing legitimate is failing.</p>
-      </section>
-
-      <section class="block" id="dkim">
-        <h2>DKIM, proving it was not altered</h2>
-        <p>SPF says a server was allowed to send. It says nothing about whether the message arrived in one
-          piece. DKIM covers that: the sending side signs the message with a private key, publishes the
-          matching public key in DNS, and the receiver verifies the signature. If anything altered the
-          signed parts in transit, verification fails.</p>
-        <p>The public key is published under a label called a selector, which is just a name that lets a
-          domain publish several keys at once and rotate them without an outage. Two selectors are
-          published for this domain, and rather than holding the key text directly they point at the
-          sending relay's own published keys:</p>
-        <pre><code>brevo1._domainkey  ->  b1.parsec-lab-com.dkim.brevo.com
-brevo2._domainkey  ->  b2.parsec-lab-com.dkim.brevo.com</code></pre>
-        <p>That pointer arrangement is deliberate and it is the normal pattern when a relay signs on your
-          behalf. The relay holds the private key and rotates it on its own schedule; because the domain
-          publishes a pointer rather than a copy, the rotation happens without anyone editing this domain's
-          DNS. Two selectors rather than one is what keeps a rotation invisible from the receiver's side:
-          the old key stays resolvable while the new one takes over.</p>
-      </section>
-
-      <section class="block" id="dmarc">
-        <h2>DMARC, tying the two together</h2>
-        <p>SPF and DKIM each answer a narrow question and neither says what a receiver should do when the
-          answer is no. DMARC is the policy that ties them together. It says: check that the domain the
-          reader sees in the From line is the same domain that SPF or DKIM actually verified, and here is
-          what to do if not.</p>
-        <p>The published policy, read from DNS on 29 July 2026, with the reporting address shown by role
-          rather than in full:</p>
-        <pre><code>v=DMARC1; p=none; rua=&lt;reporting mailbox at this domain&gt;; fo=1</code></pre>
-        <p><code>p=none</code> is the policy, and it means: do not reject anything, but send me reports.
-          That is the monitoring stage rather than the enforcing stage, and choosing it on purpose is the
-          point. Turning on rejection before you know every path your mail takes is how organisations
-          silently destroy their own invoices and password resets. The sequence is to publish
-          <code>p=none</code>, collect reports until the picture is boring, then move to quarantine and
-          eventually reject.</p>
-        <p><code>rua</code> is where receiving providers send aggregate reports: daily summaries from the
-          likes of Google and Microsoft saying how much mail they saw claiming to be from this domain and
-          whether it passed. <code>fo=1</code> asks for a report whenever any check fails, rather than only
-          when everything fails, which is the setting that makes the reports useful while tuning.</p>
-        <p>Reading those reports properly, and the decision about when to tighten the policy, is genuinely
-          the next piece of work here rather than something already finished.</p>
-      </section>
-
-      <section class="block" id="clients">
-        <h2>Getting mail to a phone</h2>
-        <p>Mail clients get new messages one of two ways. They can ask repeatedly, which is simple and
-          means new mail waits until the next poll. Or they can hold a connection open and be told
-          immediately when something arrives, which is what makes mail feel instant on a phone.</p>
-        <p>The second way is better and it is fragile in a specific way that took a while to pin down. It
-          depends on a connection that stays open and mostly silent for long stretches, and anything in the
-          middle that quietly closes idle connections breaks it. The symptom is not an error. It is mail
-          that arrives promptly some of the time and with a long delay the rest of the time, which reads
-          like a slow server rather than a dropped connection.</p>
-        <p>The fix is to keep the idle connection alive deliberately rather than assume the path will leave
-          it alone, and the lesson generalises past mail: any long-lived connection through something you
-          do not control needs to prove it is still there, or it will be closed underneath you and nothing
-          will report it.</p>
-      </section>
-
-      <section class="block" id="live" data-public-noc>
-        <h2>Live mail operations</h2>
-        <p>This public dashboard shows submission reachability, mail-host capacity, certificate
-          lifetime, and aggregate notification delivery. Domains, recipients, message content, queue
-          identifiers, account names, and internal addresses stay private.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live mail dashboard.</p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/e816c9f4610d45409a81d795219ee19b"
-          title="Public mail operations dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live mail dashboard is unavailable. The mail-platform write-up remains online, and it
-            does not present stale delivery state as current.</p>
-        </div>
-        <noscript><p>The live mail dashboard requires JavaScript.</p></noscript>
-      </section>
-
-      <div class="links">
-        <a href="/windows-identity/">See the identity platform &#8594;</a>
-        <a href="/platform/">See the wider platform &#8594;</a>
-        <a href="/security/">See the security posture &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Technical platform walkthrough</span><h1>How I run mail across a public edge and a private mailbox server</h1><p class="descriptor lede">Internet mail lands on a small cloud relay with a stable public address. That relay filters the connection and forwards accepted messages over a private mesh network to the mailbox server in the lab. Mail clients use the same private path through TLS passthrough, while webmail arrives through the platform’s identity-protected tunnel.</p><p class="descriptor lede">Outbound mail takes the reverse path. The mailbox server sends through the relay, and the relay uses one authorized public address to reach a delivery provider. Active Directory supplies mailbox identity over encrypted LDAP, Entra supplies web sign-in, and the public dashboard measures the complete route without exposing addresses or message data.</p><p class="source-note">Built from the current mail-flow architecture, hardening playbooks, identity rotation path, relay monitoring, delivery scripts, and public mail dashboard wiring.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#inbound">Inbound</a><span class="sep">/</span><a href="#outbound">Outbound</a><span class="sep">/</span><a href="#identity">Identity</a><span class="sep">/</span><a href="#trust">Sender trust</a><span class="sep">/</span><a href="#live">Dashboard</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>The public relay and the mailbox host do different work</h2><div class="story-opening"><p>A mail server must accept connections from arbitrary mail systems on the internet. My home connection is the wrong place to terminate that traffic. Its address can change, residential reputation is poor, and an outage or firewall change would directly affect delivery.</p><p>The cloud edge gives the domain a stable MX destination. MX is the DNS record that tells other mail systems where incoming messages should go. The edge runs Postfix and postscreen. Postfix speaks SMTP and routes messages. Postscreen rejects obviously abusive connections before they consume the heavier mail-processing path.</p><p>The edge does not own mailboxes. Accepted mail crosses a private mesh network to the on-premises backend. The backend stores messages, authenticates users, runs the content filter, and serves IMAP and submission. Splitting the roles keeps public connection handling away from mailbox storage and directory credentials.</p></div><div class="evidence"><strong>Current user experience.</strong> A directory account has a mailbox without a second mail password. Webmail uses Entra sign-in. A fresh private-session login passed after the Roundcube application secret was rotated, so the result was validated at the inbox rather than at the credential provider.</div></section>
+<section class="block" id="parts"><h2>The mail path has six owners</h2><dl class="responsibilities"><div><dt>Cloud edge relay</dt><dd>Publishes the MX destination, runs Postfix and postscreen, forwards accepted inbound mail privately, passes client TLS through, and supplies the stable outbound address.</dd></div><div><dt>Mailbox backend</dt><dd>Runs docker-mailserver, stores mail, serves SMTP submission and IMAP, and sends outbound messages back through the edge.</dd></div><div><dt>Amavis</dt><dd>Processes message content on the backend and can quarantine malformed or suspicious mail. The live verification corrected older documentation that named Rspamd.</dd></div><div><dt>Roundcube</dt><dd>Provides the browser mail client. It reads the same IMAP mailboxes and submits through the same SMTP path as other clients.</dd></div><div><dt>Directory and identity</dt><dd>Active Directory validates mailbox credentials over LDAPS. Entra and Cloudflare Access handle browser sign-in before Roundcube.</dd></div><div><dt>Outbound delivery provider</dt><dd>Accepts mail from the relay’s authorized address and carries the reputation and delivery path used for internet recipients.</dd></div></dl></section>
+<section class="block" id="inbound"><h2>Inbound mail is accepted at the edge and stored in the lab</h2><figure class="architecture"><img src="/assets/engineering-diagrams/mail-flow-path.svg" alt="Inbound, outbound, client, and webmail paths through the cloud edge and private mailbox backend"></figure><h3>The inbound path</h3><ol class="sequence"><li><strong>The sender looks up the domain’s MX record.</strong> DNS returns the public cloud relay.</li><li><strong>Postscreen evaluates the connection.</strong> Cheap connection checks reject obvious abuse before Postfix commits resources to a full SMTP session.</li><li><strong>Postfix accepts mail for the registered domain.</strong> The edge is a relay for that domain, not the final mailbox store.</li><li><strong>The relay forwards over the private mesh network.</strong> The backend is not exposed as the public MX destination.</li><li><strong>The backend filters and delivers the message.</strong> Amavis handles content policy, then the mail server writes the accepted message into the user’s mailbox.</li><li><strong>The user reads the stored message.</strong> Roundcube or an IMAP client sees the same server-side folders and state.</li></ol><p>The private transport avoids a public inbound rule to the mailbox backend. TLS continues across the path, and the edge is configured around forwarding rather than becoming a second message store.</p></section>
+<section class="block" id="outbound"><h2>Outbound mail returns through one controlled address</h2><p>A browser or mail client submits an authenticated message to the backend. The backend sends it to the cloud relay over the private mesh. The relay then authenticates to the outbound delivery provider using a credential from Vault.</p><p>The provider is configured to accept the relay’s public address. That keeps the sending identity stable even when the home internet address changes. It also puts delivery reputation and feedback handling on a service built for internet mail, while mailbox storage and user identity remain self-hosted.</p><ol class="sequence"><li><strong>The user submits through TLS.</strong> The backend authenticates the mailbox identity and accepts the message for delivery.</li><li><strong>The backend routes the message to the edge.</strong> This hop stays on the private mesh network.</li><li><strong>The edge authenticates to the delivery provider.</strong> The provider credential is fetched through the managed secrets path.</li><li><strong>The provider sends to the recipient domain.</strong> SPF, DKIM, and DMARC give the recipient evidence about the domain and message.</li></ol></section>
+<section class="block" id="clients"><h2>Mail clients keep end-to-end TLS to the backend</h2><p>Phones and desktop clients connect to the public edge for IMAP and secure submission. HAProxy on the edge passes those encrypted connections through to the backend without terminating TLS. The client therefore verifies the certificate presented by the mailbox server, and the edge never sees the decrypted mailbox session.</p><p>That detail narrows the cloud relay’s trust. It can see connection metadata and route encrypted bytes, but it does not receive the mailbox password or message content from an IMAP session.</p><p>Roundcube follows a different browser path. Cloudflare Access performs Entra sign-in, the outbound tunnel carries the allowed request to the webmail proxy, and Roundcube opens the user’s mailbox on the backend. The application secret used in the OpenID Connect exchange is stored and rotated through Vault.</p></section>
+<section class="block" id="identity"><h2>Directory identity creates the mailbox experience</h2><p>The mail backend authenticates against Active Directory using LDAPS, which is LDAP inside TLS. A trusted internal certificate authority lets the mail host verify the directory server before it sends credentials.</p><p>The configuration uses implicit LDAPS on its dedicated port. An early setting attempted StartTLS on that already encrypted port, which fails because the client and server disagree about how TLS begins. The corrected path starts encrypted from the first byte.</p><p>The public mail domain is also a directory sign-in suffix and a verified Entra domain. That lets the mailbox address, directory sign-in, and web identity line up. Account provisioning creates the directory identity and required group state; the mail server derives mailbox access from that identity without a separate account database.</p><h3>Roundcube credential rotation</h3><p>The Entra application credential behind webmail is registered in the credential lifecycle system. The rotator creates a replacement, updates Vault, invokes a narrowly scoped host helper to update Roundcube, reloads the affected service, and runs a fresh Microsoft login. The predecessor remains during overlap and is retired only after revalidation.</p></section>
+<section class="block" id="trust"><h2>SPF, DKIM, and DMARC let a receiver check the sender</h2><p><b>SPF</b> is a DNS policy that names the systems allowed to send for the domain. It helps the receiver decide whether the connecting server belongs to the claimed envelope domain.</p><p><b>DKIM</b> signs selected message headers and content with a private key. DNS publishes the corresponding public key. A receiver can verify that the signed parts were not changed after the message left the authorized signer.</p><p><b>DMARC</b> requires alignment between the visible From domain and the domain authenticated by SPF or DKIM. It also publishes the handling policy and creates a reporting path for failures.</p><div class="table-wrap"><table><thead><tr><th>Signal</th><th>What it answers</th><th>What it cannot answer alone</th></tr></thead><tbody><tr><td>SPF</td><td>Was this connecting sender authorized for the envelope domain?</td><td>Whether the visible From address aligns or the message changed later.</td></tr><tr><td>DKIM</td><td>Does the message carry a valid signature from the signing domain?</td><td>Whether that signing domain matches what the reader sees.</td></tr><tr><td>DMARC</td><td>Does the visible domain align with a passing SPF or DKIM result?</td><td>Whether the message content is desirable or safe.</td></tr><tr><td>Amavis</td><td>Does the backend content policy accept or quarantine the message?</td><td>Whether the internet sender is authorized to represent its domain.</td></tr></tbody></table></div></section>
+<section class="block" id="monitoring"><h2>Monitoring follows the route, not one process</h2><p>The public mail dashboard combines edge availability, backend mail protocols, queue state, delivery outcomes, content-filter state, webmail reachability, and certificate expiry. Recipient addresses, subjects, message bodies, account names, and internal routing labels remain private.</p><p>A page check alone would be weak evidence. Roundcube can load while SMTP delivery is stuck. Postfix can accept mail while the private forwarding path is broken. The dashboard separates those stages so the failing owner is visible.</p><p>The certificate path is also split. The public relay and webmail names use Let’s Encrypt. Directory connections rely on the internal authority. Blackbox checks read the certificate actually served on each network path.</p></section>
+<section class="block" id="live" data-public-noc><h2>Live mail operations</h2><div class="dashboard-shell"><div class="dashboard-head"><p>Live public Grafana view</p><a href="https://status.billgernert.com/public-dashboards/e816c9f4610d45409a81d795219ee19b" target="_blank" rel="noreferrer">Open full screen</a></div><p class="live-status" data-live-status aria-live="polite">Checking the live mail dashboard.</p><iframe class="dashboard-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/e816c9f4610d45409a81d795219ee19b" title="Public mail operations dashboard" referrerpolicy="no-referrer" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live mail dashboard is unavailable. The mail-platform write-up remains online, and it does not present stale delivery state as current.</p></div><noscript><p>The live mail dashboard requires JavaScript.</p></noscript></div><h3>How to read it</h3><div class="read-grid"><article class="read-card"><p class="question">Can the internet reach mail?</p><h3>Start with the edge</h3><p>Public SMTP and protocol checks show whether the relay is reachable and presenting the expected TLS identity.</p></article><article class="read-card"><p class="question">Is mail moving inward?</p><h3>Compare relay and backend</h3><p>A healthy edge beside an unhealthy backend points to the private forwarding path or mailbox service.</p></article><article class="read-card"><p class="question">Is outbound mail delayed?</p><h3>Use queue and delivery state</h3><p>Queue growth and delivery results separate submission from the provider handoff.</p></article><article class="read-card"><p class="question">Can a user read mail?</p><h3>Use IMAP and webmail</h3><p>Protocol checks and the signed-in application route cover different client paths to the same mailbox.</p></article></div></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>On inbound connection</td><td>Edge filtering and Postfix routing evaluate the sender and recipient domain.</td><td>Accepted mail crosses the private path to the backend.</td></tr><tr><td>On outbound submission</td><td>The backend authenticates the user and relays through the cloud edge.</td><td>The delivery provider accepted the authorized handoff.</td></tr><tr><td>On webmail sign-in</td><td>Edge access and Entra identify the user; Roundcube opens the matching mailbox.</td><td>The browser identity and mailbox path both work.</td></tr><tr><td>On directory login</td><td>The backend verifies Active Directory over LDAPS.</td><td>No separate mailbox password is needed.</td></tr><tr><td>Continuously</td><td>Monitoring checks protocols, queues, services, certificates, and public reachability.</td><td>Each stage is producing current evidence.</td></tr><tr><td>On credential rotation</td><td>The registered worker updates Vault and Roundcube, reloads, and performs a fresh login.</td><td>The replacement is active; the predecessor remains through overlap.</td></tr></tbody></table></div></section>
+<section class="block" id="broke"><h2>What broke and what remains limited</h2><div class="failure"><h3>The documented content filter was wrong</h3><p>An operational verification observed Amavis quarantine behavior and no Rspamd verdicts in the live mail log. The architecture record was corrected. This page names Amavis because it is the component making the backend content decision.</p><h3>Implicit LDAPS was configured like StartTLS</h3><p>The backend attempted to negotiate StartTLS on a port that expects TLS immediately. Directory authentication failed until the connection mode matched the server.</p><h3>Receive still has one edge and one backend</h3><p>The cloud relay separates public transport from mailbox storage, but each role currently has one active instance. A managed backup MX and a rebuilt, code-owned relay path are the next steps if mail becomes load-bearing.</p><h3>The edge rebuild path is incomplete</h3><p>The relay is documented and monitored, but the complete cloud-host provisioning manifest is still being brought under the same repository-controlled rebuild standard as the rest of the lab.</p></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Choose where public SMTP terminates.</strong> Use a stable, reputable address and decide which connection filtering belongs there.</li><li><strong>Keep mailbox storage behind the private boundary.</strong> Define the encrypted relay path before publishing the MX record.</li><li><strong>Separate inbound, outbound, client, and webmail paths.</strong> Each has different TLS, authentication, and monitoring requirements.</li><li><strong>Build directory trust before account cutover.</strong> Install the internal CA, verify LDAPS, and test the exact bind and search behavior.</li><li><strong>Publish sender-authentication DNS together.</strong> SPF, DKIM, and DMARC should describe the outbound route that actually sends.</li><li><strong>Test with a new message and a fresh login.</strong> Check inbound delivery, outbound delivery, IMAP, webmail, and message authentication from outside.</li><li><strong>Record the single-instance limits.</strong> Monitoring a single edge is useful; it does not turn it into a redundant edge.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

@@ -147,7 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/dead-man-monitoring/">
   <!-- END generated: canonical -->
@@ -179,166 +180,55 @@
       <span class="here">Monitoring the monitoring</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Monitoring</span>
-      <h1>Monitoring the monitoring</h1>
-      <p class="descriptor">Monitoring has a blind spot. If a nightly job crashes, or the thing that sends
-        the alerts dies, nothing fires. Silence looks exactly like success. This lab closes that gap with
-        dead-man switches: fake hosts in the monitoring system that expect a heartbeat on a schedule and
-        raise an alarm when the heartbeat stops. This page covers the pattern, the one running in
-        production today, and the second one that is built and waiting to be switched on.</p>
-    </header>
-
-    <div class="skill-body">
-      <nav class="anchors" aria-label="On this page">
-        <a href="#blindspot">The blind spot</a>
-        <a href="#how">How a dead-man switch works</a>
-        <a href="#digests">The one that runs today</a>
-        <a href="#reconciler">A checker that is itself checked</a>
-        <a href="#dr">The same pattern guarding recovery</a>
-      </nav>
-
-      <section class="block" id="blindspot">
-        <h2>The blind spot</h2>
-        <p>Monitoring is built around events. A disk fills, a service stops responding, a certificate is
-          about to expire, and an alert fires. That model works well and it hides one assumption: that
-          something is still running to notice.</p>
-        <p>Consider a nightly job that emails a summary of every backup. If it works, mail arrives. If the
-          job crashes at three in the morning, no mail arrives, and no alert fires either, because nothing
-          went wrong in a way anything was watching. The next morning looks exactly like a quiet, healthy
-          night. You can go weeks like that and only find out when you need one of those backups.</p>
-        <p>This is not hypothetical here. Building the recovery pipeline turned up several checks that were
-          passing without actually testing anything, and the reason nobody noticed was that a check which
-          silently does nothing and a check which passes look identical from the outside. That experience is
-          why absence became a thing to alarm on rather than a thing to assume.</p>
-        <p>So the rule this page is about: <strong>every job that matters has to prove it ran, and the
-          absence of that proof has to be loud.</strong></p>
-      </section>
-
-      <section class="block" id="how">
-        <h2>How a dead-man switch works</h2>
-        <p>Three small pieces, none of them clever on its own, and all three are built out of Zabbix, the
-          monitoring system this lab runs.</p>
-        <p>The first is a Zabbix trapper item, which only holds what something pushes into it. Most Zabbix
-          items work by going out and asking a machine a question every minute. A trapper item does the
-          opposite: it sits empty until a job reaches in and drops a value, so it is a mailbox rather than a
-          question.</p>
-        <p>The second is a Zabbix nodata trigger, using the built-in <code>nodata()</code> trigger function,
-          which fires on nothing arriving. Instead of "alert when this value is too high", it says "alert
-          when nothing has arrived here for longer than it should have". That is the switch. The job is not
-          reporting a problem, it is reporting that it is alive, and going quiet is the problem.</p>
-        <p>The third is a Zabbix host that does not exist. Zabbix organises everything under hosts, but
-          nothing says a host has to be a real machine. A named bucket with no agent and no address behind
-          it is enough to hang these items on, and it keeps them together and obvious instead of scattered
-          across whichever real machine happened to run the job.</p>
-        <p>Put together: the job finishes, pushes a value, and the clock resets. If the job dies, stops
-          being scheduled, or gets stuck halfway, nothing pushes, the clock runs out, and an alarm fires
-          naming the job that went quiet.</p>
-      </section>
-
-      <section class="block" id="digests">
-        <h2>The one that runs today</h2>
-        <p>Jenkins runs three separate daily digests in this lab: a backup summary, an operations summary
-          from the automated triage, and a summary from the job-search platform. Each has its own schedule,
-          the earliest waking up around six in the morning and the last around one in the afternoon. They
-          are the kind of thing that is easy to stop noticing, which makes them exactly the kind of thing
-          that can stop arriving without anyone reacting.</p>
-        <p>Rather than have each digest push its own heartbeat, a separate Jenkins job checks in on all
-          three roughly every fifteen minutes. It looks at how long it has been since each digest last
-          completed and pushes that age into its own Zabbix trapper item, one per digest. That indirection
-          is deliberate: it means the heartbeat mechanism itself can be watched for going quiet, not only
-          the digests it is watching.</p>
-        <figure class="shot">
-          <img src="img/jenkins-monitoring.png" alt="The Jenkins monitoring view: the dead-man switch heartbeat job with a build count in the thousands, beside the overview reconciler and facts collector.">
-          <figcaption>The heartbeat checker in the monitoring view. The build number is the point: it has to run constantly to mean anything. Captured 2026-08-23.</figcaption>
-        </figure>
-        <p>Each digest's item carries two nodata triggers, not one. A short one, around two hours, fires if
-          the fifteen-minute checker itself stops pushing, which is the heartbeat mechanism going silent. A
-          longer one, at thirty hours, fires if the age it is reporting gets too large, which is the digest
-          itself actually missing a day. Splitting them this way means a stuck checker and an actually
-          missed digest read as two different alarms instead of one ambiguous one.</p>
-        <p>The checker job and both trigger definitions are written and committed. Wiring them into the
-          monitoring system so the alarms fire on their own is not done yet, the same as the checker further
-          down this page.</p>
-      </section>
-
-      <section class="block" id="reconciler">
-        <h2>A checker that is itself checked</h2>
-        <p>The second switch goes a step past heartbeats, and it guards something more interesting than a
-          job. The lab publishes a public operations dashboard that claims to describe what is monitored. A
-          dashboard like that has a specific way of going wrong: it stays up, it stays green, and it
-          gradually stops describing reality. Somebody edits a panel by hand, or a system it claims to watch
-          is retired, and the board keeps looking authoritative while quietly becoming fiction.</p>
-        <p>The checker is a tool called noc-reconcile. Jenkins runs it once a night, around four in the
-          morning. It rebuilds the dashboard's definition from the same tagged source files the dashboard is
-          supposed to be generated from, then compares that rebuild against the live board field by field:
-          every tile, every query, every link, every threshold and color step, the banner text, even
-          dashboard-level settings like which variables are editable. It names the panel and the field that
-          moved rather than just announcing that something moved, because "there is drift somewhere" is not
-          something anyone can act on at eight in the morning.</p>
-        <p>Whatever it finds also gets pushed into its own Zabbix item, the same heartbeat shape as the
-          digests above: a flag that goes up when there is drift, with a short summary of the first few
-          differences attached, and a clean signal when the board matches. Two alarms watch that flag for
-          drift being found. A third, set to fire after a bit over a day of silence, watches for the checker
-          itself going quiet, because a drift detector that stops running reports no drift, which reads
-          exactly like a board that is perfectly accurate. A checker that is itself checked.</p>
-        <p>Being straight about the state of this one: the checking job is built, tested, and has found real
-          differences between what the board claimed and what it was supposed to say when run against the
-          live board during development. Wiring it into the monitoring system so those three alarms fire on
-          their own is the step that has not been done yet. It is on the list rather than on the wall.</p>
-      </section>
-
-      <section class="block" id="dr">
-        <h2>The same pattern guarding recovery</h2>
-        <p>The weekly test that destroys the secrets server and restores it from backup pushes its own
-          heartbeat when it passes, and an alarm fires if those stop arriving. A recovery test that quietly
-          stops running leaves you with the belief that your backups restore, which is the most expensive
-          thing in this lab to be wrong about. The restore proof page has the detail.</p>
-      </section>
-
-      <div class="links">
-        <a href="/noc/">See the operations dashboard &#8594;</a>
-        <a href="/dr-restore-verify/">See the weekly restore proof &#8594;</a>
-        <a href="/platform/">See the wider platform &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Reliability walkthrough</span><h1>How I made a missing job loud</h1><p class="descriptor lede">Daily digests and recovery tests have to report that they ran. A scheduled checker reads the age of the last successful completion and pushes that age to Zabbix. One alarm catches work that has gone stale; another catches the checker itself when it stops pushing.</p><p class="descriptor lede">The design keeps the shared operations database private inside Kubernetes. The checker runs where it can already reach that database and pushes two small age values outward. Prometheus watches the Zabbix virtual machine from a separate monitoring plane, so the dead-man switch does not depend entirely on the system it is checking.</p><p class="source-note">Built from the digest dead-man decision, sender pipeline, committed Zabbix item and trigger specification, NOC reconciler, recovery heartbeat, and watcher-of-the-watcher rule.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#heartbeat">Heartbeat</a><span class="sep">/</span><a href="#watcher">The watcher</a><span class="sep">/</span><a href="#recovery">Recovery</a><span class="sep">/</span><a href="#running">How it runs</a><span class="sep">/</span><a href="#limits">Limits</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>A job that never starts may never report an error</h2><div class="story-opening"><p>A backup digest that runs and finds a stale backup can send an alert. A digest that never runs sends nothing. The inbox looks the same as it would after a quiet night, and the absence can continue until someone notices that the expected message has been missing.</p><p>The same blind spot applies to the morning operations summary, the public-dashboard reconciler, and the weekly restore test. Each exists to report on another system. If the reporting job or its scheduler disappears, the monitored system can look healthy because no new result arrived to disagree.</p><p>I treat completion as a piece of monitoring data. A job records when its useful work finished, and a separate process reports how old that completion is. The alarms are based on that age and on whether the separate process is still speaking.</p></div></section>
+<section class="block" id="heartbeat"><h2>The heartbeat records completion, not email arrival</h2><p>The AIOps digest writes one database row for each actual send. Preview runs are excluded. The backup digest gained a separate heartbeat table and records its status and finding counts immediately after the email is sent.</p><p>I considered watching the mailbox for a subject line. That would mix together several failures: the job, SMTP delivery, mailbox rules, IMAP access, subject wording, and timezone windows. A database heartbeat answers the narrower question the control needs: did the digest complete and send?</p><p>The shared database is available only inside Kubernetes. Exposing it to the Zabbix server for two read-only queries would add a routable listener, database role, stored password, driver, firewall rule, and maintenance path around a store that also carries infrastructure state. I inverted the check instead.</p><figure class="architecture"><img src="/assets/engineering-diagrams/dead-man-heartbeat-path.svg" alt="Digest completion rows read by an in-cluster sender and pushed to Zabbix, with Prometheus independently watching Zabbix"></figure><h3>The five-step heartbeat path</h3><ol class="sequence"><li><strong>A digest completes its useful work.</strong> The successful send writes a timestamp and small status fields to its heartbeat table.</li><li><strong>A separate Jenkins job wakes roughly every fifteen minutes.</strong> It runs on an in-cluster agent that already has network access to the database.</li><li><strong>The sender calculates age.</strong> It reads the most recent successful row for each monitored digest and converts elapsed time into hours. A missing table row becomes an intentionally large age, not an empty success.</li><li><strong>The sender pushes the ages to Zabbix trapper items.</strong> A trapper item is a mailbox for a value another process sends. Zabbix does not need database access.</li><li><strong>Zabbix evaluates two kinds of trigger.</strong> An age threshold catches missed work. The built-in <code>nodata()</code> function catches a sender that stopped updating the item.</li></ol></section>
+<section class="block" id="watcher"><h2>The checker is designed to fail loudly</h2><p>The digest itself treats heartbeat recording as fail-soft. If email was sent and the heartbeat database is temporarily unavailable, the digest logs a warning without converting a delivered report into a failed delivery. The separate heartbeat sender has the opposite behavior. A database error, query error, or failed Zabbix push exits nonzero and turns the Jenkins build red.</p><p>That difference preserves both signals. The digest reports whether the report was delivered. The sender reports whether monitoring can still read and publish completion age.</p><figure class="shot"><img src="https://billgernert.com/dead-man-monitoring/img/jenkins-monitoring.png" alt="Jenkins monitoring view containing the heartbeat checker and monitoring reconciliation jobs"><figcaption>Captured 2026-08-23. The repeated build history matters because a heartbeat checker has value only while it keeps running.</figcaption></figure><p>Each digest item has a long threshold and a short no-data threshold. The long threshold is a full daily cycle plus grace, around 30 hours, so a slightly late schedule does not alert. The short threshold is about two hours, which is long compared with the fifteen-minute sender schedule and therefore identifies a stalled checker.</p><div class="comparison"><div><h3>Fresh push, old completion</h3><p>The sender is alive. The value it just reported says the digest missed its daily run. The alert names the digest.</p></div><div><h3>No recent push</h3><p>Zabbix has no current statement from the sender. The alert names the dead-man checker or its Jenkins path.</p></div></div></section>
+<section class="block" id="independence"><h2>Prometheus watches the machine running Zabbix</h2><p>A Zabbix trigger cannot send mail when the Zabbix server itself is down. A separate Prometheus rule watches the virtual machine that runs it. That leaves two monitoring planes with different failure paths.</p><p>If the Jenkins sender stops while Zabbix remains up, the Zabbix no-data trigger fires. If Zabbix disappears while Prometheus remains up, Prometheus alerts on the missing virtual machine. A complete lab and internet outage is outside that internal pair, which is why an external heartbeat service remains the next escalation if full-site outage detection is required.</p><p>Planned maintenance uses Zabbix maintenance periods and Alertmanager silences. The age threshold already includes schedule grace, so routine jitter does not need a silence.</p></section>
+<section class="block" id="reconcile"><h2>The same pattern protects the public NOC definition</h2><p>The public NOC is generated from registered domains and dashboard definitions. It can still drift after deployment if someone changes Grafana by hand or if a route is retired without updating the hub.</p><p>A nightly reconciliation job rebuilds the expected dashboard and compares it with the live Grafana definition field by field. It checks panels, queries, links, thresholds, color steps, variables, and dashboard settings. The job reports the first differences and pushes its own current result. A drift trigger catches disagreement; a no-data trigger catches a reconciler that stopped running.</p><p>The reconciler found actual differences during development, which is why the comparison reports the panel and field rather than a generic drift flag. That makes the morning alert actionable without opening every dashboard.</p></section>
+<section class="block" id="recovery"><h2>Restore verification sends a different kind of heartbeat</h2><p>The weekly recovery pipeline restores a protected guest into an isolated network, runs operating-system and service checks, destroys the scratch copy, and records the outcome. Its heartbeat means more than “the scheduler woke up.” It is written after the restore and verification path completes.</p><p>If that heartbeat ages out, the system no longer claims that recovery is being exercised. A backup dashboard can remain green while a restore job has silently stopped, so the recovery heartbeat is displayed and alerted separately from backup freshness.</p></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>After each daily digest</td><td>The delivery path writes a completion row after the email send.</td><td>The next age calculation will return to near zero.</td></tr><tr><td>Roughly every fifteen minutes</td><td>Jenkins reads completion ages and pushes trapper values to Zabbix.</td><td>The sender, database read, network path, and Zabbix item accepted the update.</td></tr><tr><td>Continuously in Zabbix</td><td>Age and no-data triggers evaluate the latest items.</td><td>Both the monitored work and the checker are within policy.</td></tr><tr><td>Nightly</td><td>The NOC reconciler compares generated intent with live Grafana.</td><td>The served dashboard still matches the repository definition.</td></tr><tr><td>Weekly</td><td>The recovery pipeline sends completion evidence after restore and teardown.</td><td>The scheduled recovery path still produces a usable guest and cleans it up.</td></tr><tr><td>Continuously in Prometheus</td><td>A separate rule watches the Zabbix virtual machine.</td><td>The monitoring plane that owns the dead-man triggers is reachable.</td></tr></tbody></table></div></section>
+<section class="block" id="limits"><h2>What broke and what remains limited</h2><div class="failure"><h3>The first design could not reach its database</h3><p>The initial plan put an ODBC query on the Zabbix server. The database had no routable address outside Kubernetes. Creating one solely for two timestamps would have expanded the attack surface around a shared high-value store. The design changed to an in-cluster read and an outbound trapper push.</p><h3>A missing first run is intentionally noisy</h3><p>When a registered heartbeat has no row, the sender reports a very large age. That can raise an alert immediately after activation. The correction is to run the producer and create the first successful evidence, not to widen the threshold until the unknown state looks healthy.</p><h3>A full-site outage still needs an outside observer</h3><p>Zabbix and Prometheus cover one another while at least one internal monitoring plane is alive. They cannot notify from a site with no power or internet path. An external dead-man service is the design option for that failure boundary.</p></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Define what completion means.</strong> Record the timestamp after the report, restore, or reconciliation actually finishes, not when its scheduler starts.</li><li><strong>Store a small status record.</strong> Keep the timestamp and useful counts. Do not use email delivery as the primary evidence source.</li><li><strong>Read the heartbeat from the network zone that already owns access.</strong> Avoid exposing a database merely to make monitoring topology convenient.</li><li><strong>Push age to a receiving item.</strong> Use separate items for each job so an alert can name the missing producer.</li><li><strong>Create age and no-data alarms.</strong> One watches the work. The other watches the watcher.</li><li><strong>Put the monitoring server under another plane.</strong> A dead-man switch hosted by one system needs a second system to report that host's disappearance.</li><li><strong>Test missed work and a stopped sender separately.</strong> They should produce different alarms and recovery instructions.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

@@ -147,7 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/security/">
   <!-- END generated: canonical -->
@@ -179,186 +180,56 @@
       <span class="here">Security</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Security</span>
-      <h1>Secured like it matters</h1>
-      <p class="descriptor">The lab is a great place to practise security badly, because nothing
-        punishes you. So the rule here is that a control only counts if it <b>fails closed</b>, gets
-        <b>audited</b>, and would survive someone actually trying. Below is what is really running,
-        what it deliberately does not do, and the bug I found in my own control.</p>
-    </header>
-
-    <div class="skill-body">
-      <section class="block">
-        <h2>One authority for secrets, and nothing on disk</h2>
-        <p>Every secret lives in one system. Nothing is written to disk and nothing is committed:
-          pipelines fetch what they need at run time and hold it in memory, and workloads authenticate
-          by <b>role</b> rather than by carrying a password around. Per-host keys are minted into the
-          secrets manager by the pipeline that builds the host, and removed by the pipeline that
-          destroys it.</p>
-        <p><b>Two independent scanners backstop the rule</b>, one at commit time and one at write
-          time, so a secret has to beat both to reach the repository. The commit-time one is the
-          authority: it runs in CI over the committed tree, where no choice of editor or tool can
-          route around it.</p>
-        <div class="links">
-          <a href="/capabilities/vault.html">Vault &#8594;</a>
-          <a href="/capabilities/devsecops.html">DevSecOps &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Fail closed, everywhere, on purpose</h2>
-        <p>The interesting question about a gate is not what it does when it works. It is what it does
-          when it is <em>broken</em>. Everything here answers that the same way:</p>
-        <ul>
-          <li><b>The publication gate</b> greps everything about to be published for internal strings
-            and fails the whole build on a hit, before anything is cloned or pushed. A public leak
-            cannot be undone, so it refuses rather than guesses.</li>
-          <li><b>The name-collision gate</b> asks every system that could already know a name. An
-            unreachable system is <em>never</em> read as "no collision": unknown stops the build.</li>
-          <li><b>The AI budget gate</b> denies when the budget is missing or unreadable, not just when
-            it is exceeded. A broken secret closes the tap instead of opening it.</li>
-          <li><b>Scanner triage</b> can only ever <em>downgrade</em> a finding on a valid verdict. If
-            the model is down or answers with nonsense, the finding stays real.</li>
-          <li><b>The decommission gate</b> refuses to destroy when its plan would destroy nothing,
-            because a destroy that silently does nothing is a lie in an email.</li>
-        </ul>
-        <p class="note">The pattern is one decision made once: when a control cannot tell, it stops.
-          Convenience is the thing you trade away, and it is the right trade every time.</p>
-      </section>
-
-      <section class="block">
-        <h2>Zero trust at the edge</h2>
-        <p><b>Nothing is port-forwarded and nothing listens on the internet.</b> A connector makes an
-          outbound connection out to the edge network, and traffic comes back down that tunnel to an
-          ingress controller inside the cluster. There is no inbound hole to find, because there is no
-          inbound hole.</p>
-        <p>Every application hostname sits behind <b>single sign-on at the edge</b>, so an
-          unauthenticated request is turned away before it reaches the app rather than by the app.
-          Identity comes from the directory and group membership decides access. There are two
-          deliberate exceptions. This site has no login in front of it, because it is meant to be
-          read. The public status host serves the NOC dashboard documents, their data route, the health
-          check, and the static assets they load to anyone. Everything else on that host goes to an
-          Access policy whose only action is block, so it has no login path at all. Remote access for me
-          is a mesh VPN, not an exposed service.</p>
-        <div class="links">
-          <a href="/capabilities/cloudflare.html">Cloudflare Zero Trust &#8594;</a>
-          <a href="/capabilities/entra-id.html">Entra ID &#8594;</a>
-          <a href="/capabilities/duo-mfa.html">Duo MFA &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Identity, least privilege, and machine identity</h2>
-        <p>Access is role-driven and declarative: a role maps to its groups and its app assignments, so
-          "why does this account have this" has a written answer. Offboarding <b>disables first and
-          never deletes</b>, keeps a machine-readable snapshot taken <em>before</em> anything is
-          stripped, and only removes an account after a grace period, and only when it can explain what
-          it is removing.</p>
-        <p>Machines get identities too. An internal certificate authority issues for the services no
-          public authority should ever vouch for, and the genuinely interesting part of running a CA is
-          not issuing: it is that <b>the templates are the privilege boundary</b>. An over-permissive
-          template that lets a low-privileged account choose its own subject is a well-known escalation
-          path, so scoping them tightly is the actual work.</p>
-        <div class="links">
-          <a href="/capabilities/active-directory.html">Active Directory &#8594;</a>
-          <a href="/capabilities/ad-cs-pki.html">AD CS and PKI &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>The bug I found in my own control</h2>
-        <p>Deprovisioning a user is gated by <b>two-person approval</b>: restricted to an admin
-          allowlist, and the requester cannot approve their own request. Good control. Then I audited
-          it, and it was <b>fail-open</b>.</p>
-        <p>The same-person check only ran when the requester was known. On a run triggered by the API,
-          a timer, or a replay, there is no requester attached, so the check short-circuited and a
-          single actor could approve their own offboard. It now <b>hard-fails on a blank requester</b>,
-          so every path reaches the gate with a name attached.</p>
-        <p class="note">I keep this on the page on purpose. Anyone can list controls they have
-          implemented. The useful question is whether you have ever gone back and tried to break one,
-          because <b>a control nobody audits is a control nobody has</b>. This one was mine, it was
-          wrong for weeks, and an audit is the only reason it is not wrong now.</p>
-        <div class="links">
-          <a href="/projects/">The pipeline it guards &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Guardrails are not gates</h2>
-        <p>Some checks here run at the moment work is done, and some run over what actually landed.
-          Only the second kind is enforcement, and conflating them is how a review comes to believe a
-          guard ran when it never did.</p>
-        <p>So the split is written down and treated as load-bearing: the convenience checks are
-          <b>guardrails</b> against absent-minded mistakes, and the gates that cannot be routed around
-          live in the pipeline, over the committed tree. Where a guardrail cannot enforce, a
-          <b>scheduled audit</b> reports what got past it, because the honest answer to "we cannot
-          prevent this" is to look regularly rather than to claim otherwise.</p>
-        <p class="note">The same logic applies to anything a scanner cannot read. A text gate cannot
-          see inside an image, so images are reviewed by a person against a written checklist rather
-          than waved through by a green check that never looked.</p>
-      </section>
-
-      <section class="block">
-        <h2>Scanning, and what it is honestly worth</h2>
-        <p>Container images, infrastructure code, and the repository are scanned on every change, and
-          the scans are <b>required checks</b> rather than advice. A local model triages the output
-          into exploitable-in-context versus likely-noise so that a wall of findings becomes a short
-          list worth acting on, and it is only ever allowed to <em>lower</em> a verdict, never to
-          invent one. Secret values are dropped before the model sees them at all.</p>
-        <p class="note">Honest scope: a SIEM to correlate all of this centrally is <b>designed and
-          committed but not yet running</b>. It is on the roadmap as work, not described here as a
-          capability. A security page that lists what you plan to deploy is a wish list.</p>
-        <div class="links">
-          <a href="/capabilities/devsecops.html">DevSecOps &#8594;</a>
-          <a href="/ai/">How I use AI &#8594;</a>
-          <a href="/roadmap/">Read the roadmap &#8594;</a>
-        </div>
-      </section>
-
-      <div class="links">
-        <a href="/platform/">How the platform works &#8594;</a>
-        <a href="/projects/">The pipelines &#8594;</a>
-        <a href="/capabilities/#security-identity">Explore security and identity &#8594;</a>
-      </div>
+    <header class="skill-head"><span class="badge">Security engineering walkthrough</span><h1>How security decisions are enforced in the lab</h1><p class="descriptor lede">A person signs in once, applications receive only the identity claims they need, workloads fetch credentials through narrow Vault roles, and infrastructure jobs stop when approval, inventory, budget, or verification is missing. Public traffic reaches applications through an outbound tunnel, so there is no ordinary inbound application port to discover.</p><p class="descriptor lede">The controls are split across layers because they answer different questions. Edge access decides who may reach an application. The pipeline decides whether the requested change is complete and approved. Vault limits which credential the workload can read. The target system applies the final permission. I learned why that separation matters when an approval check I wrote could fail open on execution paths with no requester identity.</p><p class="source-note">Built from the security page, identity lifecycle policy, publication gates, workload policies, certificate automation, edge access configuration, and the dated approval-gate failure in the repository.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#layers">Layers</a><span class="sep">/</span><a href="#identity">Identity</a><span class="sep">/</span><a href="#gates">Gates</a><span class="sep">/</span><a href="#bug">The bug</a><span class="sep">/</span><a href="#running">How it runs</a></nav>
+<div class="skill-body">
+<section class="block" id="result"><h2>The security model starts with boundaries, not products</h2><div class="story-opening"><p>The lab is public enough to be useful and private enough to operate. The portfolio and scrubbed dashboards are intentionally readable. Management interfaces, infrastructure APIs, secrets, identities, and operational dashboards sit behind controls that can identify the caller and deny the request.</p><p>I use several products because one product cannot answer every question. Cloudflare Access can decide whether a signed-in person belongs to an allowed group, but it cannot decide whether a Terraform destroy plan is safe. Vault can decide whether a Jenkins workload may read a provider token, but it cannot know whether the operator approved the target. CI can scan a public page for internal strings, but it cannot validate the certificate a browser receives after deployment.</p><p>The design therefore follows the request. Each control has one place in the path, one failure behavior, and evidence that can be checked after the request finishes.</p></div></section>
+<section class="block" id="layers"><h2>A request crosses four independent decisions</h2><figure class="architecture"><img src="/assets/engineering-diagrams/security-control-path.svg" alt="Security control path from identity at the edge through a pipeline gate and Vault role to the target system, with audit evidence beside the path"></figure><dl class="responsibilities"><div><dt>Edge identity</dt><dd>Cloudflare Access redirects protected browser requests to Entra ID. Sign-in and group membership are checked before traffic reaches the application.</dd></div><div><dt>Pipeline policy</dt><dd>Jenkins or Gitea Actions validates the request, approval, collision result, budget, plan, and expected change before it calls an infrastructure API.</dd></div><div><dt>Workload identity</dt><dd>A Kubernetes service account, Vault AppRole, or forced-command SSH identity identifies one automation path. It cannot borrow a broad operator login.</dd></div><div><dt>Target authorization</dt><dd>The provider, operating system, Kubernetes API, or application accepts only the actions granted to that machine identity.</dd></div><div><dt>Independent observation</dt><dd>Monitoring, live login probes, audit logs, and repository checks record what the request changed and whether the consumer worked afterward.</dd></div></dl><p>A request is allowed only when each applicable layer can answer. An unavailable identity provider, unreadable budget, failed collision source, missing approver, or unknown target state stops the path that depends on it.</p></section>
+<section class="block" id="edge"><h2>The public edge has no general inbound application rule</h2><p>A connector inside the network opens an outbound connection to Cloudflare. Approved traffic returns over that tunnel to the Kubernetes ingress controller, which routes by hostname to the intended service. The firewall does not expose a matching inbound port-forward for those applications.</p><p>Protected hostnames require Entra sign-in at the edge. The application may also maintain its own authorization, but unauthenticated internet traffic never reaches its login handler. Remote administrative access uses a private mesh VPN.</p><p>There are two public surfaces by design. This portfolio has no login because it exists to be read. The status host serves fixed dashboard documents, their public data route, health checks, and required static assets. Other routes on that host meet a block policy with no login flow.</p><div class="decision"><strong>Public-dashboard boundary.</strong> Internal labels are removed in Prometheus recording rules before the public Grafana instance can query them. Hiding a hostname in a panel would be too late because the browser-facing data source could still return it.</div></section>
+<section class="block" id="identity"><h2>People and workloads have separate identities</h2><p>Human access is group-driven. A role maps to directory groups and application assignments, which gives each access decision a written source. Multi-factor authentication protects remote administration and selected application paths. The user lifecycle pipeline creates, changes, disables, and later removes directory accounts through reviewed requests.</p><p>Offboarding disables access first. Before removing memberships or application assignments, the pipeline records a machine-readable snapshot. That snapshot keeps the information needed to explain what was removed and to reverse an incorrect request during the grace period. Deletion is a later action with its own checks.</p><p>Machines receive narrow identities for the same reason. A certificate-sync job can update registered certificate destinations but cannot open a general shell. A credential rotator can read and update its own Vault records but cannot enumerate unrelated secret values. Kubernetes service accounts bind jobs to namespace permissions. Product API tokens are limited to the action and resource the job manages.</p><h3>Certificate identity is part of authorization</h3><p>The internal certificate authority issues private service identities from templates. A template defines permitted subject names, purposes, enrollment identities, and lifetimes. That configuration is the privilege boundary. A template that lets a low-privileged requester choose an arbitrary high-value subject can turn certificate enrollment into account impersonation.</p><p>Public certificates come from Let’s Encrypt. Internal certificates come from Active Directory Certificate Services. Both paths are monitored from the network so the certificate a service actually presents must match the expected name, chain, and lifetime.</p></section>
+<section class="block" id="secrets"><h2>Secret values have one custody path</h2><p>Vault stores provider credentials, application secrets, and the lifecycle metadata used by automatic rotation. Pipelines authenticate at run time and receive only the fields permitted by their role. The values are kept out of the repository, command arguments, metrics, and public logs.</p><p>Two scanners protect the repository path. A local check catches an accidental secret before commit when the developer environment supports it. CI scans the committed tree and is the enforcement gate because it does not depend on the editor or workstation that created the change.</p><p>Rotation follows overlap. A worker creates a replacement, updates Vault with a version check, activates the consumer, performs a real login or API request, and keeps the predecessor during a seven-day recovery window. The predecessor is retired only after the same path passes again. A new value is never printed as evidence; the provider identifier, timestamps, state, and validation results are enough.</p></section>
+<section class="block" id="gates"><h2>Fail-closed behavior is written into the control path</h2><p>The most useful question for a gate is what happens when one of its dependencies is broken. These are the current answers.</p><div class="table-wrap"><table><thead><tr><th>Gate</th><th>Question</th><th>Unknown or failed result</th></tr></thead><tbody><tr><td>Public-site scrub</td><td>Does the complete publish tree contain a private string, identifier, or unsafe route?</td><td>The build stops before the public mirror is updated.</td></tr><tr><td>Provisioning collision</td><td>Do DNS, inventory, virtualization, directory, and infrastructure state agree that the requested identity is unused?</td><td>An unreachable source stops the request. Unknown is not treated as available.</td></tr><tr><td>Approval identity</td><td>Are the requester and approver known, allowed, and different where two-person review is required?</td><td>A blank or matching identity fails the gate.</td></tr><tr><td>Decommission plan</td><td>Does the plan contain the deletion the request claims it will perform?</td><td>An empty destroy plan is a failure, not a successful run.</td></tr><tr><td>AI capacity</td><td>Is provider usage current and below the configured reserve?</td><td>Missing or stale capacity closes dispatch.</td></tr><tr><td>Scanner triage</td><td>Did the model return a valid, bounded disposition for a scanner finding?</td><td>The original finding remains active.</td></tr><tr><td>Credential retirement</td><td>Did provider auth, Vault binding, consumer health, and the real application path pass after overlap?</td><td>Both credentials remain and the lifecycle state stays pending.</td></tr></tbody></table></div><p>Some checks run at the workstation and help prevent mistakes. The corresponding pipeline gates inspect the committed or deployed result. I keep that distinction because a convenient check can be skipped; a branch requirement or deployment validation decides whether the change moves.</p></section>
+<section class="block" id="bug"><h2>The two-person approval check had a path around it</h2><p>User deprovisioning requires a requester and a different authorized approver. The original implementation compared those identities only when the requester field contained a value. Browser-started work normally supplied one, so the expected path behaved correctly.</p><p>API, timer, and replay paths could start without a requester attached. In that case the comparison short-circuited. The gate did not say that one person was allowed to request and approve. It simply failed to evaluate the rule because one operand was absent.</p><div class="failure"><h3>What failed</h3><p>The control treated a missing identity as a reason to skip the separation check.</p><h3>Why normal testing missed it</h3><p>The interactive route always carried a requester. Tests centered on same-person and different-person comparisons, not on the execution paths that had no person attached.</p><h3>What changed</h3><p>The pipeline now rejects a blank requester before it compares requester and approver. Trigger paths that cannot supply the required identity cannot enter deprovisioning.</p><h3>What the test suite checks</h3><p>Interactive, API, timer, and replay inputs all reach the same identity precondition. A missing requester, missing approver, unauthorized approver, or matching pair fails before account mutation.</p></div></section>
+<section class="block" id="scanning"><h2>Scanning finds candidates; context decides priority</h2><p>Repository secrets, container images, and infrastructure code are scanned in CI. Required checks stop delivery for findings that cross policy. A local model can classify scanner output into likely exploitable paths and likely noise, but it cannot create a clean result when the scanner failed or the model returned malformed output.</p><p>Secret values are removed before a model sees scanner or log context. The model receives bounded text as data, not as instructions. Its disposition, source finding, and downstream decision are recorded separately.</p><p>A central security-event correlation layer is still under development. Wazuh and the existing monitoring paths provide current host and service signals, but this page does not describe the planned correlation work as deployed.</p></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What the result means</th></tr></thead><tbody><tr><td>On a protected browser request</td><td>Cloudflare Access and Entra evaluate sign-in and group policy.</td><td>Allowed traffic enters the tunnel; rejected traffic never reaches the application.</td></tr><tr><td>On a repository change</td><td>CI runs tests, security scans, privacy checks, and policy checks.</td><td>The committed result satisfies the gates required for its branch.</td></tr><tr><td>On an infrastructure request</td><td>The coordinator validates identity, approval, inventory, plan, and target permissions.</td><td>Mutation begins only after the full request is known.</td></tr><tr><td>When a workload needs a credential</td><td>It authenticates to Vault with its machine role.</td><td>Vault returns the registered fields allowed for that path.</td></tr><tr><td>After a change</td><td>Monitoring and application probes inspect the live consumer.</td><td>A write is not considered complete until the outside path works.</td></tr><tr><td>On scheduled audit</td><td>Drift, credential age, certificate expiry, missing heartbeats, and repository state are reevaluated.</td><td>A previously good system must continue producing current evidence.</td></tr></tbody></table></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this from scratch</h2><ol class="sequence"><li><strong>Draw the request path before choosing tools.</strong> Mark where identity enters, where approval is required, where a credential is read, where mutation happens, and where independent validation occurs.</li><li><strong>Give each actor one identity.</strong> Separate people, pipelines, Kubernetes workloads, host helpers, and provider integrations.</li><li><strong>Write unknown-state behavior beside every gate.</strong> An unreachable inventory, missing requester, unreadable budget, or failed scanner needs an explicit stop decision.</li><li><strong>Put secret custody in place before automation.</strong> Define Vault paths and policies, then build the worker that consumes them.</li><li><strong>Separate guardrails from enforcement.</strong> Use local checks for feedback and pipeline gates for decisions.</li><li><strong>Test the alternate trigger paths.</strong> API, schedule, replay, and retry inputs are where identity and approval assumptions tend to disappear.</li><li><strong>Observe the consumer from outside.</strong> Test the login, certificate, API request, or service response that a person or dependent system receives.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>

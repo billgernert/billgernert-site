@@ -147,7 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="../skills/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/diagram/">
   <!-- END generated: canonical -->
@@ -179,17 +180,10 @@
       <span class="here">Diagram</span>
     </nav>
 
-    <header class="skill-head">
-      <span class="badge">Architecture</span>
-      <h1>The lab, in one picture</h1>
-      <p class="descriptor">Everything below runs on hardware in my house, and every box is a thing
-        that is actually running rather than a thing I plan to run. <b>Click any region</b> for what it
-        is and why it is there. Layers read top to bottom: how traffic gets in, what it lands on, and
-        what holds the truth underneath.</p>
-    </header>
-
-    <div class="skill-body">
-      <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
+    <header class="skill-head"><span class="badge">Platform architecture walkthrough</span><h1>How the lab fits together from the public edge to recovery</h1><p class="descriptor lede">A browser request enters through an outbound tunnel, crosses identity policy, and reaches an application in Kubernetes. Infrastructure jobs start in Jenkins or Gitea Actions, read credentials from Vault, change virtual machines through Terraform and Proxmox, and configure operating systems with Ansible. Monitoring observes each layer, and the recovery path can reconstruct protected guests from two backup stores.</p><p class="descriptor lede">The map below is organized by responsibility. The <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox cluster supplies compute. K3s supplies the application platform across <!--LIVE:KUBERNETES_NODE_COUNT:START-->3<!--LIVE:KUBERNETES_NODE_COUNT:END--> nodes, including <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node. Directory, certificate, secret, mail, monitoring, backup, and AI services sit beside those paths because applications depend on them without owning them.</p><p class="source-note">Built from the current architecture page, generated topology facts, provisioning and certificate paths, Vault HA design, segmented network inventory, monitoring stack, and recovery workflow.</p></header>
+<nav class="crumbs" aria-label="On this page"><a href="#map">The map</a><span class="sep">/</span><a href="#browser">Browser request</a><span class="sep">/</span><a href="#change">Infrastructure change</a><span class="sep">/</span><a href="#recovery">Recovery</a><span class="sep">/</span><a href="#regions">Regions</a><span class="sep">/</span><a href="#failure">Failure boundaries</a></nav>
+<div class="skill-body">
+<!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Live</b>:</p>
       <ol class="project-list">
         <li><b>Live map.</b> The zooming, health-aware atlas of the running lab. <a href="/map/">Read more &#8594;</a></li>
@@ -197,410 +191,52 @@
         <li><b>Postmortems.</b> Long-form failure writeups and the follow-on work they produced. <a href="/postmortems-index/">Read more &#8594;</a></li>
       </ol>
       <!-- END generated: group-hub -->
-
-      <div class="diagram">
-        <div class="tier">
-          <div class="tier-label">Edge - how anything gets in</div>
-          <div class="tier-row">
-            <a class="dnode" href="#edge"><span class="dnode-name">Tunnel</span><span class="dnode-role">outbound-only connector, no open ports</span></a>
-            <a class="dnode" href="#edge"><span class="dnode-name">Ingress</span><span class="dnode-role">routes to in-cluster services</span></a>
-            <a class="dnode" href="#edge"><span class="dnode-name">SSO</span><span class="dnode-role">identity-gated at the edge</span></a>
-            <a class="dnode" href="#certs"><span class="dnode-name">cert-manager</span><span class="dnode-role">wildcard TLS, auto-renewed</span></a>
-          </div>
-        </div>
-
-        <div class="flow">&#8595;</div>
-
-        <div class="tier">
-          <div class="tier-label">Network - four segments, one firewall</div>
-          <div class="tier-row">
-            <a class="dnode" href="#network"><span class="dnode-name">OPNsense</span><span class="dnode-role">routing + firewall between segments</span></a>
-            <a class="dnode" href="#network"><span class="dnode-name">Infrastructure</span><span class="dnode-role">platform services</span></a>
-            <a class="dnode" href="#network"><span class="dnode-name">Kubernetes</span><span class="dnode-role">the cluster</span></a>
-            <a class="dnode" href="#network"><span class="dnode-name">Identity</span><span class="dnode-role">directory + PKI</span></a>
-            <a class="dnode" href="#network"><span class="dnode-name">Clients</span><span class="dnode-role">workstations</span></a>
-          </div>
-        </div>
-
-        <div class="flow">&#8595;</div>
-
-        <div class="tier">
-          <div class="tier-label">Compute - <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox HA cluster</div>
-          <div class="tier-row">
-            <a class="dnode" href="#compute"><span class="dnode-name">Node x5</span><span class="dnode-role">HA cluster; a guest can move between them</span></a>
-            <a class="dnode" href="#compute"><span class="dnode-name">Templates</span><span class="dnode-role">rebuilt weekly, never patched in place</span></a>
-            <a class="dnode" href="#compute"><span class="dnode-name">Cloud image</span><span class="dnode-role">the Linux build path</span></a>
-          </div>
-        </div>
-
-        <div class="flow">&#8595;</div>
-
-        <div class="tier">
-          <div class="tier-label">Kubernetes - K3s, <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node + two workers</div>
-          <div class="tier-row">
-            <a class="dnode" href="#kubernetes"><span class="dnode-name">Control</span><span class="dnode-role">API + scheduler</span></a>
-            <a class="dnode" href="#kubernetes"><span class="dnode-name">Worker x2</span><span class="dnode-role">where the work runs</span></a>
-            <a class="dnode" href="#cicd"><span class="dnode-name">Jenkins</span><span class="dnode-role">prod + a separate dev instance</span></a>
-            <a class="dnode" href="#cicd"><span class="dnode-name">Argo CD</span><span class="dnode-role">reconciles the cluster to git</span></a>
-            <a class="dnode" href="#cicd"><span class="dnode-name">Kaniko</span><span class="dnode-role">builds images in-cluster</span></a>
-            <a class="dnode" href="#cicd"><span class="dnode-name">Renovate</span><span class="dnode-role">dependency PRs</span></a>
-            <a class="dnode" href="#ai"><span class="dnode-name">LLM gateway</span><span class="dnode-role">routes, keys, and meters AI calls</span></a>
-            <a class="dnode" href="#monitoring"><span class="dnode-name">Prometheus</span><span class="dnode-role">metrics + alerting rules</span></a>
-          </div>
-        </div>
-
-        <div class="flow">&#8595;</div>
-
-        <div class="tier">
-          <div class="tier-label">Platform - the things that hold the truth</div>
-          <div class="tier-row">
-            <a class="dnode" href="#secrets"><span class="dnode-name">Vault</span><span class="dnode-role">every secret, fetched at run time</span></a>
-            <a class="dnode" href="#cicd"><span class="dnode-name">Gitea</span><span class="dnode-role">every definition, reviewed as a PR</span></a>
-            <a class="dnode" href="#ipam"><span class="dnode-name">NetBox</span><span class="dnode-role">every address</span></a>
-            <a class="dnode" href="#monitoring"><span class="dnode-name">Zabbix</span><span class="dnode-role">agent fleet + self-heal</span></a>
-            <a class="dnode" href="#monitoring"><span class="dnode-name">Grafana</span><span class="dnode-role">one pane over both</span></a>
-            <a class="dnode" href="#mail"><span class="dnode-name">Mail</span><span class="dnode-role">the only alerting path</span></a>
-          </div>
-        </div>
-
-        <div class="flow">&#8595;</div>
-
-        <div class="tier">
-          <div class="tier-label">Identity and backup - underneath everything</div>
-          <div class="tier-row">
-            <a class="dnode" href="#identity"><span class="dnode-name">Directory</span><span class="dnode-role">two controllers, on-prem authoritative</span></a>
-            <a class="dnode" href="#identity"><span class="dnode-name">Cloud directory</span><span class="dnode-role">synced up, never down</span></a>
-            <a class="dnode" href="#certs"><span class="dnode-name">Internal CA</span><span class="dnode-role">machine identity for private services</span></a>
-            <a class="dnode" href="#backup"><span class="dnode-name">Backup server</span><span class="dnode-role">nightly, and proven by restoring</span></a>
-            <a class="dnode" href="#backup"><span class="dnode-name">NAS</span><span class="dnode-role">bulk storage + backup target</span></a>
-          </div>
-        </div>
-      </div>
-
-      <p class="note">Addresses, segment numbers, and machine names are deliberately not on this
-        picture. The internal copy of this diagram has them; that copy stays private, and the gate
-        between the two repos is fail-closed rather than a habit. What is on this page is the shape,
-        which is the part that is actually interesting.</p>
-
-      <section class="block">
-        <h2>The regions</h2>
-
-        <div class="region-card" id="edge">
-          <h3>Edge</h3>
-          <p>Nothing is port-forwarded and nothing listens on the internet. A connector makes an
-            <b>outbound</b> connection to the edge network, and traffic comes back down that tunnel to
-            an ingress controller which routes it to a service inside the cluster. Every application
-            hostname sits behind single sign-on <em>at the edge</em>, so an unauthenticated request is
-            turned away before it reaches the app rather than by the app. The public landing page you
-            are reading is the deliberate exception: it is the one thing with no login in front of
-            it.</p>
-          <div class="links">
-            <a href="/capabilities/cloudflare.html">Cloudflare Zero Trust &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="certs">
-          <h3>Certificates</h3>
-          <p><!--LIVE:CERTIFICATE_STORY_COUNT:START-->2<!--LIVE:CERTIFICATE_STORY_COUNT:END--> certificate stories, on purpose. Public hostnames get a wildcard certificate issued
-            automatically against a DNS challenge and renewed without anyone remembering to. Internal
-            services that no public authority should ever vouch for get theirs from an internal
-            certificate authority instead. The interesting part of running a CA is not issuing, it is
-            that the <b>templates are the privilege boundary</b>: an over-permissive template that lets
-            a low-privileged account choose its own subject is a well-known escalation path, so scoping
-            them tightly is the actual work.</p>
-          <div class="links">
-            <a href="/capabilities/ad-cs-pki.html">AD CS and PKI &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="network">
-          <h3>Network</h3>
-          <p>Four segments, split by role rather than by convenience: platform infrastructure, the
-            Kubernetes cluster, identity, and client machines. A firewall routes between them, so
-            "which segment is this in" is a real answer with real consequences rather than a diagram
-            label. Segmentation is also why provisioning has a pre-flight that refuses to build into a
-            segment whose network path has not been proven: a machine on an unreachable segment looks
-            fine right up until you need it.</p>
-          <div class="links">
-            <a href="/capabilities/vlans.html">VLANs &#8594;</a>
-            <a href="/capabilities/opnsense.html">OPNsense &#8594;</a>
-            <a href="/capabilities/split-horizon-dns.html">Split-horizon DNS &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="topology">
-          <h3>Topology</h3>
-          <p>This is the wiring under every region above: egress, the switch, and the <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes.
-            Traffic gets in through a tunnel that dials out from inside the lab, so the firewall has no
-            open inbound ports. Below the firewall it is one switch, five small machines, and two NAS
-            boxes. Cyan boxes link to the page that covers them.</p>
-          <svg class="topology-diagram" viewBox="0 0 900 724" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Physical network path from the internet to the five node cluster, network segments, and storage">
-            <defs>
-              <marker id="topo-chev" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-                <path class="topo-chev-path" d="M2 1L8 5L2 9" fill="none" stroke-width="1.5" stroke-linecap="round"/>
-              </marker>
-            </defs>
-
-            <g class="topo-node"><title>The outside world. Nothing out here can open a connection into the lab.</title>
-              <rect x="60" y="30" width="150" height="50"/>
-              <text class="topo-t" x="135" y="60" text-anchor="middle">internet</text>
-            </g>
-
-            <a href="/security/"><g class="topo-node"><title>Cloudflare terminates public traffic. The tunnel connector inside the lab dials out to it. Covered on the security page.</title>
-              <rect x="330" y="23" width="240" height="64"/>
-              <text class="topo-t" x="450" y="48" text-anchor="middle">Cloudflare</text>
-              <text class="topo-s" x="450" y="68" text-anchor="middle">tunnel dials out, no open ports</text>
-            </g></a>
-            <line class="topo-wire" x1="210" y1="55" x2="322" y2="55" marker-end="url(#topo-chev)"/>
-
-            <line class="topo-wire" x1="450" y1="87" x2="450" y2="132" marker-end="url(#topo-chev)"/>
-
-            <g class="topo-node"><title>OPNsense routes between segments and holds the firewall rules.</title>
-              <rect x="330" y="140" width="240" height="64"/>
-              <text class="topo-t" x="450" y="165" text-anchor="middle">OPNsense</text>
-              <text class="topo-s" x="450" y="185" text-anchor="middle">routing and firewall between segments</text>
-            </g>
-
-            <line class="topo-wire" x1="450" y1="204" x2="450" y2="242" marker-end="url(#topo-chev)"/>
-
-            <g class="topo-node"><title>One managed switch. Every segment is trunked to every node, so a guest can land anywhere.</title>
-              <rect x="330" y="250" width="240" height="64"/>
-              <text class="topo-t" x="450" y="275" text-anchor="middle">L2/L3 2.5GbE switch</text>
-              <text class="topo-s" x="450" y="295" text-anchor="middle">all segments trunked to all nodes</text>
-            </g>
-
-            <line class="topo-wire" x1="450" y1="314" x2="450" y2="352" marker-end="url(#topo-chev)"/>
-
-            <rect class="topo-zone" x="60" y="360" width="780" height="120"/>
-            <text class="topo-zone-label" x="76" y="386">PROXMOX HA CLUSTER - FIVE IDENTICAL NODES</text>
-            <g class="topo-node"><title>One of five identical nodes. Any guest can move to any other node.</title>
-              <rect x="80" y="410" width="128" height="44"/>
-              <text class="topo-t" x="144" y="436" text-anchor="middle">node 1</text>
-            </g>
-            <g class="topo-node"><title>One of five identical nodes.</title>
-              <rect x="233" y="410" width="128" height="44"/>
-              <text class="topo-t" x="297" y="436" text-anchor="middle">node 2</text>
-            </g>
-            <g class="topo-node"><title>One of five identical nodes.</title>
-              <rect x="386" y="410" width="128" height="44"/>
-              <text class="topo-t" x="450" y="436" text-anchor="middle">node 3</text>
-            </g>
-            <g class="topo-node"><title>One of five identical nodes.</title>
-              <rect x="539" y="410" width="128" height="44"/>
-              <text class="topo-t" x="603" y="436" text-anchor="middle">node 4</text>
-            </g>
-            <g class="topo-node"><title>One of five identical nodes.</title>
-              <rect x="692" y="410" width="128" height="44"/>
-              <text class="topo-t" x="756" y="436" text-anchor="middle">node 5</text>
-            </g>
-
-            <line class="topo-wire" x1="450" y1="480" x2="450" y2="512" marker-end="url(#topo-chev)"/>
-            <text class="topo-wire-label" x="462" y="502">segments</text>
-
-            <a href="/platform/"><g class="topo-node"><title>Platform services: secrets, git, CI, monitoring, inventory. Covered on the platform page.</title>
-              <rect x="60" y="520" width="180" height="64"/>
-              <text class="topo-t" x="150" y="545" text-anchor="middle">Infrastructure</text>
-              <text class="topo-s" x="150" y="565" text-anchor="middle">platform services</text>
-            </g></a>
-            <g class="topo-node"><title>The k3s cluster: <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node, two workers.</title>
-              <rect x="260" y="520" width="180" height="64"/>
-              <text class="topo-t" x="350" y="545" text-anchor="middle">Kubernetes</text>
-              <text class="topo-s" x="350" y="565" text-anchor="middle">k3s cluster</text>
-            </g>
-            <a href="/windows-identity/"><g class="topo-node"><title>Active Directory domain controllers and the certificate authority. Covered on the identity page.</title>
-              <rect x="460" y="520" width="180" height="64"/>
-              <text class="topo-t" x="550" y="545" text-anchor="middle">Identity</text>
-              <text class="topo-s" x="550" y="565" text-anchor="middle">directory and PKI</text>
-            </g></a>
-            <g class="topo-node"><title>The GPU box running local models.</title>
-              <rect x="660" y="520" width="180" height="64"/>
-              <text class="topo-t" x="750" y="545" text-anchor="middle">Lab</text>
-              <text class="topo-s" x="750" y="565" text-anchor="middle">GPU, local AI</text>
-            </g>
-
-            <line class="topo-wire" x1="290" y1="584" x2="290" y2="622" marker-end="url(#topo-chev)"/>
-            <line class="topo-wire" x1="610" y1="584" x2="610" y2="622" marker-end="url(#topo-chev)"/>
-
-            <a href="/dr-restore-verify/"><g class="topo-node"><title>Shared NFS storage every node mounts. Guests live here so they can move between nodes. Covered on the backup and restore page.</title>
-              <rect x="170" y="630" width="240" height="64"/>
-              <text class="topo-t" x="290" y="655" text-anchor="middle">primary NAS</text>
-              <text class="topo-s" x="290" y="675" text-anchor="middle">shared NFS</text>
-            </g></a>
-            <a href="/dr-restore-verify/"><g class="topo-node"><title>The second NAS on its own subnet. Backups land here so one failure cannot take both copies. Covered on the backup and restore page.</title>
-              <rect x="490" y="630" width="240" height="64"/>
-              <text class="topo-t" x="610" y="655" text-anchor="middle">DR NAS</text>
-              <text class="topo-s" x="610" y="675" text-anchor="middle">separate subnet</text>
-            </g></a>
-          </svg>
-        </div>
-
-        <div class="region-card" id="compute">
-          <h3>Compute</h3>
-          <p><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END--> nodes in a high-availability cluster, so a guest is not welded to the machine it
-            happens to be running on. Two build paths sit on top: Windows clones a template that a
-            weekly pipeline rebuilds from scratch (patching a golden image is a fiction, rebuilding it
-            is not), and Linux boots a shared cloud image with no golden-template dependency at all.
-            Every machine is built by a pipeline, never by hand.</p>
-          <div class="links">
-            <a href="/capabilities/proxmox.html">Proxmox &#8594;</a>
-            <a href="/capabilities/terraform.html">Terraform &#8594;</a>
-            <a href="/capabilities/pipelines.html">Pipelines &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="kubernetes">
-          <h3>Kubernetes</h3>
-          <p>A K3s cluster: <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node, two workers. It is where the platform's own software
-            runs, which is the part people usually leave out of a lab picture. CI, GitOps
-            reconciliation, image builds, dependency updates, the AI gateway, and the metrics stack are
-            all workloads here, not pets on a VM somewhere.</p>
-          <div class="links">
-            <a href="/capabilities/kubernetes-k3s.html">Kubernetes (K3s) &#8594;</a>
-            <a href="/capabilities/helm.html">Helm &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="cicd">
-          <h3>CI/CD and GitOps</h3>
-          <p>Git is the definition of the estate, and a change reaches it as a branch and a pull
-            request with lint and security gates as required checks. CI runs on the cluster, with a
-            <b>separate dev instance</b> so that changing the pipeline platform does not mean testing
-            in production. Images are built in-cluster rather than on somebody's laptop, dependency
-            bumps arrive as PRs, and a reconciler continuously drags the cluster back to what git says
-            it should be. Drift has nowhere to live.</p>
-          <div class="links">
-            <a href="/capabilities/jenkins.html">Jenkins &#8594;</a>
-            <a href="/capabilities/gitea.html">Gitea &#8594;</a>
-            <a href="/capabilities/argo-cd.html">Argo CD &#8594;</a>
-            <a href="/capabilities/kaniko.html">Kaniko &#8594;</a>
-            <a href="/capabilities/devsecops.html">DevSecOps &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="secrets">
-          <h3>Secrets</h3>
-          <p>One system owns every secret and nothing is written to disk: pipelines fetch what they
-            need at run time and hold it in memory, and workloads authenticate by role rather than by
-            carrying a password around. Two independent scanners backstop the rule, one at commit time
-            and one at write time, so a secret has to beat both to reach the repository. This tier is
-            also the one whose recovery I proved by destroying it outright and restoring it.</p>
-          <div class="links">
-            <a href="/capabilities/vault.html">Vault &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="ipam">
-          <h3>Addressing</h3>
-          <p>One system is the source of truth for addresses, and provisioning asks it rather than a
-            spreadsheet or a memory. That is what makes an automated build safe to run twice: the
-            address is allocated, recorded, and released again by the same pipeline that created it,
-            and released only once the machine it belonged to is genuinely gone.</p>
-          <div class="links">
-            <a href="/capabilities/netbox-ipam.html">NetBox IPAM &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="monitoring">
-          <h3>Monitoring</h3>
-          <p>Three tools with distinct jobs: agent-based monitoring for the traditional fleet, a
-            metrics stack for the cluster and the hypervisors, and one visualization pane over both.
-            Dashboards are code, so the repository is the source of truth and a dashboard edited in the
-            UI has nowhere to hide. The overview screen is generated from the dashboards themselves and
-            refuses to build if one is missing its domain tag. A tile with no signal renders grey, never
-            green, because a green light meaning "I have no idea" is worse than no light.</p>
-          <div class="links">
-            <a href="/capabilities/zabbix.html">Zabbix &#8594;</a>
-            <a href="/capabilities/prometheus.html">Prometheus &#8594;</a>
-            <a href="/capabilities/grafana.html">Grafana &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="ai">
-          <h3>AI</h3>
-          <p>A local model does the high-volume, zero-cost, privacy-sensitive work and never leaves the
-            network; a paid API is reserved for the harder reasoning where it earns its cost. A gateway
-            fronts them so calls are routed, keyed, and metered in one place. Spend is governed by
-            layered budgets where any layer can say no, and the innermost one fails closed: a budget
-            that is missing or unreadable denies rather than allows.</p>
-          <div class="links">
-            <a href="/ai/">How I use AI &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="identity">
-          <h3>Identity</h3>
-          <p>An on-prem directory with two controllers is authoritative, and it synchronizes <em>up</em>
-            to the cloud directory, never down. That direction is the whole design: edit an attribute in
-            the cloud and the next sync quietly overwrites it from on-prem, with no error, so the rule
-            is to change it where the authority is. Joiners and leavers are pipelines driven by
-            declarative role definitions, and offboarding disables rather than deletes.</p>
-          <div class="links">
-            <a href="/capabilities/active-directory.html">Active Directory &#8594;</a>
-            <a href="/capabilities/entra-id.html">Entra ID &#8594;</a>
-            <a href="/capabilities/duo-mfa.html">Duo MFA &#8594;</a>
-          </div>
-        </div>
-
-        <div class="region-card" id="backup">
-          <h3>Backup</h3>
-          <p>Nightly backups to a dedicated backup server, with bulk storage on a NAS. The part that
-            matters is not the schedule, it is that the restore has actually been performed: the secrets
-            VM was destroyed on purpose and restored from that night's snapshot, and a canary written
-            minutes before the destroy survived. A backup you have never restored is a hypothesis.</p>
-        </div>
-
-        <div class="region-card" id="mail">
-          <h3>Alerting</h3>
-          <p>Every alert leaves by one path: a self-hosted mail platform, into role-based groups. That
-            is a deliberate constraint rather than a limitation. Push services were tried and removed,
-            because one auditable notification path that everything shares beats several that each
-            work slightly differently and fail in their own way.</p>
-        </div>
-      </section>
-
-      <div class="links">
-        <a href="/platform/">How the platform works &#8594;</a>
-        <a href="/projects/">The pipelines that build it &#8594;</a>
-        <a href="/capabilities/">Explore the capabilities &#8594;</a>
-      </div>
+<section class="block" id="map"><h2>The map separates traffic, execution, trust, and evidence</h2><figure class="architecture"><img src="/assets/engineering-diagrams/lab-architecture-path.svg" alt="AutomationLab architecture from public edge through Kubernetes and shared services to Proxmox compute, monitoring, and backup"></figure><p>Reading downward follows a normal application request. Reading across the middle shows the shared services an application or pipeline calls. Reading upward from the bottom follows monitoring and recovery evidence back to the operator.</p><p>The diagram uses roles rather than internal names. The live operator map carries hostnames, addresses, guest placement, and management links. The public page keeps the relationship and leaves out the identifiers needed to operate the environment.</p></section>
+<section class="block" id="browser"><h2>A browser request never starts with an inbound port-forward</h2><ol class="sequence"><li><strong>Public DNS resolves the application name.</strong> The record points to the edge service, not to a private cluster address.</li><li><strong>Cloudflare applies the route policy.</strong> Public portfolio and status routes are allowed. Protected applications redirect to Entra sign-in and evaluate group membership.</li><li><strong>An existing outbound tunnel carries approved traffic inward.</strong> A connector inside the lab established the connection first, so the firewall does not need a general inbound rule for the application.</li><li><strong>Traefik receives the hostname in Kubernetes.</strong> This ingress controller selects the service and presents the public certificate.</li><li><strong>The application handles the authenticated request.</strong> It may read secrets from Vault, identity from directory claims, data from its own store, and metrics through the platform libraries.</li><li><strong>Blackbox and application monitoring observe the result.</strong> They check the page, certificate, protocol, and workload state from paths outside the application process.</li></ol><p>The public wildcard certificate follows the same boundary. Let’s Encrypt issues it through cert-manager, one Kubernetes Secret owns the source pair, and Jenkins distributes that pair to registered services outside the source namespace. A handshake against each public name verifies what a browser receives.</p></section>
+<section class="block" id="change"><h2>An infrastructure request moves through owners, not one all-powerful tool</h2><p>Jenkins is the main front door for infrastructure work. Backstage can create the same reviewed request and let Gitea Actions apply it. Both paths use the same underlying scripts and definitions.</p><div class="table-wrap"><table><thead><tr><th>System</th><th>What it owns</th><th>What it hands to the next step</th></tr></thead><tbody><tr><td>Jenkins or Gitea Actions</td><td>Request inputs, approval, stage order, logs, notification, and failure handling.</td><td>A validated request and execution context.</td></tr><tr><td>NetBox</td><td>Address allocation and the intended infrastructure inventory record.</td><td>A reserved address and canonical server facts.</td></tr><tr><td>Terraform</td><td>Requested infrastructure definition, plan, apply, and state.</td><td>An approved provider change.</td></tr><tr><td>Proxmox provider</td><td>Translation from Terraform resource operations to virtualization API calls.</td><td>A create, update, move, or delete request to Proxmox.</td></tr><tr><td>Proxmox</td><td>Virtual machine lifecycle, compute placement, disks, and virtual networks.</td><td>A running guest reachable for configuration.</td></tr><tr><td>Ansible</td><td>Operating-system configuration, packages, domain integration, monitoring, and security controls.</td><td>A configured server and verification results.</td></tr><tr><td>Vault</td><td>Credentials read at run time by each narrow workload identity.</td><td>Only the secret fields permitted for that stage.</td></tr></tbody></table></div><p>The committed host record and monitoring enrollment make the result discoverable after the pipeline ends. Backup policy and the generated topology then pick up the same recorded server.</p></section>
+<section class="block" id="trust"><h2>Public and internal trust have separate authorities</h2><p>Let’s Encrypt signs names that public browsers must trust. Cloudflare provides DNS validation for the wildcard request. cert-manager owns renewal inside Kubernetes, and the fan-out pipeline moves the source pair to the registered consumers.</p><p>Active Directory Certificate Services signs private service identities. Managed Windows systems use templates and auto-enrollment. Linux systems create keys locally and submit approved certificate requests. The internal root is distributed to the managed callers that need it.</p><p>Vault handles application credentials and API tokens. A client secret is not a certificate, but the lifecycle shape is similar: create a replacement, place it in custody, activate the consumer, test the live path, keep overlap, and retire the recorded predecessor.</p></section>
+<section class="block" id="recovery"><h2>Recovery starts below the application and verifies above it</h2><p>Proxmox Backup Server stores protected guest backups. A second storage system receives a mirrored copy so the primary backup server is not its own final recovery point.</p><p>The weekly restore pipeline selects a protected system class, restores it into a reserved scratch guest, attaches a network with no production uplink, boots it, checks the operating system and application, removes the scratch copy, and verifies absence. That path begins at storage and ends at application behavior.</p><p>Configuration and source code follow a different recovery path through Git, Argo CD, Terraform state, and Ansible. The architecture uses both approaches because restoring a guest image and reconciling a declared workload solve different recovery problems.</p></section>
+<section class="block" id="regions"><h2>What each region is for</h2><dl class="responsibilities"><div><dt>Edge</dt><dd>Public DNS, identity policy, and the outbound tunnel decide how a browser reaches the platform.</dd></div><div><dt>Network</dt><dd>Firewall policy, routing, private mesh connectivity, and segmented server, management, storage, and user networks limit which systems can talk.</dd></div><div><dt>Compute</dt><dd>The Proxmox cluster runs virtual machines and can move or restart guests across physical nodes.</dd></div><div><dt>Kubernetes</dt><dd>K3s schedules platform applications, controllers, monitoring exporters, and internal services across its control and worker nodes.</dd></div><div><dt>Delivery</dt><dd>Gitea stores code and review state; Jenkins and Gitea Actions coordinate pipelines; Argo CD reconciles registered Kubernetes applications from Git.</dd></div><div><dt>Secrets</dt><dd>Vault authenticates workloads, applies path policy, rotates registered credentials, and serves sensitive values at run time.</dd></div><div><dt>Identity</dt><dd>Active Directory, Entra, Duo, and application roles identify people and machines and apply sign-in policy.</dd></div><div><dt>Certificates</dt><dd>Let’s Encrypt covers public names; AD CS covers private identities; live probes verify the certificate presented by each service.</dd></div><div><dt>Monitoring</dt><dd>Prometheus, Grafana, Zabbix, logs, and dead-man checks report state, trend, missing evidence, and drift.</dd></div><div><dt>Backup</dt><dd>PBS, mirrored storage, configuration repositories, and scheduled restore tests provide recovery paths with different failure boundaries.</dd></div><div><dt>AI</dt><dd>Subscription-backed repository agents and gateway-routed operational inference run under the delivery, identity, budget, and evidence controls above.</dd></div></dl></section>
+<section class="block" id="failure"><h2>The architecture is also a list of failure boundaries</h2><div class="table-wrap"><table><thead><tr><th>Failure</th><th>Boundary that contains it</th><th>Evidence after containment</th></tr></thead><tbody><tr><td>One physical compute node</td><td>Cluster placement and shared storage let eligible guests run elsewhere.</td><td>Node, guest, and service state in monitoring.</td></tr><tr><td>One Vault cluster node</td><td>Raft majority and the service-aware shared address keep the credential endpoint available.</td><td>Seal state, quorum, address owner, and client request.</td></tr><tr><td>Public certificate renewal</td><td>One source certificate feeds registered copies with consumer-specific reload.</td><td>Live handshake fingerprint and expiry per application name.</td></tr><tr><td>One Kubernetes pod</td><td>The controller recreates the workload from its declared state.</td><td>Rollout state, service endpoint, and application probe.</td></tr><tr><td>Monitoring producer</td><td>Dead-man items alert on missing heartbeat or stale result.</td><td>Age, no-data trigger, and second-plane host check.</td></tr><tr><td>Primary backup storage</td><td>The mirrored store preserves a separate recovery copy.</td><td>Freshness by source and a restore from the selected copy.</td></tr><tr><td>Configuration drift</td><td>Argo CD, CI checks, and scheduled reconciliation compare declared and live state.</td><td>Named resource or dashboard field that differs.</td></tr></tbody></table></div></section>
+<section class="block" id="running"><h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What coordinates the work</th><th>What changes</th></tr></thead><tbody><tr><td>On a browser request</td><td>DNS, edge policy, tunnel, ingress, and application identity.</td><td>No infrastructure change; the request reaches one registered service.</td></tr><tr><td>On a reviewed infrastructure request</td><td>Jenkins or Gitea Actions with NetBox, Terraform, Proxmox, Ansible, and Vault.</td><td>Compute, configuration, inventory, monitoring, and repository state.</td></tr><tr><td>Continuously in Kubernetes</td><td>K3s controllers and Argo CD compare desired and running resources.</td><td>Missing or drifted workloads are reconciled within declared authority.</td></tr><tr><td>Continuously in monitoring</td><td>Exporters, Prometheus, Zabbix, and Grafana update state and alerts.</td><td>Evidence changes; the monitored services are not mutated by the dashboard.</td></tr><tr><td>On a lifecycle schedule</td><td>Certificate and credential workers evaluate renewal, overlap, and retirement.</td><td>Registered trust material is replaced and consumers reload.</td></tr><tr><td>On recovery schedule</td><td>PBS, Proxmox, Jenkins, guest verifiers, and cleanup checks.</td><td>A fenced scratch guest is created, tested, and removed.</td></tr></tbody></table></div></section>
+<section class="block" id="recreate"><h2>If I were recreating this map</h2><ol class="sequence"><li><strong>Start with three journeys.</strong> Trace a browser request, an infrastructure change, and a recovery run from beginning to end.</li><li><strong>Name the owner at each handoff.</strong> The coordinator, source of truth, executor, credential source, and verifier should be distinct.</li><li><strong>Draw network and trust boundaries before product boxes.</strong> Show which paths are public, private, identity-protected, or fenced.</li><li><strong>Add observation beside execution.</strong> Every important change needs evidence from outside the process that made it.</li><li><strong>Mark shared dependencies.</strong> Secrets, identity, DNS, certificate authority, storage, and Git should be visible where several paths depend on them.</li><li><strong>Generate counts and labels that drift.</strong> The site build should read current topology facts rather than preserving a hand-drawn fleet size.</li></ol></section>
+</div>
+<footer>
+  <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
+  <nav class="sitemap" aria-label="Site map">
+    <div class="sitemap-group">
+      <span class="sitemap-label">Projects</span>
+      <a href="/projects/">Project stories</a>
+      <a href="/projects/server-provisioning/">Server provisioning</a>
+      <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
     </div>
-
-    <footer>
-      <!-- BEGIN generated: sitemap (generate-site-pages.py) -->
-      <nav class="sitemap" aria-label="Site map">
-        <div class="sitemap-group">
-          <span class="sitemap-label">Projects</span>
-          <a href="/projects/">Project stories</a>
-          <a href="/projects/server-provisioning/">Server provisioning</a>
-          <a href="/projects/certificate-secret-renewal/">Certificate lifecycle</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Platform</span>
-          <a href="/platform/">How it works</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/vault/">Vault</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
-          <a href="/security/">Security</a>
-          <a href="/ai/">Applied AI</a>
-          <a href="/dead-man-monitoring/">Watchdog</a>
-        </div>
-        <div class="sitemap-group">
-          <span class="sitemap-label">Live and about</span>
-          <a href="/live/">Live evidence</a>
-          <a href="/diagram/">Architecture diagram</a>
-          <a href="/noc/">NOC</a>
-          <a href="/about/">About Bill</a>
-        </div>
-      </nav>
-      <!-- END generated: sitemap -->
-      <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
-      <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
-    </footer>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Platform</span>
+      <a href="/platform/">How it works</a>
+      <a href="/capabilities/">Capabilities</a>
+      <a href="/roadmap/">Roadmap</a>
+      <a href="/vault/">Vault</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Engineering</span>
+      <a href="/fleet/">Fleet</a>
+      <a href="/security/">Security</a>
+      <a href="/ai/">Applied AI</a>
+      <a href="/dead-man-monitoring/">Watchdog</a>
+    </div>
+    <div class="sitemap-group">
+      <span class="sitemap-label">Live and about</span>
+      <a href="/live/">Live evidence</a>
+      <a href="/diagram/">Architecture diagram</a>
+      <a href="/noc/">NOC</a>
+      <a href="/about/">About Bill</a>
+    </div>
+  </nav>
+  <!-- END generated: sitemap -->
+  <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
+  <p class="verified-line">Verified against the lab on 2026-08-27</p>
+  <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
+</footer>
   </main>
 </body>
 </html>
