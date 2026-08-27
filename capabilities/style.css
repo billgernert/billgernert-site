@@ -69,45 +69,26 @@ a:hover { text-decoration: underline; }
 .crumbs .sep { color: rgba(95, 119, 153, 0.5); }
 .crumbs .here { color: var(--fg); }
 
-/* ---- sticky site header: brand mark + name + nav, pinned while scrolling (item 448) ---- */
-/* scroll-padding-top keeps an anchor jump (#id) landing with its heading visible BELOW the sticky
-   header, instead of right at the very top of the viewport where the header would cover it. The value
-   is a generous upper bound for the header's height including a two-line wrap on a narrow phone width,
-   not an exact measurement - there is no JS on this site to measure it, and a few extra px of gap below
-   the header is harmless where actually covering the heading would not be. */
-html { scroll-padding-top: 130px; }
+/* ---- site header: keep every interior page aligned with the homepage ---- */
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 28px;
   min-height: 82px;
-  background: rgba(10, 14, 26, 0.94);
-  backdrop-filter: blur(10px);
-  padding: 18px 0;
-  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 28px;
   border-bottom: 1px solid var(--border-quiet);
 }
 .site-header .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
   flex: 0 0 auto;
   color: #fff;
-  text-decoration: none;
   font-family: var(--mono);
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 .site-header .brand:hover { color: var(--cyan); text-decoration: none; }
-.site-header .brand-mark { width: 30px; height: 30px; flex: none; }
-.site-header .brand-name {
-  font-size: 0.84rem;
-  white-space: nowrap;
-}
+.site-header .brand-mark { width: 30px; height: 30px; }
 
 /* ---- site-wide top navigation (item 136), nested inside .site-header ---- */
 .topnav {
@@ -120,20 +101,17 @@ html { scroll-padding-top: 130px; }
   font-size: 0.78rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  flex: 1 1 auto;
-  min-width: 0;
 }
 .topnav a { color: var(--muted); }
 .topnav a:hover { color: var(--cyan); text-decoration: none; }
 .topnav a.active { color: #fff; }
 .topnav .topnav-spacer { flex: 1 1 auto; }
-@media (max-width: 720px) { .topnav a[rel="me"] { display: none; } }
 /* Nav group labels used to be a plain, unclickable `.topnav-group` span (item 467's first build) - the
    row grew instead of collapsing, because a label with no link and the flat list beside it is a divider,
    not a group. Corrected (item 467 correction, entry 48/49): each group label is now a real `<a>` in the
    primary row (styled by the plain `.topnav a` rule above), pointing at that group's hub page. */
-@media (max-width: 480px) { .topnav .topnav-spacer { display: none; } }
-@media (max-width: 720px) {
+@media (max-width: 860px) { .topnav .topnav-spacer { display: none; } }
+@media (max-width: 620px) {
   .site-header {
     align-items: flex-start;
     flex-direction: column;
@@ -141,6 +119,7 @@ html { scroll-padding-top: 130px; }
     padding: 18px 0;
   }
   .topnav { gap: 7px 14px; }
+  .topnav a[rel="me"] { display: none; }
 }
 
 /* ---- shared eyebrow + headings ---- */
