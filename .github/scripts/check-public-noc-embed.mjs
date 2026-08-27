@@ -41,9 +41,58 @@ async function checkHealthContract() {
   }
 }
 
+async function checkMetadataBoundary() {
+  const siteResponse = await fetch(SITE_URL);
+  const siteHtml = await siteResponse.text();
+  const dashboardMatch = siteHtml.match(
+    /https:\/\/status\.billgernert\.com\/public-dashboards\/([0-9a-f]{32})/
+  );
+  if (!siteResponse.ok || !dashboardMatch) {
+    throw new Error("public NOC page has no pinned dashboard URL");
+  }
+
+  const dashboardUrl = dashboardMatch[0];
+  const dashboardResponse = await fetch(dashboardUrl);
+  const dashboardHtml = await dashboardResponse.text();
+  if (!dashboardResponse.ok ||
+      dashboardResponse.headers.get("X-Public-NOC-Boundary") !== "metadata-v1") {
+    throw new Error("public dashboard did not pass through the metadata boundary");
+  }
+  for (const [name, pattern] of [
+    ["private Grafana origin", /grafana\.parsec-lab\.com/i],
+    ["private SSO label", /parsec-lab\s+SSO/i],
+    ["datasource proxy route", /\/api\/datasources\/proxy\//i],
+    ["Grafana software version", /"(?:pluginVersion|versionString)"\s*:\s*"[^"\s]+"/i],
+    ["Grafana commit", /"commit(?:Short)?"\s*:\s*"[0-9a-f]{7,40}"/i]
+  ]) {
+    if (pattern.test(dashboardHtml)) throw new Error("public dashboard exposed " + name);
+  }
+  if (!/"hideVersion":true/.test(dashboardHtml) || /dashboardNewLayouts|provisioning/.test(dashboardHtml)) {
+    throw new Error("public dashboard bootstrap metadata was not reduced");
+  }
+
+  const apiUrl = `${STATUS_ORIGIN}/api/public/dashboards/${dashboardMatch[1]}`;
+  const apiResponse = await fetch(apiUrl);
+  const apiBody = await apiResponse.text();
+  if (!apiResponse.ok || apiResponse.headers.get("X-Public-NOC-Boundary") !== "metadata-v1") {
+    throw new Error("public dashboard JSON did not pass through the metadata boundary");
+  }
+  if (/"(?:pluginVersion|folderUid|created|updated)"\s*:/.test(apiBody)) {
+    throw new Error("public dashboard JSON exposed implementation metadata");
+  }
+
+  const genericApi = await fetch(STATUS_ORIGIN + "/apis/dashboard.grafana.app/", {
+    redirect: "manual"
+  });
+  if (genericApi.status !== 403) {
+    throw new Error("generic Grafana dashboard API was not blocked at Access");
+  }
+}
+
 async function checkEmbed() {
   const browser = await chromium.launch({ headless: true });
   const forbidden = [];
+  const responseChecks = [];
   try {
     const context = await browser.newContext({ locale: "en-US" });
     const page = await context.newPage();
@@ -52,12 +101,22 @@ async function checkEmbed() {
       if (url.origin === STATUS_ORIGIN && response.status() === 403) {
         forbidden.push(url.pathname);
       }
+      if (url.origin === STATUS_ORIGIN &&
+          url.pathname.startsWith("/api/public/dashboards/") &&
+          response.status() === 200) {
+        responseChecks.push(response.headerValue("X-Public-NOC-Boundary").then(value => {
+          if (value !== "metadata-v1") {
+            forbidden.push(url.pathname + " (metadata boundary missing)");
+          }
+        }));
+      }
     });
 
     await page.goto(SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
     const frameElement = page.locator("iframe[data-live-frame]").first();
     await frameElement.scrollIntoViewIfNeeded();
     await page.waitForTimeout(15000);
+    await Promise.all(responseChecks);
 
     if (forbidden.length) {
       throw new Error("status origin returned HTTP 403 for " + forbidden.join(", "));
@@ -84,5 +143,6 @@ async function checkEmbed() {
 
 await checkSiteFrameHeaders();
 await checkHealthContract();
+await checkMetadataBoundary();
 await checkEmbed();
-console.log("public NOC outside health and embed checks passed");
+console.log("public NOC outside metadata, health, and embed checks passed");
