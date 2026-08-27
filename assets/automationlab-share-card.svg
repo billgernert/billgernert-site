@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">AutomationLab platform engineering</title>
+  <desc id="description">AutomationLab hexagon mark beside platform engineering, built and operated.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0e1a"/>
+      <stop offset="0.58" stop-color="#0d1628"/>
+      <stop offset="1" stop-color="#07121a"/>
+    </linearGradient>
+    <radialGradient id="cyan-glow" cx="0" cy="0" r="1" gradientTransform="translate(190 315) rotate(90) scale(270)">
+      <stop offset="0" stop-color="#00d4ff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0V42" fill="none" stroke="#8fa8c8" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" rx="28" fill="url(#background)"/>
+  <rect width="1200" height="630" rx="28" fill="url(#grid)"/>
+  <rect width="560" height="630" fill="url(#cyan-glow)"/>
+  <path d="M44 44H1156V586H44Z" fill="none" stroke="#00d4ff" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M44 126H1156M414 44V586" fill="none" stroke="#8fa8c8" stroke-opacity="0.12"/>
+
+  <g transform="translate(74 171)">
+    <path d="M124 0 238 66V198L124 264 10 198V66Z" fill="#091321" stroke="#00d4ff" stroke-width="8"/>
+    <path d="M124 39 204 85V179L124 225 44 179V85Z" fill="none" stroke="#0066ff" stroke-opacity="0.85" stroke-width="3"/>
+    <path d="M124 132 58 94M124 132l66-38M124 132v77" fill="none" stroke="#00d4ff" stroke-opacity="0.62" stroke-width="3"/>
+    <circle cx="124" cy="132" r="18" fill="#00ff96" filter="url(#glow)"/>
+    <circle cx="58" cy="94" r="8" fill="#00d4ff"/>
+    <circle cx="190" cy="94" r="8" fill="#00d4ff"/>
+    <circle cx="124" cy="209" r="8" fill="#00d4ff"/>
+  </g>
+
+  <g fill="#e0e8ff" font-family="Segoe UI, Arial, sans-serif">
+    <text x="470" y="104" fill="#00d4ff" font-size="25" font-weight="700" letter-spacing="7">AUTOMATIONLAB</text>
+    <text x="470" y="247" font-size="70" font-weight="700" letter-spacing="1">PLATFORM</text>
+    <text x="470" y="326" font-size="70" font-weight="700" letter-spacing="1">ENGINEERING</text>
+    <text x="473" y="387" fill="#a9bad3" font-size="28" font-weight="400" letter-spacing="2">BUILT AND OPERATED</text>
+  </g>
+
+  <g transform="translate(470 461)" font-family="Consolas, monospace" font-size="18" letter-spacing="1.5">
+    <rect width="150" height="47" rx="6" fill="#00d4ff" fill-opacity="0.08" stroke="#00d4ff" stroke-opacity="0.34"/>
+    <text x="22" y="30" fill="#bfefff">AUTOMATION</text>
+    <rect x="166" width="132" height="47" rx="6" fill="#00ff96" fill-opacity="0.07" stroke="#00ff96" stroke-opacity="0.3"/>
+    <text x="190" y="30" fill="#c7ffe7">RECOVERY</text>
+    <rect x="314" width="116" height="47" rx="6" fill="#0066ff" fill-opacity="0.12" stroke="#5a8fff" stroke-opacity="0.42"/>
+    <text x="338" y="30" fill="#c9d8ff">IDENTITY</text>
+    <rect x="446" width="194" height="47" rx="6" fill="#00d4ff" fill-opacity="0.08" stroke="#00d4ff" stroke-opacity="0.34"/>
+    <text x="470" y="30" fill="#bfefff">OBSERVABILITY</text>
+  </g>
+</svg>

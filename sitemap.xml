@@ -2,34 +2,49 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://billgernert.com/</loc></url>
   <url><loc>https://billgernert.com/about/</loc></url>
+  <url><loc>https://billgernert.com/ai-guardrails/</loc></url>
   <url><loc>https://billgernert.com/ai/</loc></url>
   <url><loc>https://billgernert.com/capabilities/</loc></url>
   <url><loc>https://billgernert.com/capabilities/active-directory</loc></url>
   <url><loc>https://billgernert.com/capabilities/ad-cs-pki</loc></url>
   <url><loc>https://billgernert.com/capabilities/ansible</loc></url>
+  <url><loc>https://billgernert.com/capabilities/argo-cd</loc></url>
+  <url><loc>https://billgernert.com/capabilities/cloudflare</loc></url>
   <url><loc>https://billgernert.com/capabilities/devsecops</loc></url>
+  <url><loc>https://billgernert.com/capabilities/duo-mfa</loc></url>
   <url><loc>https://billgernert.com/capabilities/entra-id</loc></url>
+  <url><loc>https://billgernert.com/capabilities/gitea</loc></url>
   <url><loc>https://billgernert.com/capabilities/grafana</loc></url>
+  <url><loc>https://billgernert.com/capabilities/helm</loc></url>
   <url><loc>https://billgernert.com/capabilities/incident-postmortem</loc></url>
   <url><loc>https://billgernert.com/capabilities/jenkins</loc></url>
+  <url><loc>https://billgernert.com/capabilities/job-search-platform</loc></url>
+  <url><loc>https://billgernert.com/capabilities/kaniko</loc></url>
   <url><loc>https://billgernert.com/capabilities/kubernetes-k3s</loc></url>
   <url><loc>https://billgernert.com/capabilities/netbox-ipam</loc></url>
+  <url><loc>https://billgernert.com/capabilities/opnsense</loc></url>
   <url><loc>https://billgernert.com/capabilities/pipelines</loc></url>
   <url><loc>https://billgernert.com/capabilities/prometheus</loc></url>
   <url><loc>https://billgernert.com/capabilities/proxmox</loc></url>
   <url><loc>https://billgernert.com/capabilities/python-tooling</loc></url>
+  <url><loc>https://billgernert.com/capabilities/split-horizon-dns</loc></url>
   <url><loc>https://billgernert.com/capabilities/terraform</loc></url>
   <url><loc>https://billgernert.com/capabilities/vault</loc></url>
+  <url><loc>https://billgernert.com/capabilities/vlans</loc></url>
   <url><loc>https://billgernert.com/capabilities/zabbix</loc></url>
   <url><loc>https://billgernert.com/dead-man-monitoring/</loc></url>
   <url><loc>https://billgernert.com/diagram/</loc></url>
   <url><loc>https://billgernert.com/dr-restore-verify/</loc></url>
   <url><loc>https://billgernert.com/engineering/</loc></url>
   <url><loc>https://billgernert.com/everything-as-code/</loc></url>
+  <url><loc>https://billgernert.com/fleet/</loc></url>
   <url><loc>https://billgernert.com/gitops-argocd/</loc></url>
+  <url><loc>https://billgernert.com/lab-mcp-server/</loc></url>
+  <url><loc>https://billgernert.com/litellm/</loc></url>
   <url><loc>https://billgernert.com/live/</loc></url>
   <url><loc>https://billgernert.com/mail/</loc></url>
   <url><loc>https://billgernert.com/map/</loc></url>
+  <url><loc>https://billgernert.com/map/embed/</loc></url>
   <url><loc>https://billgernert.com/noc/</loc></url>
   <url><loc>https://billgernert.com/platform/</loc></url>
   <url><loc>https://billgernert.com/postmortems-index/</loc></url>
@@ -43,8 +58,11 @@
   <url><loc>https://billgernert.com/projects/self-healing-monitoring/</loc></url>
   <url><loc>https://billgernert.com/projects/server-provisioning/</loc></url>
   <url><loc>https://billgernert.com/projects/template-factory/</loc></url>
+  <url><loc>https://billgernert.com/public-roadmap/</loc></url>
+  <url><loc>https://billgernert.com/renovate/</loc></url>
   <url><loc>https://billgernert.com/roadmap/</loc></url>
   <url><loc>https://billgernert.com/security/</loc></url>
+  <url><loc>https://billgernert.com/supply-chain-security/</loc></url>
   <url><loc>https://billgernert.com/vault/</loc></url>
   <url><loc>https://billgernert.com/windows-identity/</loc></url>
 </urlset>
