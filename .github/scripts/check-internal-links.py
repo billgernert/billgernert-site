@@ -53,7 +53,7 @@ def parse_html(path):
     return ex.refs, ex.ids
 
 
-def _redirect_route(value, line_number, field, errors):
+def _redirect_route(value, line_number, field, errors, allow_wildcard=False, allow_splat=False):
     """Return a decoded, site-root route or record why the redirect field is unsafe."""
     label = f"_redirects:{line_number}: {field}"
     if not value.startswith("/") or value.startswith("//"):
@@ -78,16 +78,24 @@ def _redirect_route(value, line_number, field, errors):
             or any(ord(char) < 32 or ord(char) == 127 for char in decoded)):
         errors.append(f"{label} decodes to an unsafe site-root path: '{value}'")
         return None
-    if any(part in (".", "..") for part in decoded.split("/")):
+    if "*" in decoded:
+        if not allow_wildcard or decoded.count("*") != 1 or not decoded.endswith("/*"):
+            errors.append(f"{label} wildcard must be one trailing '/*': '{value}'")
+            return None
+    if ":splat" in decoded:
+        if not allow_splat or decoded.count(":splat") != 1 or not decoded.endswith("/:splat"):
+            errors.append(f"{label} splat must be one trailing '/:splat' paired with a wildcard source: '{value}'")
+            return None
+    if any(part in (".", "..") for part in decoded.replace("*", "wildcard").replace(":splat", "splat").split("/")):
         errors.append(f"{label} contains path traversal: '{value}'")
         return None
     return decoded
 
 
-def _redirect_target(value, line_number, errors):
+def _redirect_target(value, line_number, errors, allow_splat=False):
     """Accept a safe site-root route or an HTTPS terminal redirect target."""
     if not value.startswith("https://"):
-        return _redirect_route(value, line_number, "target", errors)
+        return _redirect_route(value, line_number, "target", errors, allow_splat=allow_splat)
     label = f"_redirects:{line_number}: target"
     parsed = urllib.parse.urlsplit(value)
     if (parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password
@@ -104,6 +112,8 @@ def _is_external_redirect(value):
 
 def _redirect_target_file(root, route):
     """Resolve a validated site-root route to a file without escaping root."""
+    if "*" in route or ":splat" in route:
+        return None, f"unresolved redirect pattern: '{route}'"
     candidate = os.path.abspath(os.path.join(root, route.lstrip("/")))
     if route.endswith("/") or os.path.isdir(candidate):
         candidate = os.path.join(candidate, "index.html")
@@ -124,19 +134,41 @@ def _redirect_target_file(root, route):
     return candidate_real, None
 
 
+def _matching_redirect(route, redirects):
+    """Return the exact or longest-prefix Cloudflare redirect rule for one concrete route."""
+    exact = redirects.get(route)
+    if exact is not None:
+        return exact
+    wildcard_sources = sorted(
+        (source for source in redirects if source.endswith("/*")),
+        key=len,
+        reverse=True,
+    )
+    for source in wildcard_sources:
+        prefix = source[:-1]
+        if not route.startswith(prefix):
+            continue
+        target, status, line_number = redirects[source]
+        splat = route[len(prefix):]
+        return target.replace(":splat", splat), status, line_number
+    return None
+
+
 def _follow_redirect(route, redirects):
     """Follow an exact redirect route through a bounded, cycle-free chain."""
     seen = []
     current = route
-    while current in redirects:
+    while True:
+        rule = _matching_redirect(current, redirects)
+        if rule is None:
+            return current, None
         if current in seen:
             cycle = seen[seen.index(current):] + [current]
             return None, "redirect cycle: " + " -> ".join(cycle)
         if len(seen) >= MAX_REDIRECT_HOPS:
             return None, f"redirect chain exceeds {MAX_REDIRECT_HOPS} hops from '{route}'"
         seen.append(current)
-        current = redirects[current][0]
-    return current, None
+        current = rule[0]
 
 
 def load_redirects(root):
@@ -161,8 +193,13 @@ def load_redirects(root):
                 )
                 continue
             source_raw, target_raw, status = fields
-            source = _redirect_route(source_raw, line_number, "source", errors)
-            target = _redirect_target(target_raw, line_number, errors)
+            source = _redirect_route(source_raw, line_number, "source", errors, allow_wildcard=True)
+            target = _redirect_target(
+                target_raw,
+                line_number,
+                errors,
+                allow_splat=source is not None and source.endswith("/*"),
+            )
             if status not in REDIRECT_STATUSES:
                 errors.append(f"_redirects:{line_number}: unsupported redirect status '{status}'")
             if source is None or target is None or status not in REDIRECT_STATUSES:
@@ -178,18 +215,29 @@ def load_redirects(root):
                 continue
             redirects[source] = rule
 
+    probe = "__redirect_probe__"
     for source in sorted(redirects):
-        final_route, chain_error = _follow_redirect(source, redirects)
+        start_route = source[:-1] + probe if source.endswith("/*") else source
+        final_route, chain_error = _follow_redirect(start_route, redirects)
         if chain_error:
             errors.append(f"_redirects:{redirects[source][2]}: {chain_error}")
             continue
         if _is_external_redirect(final_route):
             continue
-        _, file_error = _redirect_target_file(root, final_route)
+        validation_route = final_route
+        if probe in validation_route:
+            if validation_route.count(probe) != 1 or not validation_route.endswith(probe):
+                errors.append(
+                    f"_redirects:{redirects[source][2]}: wildcard source '{source}' does not preserve "
+                    "its splat as the final target path segment"
+                )
+                continue
+            validation_route = validation_route[:-len(probe)]
+        _, file_error = _redirect_target_file(root, validation_route)
         if file_error:
             errors.append(
                 f"_redirects:{redirects[source][2]}: source '{source}' resolves to "
-                f"'{final_route}': {file_error}"
+                f"'{validation_route}': {file_error}"
             )
     return redirects, errors
 
@@ -253,7 +301,7 @@ def main():
             checked += 1
             if not os.path.exists(abs_target):
                 redirect_source = target_path if target_path.startswith("/") else None
-                if redirect_source in redirects:
+                if redirect_source is not None and _matching_redirect(redirect_source, redirects) is not None:
                     final_route, chain_error = _follow_redirect(redirect_source, redirects)
                     if not chain_error and _is_external_redirect(final_route):
                         abs_target, file_error = None, None
