@@ -1,5 +1,6 @@
 # Cloudflare Pages response headers (https://developers.cloudflare.com/pages/configuration/headers/).
-# The landing page is near-self-contained: inline CSS, inline SVG logo, data: favicon, and one
+# The landing page is near-self-contained: inline CSS, inline SVG logo, data: favicon with a
+# conventional same-origin ICO fallback, and one
 # same-origin script (assets/motion.js, the generated entrance-motion engine). script-src stays
 # 'self' with no 'unsafe-inline', so the engine is a file and only its stylesheet is inline.
 # The capabilities section links a shared stylesheet (capabilities/style.css), so style-src includes 'self'.
