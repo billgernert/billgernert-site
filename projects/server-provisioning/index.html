@@ -263,7 +263,7 @@
         <h2>The Windows form shows what the workflow can build</h2>
         <p>I started this walkthrough with Windows because the form makes the scope visible before the job runs. The request names the machine and its role, sets compute and storage, chooses a tagged Windows Server template, and can add tools, Windows features, a data disk, nested virtualization, and a published DNS record. The help text puts each constraint next to the choice that activates it.</p>
         <figure class="shot">
-          <img src="img/jenkins-windows-form.png" alt="Jenkins Windows provisioning form with compute, template, storage, tools, Windows features, nested virtualization, and DNS choices.">
+          <img src="img/jenkins-windows-form.png" alt="Jenkins Windows provisioning form with compute, template, storage, tools, Windows features, nested virtualization, and DNS choices." width="1055" height="2019">
           <figcaption>The Jenkins Windows request form. Template choice, disk placement, optional software, Windows roles, and virtualization constraints are visible before the build starts. Captured 2026-08-23.</figcaption>
         </figure>
         <p>The Windows Jenkinsfile has more stages than the Linux one because template resolution, WinRM, password generation, and disk movement are Windows-only. Some disk work is conditional. Moving the operating-system disk runs only for node-local storage, and adding a data disk runs only when one was requested.</p>
@@ -274,7 +274,7 @@
       <section class="block" id="linux">
         <h2>Linux uses the same backbone with fewer choices</h2>
         <figure class="shot">
-          <img src="img/jenkins-form.png" alt="Jenkins Linux provisioning form with hostname, role, CPU, and memory choices.">
+          <img src="img/jenkins-form.png" alt="Jenkins Linux provisioning form with hostname, role, CPU, and memory choices." width="1055" height="615">
           <figcaption>The Jenkins Linux request form. It asks for the facts needed to size and place the machine, then leaves configuration to the versioned playbook. Captured 2026-08-23.</figcaption>
         </figure>
         <p>Linux uses a shared cloud image, so it does not need the Windows template-resolution, WinRM, password-generation, or disk-movement stages. A configuration profile can add a CI runner after the base operating system is ready.</p>
@@ -315,15 +315,15 @@
         <h2>Backstage provides the same workflow without Jenkins</h2>
         <p>Backstage is an internal developer portal. In this project it does not provision a machine directly. Its software template collects the request, validates the form shape, writes a small declarative request file, and opens a pull request. After that handoff, Gitea Actions performs the checks and the apply. A measured run on 2026-08-23 completed in 5 minutes 21 seconds without calling Jenkins or using a Jenkins agent.</p>
         <figure class="shot">
-          <img src="img/portal-templates.png" alt="Backstage template gallery with the server provisioning template.">
+          <img src="img/portal-templates.png" alt="Backstage template gallery with the server provisioning template." width="957" height="355">
           <figcaption>The Backstage template gallery. Selecting “Provision a new server” starts a request workflow, not an infrastructure change. Captured 2026-08-23.</figcaption>
         </figure>
         <figure class="shot">
-          <img src="img/portal-form.png" alt="Backstage server request form with operating system, hostname, role, and sizing fields.">
+          <img src="img/portal-form.png" alt="Backstage server request form with operating system, hostname, role, and sizing fields." width="1168" height="535">
           <figcaption>The portal asks for the same contract the pipeline understands. Its choices are tested against the request schema and the Jenkins parameters so the two front doors cannot quietly drift apart. Captured 2026-08-23.</figcaption>
         </figure>
         <figure class="shot">
-          <img src="img/portal-review.png" alt="Backstage review screen showing the proposed server request before submission.">
+          <img src="img/portal-review.png" alt="Backstage review screen showing the proposed server request before submission." width="1168" height="535">
           <figcaption>The Backstage review step confirms the request before opening a pull request. Submitting here still creates no address, state, credential, or VM. Captured 2026-08-23.</figcaption>
         </figure>
 
@@ -335,7 +335,7 @@
         <p>A separate Gitea Actions workflow notices the newly added request on the main branch. It installs the provisioning toolchain in the runner and passes the file to the portal apply driver. That driver revalidates the request, repeats the target and collision checks, allocates the address, selects the node, runs Terraform, registers Zabbix, configures the guest with Ansible, registers DNS over WinRM, and writes the host manifest.</p>
         <p>The driver calls the same scripts and playbooks as the Jenkinsfiles. The orchestration code is different because Gitea Actions has no Jenkins stages or input step, but address allocation, collision detection, placement, infrastructure definition, guest configuration, and registration remain shared. A manual Actions dispatch can rerun a named request when a previous apply needs to continue.</p>
         <figure class="shot">
-          <img src="img/apply-run.png" alt="Successful Gitea Actions apply workflow showing request detection, toolchain installation, provisioning, and manifest commit.">
+          <img src="img/apply-run.png" alt="Successful Gitea Actions apply workflow showing request detection, toolchain installation, provisioning, and manifest commit." width="963" height="353">
           <figcaption>The merge-triggered apply in Gitea Actions. This measured run completed in 5 minutes 21 seconds on 2026-08-23; the provisioning step used 4 minutes 27 seconds. Jenkins was not involved.</figcaption>
         </figure>
 

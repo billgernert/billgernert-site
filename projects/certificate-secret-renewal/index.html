@@ -313,7 +313,7 @@
         <h2>One wildcard certificate now feeds every copy</h2>
         <p>The wildcard covers the first level of application names. Let’s Encrypt signs it, cert-manager renews it in Kubernetes, Cloudflare carries the DNS validation record, and Jenkins sends the resulting certificate and key to the services that use them.</p>
         <p>This division matters because cert-manager finishes its work at the source Secret. It has no knowledge of a certificate file on a Linux VM, an appliance certificate object, or a copy in another Kubernetes namespace. The Jenkins job knows those destinations and how each service reloads.</p>
-        <figure class="architecture"><img src="img/public-certificate-path.svg" alt="Detailed public certificate flow from Let’s Encrypt through cert-manager and Jenkins to consumers"></figure>
+        <figure class="architecture"><img src="img/public-certificate-path.svg" alt="Detailed public certificate flow from Let’s Encrypt through cert-manager and Jenkins to consumers" width="1440" height="930"></figure>
 
         <h3>The six-step certificate renewal run</h3>
         <p>These are the six things one run has to accomplish. Steps one through three create a replacement. Steps four and five put it into use. Step six proves the live result.</p>
@@ -344,7 +344,7 @@
       <section class="block" id="internal">
         <h2>Public and internal certificates solve different trust problems</h2>
         <p>Public browsers already trust Let’s Encrypt. Private services use Active Directory Certificate Services, Microsoft’s domain certificate authority, whose root is distributed to managed computers.</p>
-        <figure class="architecture"><img src="img/internal-trust-path.svg" alt="Separate public Let’s Encrypt and internal AD CS trust paths"></figure>
+        <figure class="architecture"><img src="img/internal-trust-path.svg" alt="Separate public Let’s Encrypt and internal AD CS trust paths" width="1440" height="870"></figure>
         <p>Windows auto-enrollment uses Group Policy and an AD CS template, which defines purpose, names, lifetime, and enrollment permission. Windows requests and renews without moving the private key between machines.</p>
         <p>Linux creates its private key locally and submits a CSR, a request containing the public key and names. AD CS returns the signed certificate and chain; Linux installs them and reloads the service.</p>
         <p>Blackbox exporter validates the name, trust chain, and live expiry on both paths, catching an expired leaf, untrusted chain, or missed reload. Some internal leaves are still watched rather than automatically renewed.</p>
@@ -354,7 +354,7 @@
         <h2>Secrets needed the same handoff and a different last mile</h2>
         <p>A client secret is a password an application uses when it authenticates as itself. API tokens and service keys serve a similar purpose for other products. Creating a replacement at the provider does not make an application use it. The replacement still has to reach the application’s configuration, the process has to reload, and a real authentication request has to succeed.</p>
         <p>I call the system that creates and revokes a credential its provider. Microsoft Graph manages the Entra client secrets. Grafana, Zabbix, Jenkins, NetBox, Cloudflare, OPNsense, and LiteLLM expose product APIs for their own credentials. Where a product has no secret-safe update API, a small helper on the host accepts the value through standard input and can change one allowlisted setting.</p>
-        <figure class="architecture"><img src="img/secret-rotation-path.svg" alt="Detailed secret rotation path from scheduled decision through provider, Vault, consumer activation, validation and retirement"></figure>
+        <figure class="architecture"><img src="img/secret-rotation-path.svg" alt="Detailed secret rotation path from scheduled decision through provider, Vault, consumer activation, validation and retirement" width="1500" height="1010"></figure>
 
         <h3>The seven-step secret rotation run</h3>
         <p>Certificates share one deployment source. Credentials do not because each provider creates them differently and each application stores them differently. A reviewed registry describes those differences so the worker does not infer where a value belongs.</p>
@@ -381,7 +381,7 @@
       <section class="block" id="observation">
         <h2>I verify the result outside the process that made the change</h2>
         <p>Jenkins could prove that it wrote a file or Secret, but not what a browser received. The observation path measures the service independently.</p>
-        <figure class="architecture"><img src="img/observation-path.svg" alt="Monitoring path from live services and metadata exporters through Prometheus to the private and public Grafana views"></figure>
+        <figure class="architecture"><img src="img/observation-path.svg" alt="Monitoring path from live services and metadata exporters through Prometheus to the private and public Grafana views" width="1440" height="920"></figure>
         <p>Each exporter converts one source into metrics. Blackbox exporter opens the TLS connection; the Entra and Vault exporters collect metadata without receiving existing secret values.</p>
         <p>Prometheus stores the metrics and evaluates alerts. Grafana groups the resulting series by application and renewal path.</p>
         <div class="table-wrap"><table><thead><tr><th>Question</th><th>Signal</th><th>Why it exists</th></tr></thead><tbody>

@@ -232,7 +232,7 @@
           estate is one prompt away from being asked to change your whole estate. So the design started at the
           dangerous end and worked backwards.</p>
         <p>In one day, a git token, a secrets-server token, and a database password reached transcripts through three different shell commands. The database case made the design problem clear. The assistant asked for a username, and an environment search returned the password beside it. A longer denylist of dangerous commands would not have predicted that output.</p>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/mcp-read-boundary.svg" alt="Read-only MCP server between an agent and allowlisted data sources, with mutation excluded and calls recorded"><figcaption>The credential belongs to the server process. The assistant receives the result of a registered operation, after the response is checked for the raw and encoded credentials used by that operation.</figcaption></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/mcp-read-boundary.svg" alt="Read-only MCP server between an agent and allowlisted data sources, with mutation excluded and calls recorded" width="1160" height="680"><figcaption>The credential belongs to the server process. The assistant receives the result of a registered operation, after the response is checked for the raw and encoded credentials used by that operation.</figcaption></figure>
       </section>
 
       <section class="block" id="readonly">

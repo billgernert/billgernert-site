@@ -228,7 +228,7 @@
       <section class="block" id="path">
         <h2>Each kind of file has one owner and one way into production</h2>
         <p>“As code” does not mean one tool manages everything. Terraform owns infrastructure state, Ansible owns operating-system configuration, Jenkins Job DSL owns job definitions, Argo CD compares Kubernetes manifests with the cluster, and the site generator owns derived indexes and measured tokens. Git supplies the review history that connects them.</p>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/code-to-running-state.svg" alt="Reviewed source definitions move through generation and controllers into the running system, with drift returning to the source"><figcaption>A console remains useful for seeing current state and diagnosing a failure. Durable changes go back through the source file so a rebuild and the running environment follow the same path.</figcaption></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/code-to-running-state.svg" alt="Reviewed source definitions move through generation and controllers into the running system, with drift returning to the source" width="1160" height="680"><figcaption>A console remains useful for seeing current state and diagnosing a failure. Durable changes go back through the source file so a rebuild and the running environment follow the same path.</figcaption></figure>
         <dl class="responsibilities">
           <div><dt>Git and pull requests</dt><dd>Hold the proposed change, the reason, the review, and the exact revision that passed.</dd></div>
           <div><dt>Generators</dt><dd>Build indexes, public summaries, configuration fragments, and measured tokens from their registered sources.</dd></div>

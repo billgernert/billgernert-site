@@ -246,7 +246,7 @@
           own restricted service identity on the git server, scoped to write to exactly one repository
           and nothing else, with its token read from the lab's secrets server rather than stored on
           disk.</p>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/renovate-review-path.svg" alt="Renovate weekly discovery, grouped pull request, normal CI review and disabled automerge path"><figcaption>Renovate owns discovery and branch creation. The repository's ordinary checks and reviewer own acceptance. The classifier remains advice while both automerge guards stay closed.</figcaption></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/renovate-review-path.svg" alt="Renovate weekly discovery, grouped pull request, normal CI review and disabled automerge path" width="1160" height="700"><figcaption>Renovate owns discovery and branch creation. The repository's ordinary checks and reviewer own acceptance. The classifier remains advice while both automerge guards stay closed.</figcaption></figure>
         <p>Its configuration is split in two on purpose. The global half (where the git server is, who
           the bot is, which repositories it looks at) lives with the deployment. The half that decides
           how updates are grouped and what gets tracked lives in a config file in the repository itself,

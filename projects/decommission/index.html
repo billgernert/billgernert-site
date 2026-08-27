@@ -271,7 +271,7 @@
         <h2>One name starts a bounded teardown</h2>
         <p>The operator supplies the machine name because that name is also the Terraform workspace. A workspace is the isolated state record for one machine. Selecting it tells Terraform which infrastructure record to read and prevents a request for one server from silently drifting into another server’s state.</p>
         <figure class="shot">
-          <img src="img/jenkins-decommission-form.png" alt="Jenkins decommission form with one machine-name field and a build button.">
+          <img src="img/jenkins-decommission-form.png" alt="Jenkins decommission form with one machine-name field and a build button." width="1055" height="320">
           <figcaption>The Linux decommission form. Its small surface is deliberate: the workflow derives the address and every cleanup target from the selected machine’s recorded state. Captured from the running Jenkins job on 2026-08-22.</figcaption>
         </figure>
         <p>The first stages validate the name, check out the reviewed automation, select the matching workspace, and read the machine’s recorded address. Terraform then creates a saved destroy plan. Nothing has been deleted yet. The plan is a reviewable description of what Terraform intends to remove, and the same saved file is applied after approval so the request cannot be approved against one plan and executed against another.</p>
