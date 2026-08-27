@@ -140,8 +140,8 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Job reporting - Bill Gernert</title>
-  <meta name="description" content="How the job reporting pipeline handles scheduled collection, shared-mailbox ingestion, PostgreSQL normalization, bounded enrichment, evidence-backed scoring, reporting, and recovery.">
+  <title>The job reporting pipeline - Bill Gernert</title>
+  <meta name="description" content="How the job reporting pipeline turns feeds and mailbox alerts into one reviewable daily queue with bounded enrichment and recovery evidence.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,6 +149,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../capabilities/style.css">
   <script src="../../assets/live-dashboard.js" defer></script>
+  <style>
+body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif}.page{max-width:1100px;margin:auto;padding:28px}.note,.box,.diagram,.failure{border:1px solid #24445f;border-radius:10px;background:#0b1728;padding:22px}.note{border-left:3px solid #ffb84d}.badge{font:12px "Share Tech Mono";letter-spacing:.13em;text-transform:uppercase;color:#00ff96}h1{font-size:58px;line-height:1.02;margin:.3em 0}h2{font-size:34px;margin-top:2.2em}h3{font-size:23px}.lead{font-size:23px;color:#b7c9d8}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards div{border:1px solid #24445f;border-radius:8px;padding:18px;background:#0b1728}.cards b{display:block;color:#fff;margin-bottom:8px}.sequence{list-style:none;padding:0;counter-reset:step}.sequence li{position:relative;padding:0 0 28px 64px;counter-increment:step}.sequence li:before{content:counter(step);position:absolute;left:0;top:0;width:36px;height:36px;border:1px solid #00d4ff;border-radius:50%;display:grid;place-items:center;color:#00d4ff;font:700 16px "Share Tech Mono"}.sequence li:not(:last-child):after{content:"";position:absolute;left:18px;top:38px;bottom:0;border-left:1px solid #24445f}.sequence strong{color:#fff}.table-wrap{overflow:auto;border:1px solid #24445f;border-radius:9px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:14px;border-bottom:1px solid #24445f;vertical-align:top}th{color:#00d4ff;font:12px "Share Tech Mono";text-transform:uppercase;letter-spacing:.08em}.diagram{padding:18px;margin:22px 0}.diagram img{display:block;width:100%;height:auto}.diagram figcaption{font:13px "Share Tech Mono";color:#91a8bc;margin-top:12px}.wire{stroke:#00ff96;stroke-width:3;fill:none}.node{fill:#10233a;stroke:#2e5879;stroke-width:2}.hot{fill:#08243a;stroke:#00d4ff;stroke-width:2}.t{fill:#e8f3ff;font:600 17px "Exo 2"}.s{fill:#91a8bc;font:12px "Share Tech Mono"}.token{border:1px dashed #00d4ff;padding:2px 7px;color:#00d4ff;font:14px "Share Tech Mono"}.footer{margin-top:60px;border-top:1px solid #24445f;padding-top:20px;color:#91a8bc}@media(max-width:760px){.cards{grid-template-columns:1fr}h1{font-size:42px}}
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/job-reporting/">
   <!-- END generated: canonical -->
@@ -183,94 +186,28 @@
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span>
-      <h1>The job reporting pipeline</h1>
-      <p class="descriptor">I wanted one place to answer three questions: what is new, what is actually a
-        fit, and what needs a response. <!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> live Jenkins jobs collect board and mailbox alerts, normalize
-        them in PostgreSQL, enrich and score the postings, send a daily report, and back up the database.</p>
+      <span class="badge">Project story</span><h1>The job reporting pipeline</h1>
+<p class="lead">The job reporting pipeline turns scattered job-board and mailbox alerts into one reviewable daily queue.</p>
+<div class="box"><strong>How it is built, in one paragraph</strong><p><!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> scheduled Jenkins jobs divide collection, enrichment, reporting, and recovery. Collectors normalize supported feeds and shared-mailbox alerts into PostgreSQL. Deterministic parsers and bounded AI stages add structured fields, relevance, and evidence-backed fit scores. A daily digest brings new high-fit and time-sensitive records forward, while a separate backup job protects the database.</p></div>
+<p>Measured from the last merged filing run at publish: <span class="token"><!--LIVE:JOB_POSTINGS_FILED_LAST_RUN:START-->3<!--LIVE:JOB_POSTINGS_FILED_LAST_RUN:END--></span> postings filed in the last run.</p>
     </header>
 
     <div class="skill-body">
-      <section class="block">
-        <h2>Collection starts with feeds and a shared mailbox</h2>
-        <p>The collection job polls the supported job-board and ATS feeds, then reads the shared jobs
-          mailbox. Indeed and LinkedIn alerts arrive as email digests, so the collector parses the message,
-          extracts the canonical posting URL, and sends it through the same normalization path as an API
-          result. Greenhouse, Lever, and Ashby postings keep their source metadata through normalization.</p>
-        <p>PostgreSQL is the system of record. URL and source identifiers handle duplicates, while liveness
-          checks close postings that disappear and repost detection relates a new listing to an older one.
-          Every collection run records its own outcome, which is how the dashboard distinguishes no new jobs
-          from a collector that never completed. The normal daily intake is bounded at 50; a manual backlog
-          run can drain accumulated mail without changing that steady-state limit.</p>
-      </section>
+      <h2>How to read it in thirty seconds</h2><div class="cards"><div><b>PostgreSQL is the record</b>Feeds, email alerts, enrichment, application state, and run outcomes meet in one schema.</div><div><b>Each job has one responsibility</b>Collection does not send reports, enrichment does not own ingestion, and backup does not share their failure path.</div><div><b>The report is the interface</b>The daily digest and dashboard turn the queue into decisions without exposing private records publicly.</div></div>
 
-      <section class="block">
-        <h2>Enrichment is a queue, not one oversized model prompt</h2>
-        <p>The enrichment job takes unprocessed postings in bounded batches. Deterministic parsers pull out
-          salary ranges, location, remote status, deadlines, and skills first. A local Ollama model handles
-          the broad relevance pass. The headless scoring path then compares evidence from the posting with
-          the resume rubric and stores both the score and its explanation, so a 60 means there is reviewable
-          evidence behind it.</p>
-        <p>Harder scoring and resume work uses the same hourly subscription router as AIOps. Prometheus
-          reports Codex and Claude usage, the router preserves an interactive reserve, and Jenkins launches
-          the provider with available headroom. No scheduled path retains the old Claude API fallback. If
-          usage is stale or both subscriptions are full, the item stays queued and no metered API call is
-          made.</p>
-      </section>
+<h2>Where the pipeline runs</h2><p>Jenkins schedules the <!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> jobs. Their short-lived Kubernetes agents run repository scripts and retrieve narrow database, mailbox, and service access from Vault. PostgreSQL holds the normalized state. The optional local model performs broad extraction when available, while the headless subscription router admits harder scoring only when monitored capacity has room.</p>
+<figure class="diagram"><img src="img/job-reporting-flow.svg" alt="Job feeds and mail flow through Jenkins jobs into PostgreSQL and reports"><figcaption>Figure 1. Jenkins moves data between named stages. PostgreSQL is the shared handoff, not a chain of files or one oversized prompt.</figcaption></figure>
 
-      <section class="block">
-        <h2><!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> live Jenkins jobs keep scheduled work separate</h2>
-        <p><code>jobsearch-collect</code> ingests and reconciles postings. <code>jobsearch-enrich</code>
-          parses, classifies, and scores them. <code>jobsearch-digest</code> sends the daily high-fit and
-          expiring-posting report, and <code>jobsearch-db-backup</code> writes the database recovery artifact.</p>
-        <p>The repository also contains separate Jenkinsfiles for scorer evaluation and parameterized
-          application work, but those two definitions are not jobs on the production controller today. I do
-          not count them in the four above. The evaluation script can compare scores with judged examples,
-          while application lifecycle changes remain an operator-run path that cannot be triggered by a
-          scheduled collector.</p>
-        <p>The migration stage runs before code that expects a new schema. That rule came from an early
-          failure where merged code and the live database disagreed. The repository describes the intended
-          schema; PostgreSQL reports the applied schema. Jenkins has to make those states converge before an
-          enrichment or digest stage is allowed to trust a new column.</p>
-      </section>
+<h2>The seven-step reporting run</h2><ol class="sequence"><li><strong>The collector polls supported feeds.</strong><p>Source-specific adapters retrieve postings while preserving their source identifiers and canonical URLs.</p></li><li><strong>The collector reads the shared mailboxes.</strong><p>Email alerts are parsed, linked to the original posting where possible, and moved to a processed folder only after handling.</p></li><li><strong>Normalization writes one posting record.</strong><p>URL and source identifiers suppress duplicates. Every collection run records its own outcome so zero new records is distinguishable from no completed run.</p></li><li><strong>Deterministic parsing runs first.</strong><p>Scripts extract salary, location, remote status, deadlines, and skills before any model receives the posting.</p></li><li><strong>Enrichment advances bounded batches.</strong><p>The local model handles broad extraction and relevance. Harder scoring is admitted by the <a href="/projects/api-to-usage/">API to usage-based AI pipelines</a> system, which monitors subscription capacity and leaves an item queued when the admitted path is unavailable.</p></li><li><strong>The digest selects decisions.</strong><p>The daily report brings new high-fit matches, approaching deadlines, and records needing more information into one operator view.</p></li><li><strong>Backup protects the system of record.</strong><p>The database backup job runs separately so recovery evidence does not depend on a successful collection or enrichment run.</p></li></ol>
 
-      <section class="block">
-        <h2>The report is the operator interface</h2>
-        <p>The private Grafana dashboard shows open high-fit postings, source mix, collection age,
-          enrichment backlog, application state, and scoring evidence. The daily email pulls the decisions
-          forward: new high-fit matches, approaching deadlines, and records that need more information.
-          Titles, companies, links, contacts, application history, and resume evidence stay private.</p>
-        <p>Next I want to close the quality loop between applications and the scorer. The evaluation script can
-          already compare predictions with judged examples; the next step is to make response outcomes a
-          separate calibration signal without letting a small or biased sample rewrite the rubric. Company
-          enrichment and skill-gap reporting will remain opt-in until their signal is better than the extra
-          model work they create.</p>
-      </section>
+<h2><!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> jobs, <!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END--> failure boundaries</h2><div class="table-wrap"><table><thead><tr><th>Job</th><th>What it reads</th><th>What it changes</th></tr></thead><tbody><tr><td>Collect</td><td>Supported feeds and shared mailboxes</td><td>Normalized postings, source state, liveness, and collection-run evidence</td></tr><tr><td>Enrich</td><td>Unprocessed PostgreSQL rows and the scoring rubric</td><td>Structured fields, relevance, fit score, and explanation</td></tr><tr><td>Digest</td><td>New, high-fit, expiring, and incomplete records</td><td>One private daily decision report</td></tr><tr><td>Database backup</td><td>The PostgreSQL system of record</td><td>A recovery artifact and backup-run evidence</td></tr></tbody></table></div>
 
-      <section class="block" id="public-dashboard" data-public-noc>
-        <h2>A public version of the dashboard</h2>
-        <p>The public Grafana view keeps the operational evidence and removes the job-search records. It
-          shows live Jenkins result history, duration, and observed 24-hour run count for collection,
-          enrichment, digest delivery, and database backup. Green intervals are successful completed builds;
-          red intervals are failed or unstable builds. That is enough to demonstrate the pipeline is operating
-          without publishing where I applied or what the scorer said about a specific employer.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the public job reporting dashboard.</p>
-        <div>
-          <iframe class="live-frame" data-live-frame
-            data-src="/projects/job-reporting/open/dashboard"
-            title="Public job reporting pipeline dashboard" referrerpolicy="no-referrer" hidden></iframe>
-          <div class="live-fallback" data-live-fallback hidden>
-            <p>The live job reporting dashboard is unavailable. No cached pipeline state is presented as current.</p>
-          </div>
-        </div>
-      </section>
+<h2>The queue keeps model work bounded</h2><figure class="diagram"><img src="img/job-reporting-queue.svg" alt="Deterministic parsing and local extraction precede capacity-gated scoring"><figcaption>Figure 2. Expensive judgment comes last. If capacity is unavailable, the posting remains queued instead of falling through to an unbounded paid call.</figcaption></figure>
 
-      <div class="links">
-        <a href="/projects/api-to-usage/">API to usage-based pipelines &#8594;</a>
-        <a href="/capabilities/job-search-platform.html">Job-search platform &#8594;</a>
-        <a href="/ai/">Applied AI &#8594;</a>
-        <a href="/platform/">Platform &#8594;</a>
-      </div>
+<h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>Daily collection window</td><td>The collector polls feeds, ingests mailbox alerts, reconciles liveness, and records the run.</td><td>No new posting is a valid result when the run itself completed.</td></tr><tr><td>Daily enrichment window</td><td>Bounded batches receive deterministic fields, local extraction, and admitted scoring.</td><td>Already-processed rows remain unchanged; unavailable model capacity leaves work queued.</td></tr><tr><td>Daily report window</td><td>The digest selects high-fit, expiring, and incomplete records and sends the private report.</td><td>An empty section means no records met that section's rule, not that collection disappeared.</td></tr><tr><td>Daily backup window</td><td>The backup job writes the PostgreSQL recovery artifact.</td><td>Recovery evidence is current independently of collection and scoring.</td></tr><tr><td>Continuously</td><td>Prometheus and the dashboard observe Jenkins results, durations, and run counts.</td><td>The public view can prove pipeline operation without exposing posting or application data.</td></tr></tbody></table></div>
+
+<h2>What broke</h2><div class="failure"><h3>Code and schema moved at different speeds on 2026-07-09</h3><p>A fresh-database run reached code that expected the postings relation before the live schema had been migrated. The pipeline was healthy enough to start and still unable to complete the work it had checked out.</p><h3>The correction</h3><p>Migration now runs before any stage that trusts a changed schema. Source control describes the intended state, PostgreSQL reports the applied state, and Jenkins makes them converge before enrichment or reporting continues.</p><h3>The other lesson</h3><p>A single giant collection-and-model job would have hidden whether the source, database, model, or report failed. The <!--LIVE:JOB_REPORTING_COUNT:START-->4<!--LIVE:JOB_REPORTING_COUNT:END-->-job split keeps those failures attributable and recoverable.</p></div>
+<h2>What I would do differently</h2><p>I would establish the run ledger and schema migration contract before adding the first enrichment model. The valuable part is not producing a score. It is being able to explain which source produced the record, which run changed it, which evidence produced the score, and why a quiet report is trustworthy.</p>
     </div>
 
     <footer>

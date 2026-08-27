@@ -1,0 +1,125 @@
+/* Platform hub treatment. The shared capabilities stylesheet owns the site shell and palette. */
+
+.platform-hub .page-narrow { max-width: 1040px; }
+
+.platform-hub .skill-head {
+  max-width: 880px;
+  padding-top: 38px;
+}
+
+.platform-hub .skill-head .descriptor { max-width: 72ch; }
+
+.platform-hub .skill-head .links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.platform-hub .skill-head .links a {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-color: var(--cap-line);
+  background: rgba(7, 17, 31, 0.72);
+}
+
+.platform-hub .skill-head .links a::after {
+  content: "\2193";
+  color: var(--green);
+}
+
+.platform-hub .platform-rail { margin-bottom: 2rem; }
+
+.platform-hub .skill-body > .note:first-child {
+  margin: 0 0 14px;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.platform-hub .skill-body > .project-list:first-of-type {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 34px;
+  padding: 0;
+  list-style-position: inside;
+}
+
+.platform-hub .skill-body > .project-list:first-of-type > li {
+  min-height: 158px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 5px;
+  padding: 20px;
+  border: 1px solid var(--cap-line);
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(0, 212, 255, 0.045), transparent 46%), var(--cap-panel);
+  color: var(--cap-copy);
+}
+
+.platform-hub .skill-body > .project-list:first-of-type > li::marker {
+  font-size: 0.82rem;
+}
+
+.platform-hub .skill-body > .project-list:first-of-type > li > b {
+  display: block;
+  flex-basis: calc(100% - 1.5rem);
+  margin-bottom: 5px;
+  font-size: clamp(1.18rem, 2vw, 1.45rem);
+  line-height: 1.15;
+}
+
+.platform-hub .skill-body > .project-list:first-of-type > li > a {
+  flex-basis: 100%;
+  align-self: flex-end;
+  margin-top: auto;
+  padding-top: 10px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.platform-hub .skill-body > section.block {
+  margin-top: 18px;
+  padding: clamp(24px, 4vw, 38px);
+  border: 1px solid var(--cap-line);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(0, 212, 255, 0.035), transparent 38%), rgba(7, 17, 31, 0.7);
+}
+
+.platform-hub .skill-body > section.block + section.block { margin-top: 20px; }
+
+.platform-hub .skill-body > section.block > h2 {
+  max-width: 24ch;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+}
+
+.platform-hub .skill-body > section.block > p { max-width: 76ch; }
+
+.platform-hub .skill-body > section.block:has(figure),
+.platform-hub .skill-body > section.block:has(.live-wide),
+.platform-hub .skill-body > section.block:has(table) {
+  border-color: rgba(0, 212, 255, 0.34);
+}
+
+@media (max-width: 760px) {
+  .platform-hub .skill-head .links,
+  .platform-hub .skill-body > .project-list:first-of-type {
+    grid-template-columns: 1fr;
+  }
+
+  .platform-hub .skill-head .links { gap: 8px; }
+  .platform-hub .skill-body > .project-list:first-of-type > li { min-height: 0; }
+  .platform-hub .skill-body > section.block { padding: 22px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platform-hub .capability-track::after { animation: none; }
+}

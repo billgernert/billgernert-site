@@ -141,13 +141,54 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Automated server provisioning - Bill Gernert</title>
-  <meta name="description" content="A pipeline that builds a server as one consistent fact across five systems at once, now with two front doors: a Backstage portal form that opens a pull request, and Jenkins for scheduled work. Merge the request and a configured, monitored, DNS-registered VM exists five minutes later. Includes the three bugs that taught it to fail safe.">
+  <meta name="description" content="How one server provisioning workflow runs through Jenkins or Backstage, and how NetBox, Vault, Terraform, Proxmox, Ansible, Zabbix, DNS, and Git interact during a build.">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20fill%3D%27%230a0e1a%27%2F%3E%3Cpolygon%20points%3D%2750%2C14%2081%2C32%2081%2C68%2050%2C86%2019%2C68%2019%2C32%27%20fill%3D%27none%27%20stroke%3D%27%2300d4ff%27%20stroke-width%3D%275%27%2F%3E%3Ccircle%20cx%3D%2750%27%20cy%3D%2750%27%20r%3D%279%27%20fill%3D%27%2300ff96%27%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../capabilities/style.css">
+  <style>
+:root { --panel: rgba(14,21,34,.84); --line: rgba(0,212,255,.28); --muted: #aebbd0; --good: #00ff96; --warn: #ffd166; --bad: #ff5c7a; }
+
+    .lede { max-width: 78ch; font-size: 1.16rem; }
+    .source-note { margin: .9rem 0 0; padding: .7rem .85rem; border-left: 3px solid #00d4ff; background: rgba(0,212,255,.055); color: var(--muted); font-size: .9rem; }
+    .shot { margin: 1.5rem 0 2.5rem; }
+    .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #090e18; }
+    .approval-shot img { display: block; width: min(100%, 720px); height: auto; border: 1px solid var(--line); background: #090e18; }
+    figcaption { margin-top: .7rem; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+    .sequence { counter-reset: step; margin: 1.2rem 0 2rem; padding: 0; list-style: none; }
+    .sequence li { position: relative; margin: 0; padding: .35rem 0 1.55rem 4rem; }
+    .sequence li:not(:last-child)::after { content: ""; position: absolute; left: 1.25rem; top: 2.7rem; bottom: .15rem; width: 1px; background: rgba(0,212,255,.32); }
+    .sequence li::before { counter-increment: step; content: counter(step); position: absolute; left: .15rem; top: .2rem; display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border: 1px solid #00d4ff; border-radius: 50%; color: #00d4ff; font: 700 1rem 'Share Tech Mono', monospace; }
+    .sequence strong { color: #eef4fb; }
+    .table-wrap { overflow-x: auto; margin: 1.2rem 0 2rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: .8rem; border-bottom: 1px solid rgba(174,187,208,.18); text-align: left; vertical-align: top; }
+    th { color: #00d4ff; font: .78rem 'Share Tech Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
+    td:first-child { color: #eef4fb; font-weight: 600; }
+    .phase-map { margin: 1.4rem 0 2.2rem; padding: 1.25rem; border: 1px solid var(--line); background: #090e18; }
+    .phase-map h3 { margin-top: 0; }
+    .phase-line { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: .55rem; align-items: stretch; margin: 1.1rem 0; }
+    .phase { position: relative; min-height: 8.5rem; padding: .9rem .75rem; border-top: 3px solid #00d4ff; background: rgba(0,212,255,.07); }
+    .phase:not(:last-child)::after { content: "→"; position: absolute; top: 3.25rem; right: -.55rem; z-index: 2; color: var(--warn); font-size: 1.15rem; }
+    .phase .num { display: block; color: var(--warn); font: .76rem 'Share Tech Mono', monospace; letter-spacing: .06em; text-transform: uppercase; }
+    .phase strong { display: block; margin: .45rem 0; color: #eef4fb; }
+    .phase small { color: var(--muted); line-height: 1.45; }
+    .phase-explain { margin: 0; padding-top: 1rem; border-top: 1px solid rgba(174,187,208,.18); color: var(--muted); }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 1.4rem 0 2rem; }
+    .lane { padding: 1.1rem; border-top: 3px solid #00d4ff; background: rgba(14,21,34,.68); }
+    .lane.portal { border-color: var(--good); }
+    .lane h3 { margin-top: 0; }
+    .lane ol { margin-bottom: 0; }
+    .decision { margin: 1.2rem 0; padding: 1rem; border-left: 4px solid var(--warn); background: rgba(255,209,102,.07); }
+    .failure { margin: 1.2rem 0; padding: 1.2rem; border: 1px solid rgba(255,92,122,.36); background: rgba(43,23,32,.38); }
+    .failure h3 { color: #eef4fb; }
+    .failure time { margin-right: .45rem; color: var(--warn); font: .8rem 'Share Tech Mono', monospace; }
+    code { white-space: normal; overflow-wrap: anywhere; }
+    @media (max-width: 980px) { .phase-line { grid-template-columns: repeat(2,minmax(0,1fr)); } .phase:not(:last-child)::after { display: none; } }
+    @media (max-width: 720px) { .compare, .phase-line { grid-template-columns: 1fr; } }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/server-provisioning/">
   <!-- END generated: canonical -->
@@ -182,185 +223,179 @@
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Pipeline</span>
-      <h1>Automated server provisioning</h1>
-      <p class="descriptor">A server is one fact recorded in five systems at once, and building it by hand lets
-        any of them silently disagree. This pipeline builds all five together and refuses to proceed if a name
-        is already taken anywhere. It now has two front doors: a form in a Backstage portal that turns the
-        request into a pull request, and Jenkins for scheduled and operational work. Same scripts, same gates,
-        two engines. The last portal-driven build went from merged request to a configured, monitored,
-        DNS-registered VM in 5 minutes 21 seconds.</p>
+      <span class="badge">Technical project walkthrough</span>
+      <h1>How I built one server provisioning workflow with two front doors</h1>
+      <p class="descriptor lede">A Windows or Linux request becomes a running virtual machine with an allocated address, infrastructure state, operating-system configuration, Zabbix monitoring, DNS, and a committed host record. Windows servers also join Active Directory and enforce Duo MFA for remote desktop logins, with the Windows features and tools selected on the form already installed. Jenkins can coordinate the run, or Backstage can open a reviewed request that Gitea Actions applies without Jenkins. Both routes use the same repository scripts, Terraform definition, and Ansible playbooks.</p>
+      <p class="source-note">Built from the current Jenkinsfiles, provisioning request schema, Backstage template, Gitea workflows, apply driver, Terraform configuration, Ansible playbooks, and the screenshots captured from the running interfaces.</p>
     </header>
 
-    <nav class="crumbs" aria-label="On this page">
-      <a href="#portal">Through the portal</a>
-      <span class="sep">/</span>
-      <a href="#what">What it does</a>
-      <span class="sep">/</span>
-      <a href="#windows">The Windows path</a>
-      <span class="sep">/</span>
-      <a href="#broke">What broke, three times</a>
-      <span class="sep">/</span>
-      <a href="#rule">The rule worth stealing</a>
-    </nav>
-
     <div class="skill-body">
-      <section class="block" id="portal">
-        <h2>Through the portal</h2>
-        <p>The original front door was a Jenkins parameter form. It works, and Jenkins still owns every
-          scheduled job in the lab, but a parameter form has no review step and no paper trail a reader can
-          follow. So the request itself became a file in git, and the front door became a Backstage portal
-          running inside the lab. The form renders a small request file, opens a pull request with it, and
-          stops. Nothing has been built yet. That is the point.</p>
+      <section class="block" id="windows">
+        <h2>The Windows form shows what the workflow can build</h2>
+        <p>I started this walkthrough with Windows because the form makes the scope visible before the job runs. The request names the machine and its role, sets compute and storage, chooses a tagged Windows Server template, and can add tools, Windows features, a data disk, nested virtualization, and a published DNS record. The help text puts each constraint next to the choice that activates it.</p>
         <figure class="shot">
-          <img src="img/portal-templates.png" alt="The portal's template gallery with a Provision a new server card and a New Python service card.">
-          <figcaption>The portal's self-service gallery. The provisioning template is the front door to the pipeline. Captured 2026-08-23.</figcaption>
+          <img src="img/jenkins-windows-form.png" alt="Jenkins Windows provisioning form with compute, template, storage, tools, Windows features, nested virtualization, and DNS choices.">
+          <figcaption>The Jenkins Windows request form. Template choice, disk placement, optional software, Windows roles, and virtualization constraints are visible before the build starts. Captured 2026-08-23.</figcaption>
         </figure>
-        <p>The form asks only for what the pipeline actually needs: operating system, a hostname, a role, an
-          owner, and sizes. The role decides which network the address comes from, so the requester never
-          types an address and never gets one wrong.</p>
-        <figure class="shot">
-          <img src="img/portal-form.png" alt="The provisioning form filled in with an example Linux request: hostname, role, and sizing fields.">
-          <figcaption>The request form, filled with an example. Captured 2026-08-23.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/portal-review.png" alt="The review step summarising the example request before it opens a pull request.">
-          <figcaption>The review step. Submitting opens a pull request; it does not build anything. Captured 2026-08-23.</figcaption>
-        </figure>
-        <p>The pull request is the approval boundary, and it is not a rubber stamp. CI runs the same collision
-          gate the pipeline uses (ask every system that could already know the name) plus a full
-          infrastructure-state plan, on the request itself, before any human decides. A reviewer sees the
-          exact machine the request would create. Merging is the approval. A workflow picks up the merged
-          request and runs the same provisioning scripts Jenkins runs: allocate the address, pick a node by
-          live free memory, apply, register monitoring, configure with the agent, register DNS, write the
-          host manifest back to git.</p>
-        <figure class="shot">
-          <img src="img/apply-run.png" alt="The apply workflow run with every step green: identify request, install toolchain, provision, commit manifest.">
-          <figcaption>The apply run after the merge. Provisioning the machine took 4 minutes 27 seconds of the
-            5 minute 21 second total. Captured 2026-08-23.</figcaption>
-        </figure>
-        <p>The part I care about: this path never touches Jenkins, and it changed no pipeline logic. The
-          request file, the collision gate, the plan, the apply, the registrations are all the same code the
-          Jenkins door uses. One pipeline, two engines. If either door is down, the other still builds
-          servers.</p>
-        <p>The Jenkins door is still there, and it is still how scheduled and operational work runs. The VM
-          view carries the whole machine lifecycle: template factory, provision, decommission. Its provision
-          form asks the same questions the portal form asks, because both render the same request for the
-          same pipeline.</p>
-        <figure class="shot">
-          <img src="img/jenkins-vm-jobs.png" alt="The Jenkins VM view listing template build, provision, and decommission pipelines with their last runs.">
-          <figcaption>The Jenkins VM view: the machine lifecycle as five pipelines. Captured 2026-08-23.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/jenkins-form.png" alt="The Jenkins parameter form for the Linux provisioning pipeline, filled with the same example request.">
-          <figcaption>The original front door: the same example request in the Jenkins parameter form. Captured 2026-08-23.</figcaption>
-        </figure>
+        <p>The Windows Jenkinsfile has more stages than the Linux one because template resolution, WinRM, password generation, and disk movement are Windows-only. Some disk work is conditional. Moving the operating-system disk runs only for node-local storage, and adding a data disk runs only when one was requested.</p>
+        <p>The pipeline resolves a template by tags instead of storing a template number in code. Terraform clones it on shared storage, then the job expands or moves disks as requested. A first-boot script brings up WinRM over HTTPS. Ansible uses that channel to rotate the bootstrap password, rename and join the computer to Active Directory, install the monitoring agent, configure time and firewall rules, enforce Duo on remote desktop logins, install allowlisted tools and roles, and initialize the optional data disk. Reboots happen inside the playbook where Windows requires them.</p>
+        <p>A per-host administrator password and monitoring key are created during the run and stored in Vault. The values do not become Jenkins parameters or Git content. The job retrieves them only for the stage that needs them.</p>
       </section>
 
-      <section class="block" id="what">
-        <h2>What it does</h2>
-        <p>A server is a fact recorded in five places at once: the address in address management, the machine on
-          the hypervisor, the host in monitoring, the resource in infrastructure state, and the entry in
-          configuration inventory. Build one by hand and any of those can silently disagree, or worse, silently
-          agree with a machine that already exists. The failure this pipeline is built against is the one
-          everybody has seen: a new host quietly reconciles a live one because nothing checked every system
-          that already knew the name.</p>
-        <ol class="stages">
-          <li>Validate input</li>
-          <li><b>Reachability pre-flight</b> - refuse a target whose network path is untested</li>
-          <li><b>Name collision check</b> - ask every system that could already know the name</li>
-          <li>Allocate an address from address management</li>
-          <li>Select a node by live free memory</li>
-          <li>Plan, in this machine's own infrastructure-state workspace</li>
-          <li><b>Operator approval</b> - a 60-minute gate on the Jenkins door, the merge itself on the portal door</li>
-          <li>Apply - <b>the roll-forward boundary</b></li>
-          <li>Register monitoring, minting a unique per-host key into the secrets manager</li>
-          <li>Configure with the agent (already trusted)</li>
-          <li>Register DNS</li>
-          <li>Commit the host manifest</li>
+      <section class="block" id="linux">
+        <h2>Linux uses the same backbone with fewer choices</h2>
+        <figure class="shot">
+          <img src="img/jenkins-form.png" alt="Jenkins Linux provisioning form with hostname, role, CPU, and memory choices.">
+          <figcaption>The Jenkins Linux request form. It asks for the facts needed to size and place the machine, then leaves configuration to the versioned playbook. Captured 2026-08-23.</figcaption>
+        </figure>
+        <p>Linux uses a shared cloud image, so it does not need the Windows template-resolution, WinRM, password-generation, or disk-movement stages. A configuration profile can add a CI runner after the base operating system is ready.</p>
+        <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM and cloud-init sets the initial network and SSH access. Ansible waits for SSH, applies the base configuration, and installs the per-host monitoring key. The DNS and host-manifest stages are the same end of the story as Windows.</p>
+        <p>Jenkins is the coordinator in both versions. It renders parameters, starts an ephemeral provisioner pod in Kubernetes, checks gates, pauses for approval, keeps the stage log, and sends the result. It does not allocate an address, create a VM, configure an operating system, or invent credentials by itself. The systems below still own those operations.</p>
+      </section>
+
+      <section class="block" id="phases">
+        <h2>Both Jenkins pipelines follow six phases</h2>
+        <p>The stage lists are longer because Jenkins gives each operation its own log and failure boundary. At the workflow level, those stages fit into six phases.</p>
+        <div class="phase-map" role="img" aria-label="Six provisioning phases from request through validation, reservation, approval, configuration, and durable recording.">
+          <h3>One request becomes a recorded server</h3>
+          <div class="phase-line">
+            <div class="phase"><span class="num">Phase 1</span><strong>Describe</strong><small>Validate the name, role, size, operating system, storage, and optional features.</small></div>
+            <div class="phase"><span class="num">Phase 2</span><strong>Prove safe</strong><small>Check network support and ask every inventory whether the name already exists.</small></div>
+            <div class="phase"><span class="num">Phase 3</span><strong>Reserve and plan</strong><small>Allocate the address, select capacity, choose a template when needed, and build the Terraform plan.</small></div>
+            <div class="phase"><span class="num">Phase 4</span><strong>Approve and create</strong><small>Review the change, apply the saved plan, create the VM, and mark the creation boundary.</small></div>
+            <div class="phase"><span class="num">Phase 5</span><strong>Configure and connect</strong><small>Register monitoring, configure the guest, join supporting services, and publish DNS.</small></div>
+            <div class="phase"><span class="num">Phase 6</span><strong>Record and recover</strong><small>Commit the host manifest, report the result, and retain enough state for a safe rerun.</small></div>
+          </div>
+          <p class="phase-explain">Cyan marks the ordered automated path. Amber arrows show the handoff from one phase to the next. Each phase ends with enough recorded state for the next phase to know what happened.</p>
+        </div>
+
+        <h3>The approval gate shows what will change</h3>
+        <p>Jenkins sends this email after Terraform has produced the plan and before the pipeline applies it. The message identifies the machine, allocated address, VM identifier, selected node, role, storage, and requested resources. The button opens the waiting Jenkins input step, where the operator can apply or abort. A plan that would replace an existing machine uses destructive wording so it cannot look like an ordinary new-server approval.</p>
+
+        <ol class="sequence">
+          <li><strong>Describe the machine.</strong> Jenkins validates its parameters before checkout-dependent checks run. Windows adds NetBIOS length and character rules, storage limits, and the requirement that Hyper-V includes nested virtualization. Values offered by the form are defined in version-controlled pipeline code.</li>
+          <li><strong>Prove the request is safe.</strong> The target check rejects a role whose network path is not supported. The collision checker asks address management, the hypervisor, monitoring, committed host manifests, and configuration inventory whether the name already exists. A confirmed match stops the build. An unavailable source is unknown, and unknown also stops the build. These checks run before a new address is reserved.</li>
+          <li><strong>Reserve capacity and produce a plan.</strong> NetBox reserves the next free address in the role’s allowed prefix. The job derives the gateway and VM identifier from that allocation, then selects an online hypervisor with enough free memory and disk. Terraform opens one workspace for the requested machine and stores its state in PostgreSQL. Vault supplies the provider and backend credentials at run time. Jenkins saves the plan that the approval step will review.</li>
+          <li><strong>Approve and create.</strong> Jenkins sends the request details and a link to a bounded approval gate. If Terraform says an existing machine would be replaced, the message and button use destructive wording. Approval applies the saved plan. Once the hypervisor has created the VM, the job records that boundary so later cleanup cannot release an address that a live machine still uses.</li>
+          <li><strong>Configure and connect the guest.</strong> Zabbix receives a host object and a newly generated per-host key. Vault keeps that key for the agent configuration. Linux is configured over SSH. Windows waits for repeated successful WinRM checks before Ansible starts because first boot can briefly open and close the port. Ansible handles the operating system; a DNS-specific step then creates the forward record and creates a reverse record only when the matching reverse zone exists.</li>
+          <li><strong>Write the durable record.</strong> The final stage creates a host manifest in Git with the selected node, address, sizing, role, and build reference. A later run reads that manifest and reuses the recorded node rather than accidentally planning a move.</li>
         </ol>
       </section>
 
-      <section class="block" id="windows">
-        <h2>The Windows path</h2>
-        <p>Windows runs the same backbone and diverges where it must: it mints a per-host local-admin password
-          into the secrets manager, resolves a template by tag rather than booting a cloud image, and waits for
-          remote management to be <em>stably</em> up (six consecutive good checks) because first-boot init flaps
-          the port and a single successful probe is a lie. Same spine, different limbs, one place where the
-          difference lives instead of a second pipeline to keep in sync.</p>
-        <p>The Windows form is where the extra surface shows. On top of the shared questions it offers the
-          Windows Server version (resolved to a template by tag, never a hardcoded id), shared or node-local
-          disk, an optional second data disk, a tool list from a Chocolatey allow-list, a roles-and-features
-          list mapped to canonical names, nested virtualization with its live-migration tradeoff spelled out
-          in the help text, and an opt-in published DNS record. Every option carries its constraint next to
-          it, so the form teaches the pipeline's rules while you fill it in.</p>
+      <section class="block" id="backstage">
+        <h2>Backstage provides the same workflow without Jenkins</h2>
+        <p>Backstage is an internal developer portal. In this project it does not provision a machine directly. Its software template collects the request, validates the form shape, writes a small declarative request file, and opens a pull request. After that handoff, Gitea Actions performs the checks and the apply. A measured run on 2026-08-23 completed in 5 minutes 21 seconds without calling Jenkins or using a Jenkins agent.</p>
         <figure class="shot">
-          <img src="img/jenkins-windows-form.png" alt="The full Windows provisioning parameter form: version, sizing, storage class, data disk, tools, Windows features, nested virtualization, and published DNS options.">
-          <figcaption>The whole Windows form, top to bottom, with the same example request. Captured 2026-08-23.</figcaption>
+          <img src="img/portal-templates.png" alt="Backstage template gallery with the server provisioning template.">
+          <figcaption>The Backstage template gallery. Selecting “Provision a new server” starts a request workflow, not an infrastructure change. Captured 2026-08-23.</figcaption>
         </figure>
+        <figure class="shot">
+          <img src="img/portal-form.png" alt="Backstage server request form with operating system, hostname, role, and sizing fields.">
+          <figcaption>The portal asks for the same contract the pipeline understands. Its choices are tested against the request schema and the Jenkins parameters so the two front doors cannot quietly drift apart. Captured 2026-08-23.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="img/portal-review.png" alt="Backstage review screen showing the proposed server request before submission.">
+          <figcaption>The Backstage review step confirms the request before opening a pull request. Submitting here still creates no address, state, credential, or VM. Captured 2026-08-23.</figcaption>
+        </figure>
+
+        <h3>The pull request is the first half of the control path</h3>
+        <p>The request file is the contract between the portal and the automation. A Gitea workflow validates it against the schema, checks that the role maps to a supported target, and runs the same fail-closed collision checker used by Jenkins. It then runs Terraform against an empty local backend with placeholder placement values. That plan checks configuration and sizing without reading shared state or reserving an address.</p>
+        <p>The check job authenticates to Vault with a portal-specific AppRole. Its policy can read the credentials needed for validation, but the pre-merge job does not write infrastructure or lifecycle records. A reviewer gets a pull request containing the requested machine and the four check results. Merging that request is the approval.</p>
+
+        <h3>The merge is the second half</h3>
+        <p>A separate Gitea Actions workflow notices the newly added request on the main branch. It installs the provisioning toolchain in the runner and passes the file to the portal apply driver. That driver revalidates the request, repeats the target and collision checks, allocates the address, selects the node, runs Terraform, registers Zabbix, configures the guest with Ansible, registers DNS over WinRM, and writes the host manifest.</p>
+        <p>The driver calls the same scripts and playbooks as the Jenkinsfiles. The orchestration code is different because Gitea Actions has no Jenkins stages or input step, but address allocation, collision detection, placement, infrastructure definition, guest configuration, and registration remain shared. A manual Actions dispatch can rerun a named request when a previous apply needs to continue.</p>
+        <figure class="shot">
+          <img src="img/apply-run.png" alt="Successful Gitea Actions apply workflow showing request detection, toolchain installation, provisioning, and manifest commit.">
+          <figcaption>The merge-triggered apply in Gitea Actions. This measured run completed in 5 minutes 21 seconds on 2026-08-23; the provisioning step used 4 minutes 27 seconds. Jenkins was not involved.</figcaption>
+        </figure>
+
+        <div class="compare">
+          <article class="lane">
+            <h3>Jenkins route</h3>
+            <ol>
+              <li>Jenkins renders the parameter form.</li>
+              <li>The pipeline validates, checks, reserves, and plans.</li>
+              <li>An operator approves inside the Jenkins run.</li>
+              <li>The saved plan is applied from the provisioner pod.</li>
+              <li>A Windows agent handles AD-integrated DNS.</li>
+              <li>Jenkins keeps the stage log and notification.</li>
+            </ol>
+          </article>
+          <article class="lane portal">
+            <h3>Backstage and Gitea route</h3>
+            <ol>
+              <li>Backstage writes a request and opens a pull request.</li>
+              <li>Gitea Actions runs schema, target, collision, and plan checks.</li>
+              <li>A reviewer approves by merging the pull request.</li>
+              <li>A merge workflow applies through the shared driver.</li>
+              <li>Ansible reaches AD-integrated DNS over WinRM.</li>
+              <li>Gitea keeps the checks, apply log, and committed request.</li>
+            </ol>
+          </article>
+        </div>
+        <p>The two routes share the systems that own the result. They differ in request, approval, orchestration, and log location. This is why the Backstage path can continue if Jenkins is unavailable without creating a second Terraform or Ansible implementation.</p>
+      </section>
+
+      <section class="block" id="systems">
+        <h2>What the workflow touches and why</h2>
+        <p>A provisioned server is not finished when the hypervisor reports that a VM exists. The workflow has to leave several systems describing the same machine. Each one has a narrow responsibility.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>System</th><th>What it owns</th><th>How the pipeline interacts</th><th>What failure means</th></tr></thead>
+          <tbody>
+            <tr><td>Git and Gitea</td><td>Pipeline code, request files, Terraform, playbooks, inventory, and host manifests</td><td>Both routes check out reviewed code. Backstage opens a pull request; the last phase commits the machine record.</td><td>The run cannot establish its reviewed inputs, or it cannot leave the durable inventory record.</td></tr>
+            <tr><td>Jenkins or Gitea Actions</td><td>Orchestration, gates, logs, and run status</td><td>One engine orders the same underlying scripts and records where the run stopped.</td><td>The workflow stops, but ownership of existing addresses, VMs, and records remains with their source systems.</td></tr>
+            <tr><td>Vault</td><td>Provider credentials, SSH and WinRM material, per-host administrator passwords, and monitoring keys</td><td>A job-specific AppRole reads or writes only the records required by that path. Secret values are masked and kept out of Git.</td><td>A stage that needs a credential fails before it can call the owning system.</td></tr>
+            <tr><td>NetBox</td><td>Address allocation and the DNS name attached to that address</td><td>The allocator reserves the next free address for the selected role.</td><td>The build cannot safely choose an address, so it stops.</td></tr>
+            <tr><td>Terraform and PostgreSQL</td><td>The requested VM definition and per-machine infrastructure state</td><td>Terraform creates a plan and sends the approved change through the Proxmox provider. PostgreSQL stores one workspace per machine.</td><td>No infrastructure change is allowed without usable state and a valid plan.</td></tr>
+            <tr><td>Proxmox</td><td>The VM, its placement, disks, virtual hardware, and power state</td><td>The provider creates or reconciles the VM. Helper scripts resolve templates, clear inherited tags, and handle requested disk work.</td><td>The creation marker records whether later recovery is dealing with a reservation or a live VM.</td></tr>
+            <tr><td>Ansible and the guest</td><td>The operating-system configuration</td><td>Ansible connects through SSH for Linux or WinRM for Windows and applies the versioned roles for that operating system.</td><td>The VM remains allocated. A rerun resumes configuration instead of pretending the machine does not exist.</td></tr>
+            <tr><td>Zabbix</td><td>The monitored host and its encrypted agent identity</td><td>The registration script creates the host and stores a unique key in Vault before Ansible configures the agent.</td><td>The machine is not considered finished because it would exist without monitoring.</td></tr>
+            <tr><td>Active Directory and DNS</td><td>Windows computer membership and authoritative name records</td><td>The Windows playbook joins the domain. The DNS stage writes forward records and reports reverse records separately.</td><td>A live VM may exist, so the workflow preserves its address and reports the integration stage that needs a rerun.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <p>This workflow is event-driven. Nothing polls for a machine to build. A request starts the control path, and the creation boundary decides what recovery is safe.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead>
+          <tbody>
+            <tr><td>On request</td><td>Jenkins validates its submitted parameters, or Backstage writes a request and opens a pull request. Target and collision checks run before infrastructure is changed.</td><td>A rejected or unverifiable request stops before an address is reserved. A valid request continues to planning and review.</td></tr>
+            <tr><td>On approval</td><td>Jenkins applies the saved Terraform plan after its input gate, or merging the Backstage request starts the Gitea Actions apply workflow.</td><td>The workflow allocates or confirms the machine state, configures the guest, registers monitoring and DNS, and writes the host manifest.</td></tr>
+            <tr><td>On failure before creation</td><td>The unsuccessful handler checks the creation marker and calls the idempotent NetBox release path.</td><td>The reserved address is released because no VM uses it. The request can start again as a clean build.</td></tr>
+            <tr><td>On failure after creation</td><td>The workflow keeps the VM, its address, Terraform workspace, and completed registrations. The failed stage remains visible in the run log.</td><td>Cleanup does not dismantle a live machine. The next run continues forward from the recorded state.</td></tr>
+            <tr><td>On rerun</td><td>The safety checks run again. An approved reconcile reuses the existing address, live or manifested node, per-machine workspace, and idempotent registration steps.</td><td>The workflow finishes the missing integration or configuration work and commits the host manifest when the full path succeeds.</td></tr>
+          </tbody>
+        </table></div>
       </section>
 
       <section class="block" id="broke">
-        <h2>What broke, three times, and what I did about it</h2>
-        <p><b>One: the gate could not see.</b> The collision check asked the address manager for devices and
-          virtual machines. But a host provisioned by this pipeline is recorded as <em>an address with a DNS
-          name</em>, not as a device object. So the query came back empty, the API was perfectly healthy, and
-          the gate said "no collision" about a host that was already alive. Fixed by also querying the address
-          records, and by adding a deterministic scan of the configuration inventory: reading a file beats
-          guessing from a naming convention.</p>
-        <p><b>Two: the gate could see, and nobody was listening.</b> This one is my favourite. The detector
-          correctly found the collision, printed it, and exited non-zero. The pipeline proceeded anyway. The
-          stage ran the checker piped into <code>tee</code> so the report could be saved, and <b>a shell
-          pipeline exits with the status of its last command</b>. That was <code>tee</code>, which always
-          succeeds. The gate had been reading <code>tee</code>'s exit code the entire time it existed. Fixed by
-          redirecting instead of piping, and by adding a fail-safe so an unset or unparseable exit code can
-          never read as clean. The same bug was sitting in the reachability pre-flight; it went in the same
-          pass.</p>
-        <pre class="excerpt"><code>script {
-    def rc = (env.COLLISION_RC ?: '').trim()
-    if (!rc.isInteger()) {
-        // Fail-safe: an unset/unparseable exit code must NEVER read as clean. Gate-or-fail.
-        error("Name collision check produced no usable exit code (COLLISION_RC='${rc}'); refusing to proceed ungated.")
-    }
-    if (rc != '0') {
-        // 2 = confirmed collision; 3 = unverifiable (fail-loud). Both gate; wording differs.
-        def collision = rc == '2'</code></pre>
-        <p class="excerpt-cap">The fix for bug two, and the fail-safe it taught me to add.</p>
-        <p><b>Three: rejecting the plan leaked the address.</b> Reject the approval and the reserved address
-          stayed reserved. The release ran in the pipeline's <em>failure</em> handler, but a rejected approval
-          does not fail a build, it <b>aborts</b> it. Fixed by moving the release to the handler that covers
-          failed, aborted, and unstable alike, still guarded so that a machine which already exists keeps its
-          address rather than having it yanked out from under it.</p>
-      </section>
+        <h2>What broke while I was building it</h2>
+        <div class="failure">
+          <h3 id="failure-netbox-objects"><time datetime="2026-07-14">2026-07-14</time>The collision gate checked the wrong NetBox objects</h3>
+          <p>The first checker asked NetBox for devices and virtual machines. This pipeline records a provisioned host as an address with a DNS name, so the query could return clean for a name that was already allocated. The checker now reads address records and committed inventory as well as the hypervisor and monitoring system.</p>
 
-      <section class="block" id="rule">
-        <h2>The rule worth stealing</h2>
-        <p>Underneath all three is one rule, and it is the part worth stealing: <b>an unreachable system is
-          never "clean"</b>. If a system that could hold a conflicting name cannot be reached, that is not a
-          pass, it is an unknown, and an unknown still stops the build.</p>
-        <pre class="excerpt"><code>def evaluate(hits):
-    """Pure verdict over the gathered hits. 'collision' &gt; 'error' &gt; 'clean'."""
-    if any(h["present"] is True for h in hits):
-        return "collision"
-    if any(h["present"] is None for h in hits):
-        return "error"
-    return "clean"
+          <h3 id="failure-masked-exit"><time datetime="2026-07-14">2026-07-14</time>The checker failed, but the pipeline continued</h3>
+          <p>The collision script originally piped its report through <code>tee</code>. The shell returned the status of <code>tee</code>, which was successful, instead of the checker’s nonzero status. Output redirection replaced the pipe, and the gate now refuses an unset or unparseable result. The target-reachability gate received the same fail-closed treatment.</p>
 
-
-EXIT = {"clean": 0, "collision": 2, "error": 3}</code></pre>
-        <p class="excerpt-cap">Present means collision. Unknown means error. Only proven-absent is clean.</p>
-        <div class="links">
-          <a href="/capabilities/terraform.html">Terraform &#8594;</a>
-          <a href="/capabilities/netbox-ipam.html">Address management &#8594;</a>
-          <a href="/capabilities/jenkins.html">Jenkins &#8594;</a>
-          <a href="/capabilities/ansible.html">Ansible &#8594;</a>
+          <h3 id="failure-aborted-reservation"><time datetime="2026-07-14">2026-07-14</time>An aborted approval leaked the reserved address</h3>
+          <p>The release logic ran in the failure handler, but rejecting a Jenkins input marks the build aborted. The reservation remained in NetBox. Cleanup now covers unsuccessful outcomes and checks the creation marker before deciding whether an address can be released.</p>
         </div>
       </section>
 
-      <div class="links">
-        <a href="/projects/">Back to all projects &#8594;</a>
-        <a href="/platform/">How the platform works &#8594;</a>
-      </div>
+      <section class="block" id="recreate">
+        <h2>If I were recreating this</h2>
+        <ol class="sequence">
+          <li><strong>Start with one request contract.</strong> Define the machine facts once, then make Jenkins parameters and the Backstage schema prove they offer the same choices.</li>
+          <li><strong>Make every ownership boundary explicit.</strong> Address management allocates addresses, Terraform owns infrastructure state, the hypervisor runs VMs, Ansible configures guests, monitoring owns the host check, DNS owns names, and Git keeps the durable record.</li>
+          <li><strong>Run safety checks before allocation.</strong> Validate the target and check the requested name everywhere it could already exist. Treat an unreachable source as unknown and stop.</li>
+          <li><strong>Record the creation boundary.</strong> Cleanup rules must know whether an address is only a reservation or already belongs to a live VM.</li>
+          <li><strong>Keep the implementation below the orchestrator.</strong> Put provider calls in scripts, infrastructure in Terraform, and guest configuration in Ansible. A second front door can then reuse them without copying the Jenkinsfile.</li>
+          <li><strong>Test the rerun path.</strong> A useful provisioning workflow can resume after the VM exists. It retains the address and recorded placement, repeats idempotent integrations, and writes the manifest when the remaining work succeeds.</li>
+        </ol>
+      </section>
     </div>
 
     <footer>
