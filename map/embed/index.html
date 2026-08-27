@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="../styles.css">
   <style>
     html, body { width: 100%; height: 100%; overflow: hidden; }
-    .map-shell { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; width: 100%; height: 100%; padding: 0; }
+    .map-shell { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px; width: 100%; height: 100%; padding: 0; }
+    .breadcrumbs { margin-bottom: 0; }
     .map-stage { width: 100%; height: auto; min-height: 0; }
     .detail-strip { margin-top: 0; }
   </style>
@@ -19,6 +20,7 @@
 </head>
 <body>
   <main class="map-shell">
+    <nav id="breadcrumbs" class="breadcrumbs" aria-label="Current topology path"></nav>
     <section class="map-stage" aria-label="Interactive system topology">
       <svg id="map" role="img" aria-labelledby="map-title map-description"><title id="map-title">Radial operations topology</title><desc id="map-description">Select a system to drill into its child systems. Color and shape encode current health.</desc><g id="viewport"></g></svg>
       <div class="map-controls" aria-label="Map controls"><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="reset-view">Fit</button></div>
