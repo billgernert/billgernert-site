@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <script src="../assets/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/everything-as-code/">
@@ -182,22 +183,41 @@
 
     <header class="skill-head">
       <span class="badge">Automation design</span>
-      <h1>Everything as code</h1>
-      <p class="descriptor">Every scheduled job in the lab is defined in one text file that lives in version
-        control, not clicked together in a web console where the settings live only in someone's memory. Files
-        that are generated from that source are never edited by hand. And a job's schedule is proven the moment
-        the job is created, after a bug where a job existed, looked correct, and had no trigger at all.</p>
+      <h1>How the running platform is rebuilt from reviewed files</h1>
+      <p class="descriptor lede">Jobs, schedules, infrastructure, configuration, dashboards, policies, and the public site begin as reviewed files. Generators and controllers turn those files into the artifacts the tools consume. CI rejects a stale generated copy, and reconciliation checks the live system against the written source.</p>
+      <p class="descriptor lede">The sharpest failure was a Jenkins job that existed and looked correct but had no active schedule. Its trigger lived inside the job and would be read only after the first build, so a never-run job could never schedule itself. The seed now emits the trigger when it creates the job, which makes the schedule testable immediately.</p>
+      <p class="source-note">Built from the Jenkins seed, site and documentation generators, infrastructure definitions, drift checks, and the trigger-creation regression tests in the repository.</p>
     </header>
 
+    <nav class="anchors" aria-label="On this page">
+      <a href="#story">Why the console stopped being the source</a><span class="sep">/</span>
+      <a href="#path">How a file becomes running state</a><span class="sep">/</span>
+      <a href="#broke">What broke</a><span class="sep">/</span>
+      <a href="#running">How it runs now</a>
+    </nav>
+
     <div class="skill-body">
-      <section class="block">
-        <h2>Why code instead of clicks</h2>
+      <section class="block" id="story">
+        <h2>I needed a platform that could be rebuilt without remembering the clicks</h2>
         <p>You can build a job by clicking through a web console: name it here, set its schedule there, paste a
           script into a box. It works, and six months later nobody can say for sure what it does or why,
           because the settings live inside the tool and nowhere else. Defining the same job in a text file
           fixes that. The file is reviewed before it takes effect, its history shows who changed what and when,
           and if the tool is wiped you rebuild everything from the file. The job is not a thing someone
           configured once. It is a thing the repository describes and the tool obeys.</p>
+      </section>
+
+      <section class="block" id="path">
+        <h2>Each kind of file has one owner and one way into production</h2>
+        <p>“As code” does not mean one tool manages everything. Terraform owns infrastructure state, Ansible owns operating-system configuration, Jenkins Job DSL owns job definitions, Argo CD compares Kubernetes manifests with the cluster, and the site generator owns derived indexes and measured tokens. Git supplies the review history that connects them.</p>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/code-to-running-state.svg" alt="Reviewed source definitions move through generation and controllers into the running system, with drift returning to the source"><figcaption>A console remains useful for seeing current state and diagnosing a failure. Durable changes go back through the source file so a rebuild and the running environment follow the same path.</figcaption></figure>
+        <dl class="responsibilities">
+          <div><dt>Git and pull requests</dt><dd>Hold the proposed change, the reason, the review, and the exact revision that passed.</dd></div>
+          <div><dt>Generators</dt><dd>Build indexes, public summaries, configuration fragments, and measured tokens from their registered sources.</dd></div>
+          <div><dt>Jenkins seed</dt><dd>Creates or updates jobs with their parameters, descriptions, identities, and schedules already attached.</dd></div>
+          <div><dt>Controllers</dt><dd>Terraform, Ansible, Argo CD, and Kubernetes turn the approved definition into infrastructure or workload state.</dd></div>
+          <div><dt>Drift checks</dt><dd>Compare generated files or live revisions with the source and fail when a difference would otherwise be silent.</dd></div>
+        </dl>
       </section>
 
       <section class="block">
@@ -220,8 +240,8 @@
           pipeline treats it as an error rather than letting it rot.</p>
       </section>
 
-      <section class="block">
-        <h2>The job that existed but never ran</h2>
+      <section class="block" id="broke">
+        <h2>What broke: the job that existed but never ran</h2>
         <p>Here is the bug that shaped how triggers work now. A scheduled job was seeded correctly. It showed up
           in the tool, its configuration read exactly right, and by every appearance it was fine. It never ran.
           The reason took a while to see: the schedule lived in the job's own properties, and those properties
@@ -266,6 +286,23 @@
         <noscript><p>The live delivery dashboard requires JavaScript.</p></noscript>
       </section>
 
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>On a source change</td><td>The pull request checks syntax, policy, generated-file freshness, and public-site safety.</td><td>A failure stops before the target tool sees the change.</td></tr>
+          <tr><td>After merge</td><td>The owning generator, seed job, deployment pipeline, or reconciler reads the approved file.</td><td>The tool creates or updates only the state that source owns.</td></tr>
+          <tr><td>On a generator run</td><td>The generator rebuilds the derived file from registered inputs.</td><td>A hand edit disappears locally and CI reports the stale committed copy.</td></tr>
+          <tr><td>On a scheduled seed</td><td>Jenkins recreates job properties, including the trigger, from the seed definition.</td><td>A new job can be inspected and scheduled before it has ever built.</td></tr>
+          <tr><td>On drift</td><td>A checker compares the generated or live result with the approved source.</td><td>The repair changes the source, then repeats generation and review.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would require every new generator to ship with its drift check and ownership comment in the same pull request. Several early generated files acquired those protections later, after it was already possible to edit the output by mistake.</p>
+        <p>I would also test creation-time behavior, not only the Jenkinsfile that runs after creation. The missing-trigger defect lived in the handoff between the seed and the first build, which neither side's original test covered.</p>
+      </section>
+
       <div class="links">
         <a href="/platform/">How the platform is built &#8594;</a>
         <a href="/roadmap/">Read the roadmap &#8594;</a>
@@ -305,7 +342,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

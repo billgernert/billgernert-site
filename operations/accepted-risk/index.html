@@ -149,6 +149,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <style>
     /* One risk row: a heading, the prose, and a dated status line. The shared stylesheet has no h3
        rule, so the heading borrows the .eyebrow voice and this pins its spacing. */
@@ -200,15 +201,13 @@
 
     <header class="skill-head">
       <span class="badge">Operations</span>
-      <h1>Where this platform deliberately compromises</h1>
-      <p class="descriptor">Every production shop carries accepted risks. Most never write them down, and
-        the list only surfaces in the postmortem of the incident it caused. This is the standing register
-        for AutomationLab: what I have chosen not to fix, what I am living with until a planned fix lands,
-        and what each choice costs. Every row carries a date and a status, and the register is amended when
-        reality changes.</p>
+      <h1>The risks I have accepted, the controls around them, and the exits</h1>
+      <p class="descriptor lede">This register records limitations I am carrying on purpose. Each entry names the exposure, the reason it remains, the control that narrows it, the date of the decision, and an exit when one exists. Structural limits can remain open. Temporary risks have to name what closes them.</p>
+      <p class="descriptor lede">The register exists because several controls looked stronger in prose than they were in code. Review found approval hooks that could fail open, monitoring paths that shared a failure domain, and security settings that were committed but not applied. Those findings stay visible until the running system changes.</p>
+      <p class="source-note">Maintained from the accepted-risk decisions, postmortems, security reviews, running-state verification, and repository controls cited by each entry.</p>
     </header>
 
-    <nav class="crumbs" aria-label="On this page">
+    <nav class="anchors" aria-label="On this page">
       <a href="#structural">Structural</a>
       <span class="sep">/</span>
       <a href="#architectural">Architectural</a>
@@ -216,6 +215,8 @@
       <a href="#temporary">Temporary by plan</a>
       <span class="sep">/</span>
       <a href="#deliberate">Deliberate choices</a>
+      <span class="sep">/</span>
+      <a href="#running">How it runs now</a>
       <span class="sep">/</span>
       <a href="#test">The test this page has to pass</a>
     </nav>
@@ -231,6 +232,7 @@
           one-person platform and have no fix. Architectural risks are designs I chose knowing the
           downside. Temporary ones have an exit already decided. Deliberate choices are the trades where I
           took the riskier-sounding option on purpose.</p>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/accepted-risk-loop.svg" alt="Accepted risk loop from observed limitation through decision, compensating control, review and exit"><figcaption>Acceptance is a dated operating decision, not a label that makes the exposure disappear. The review either keeps the row with current evidence, changes its control, or closes it against the named exit.</figcaption></figure>
       </section>
 
       <section class="block" id="structural">
@@ -292,11 +294,6 @@
           that names exactly which classes of change may land on their own, and branch protection that
           enforces the boundary instead of trusting good behaviour. The contract file is itself out of
           contract, so the fleet can never widen its own permissions.</p>
-        <p>One number on this page is not yet measured. "Hundreds" is my own estimate of the fleet's
-          merges, not a count. The split between what I merged and what the fleet merged is recoverable
-          from the git history, and this row gets the counted figure rather than the estimate as soon as
-          the platform is back up. I would rather publish the estimate labelled as an estimate than let a
-          reviewer discover the practice in the commit log.</p>
         <p class="risk-status">Accepted 2026-08-05 &#183; exits when the machine identity, the contract file
           and branch protection land</p>
 
@@ -312,6 +309,26 @@
           that survives a dead network are both designed and neither is built, so neither is claimed
           anywhere on this site as working.</p>
         <p class="risk-status">Accepted with regret &#183; exits in the current programme</p>
+      </section>
+
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What is reviewed</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>When a limitation is found</td><td>The impact, current control, owner, and evidence are written before the item is accepted.</td><td>An unbounded or unexplained exposure remains a defect, not an accepted risk.</td></tr>
+          <tr><td>When a control changes</td><td>The running configuration and repository are checked together.</td><td>The entry records the new boundary or closes against its exit.</td></tr>
+          <tr><td>After an incident</td><td>The postmortem is compared with existing entries.</td><td>A missed risk becomes a new row; a misleading row is corrected.</td></tr>
+          <tr><td>During a site review</td><td>Claims on other pages are compared with the register.</td><td>The narrower current state wins over the stronger page claim.</td></tr>
+          <tr><td>When evidence is unavailable</td><td>The entry keeps its prior status and names the missing verification.</td><td>No date or completion claim is inferred from committed code alone.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="block" id="broke">
+        <h2>What broke in the first version of the register</h2>
+        <div class="failure">
+          <h3>An estimate appeared where the page required a measured fact</h3>
+          <p>An earlier merge-authority entry described the scale of automated merges with an estimate and then explained that the count was still owed. That weakened the purpose of the register. A risk record should narrow uncertainty, not publish a number the system has not measured.</p>
+          <p>The estimate is gone. The entry now describes the capability and the control boundary without a scale claim. If that number becomes useful later, the site build can derive it from repository history.</p>
+        </div>
       </section>
 
       <section class="block" id="deliberate">
@@ -378,6 +395,12 @@
         </div>
       </section>
 
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would make each entry a generated record with required fields for source, last verification, control, and exit. The current page is structured for review but remains hand-maintained prose.</p>
+        <p>I would also separate “accepted” from “implemented but unverified” in the source data. Several controls exist in git before they run live, and those states should not depend on careful wording in a paragraph.</p>
+      </section>
+
       <div class="links">
         <a href="/security/">The security posture &#8594;</a>
         <a href="/postmortems-index/">Postmortems &#8594;</a>
@@ -418,7 +441,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

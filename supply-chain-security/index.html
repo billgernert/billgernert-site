@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/supply-chain-security/">
   <!-- END generated: canonical -->
@@ -181,17 +182,29 @@
 
     <header class="skill-head">
       <span class="badge">Software supply chain</span>
-      <h1>Checking the code and containers before they run</h1>
-      <p class="descriptor">Most of what runs in the lab is built from other people's code and packaged into
-        containers. So that stack gets scanned for leaked secrets and known bugs, the image that ships gets
-        signed, and the signature is proven from a cold machine that trusts none of the lab's infrastructure.
-        Refusing to start an unsigned image is the next piece: written and committed, not yet turned on. Two of
-        these checks looked like they worked and did not. This page walks the pipeline and the two lessons that
-        made it honest.</p>
+      <h1>How I trace a running container back to the reviewed source</h1>
+      <p class="descriptor">A change is checked for exposed credentials and vulnerable dependencies before it
+        can merge. The resulting container is identified by an immutable digest, signed, and verified from a
+        separate machine. That proves the image being inspected is the image that was built. Runtime rejection
+        of unsigned images is designed but not enabled, so the page keeps that boundary visible.</p>
+      <p>This page follows the controls from a proposed code change to the container that actually runs. It also
+        keeps the two checks that gave false confidence in the story, because they explain why a green job is not
+        evidence until it measures the right artifact.</p>
+      <p class="source-note">Built from the repository workflows, image-signing scripts, verification records,
+        deployment manifests, and the accepted-risk register.</p>
     </header>
 
+    <nav class="anchors" aria-label="On this page">
+      <a href="#story">The problem</a>
+      <a href="#path">The path</a>
+      <a href="#scan">Scan</a>
+      <a href="#sign">Sign</a>
+      <a href="#runs">How it runs now</a>
+      <a href="#broke">What broke</a>
+    </nav>
+
     <div class="skill-body">
-      <section class="block">
+      <section class="block" id="story">
         <h2>The problem in one sentence</h2>
         <p>You did not write most of the code you run. A container image is your handful of files sitting on top
           of a base image, a language runtime, and dozens of libraries, all pulled from the internet. Supply
@@ -200,7 +213,20 @@
           you have never heard of is now your bug.</p>
       </section>
 
-      <section class="block">
+      <section class="block" id="path">
+        <h2>The control path from change to running image</h2>
+        <p>The digest is the container's content fingerprint. Unlike a label such as <code>latest</code>, it
+          cannot quietly move to different bytes. The pipeline and deployment therefore use the same digest as
+          the common identity for scanning, signing, verification, and startup.</p>
+        <figure class="engineering-diagram">
+          <img src="/assets/engineering-diagrams/supply-chain-path.svg"
+               alt="A code change passes secret and vulnerability scans, produces an image digest, receives a signature and build record, is verified independently, and is then selected by digest for deployment.">
+          <figcaption>The digest ties every control to one exact image. Runtime signature enforcement remains a
+            separate, unfinished control and is marked that way in the diagram.</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="scan">
         <h2>Scan: secrets and known bugs</h2>
         <p>Two scans stand between a change and a merge, and they run on different clocks, which is worth being
           precise about. The first looks for secrets, an API key or password accidentally committed, and blocks
@@ -212,7 +238,7 @@
           checked while it is small and fresh in someone's head, and everything else is caught on the sweep.</p>
       </section>
 
-      <section class="block">
+      <section class="block" id="sign">
         <h2>Sign: prove this exact build passed</h2>
         <p>The image that ships gets signed. The signature is a small cryptographic stamp that says "this
           specific image, byte for byte, is the one that passed." Today that signing is a deliberate step an
@@ -249,6 +275,23 @@
           image, end to end and cold-verified. Enforcement is the next piece of work.</p>
       </section>
 
+      <section class="block" id="runs">
+        <h2>How it runs now</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>When</th><th>What runs</th><th>What the result means</th></tr></thead>
+            <tbody>
+              <tr><td>Before a commit leaves a workstation</td><td>The local secret scanner checks the proposed files.</td><td>A detected credential stops the commit before it reaches the server.</td></tr>
+              <tr><td>On a pull request</td><td>CI repeats the secret scan and checks changed container definitions and dependencies.</td><td>The review cannot rely on a developer having run the local hook.</td></tr>
+              <tr><td>On the scheduled sweep</td><td>The workflow rebuilds against current upstream packages and scans the fresh result.</td><td>Newly disclosed upstream risk can appear even when this repository has not changed.</td></tr>
+              <tr><td>When an image is promoted</td><td>The selected digest is signed and receives a signed build record.</td><td>The signature and provenance describe one immutable image, not a moving label.</td></tr>
+              <tr><td>Before release evidence is accepted</td><td>A separate machine verifies the signature, build record, and digest.</td><td>The proof does not depend on trusting the build worker that produced it.</td></tr>
+              <tr><td>At container startup</td><td>The deployment selects the verified digest.</td><td>The correct bytes run, but the cluster does not yet reject an unsigned digest on its own.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="block">
         <h2>Provenance: where did this come from</h2>
         <p>Provenance is the paper trail: which pipeline built this image, from which commit, at what time. That
@@ -259,7 +302,7 @@
           and here is how it got here."</p>
       </section>
 
-      <section class="block">
+      <section class="block" id="broke">
         <h2>The weekly scan that was pointed at the wrong thing</h2>
         <p>The registry, where built images are stored, was scanned once a week. That felt thorough and it was
           quietly wrong, in a way that took a while to see. The scan read the image already sitting on the
@@ -293,6 +336,14 @@
           turned on, and it is worth saying so in those words rather than letting the rest of the page imply
           otherwise. And treat both the scan schedule and the accept list as places where a check can quietly
           stop checking, because those are exactly where the last two real gaps were.</p>
+      </section>
+
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would have defined the evidence object before I wrote the first scan. The important question is not
+          whether a scanner ran. It is whether every later control can point to the same immutable digest. I
+          also would have separated “the policy exists” from “the policy is enforced” in the first status model.
+          That distinction now stays visible until runtime verification is actually enabled and tested.</p>
       </section>
 
       <div class="links">
@@ -334,7 +385,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

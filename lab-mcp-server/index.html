@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/lab-mcp-server/">
   <!-- END generated: canonical -->
@@ -181,29 +182,29 @@
 
     <header class="skill-head">
       <span class="badge">Agentic operations</span>
-      <h1>The lab MCP server, safety first</h1>
-      <p class="descriptor">This is the server that lets an AI agent ask questions about the lab, an alert, a
-        host, a backup, a pipeline, and get real answers from the live systems. Version one can read and
-        change nothing. That is not a setting. The tools it exposes are all reads, and the systems it must
-        never touch are excluded in the server's own code, so no config edit and no clever prompt can talk it
-        into a write.</p>
+      <h1>How I let an agent inspect the lab without handing it the credentials</h1>
+      <p class="descriptor lede">The lab MCP server gives an assistant named, read-only operations for Vault metadata, monitoring, and Jenkins state. It fetches each credential inside the server, uses it for the request, and checks the response before returning anything. There is no tool that returns a secret value and no tool that changes infrastructure.</p>
+      <p class="descriptor lede">I built it after three different credentials reached agent transcripts through general-purpose shell output. The common problem was not one unsafe command. It was that the assistant held a shell in the same context as plaintext credentials. The new path moves the operation behind a narrow tool and keeps the credential inside that process.</p>
+      <p class="source-note">Built from the stdio MCP server, response-egress guards, read-method allowlist, management-path exclusions, and offline secret-leak regression tests in the repository.</p>
     </header>
 
-    <nav class="crumbs" aria-label="On this page">
-      <a href="#what">What it is</a>
+    <nav class="anchors" aria-label="On this page">
+      <a href="#what">Why I built it</a>
       <span class="sep">/</span>
       <a href="#readonly">Read-only by construction</a>
       <span class="sep">/</span>
       <a href="#code">Exclusions live in code</a>
       <span class="sep">/</span>
-      <a href="#audit">Every call is audited</a>
+      <a href="#audit">What the record proves</a>
       <span class="sep">/</span>
-      <a href="#surface">The surface that is not there</a>
+      <a href="#running">How it runs now</a>
+      <span class="sep">/</span>
+      <a href="#broke">What broke</a>
     </nav>
 
     <div class="skill-body">
       <section class="block" id="what">
-        <h2>What it is</h2>
+        <h2>Three leaks showed that command rules were guarding the wrong boundary</h2>
         <p>MCP is a way to give an AI assistant a set of tools it can call. Instead of the model guessing about
           the lab from training data, it calls a tool that returns the real answer: what alerts are firing,
           what a host looks like in inventory, whether a backup succeeded. The lab MCP server is the program
@@ -212,6 +213,8 @@
         <p>The reason to build it carefully is the same reason it is useful. A tool that can read your whole
           estate is one prompt away from being asked to change your whole estate. So the design started at the
           dangerous end and worked backwards.</p>
+        <p>In one day, a git token, a secrets-server token, and a database password reached transcripts through three different shell commands. The database case made the design problem clear. The assistant asked for a username, and an environment search returned the password beside it. A longer denylist of dangerous commands would not have predicted that output.</p>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/mcp-read-boundary.svg" alt="Read-only MCP server between an agent and allowlisted data sources, with mutation excluded and calls recorded"><figcaption>The credential belongs to the server process. The assistant receives the result of a registered operation, after the response is checked for the raw and encoded credentials used by that operation.</figcaption></figure>
       </section>
 
       <section class="block" id="readonly">
@@ -240,12 +243,9 @@
       </section>
 
       <section class="block" id="audit">
-        <h2>Every call is audited</h2>
-        <p>A read-only tool is still a tool that reached into a live system, so every call is recorded to a
-          defined audit schema: which tool ran, with what arguments, and what came back at a summary level. If
-          you ever need to answer "what did the agent actually look at, and when," the record is there by
-          design rather than reconstructed after the fact. An audit trail that was planned as part of the tool
-          is trustworthy; one bolted on later always has gaps exactly where you need it.</p>
+        <h2>The protocol makes each operation explicit; durable audit is still owed</h2>
+        <p>Each request names one registered tool and supplies structured arguments. The response can therefore be tied to a concrete operation such as listing Vault field names, reading an allowlisted monitoring method, or fetching a safe Jenkins REST path. Unknown tools, monitoring methods outside the allowlist, and Jenkins management paths are refused.</p>
+        <p>The current server returns those results over standard input and output. It does not yet write a separate append-only audit log. A client transcript can show which call was made, but that is not the same as a server-owned record that survives the client. I would add that record before considering any wider deployment, and well before designing a write-capable sibling.</p>
       </section>
 
       <section class="block" id="surface">
@@ -257,6 +257,32 @@
           wrong. The page for the guardrails around the AI stack goes into the budget caps and the operator
           approvals; this page is about the one design choice under all of it, which is to make the unsafe
           thing impossible rather than merely discouraged.</p>
+      </section>
+
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>Client startup</td><td>The MCP client starts the Python server as a local stdio process with its own scoped environment.</td><td>The assistant receives the registered tool descriptions, not the server's credentials.</td></tr>
+          <tr><td>Vault metadata question</td><td>The server lists path names, field names, or a record version.</td><td>Values never enter the response surface.</td></tr>
+          <tr><td>Monitoring question</td><td>The server accepts only methods in the read allowlist and fetches its token internally.</td><td>An unknown or mutating method is refused before the API call.</td></tr>
+          <tr><td>Jenkins question</td><td>The server makes a GET request to a non-management REST path.</td><td>Credential, script-console, configuration, and management paths remain unreachable.</td></tr>
+          <tr><td>Every credential-backed response</td><td>The server scans the result and error detail for the raw and encoded credential it used.</td><td>A match returns a refusal instead of the upstream payload.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="block" id="broke">
+        <h2>What broke before this design existed</h2>
+        <div class="failure">
+          <h3>General-purpose output exposed data nobody asked to see</h3>
+          <p>The three transcript leaks came from different commands, so blocking those exact commands would have left the underlying problem intact. A shell can return neighboring environment values, command output, error bodies, or configuration fields that contain a credential.</p>
+          <p>The server now fetches a credential only for the operation that needs it and refuses a response that echoes it. This does not make a general shell safe. Plaintext credentials still have to disappear from any filesystem or environment a general agent session can reach.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would begin with the credential boundary, not the list of useful tools. The original AIOps tool surface was organized around which systems an analyst wanted to query. The leak review showed that custody and response filtering had to be the first design.</p>
+        <p>I would also make the append-only audit sink part of version one. Structured calls improve the record, but the server should own a value-free event trail independent of whichever client started it.</p>
       </section>
 
       <div class="links">
@@ -298,7 +324,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

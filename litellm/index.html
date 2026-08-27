@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/litellm/">
   <!-- END generated: canonical -->
@@ -182,14 +183,9 @@
     <header class="skill-head">
       <span class="badge">AI gateway</span>
       <h1>Putting a hard ceiling on AI spending</h1>
-      <p class="descriptor">Several jobs in this lab call a language model on a schedule, without an operator
-        in the loop. That is a bill that grows while nobody is watching, and the failure mode is not a
-        crash, it is an invoice. Every <!--LIVE:UNIT_COUNT:START-->1<!--LIVE:UNIT_COUNT:END--> of those jobs now goes through a single gateway with three
-        independent spending limits stacked behind it: a <strong>50 dollar monthly ceiling across
-        everything</strong>, a per-job allowance under it, and each job's own credit gate as the
-        innermost backstop. The ceiling and the callbacks enforcing it were verified against the running
-        gateway on 13 July 2026. This page also covers the finding that made the first monitoring
-        dashboard useless.</p>
+      <p class="descriptor lede">Scheduled jobs reach local and hosted language models through one LiteLLM gateway. A hosted request has to pass the workload's own credit gate, its virtual-key budget, and the gateway-wide monthly ceiling. The most restrictive limit wins. If the gateway or a budget check fails, the request stops instead of calling the provider directly.</p>
+      <p class="descriptor lede">The gateway also moved provider credentials out of the individual jobs and put model routing in one configuration. The first monitoring design failed because it expected enterprise-only Prometheus series from the open-source build. The replacement exporter reads the spend API that this build actually exposes.</p>
+      <p class="source-note">Built from the LiteLLM gateway and egress configuration, layered-budget decisions, consumer cutover records, spend exporter, dashboard, and live verification notes in the repository.</p>
     </header>
 
     <div class="skill-body">
@@ -200,16 +196,13 @@
         <a href="#numbers">What the caps are set to</a>
         <a href="#metrics">The metrics finding</a>
         <a href="#egress">What it is allowed to talk to</a>
-        <a href="#state">What is proven and what is not</a>
+        <a href="#running">How it runs now</a>
+        <a href="#state">What remains limited</a>
       </nav>
 
       <section class="block" id="problem">
         <h2>The failure mode is an invoice</h2>
-        <p>When a person uses a language model, spending is self-limiting, because a person gets bored.
-          When a scheduled job uses one, nothing is self-limiting. A nightly triage job that escalates an
-          unusual alert to a model costs almost nothing on a quiet night and considerably more on a night
-          when everything is unusual, and the night when everything is unusual is exactly the night
-          nobody is reading the logs.</p>
+        <p>An interactive model session ends when the person using it stops. A scheduled job can keep sending requests through a noisy night without anyone watching the logs. The triage workload costs almost nothing when deterministic rules explain the findings, and more when many cases need hosted-model judgment. The unusual night is therefore the expensive one.</p>
         <p>Worse, a runaway does not look like an outage. Every job stays green, every result is
           delivered, and the only symptom is a number on a card statement three weeks later. So the
           control has to be preventive rather than an alert, and it has to sit somewhere the individual
@@ -263,6 +256,7 @@
           reports for it. They measure different scopes and must never be added together. A request can
           also be refused by a layer other than the one it logs to, which is confusing the first time it
           happens.</p>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/litellm-budget-path.svg" alt="AI request passing an application credit gate, virtual-key budget and global ceiling before model routing"><figcaption>The workload keeps its local gate as a backstop. LiteLLM adds per-consumer and combined-estate limits, then routes the allowed request to a local or hosted model under one API contract.</figcaption></figure>
       </section>
 
       <section class="block" id="numbers">
@@ -323,8 +317,19 @@
           is live seemed more useful than describing the design as though it were.</p>
       </section>
 
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>Before a hosted request</td><td>The consumer reads its allowance and month-to-date ledger.</td><td>An unreadable or exhausted allowance denies the request locally.</td></tr>
+          <tr><td>At the gateway</td><td>LiteLLM identifies the virtual key and checks its consumer budget plus the global ceiling.</td><td>Either limit can refuse the request before provider traffic begins.</td></tr>
+          <tr><td>For routine work</td><td>The configured model name routes to the local model.</td><td>The request keeps the shared API and produces no hosted-provider charge.</td></tr>
+          <tr><td>For a hosted model</td><td>The gateway sends the request with the provider credential held centrally.</td><td>Spend is attributed to the virtual key and combined gateway total.</td></tr>
+          <tr><td>On the monitoring interval</td><td>The exporter polls the spend endpoint and publishes budget and scrape-health measurements.</td><td>Prometheus and Grafana show the current gateway view or a scrape failure.</td></tr>
+        </tbody></table></div>
+      </section>
+
       <section class="block" id="state">
-        <h2>What is proven and what is not</h2>
+        <h2>What is running and what remains limited</h2>
         <p>Verified against the running gateway: the global ceiling is in effect and both budget-limiter
           callbacks are active, all four model names resolve, an end-to-end request through the proxy to
           the local model succeeded, and the per-job keys exist with their allowances attached. Every
@@ -334,8 +339,13 @@
           has been confirmed as configured and active rather than by watching it refuse a real request.
           The replacement spend monitoring is in progress, so there is currently no dashboard view of the
           three layers together. The egress restriction above is committed and not applied.</p>
-        <p>The honest summary is that the controls are in place and the observability for them is not
-          finished. That is a better order than the reverse, but it is not done.</p>
+        <p>The spending controls are active. The remaining work is the full three-layer operator view and the narrower outbound path. Those limits stay on the page until the running configuration changes.</p>
+      </section>
+
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would capture a live response from every planned monitoring endpoint before building panels or alerts. The first dashboard used documented metric names and a reachable endpoint, but this image emitted none of the expected series.</p>
+        <p>I would also finish the restricted egress path before moving the last consumer. Centralizing a provider key makes the gateway easier to govern, but it also makes the gateway's outbound reach more consequential.</p>
       </section>
 
       <div class="links">
@@ -377,7 +387,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

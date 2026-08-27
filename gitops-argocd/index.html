@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <script src="../assets/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/gitops-argocd/">
@@ -182,17 +183,14 @@
 
     <header class="skill-head">
       <span class="badge">GitOps</span>
-      <h1>GitOps with Argo CD</h1>
-      <p class="descriptor">Argo CD watches the committed manifests for eight service directories in this
-        cluster and compares them, every few minutes and on every push, against what is actually running.
-        Automatic sync is off on all eight on purpose, so Argo CD reports a difference and changes nothing
-        until a person reads the diff and syncs. That was proven live: a deployment that git declares at one
-        replica was scaled by hand to two, Argo CD marked it out of sync and touched nothing, and a manual
-        sync put it back to one.</p>
+      <h1>How a reviewed manifest becomes the running Kubernetes state</h1>
+      <p class="descriptor lede">Argo CD compares registered Kubernetes manifests with the objects running in the cluster. A difference becomes visible as drift. The current applications wait for a reviewed sync, so detection is automatic and deployment remains an operator decision.</p>
+      <p class="descriptor lede">I tested that boundary by changing a deployment in the cluster without changing git. Argo CD reported the extra replica and left it running. After I read the diff and synced, Argo CD restored the replica count declared in the repository.</p>
+      <p class="source-note">Built from the Argo CD applications, repository webhook, Kubernetes manifests, adoption runbook, drift test, and public Kubernetes dashboard in the repository.</p>
     </header>
 
-    <nav class="crumbs" aria-label="On this page">
-      <a href="#what">What Argo CD does here</a>
+    <nav class="anchors" aria-label="On this page">
+      <a href="#story">Why I added reconciliation</a>
       <span class="sep">/</span>
       <a href="#reconciliation">What reconciliation means</a>
       <span class="sep">/</span>
@@ -200,16 +198,16 @@
       <span class="sep">/</span>
       <a href="#relations">How it relates to the rest of the lab</a>
       <span class="sep">/</span>
-      <a href="#failures">What can go wrong</a>
+      <a href="#running">How it runs now</a>
       <span class="sep">/</span>
-      <a href="#why">Why Argo CD, and when it is wrong</a>
+      <a href="#failures">What broke</a>
       <span class="sep">/</span>
-      <a href="#learned">What I learned</a>
+      <a href="#learned">What I would do differently</a>
     </nav>
 
     <div class="skill-body">
-      <section class="block" id="what">
-        <h2>What Argo CD does here</h2>
+      <section class="block" id="story">
+        <h2>I added Argo CD after deployment and desired state had started to separate</h2>
         <p>Argo CD keeps part of my Kubernetes cluster matching what git says it should be. Nothing more than
           that, and that turns out to be a lot. The manifests for eight service directories live in the lab
           repo. Argo CD watches those files, compares them against what the cluster is actually running, and
@@ -364,13 +362,24 @@
           Secrets by name; the values come from Vault through committed create-secret scripts run at deploy
           time. Wiring External Secrets Operator to make that pull automatic is committed and not yet applied,
           and this page will say so until it is running.</p>
-        <p>The honest boundary: Argo CD governs a slice of the Kubernetes half of this lab and nothing else.
+        <p>The boundary matters: Argo CD governs a slice of the Kubernetes half of this lab and nothing else.
           The VMs, the domain controllers, the mail platform, and the hypervisor cluster are Ansible and
           Jenkins territory. One platform, two reconciliation stories, and only one of them is Argo CD.</p>
       </section>
 
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>On every repository push</td><td>The webhook tells Argo CD to read the registered revision again.</td><td>Applications remain synced or show the exact desired-state difference.</td></tr>
+          <tr><td>On the reconciliation interval</td><td>Argo CD compares git with the Kubernetes API even when no webhook arrived.</td><td>A manual cluster edit becomes visible as drift.</td></tr>
+          <tr><td>When a build publishes an image</td><td>The delivery path updates the manifest with the reviewed image digest.</td><td>Argo CD sees a desired-state change, but it does not build or sign the image.</td></tr>
+          <tr><td>When an application is out of sync</td><td>The operator reads the object-level diff and starts sync.</td><td>Argo CD applies only the registered application scope.</td></tr>
+          <tr><td>After sync</td><td>Kubernetes performs the rollout and reports workload health.</td><td>Argo CD returns to synced and healthy, or keeps the failed resource visible.</td></tr>
+        </tbody></table></div>
+      </section>
+
       <section class="block" id="failures">
-        <h2>What can go wrong</h2>
+        <h2>What broke while I was building it</h2>
         <p><b>Argo CD is down.</b> Symptoms: apps stop syncing, the interface is unreachable. What does not
           happen: nothing running breaks. The cluster holds the last synced state because Kubernetes, not Argo
           CD, runs the workloads. Diagnosis: pod status in its namespace. Recovery: bring the pods back; Argo
@@ -419,7 +428,7 @@
            spine of it was verified against the repo (the empty-Secret adoption ruling, and the fact that
            self-heal is off everywhere); the judgements and the advice are the part that needs your voice. -->
       <section class="block" id="learned">
-        <h2>What I learned</h2>
+        <h2>What I would do differently</h2>
         <p>The concept that unlocked it for me was realizing reconciliation is not deployment. Deployment is
           an action someone performs. Reconciliation is a standing disagreement-resolver that happens to
           deploy things as a side effect. Once I saw that, the rest of the design fell out: of course Argo CD
@@ -491,7 +500,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>

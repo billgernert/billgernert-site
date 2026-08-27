@@ -148,6 +148,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../capabilities/style.css">
+  <link rel="stylesheet" href="/assets/engineering-pages.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/ai-guardrails/">
   <!-- END generated: canonical -->
@@ -182,25 +183,41 @@
     <header class="skill-head">
       <span class="badge">AI safety</span>
       <h1>Every control between a model and the lab</h1>
-      <p class="descriptor">A language model in an automation pipeline can spend real money and change real
-        machines. So between every model and the lab sits a stack of controls: a hard budget cap, a gate that
-        denies when it cannot read the budget, machines that automation is never allowed to touch, and an operator
-        approval before anything is changed. The AI stack is mid-migration, so each control below is marked
-        as in place today or incoming with the integration work.</p>
+      <p class="descriptor lede">Models can classify alerts, explain a failure, and prepare a repair plan. They do not receive unrestricted credentials or a direct execution path. Paid requests pass three spending limits, infrastructure changes wait for an operator, protected identity systems stay outside the tool surface, and monitoring checks the result after an approved action.</p>
+      <p class="descriptor lede">I built these boundaries while adding AI to the morning triage and self-healing workflows. The useful output is still an explanation or a plan. Deterministic code owns collection and validation, LiteLLM owns the provider route and budget controls, Jenkins owns the recorded workflow, and a narrow helper owns the exact action.</p>
+      <p class="source-note">Built from the AI budget decisions, LiteLLM gateway configuration, AIOps collectors, self-healing pipeline, read-only tool server, and approval-gate tests in the repository.</p>
     </header>
 
+    <nav class="anchors" aria-label="On this page">
+      <a href="#story">Why the controls came first</a><span class="sep">/</span>
+      <a href="#path">Where the work runs</a><span class="sep">/</span>
+      <a href="#limits">What limits a request</a><span class="sep">/</span>
+      <a href="#running">How it runs now</a><span class="sep">/</span>
+      <a href="#broke">What broke</a>
+    </nav>
+
     <div class="skill-body">
-      <section class="block">
-        <h2>Why guardrails come first</h2>
-        <p>The useful thing about a model in a pipeline is that it can act. That is also the dangerous thing. A
-          model that can open a paid connection can run up a bill, and a model wired into automation that
-          repairs machines can, in principle, break them at machine speed. None of the controls here make the
-          model smarter. They bound what it is allowed to cost and what it is allowed to touch, so a bad output
-          is a contained event rather than an open-ended one. The order matters too: the guardrails were built
-          alongside the first useful use, not bolted on after.</p>
+      <section class="block" id="story">
+        <h2>The controls arrived with the first useful model call</h2>
+        <p>The first useful case was morning triage. Code collected overnight alerts, build failures, and backup results, then a model summarized the cases that were hard to explain with fixed rules. That raised two separate risks immediately. A scheduled job could spend money while nobody watched it, and a plausible model answer could be mistaken for permission to change a machine.</p>
+        <p>I kept those risks separate. Budget controls decide whether a hosted request may leave the lab. Tool controls decide which information a model can read. The workflow decides whether a proposal reaches an operator, and the execution helper allows one named action. A model score or confident sentence never grants access.</p>
       </section>
 
-      <section class="block">
+      <section class="block" id="path">
+        <h2>The model sits inside a workflow, not in front of the infrastructure</h2>
+        <p>Jenkins starts the scheduled or attended job and keeps the log. Collectors read monitoring, build, and backup state through scoped credentials. Python handles known classifications first. Routine language work stays on the local model; difficult cases can reach a hosted model through LiteLLM. An approved remediation then passes to an allowlisted helper, and monitoring checks what happened from outside that helper.</p>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/ai-guardrail-path.svg" alt="AI automation path through deterministic checks, model routing, approval and bounded execution"><figcaption>The model is one stage in the middle. It does not collect with unrestricted access, approve its own plan, choose a new target, or decide that its action worked.</figcaption></figure>
+        <dl class="responsibilities">
+          <div><dt>Collectors</dt><dd>Read a defined set of monitoring, CI, backup, and inventory facts. Missing or stale input becomes a finding instead of an empty success.</dd></div>
+          <div><dt>Python</dt><dd>Groups known symptoms, checks schemas, removes duplicate findings, and decides when a case genuinely needs language-model judgment.</dd></div>
+          <div><dt>LiteLLM</dt><dd>Provides one internal API for local and hosted models, meters virtual keys, and enforces the gateway-wide ceiling.</dd></div>
+          <div><dt>Jenkins</dt><dd>Records the run, holds the approval gate, passes only the approved target and action, and reports a failed or timed-out gate.</dd></div>
+          <div><dt>Restricted helper</dt><dd>Accepts one allowlisted operation. It is not a general shell, and identity-core systems remain excluded from automatic repair.</dd></div>
+          <div><dt>Monitoring</dt><dd>Observes service health after the action. A successful helper exit is supporting evidence, not the final result.</dd></div>
+        </dl>
+      </section>
+
+      <section class="block" id="limits">
         <h2>The budget gate that fails closed</h2>
         <p>In place today. Every paid model call goes through a budget gate, and the important part is how it
           behaves when something is wrong. It denies not only when the budget is exceeded but also when the
@@ -275,6 +292,32 @@
           plan borrow the credibility of the proof.</p>
       </section>
 
+      <section class="block" id="running">
+        <h2>How it runs now</h2>
+        <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead><tbody>
+          <tr><td>Every collection cycle</td><td>Deterministic collectors and classifiers read the current evidence.</td><td>Known conditions stay in code; only unresolved cases continue to a model.</td></tr>
+          <tr><td>Routine language work</td><td>The local model classifies or summarizes without a hosted-provider charge.</td><td>A usable result returns to the workflow with its source evidence.</td></tr>
+          <tr><td>Hard case</td><td>The consumer, virtual-key, and global budget checks all run before LiteLLM sends a hosted request.</td><td>Any denial or gateway failure stops the escalation and reports why.</td></tr>
+          <tr><td>Proposed infrastructure change</td><td>Jenkins presents the target, evidence, and exact action to the operator.</td><td>Approval dispatches the bounded helper; timeout or rejection changes nothing.</td></tr>
+          <tr><td>After an approved action</td><td>The workflow reads health from the monitoring side.</td><td>A healthy check closes the run. A failed check keeps the incident visible.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="block" id="broke">
+        <h2>What broke while I was building it</h2>
+        <div class="failure">
+          <h3>The first gateway dashboard watched metrics this build did not expose</h3>
+          <p>The dashboard and alerts used documented LiteLLM Prometheus series. The open-source gateway image returned no series for those names, so the panels showed no data and the alerts could never fire. The endpoint being reachable had been mistaken for evidence that it contained the measurements.</p>
+          <p>I replaced that path with an exporter that polls the gateway's spend API and emits the measurements the dashboard actually uses. The old scrape target was removed. The check now verifies returned series, not just an HTTP response.</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>What I would do differently</h2>
+        <p>I would define the tool exclusions and result-verification path before connecting the first model. I built them alongside the first use, but writing the boundary first would have made every later integration a registration exercise.</p>
+        <p>I would also instrument budget decisions before drawing the dashboard. The first attempt began with expected metric names. Starting from one captured live response would have exposed the open-source metrics gap immediately.</p>
+      </section>
+
       <div class="links">
         <a href="/ai/">How I use AI &#8594;</a>
         <a href="/security/">See the security posture &#8594;</a>
@@ -314,7 +357,7 @@
       </nav>
       <!-- END generated: sitemap -->
       <p class="footer-line">billgernert.com · built and operated by Bill Gernert</p>
-      <p class="verified-line">Verified against the lab on 2026-08-26</p>
+      <p class="verified-line">Verified against the lab on 2026-08-27</p>
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </main>
