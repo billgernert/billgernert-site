@@ -263,20 +263,26 @@
       overflow: hidden;
       border: 1px solid var(--live-line);
       border-radius: 10px;
-      background: linear-gradient(145deg, rgba(0, 212, 255, 0.055), transparent 45%), var(--live-panel);
+      background-color: var(--live-panel);
+      background-image: linear-gradient(145deg, rgba(0, 212, 255, 0.055), transparent 45%);
       color: inherit;
       text-decoration: none;
       animation: view-arrive 0.5s ease both;
-      animation-delay: calc(var(--view-order) * 80ms);
       transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
     }
+
+    .view-card:nth-child(1) { animation-delay: 80ms; }
+    .view-card:nth-child(2) { animation-delay: 160ms; }
+    .view-card:nth-child(3) { animation-delay: 240ms; }
 
     .view-card::after {
       content: "";
       position: absolute;
-      inset: auto 0 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       height: 2px;
-      background: linear-gradient(90deg, var(--live-cyan), var(--live-green));
+      background: linear-gradient(90deg, #00d4ff, #00ff96);
       transform: scaleX(0.18);
       transform-origin: left;
       transition: transform 220ms ease;
@@ -443,7 +449,7 @@
       </header>
 
       <div class="view-grid">
-        <a class="view-card" style="--view-order: 1" href="/map/">
+        <a class="view-card" href="/map/">
           <span class="view-type">Interactive topology</span>
           <h2>Platform map</h2>
           <p class="view-question">Where does this current state come from?</p>
@@ -451,7 +457,7 @@
           <span class="view-cta">Open the Platform map <span class="arrow" aria-hidden="true">&#8594;</span></span>
         </a>
 
-        <a class="view-card" style="--view-order: 2" href="/diagram/">
+        <a class="view-card" href="/diagram/">
           <span class="view-type">Architecture reference</span>
           <h2>Architecture diagram</h2>
           <p class="view-question">How is the platform intended to fit together?</p>
@@ -459,7 +465,7 @@
           <span class="view-cta">Open the diagram <span class="arrow" aria-hidden="true">&#8594;</span></span>
         </a>
 
-        <a class="view-card" style="--view-order: 3" href="/noc/">
+        <a class="view-card" href="/noc/">
           <span class="view-type">Grafana dashboards</span>
           <h2>NOC</h2>
           <p class="view-question">What is being measured right now?</p>
