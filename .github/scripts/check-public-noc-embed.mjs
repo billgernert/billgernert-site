@@ -6,6 +6,7 @@ const MAP_URL = "https://billgernert.com/map/";
 const MAP_EMBED_URL = "https://billgernert.com/map/embed/";
 const STATUS_ORIGIN = "https://status.billgernert.com";
 const STATES = /\b(?:HEALTHY|DEGRADED|CRITICAL|NO SIGNAL)\b/;
+const DENIED_PUBLIC_ANNOTATIONS = /^\/api\/public\/dashboards\/[0-9a-f]{32}\/annotations$/;
 
 function frameAncestors(response) {
   const csp = response.headers.get("Content-Security-Policy") || "";
@@ -126,7 +127,8 @@ async function checkEmbed() {
     const page = await context.newPage();
     page.on("response", response => {
       const url = new URL(response.url());
-      if (url.origin === STATUS_ORIGIN && response.status() === 403) {
+      if (url.origin === STATUS_ORIGIN && response.status() === 403 &&
+          !DENIED_PUBLIC_ANNOTATIONS.test(url.pathname)) {
         forbidden.push(url.pathname);
       }
       if (url.origin === STATUS_ORIGIN &&
