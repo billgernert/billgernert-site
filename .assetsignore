@@ -1,0 +1,53 @@
+# Fail closed at the repository-to-website boundary. The Cloudflare build runs
+# from the public repository root, which also contains Git metadata, CI files,
+# and repository documentation. Deny every root entry first; only the reviewed
+# website roots below may become static assets.
+/*
+
+# Hidden files inside an allowed website directory are not web assets. The
+# explicit .well-known exception below restores the public security contact.
+**/.*
+**/README.md
+
+# Cloudflare static-asset control files (processed, not served).
+!/_headers
+!/_redirects
+
+# Public root assets.
+!/favicon.ico
+!/index.html
+!/robots.txt
+!/sitemap.xml
+
+# Public website trees.
+!/.well-known/
+!/about/
+!/ai/
+!/ai-guardrails/
+!/assets/
+!/capabilities/
+!/dead-man-monitoring/
+!/diagram/
+!/dr-restore-verify/
+!/engineering/
+!/everything-as-code/
+!/fleet/
+!/gitops-argocd/
+!/lab-mcp-server/
+!/litellm/
+!/live/
+!/mail/
+!/map/
+!/noc/
+!/operations/
+!/platform/
+!/postmortems-index/
+!/projects/
+!/public-roadmap/
+!/renovate/
+!/roadmap/
+!/security/
+!/supply-chain-security/
+!/vault/
+!/windows-identity/
+!/writeups/
