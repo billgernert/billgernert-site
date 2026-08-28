@@ -255,12 +255,13 @@
       <section class="block" id="jenkins">
         <h2>Jenkins is the engine</h2>
         <p>Jenkins is an automation server: you give it a job, it runs that job to completion, and it
-          tells you whether the job worked. In this lab it is the only thing allowed to change
-          infrastructure. There is no console where I click "create VM" and no laptop where I run a
-          playbook by hand. A change to the estate is a Jenkins job, or it does not happen.</p>
-        <p>That constraint is the whole design. It means every change has a run number, a log, an
-          operator who triggered it, and an exit code. It also means the pipeline definitions are the
-          real documentation of how this lab works, because there is no second, undocumented path.</p>
+          tells you whether the job worked. In this lab it owns finite workflows such as provisioning,
+          decommissioning, recovery, and identity changes. Argo CD owns continuous reconciliation for
+          its registered Kubernetes scope. A finite estate change follows a Jenkins job or a reviewed
+          operator runbook instead of an undocumented console path.</p>
+        <p>That constraint is the whole design. Each Jenkins change has a run number, a log, an
+          operator who triggered it, and an exit code. The pipeline definitions and reviewed runbooks
+          document how those changes work, while Argo CD records drift and sync state for its scope.</p>
         <figure class="shot">
           <img src="img/jenkins-dashboard.png" alt="The Jenkins job list with domain tabs across the top and green scheduled jobs below." width="1050" height="545" loading="lazy">
           <figcaption>The controller's job list. The tabs are the lab's domains; every row is a change or a check with a run number behind it. Captured 2026-08-23.</figcaption>
@@ -653,10 +654,11 @@
 
       <section class="block" id="secrets">
         <h2>Secrets, and a recovery I actually proved</h2>
-        <p>One system owns every secret. Nothing is written to disk and nothing is committed: pipelines
-          fetch what they need at run time and hold it in memory, workloads authenticate by role rather
-          than by carrying a password, and two independent scanners backstop the rule, one at commit
-          time and one at write time, so a secret has to beat both to reach the repository.</p>
+        <p>Vault owns automation-secret custody. Pipelines fetch what they need at run time and avoid
+          writing values to workspaces, command arguments, or the repository. Some consumers must store
+          active credentials or certificate material; lifecycle jobs control, rotate, and verify those
+          deployed copies. Two independent scanners backstop the repository rule, one at commit time and
+          one at write time.</p>
         <p><b>Then I destroyed it on purpose.</b> Recovery claims are worthless until tested, so the
           secrets VM was not drained or gracefully shut down, it was destroyed outright, then restored
           from that night's snapshot. It came back initialized and unsealed <b>97 seconds</b> later, and

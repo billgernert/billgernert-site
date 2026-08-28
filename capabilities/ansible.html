@@ -141,12 +141,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ansible - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I use Ansible to configure and harden every host in AutomationLab - role-based, idempotent, and ordered so a firewall change never locks the box out.">
+  <meta name="description" content="How I use Ansible to configure and harden managed AutomationLab hosts with role-based, idempotent work ordered to preserve management access.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Ansible - Engineering capabilities - Bill Gernert">
-  <meta property="og:description" content="How I use Ansible to configure and harden every host in AutomationLab - role-based, idempotent, and ordered so a firewall change never locks the box out.">
+  <meta property="og:description" content="How I use Ansible to configure and harden managed AutomationLab hosts with role-based, idempotent work ordered to preserve management access.">
   <meta property="og:url" content="https://billgernert.com/capabilities/ansible">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -154,7 +154,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Ansible - Engineering capabilities - Bill Gernert">
-  <meta name="twitter:description" content="How I use Ansible to configure and harden every host in AutomationLab - role-based, idempotent, and ordered so a firewall change never locks the box out.">
+  <meta name="twitter:description" content="How I use Ansible to configure and harden managed AutomationLab hosts with role-based, idempotent work ordered to preserve management access.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -203,7 +203,7 @@
     <header class="skill-head">
       <span class="badge" data-accent="cyan">Platform &amp; Orchestration</span>
       <h1>Ansible</h1>
-      <p class="descriptor">Post-provision configuration and hardening for every host, split across 28 roles - idempotent, applied in a deliberate order, because the order is what keeps a firewall change from locking the box out.</p>
+      <p class="descriptor">Post-provision configuration and hardening for managed hosts, split across 28 roles and applied in a deliberate order that preserves management access.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
@@ -389,10 +389,10 @@
             <div class="label">enforced, not hoped</div>
           </div>
         </div>
-        <p>Ansible is what makes "provisioned" mean "actually configured and hardened," every
-          time, the same way. The firewall-ordering lesson is the one I keep closest: automation
+        <p>Ansible is what makes "provisioned" mean "configured and hardened" through a repeatable
+          path. The firewall-ordering lesson is the one I keep closest: automation
           that can lock itself out of the very host it is configuring is a trap, and the defense
-          is encoding the safe order into the roles so it cannot be got wrong by accident.</p>
+          is encoding the safe order into the roles to reduce the chance of an ordering mistake.</p>
       </section>
 
       <section class="block">

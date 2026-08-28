@@ -141,12 +141,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NetBox IPAM - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I use NetBox as the IP address source of truth in AutomationLab - allocate before provisioning, so the record and reality never drift apart.">
+  <meta name="description" content="How I use NetBox as the IP address source of truth in AutomationLab, reserving an address before provisioning and releasing it after verified teardown.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="NetBox IPAM - Engineering capabilities - Bill Gernert">
-  <meta property="og:description" content="How I use NetBox as the IP address source of truth in AutomationLab - allocate before provisioning, so the record and reality never drift apart.">
+  <meta property="og:description" content="How I use NetBox as the IP address source of truth in AutomationLab, reserving an address before provisioning and releasing it after verified teardown.">
   <meta property="og:url" content="https://billgernert.com/capabilities/netbox-ipam">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -154,7 +154,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="NetBox IPAM - Engineering capabilities - Bill Gernert">
-  <meta name="twitter:description" content="How I use NetBox as the IP address source of truth in AutomationLab - allocate before provisioning, so the record and reality never drift apart.">
+  <meta name="twitter:description" content="How I use NetBox as the IP address source of truth in AutomationLab, reserving an address before provisioning and releasing it after verified teardown.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -203,7 +203,7 @@
     <header class="skill-head">
       <span class="badge" data-accent="green">Automation &amp; Tooling</span>
       <h1>NetBox IPAM</h1>
-      <p class="descriptor">The IP address source of truth - the first stop in provisioning, where an address is allocated before a VM exists, so the inventory and the network never disagree.</p>
+      <p class="descriptor">The IP address source of truth and the first stop in provisioning, where an address is reserved before infrastructure exists and released after verified teardown.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
@@ -230,7 +230,7 @@
           <li><b>Allocate first.</b> The provisioning pipeline requests an address from NetBox as
             its opening step, so the record reserves it before anything downstream uses it.</li>
           <li><b>Feeds the rest of the flow.</b> The allocated address flows into the
-            infrastructure-as-code and configuration stages, so every later step builds on the
+            infrastructure-as-code and configuration stages, so downstream steps build on the
             same authoritative value.</li>
           <li><b>Released on decommission.</b> Tearing a machine down returns its address to the
             pool in NetBox, so freed space is actually reusable and the record keeps matching
@@ -359,18 +359,17 @@
           a quick manual static IP, a machine stood up outside the pipeline. The moment that
           happens, the record and the network disagree, and the next automated allocation can hand
           out an address that is already quietly in use. An IPAM does not enforce reality; it only
-          reflects what it is told. So the discipline is absolute: <b>every</b> allocation goes
-          through NetBox, or NetBox is just a stale document that looks authoritative while lying
-          to you.
+          reflects what it is told. Provisioning and decommission paths therefore reserve and release
+          addresses through NetBox. Bypassing that path turns the source of truth into a stale record.
         </div>
         <ul>
-          <li><b>Allocate before you build, not after.</b> Reserving the address first means two
-            concurrent provisions can never race for the same one. Recording it after the fact
+          <li><b>Allocate before you build, not after.</b> Reserving the address first removes the
+            ordinary race between concurrent provisions. Recording it after the fact
             leaves a window where a conflict can slip in.</li>
           <li><b>Release on teardown or the pool silently shrinks.</b> If decommission does not
             return the address, the free pool leaks over time and you eventually "run out" of
             space that is actually idle. The reverse path matters as much as the forward one.</li>
-          <li><b>Reconcile occasionally.</b> Because out-of-band changes are always possible, it
+          <li><b>Reconcile occasionally.</b> Because out-of-band changes remain possible, it
             is worth periodically checking the record against what is really answering on the
             network, and fixing drift before it causes a conflict.</li>
         </ul>
@@ -388,14 +387,13 @@
             <div class="label">authoritative IP record</div>
           </div>
           <div class="stat">
-            <div class="num">0</div>
-            <div class="label">double-allocations by design</div>
+            <div class="num">Release</div>
+            <div class="label">after verified teardown</div>
           </div>
         </div>
-        <p>NetBox is what makes address management a solved problem instead of a recurring source
-          of conflicts. The lesson generalizes to every source of truth: it is only worth the name
-          if it is the single door everything passes through - the instant work routes around it,
-          it stops being truth and becomes a confident-looking liability.</p>
+        <p>NetBox makes address management a controlled workflow instead of a recurring source
+          of conflicts. The lesson generalizes: a source of truth stays trustworthy when managed
+          work flows through it. Bypassing it turns the record into a confident-looking liability.</p>
       </section>
 
       <section class="block">

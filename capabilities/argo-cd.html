@@ -141,12 +141,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Argo CD - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I run Argo CD in AutomationLab - GitOps reconciliation with self-heal, so git is the only lever that moves the cluster.">
+  <meta name="description" content="How I use Argo CD to compare eight review-gated Kubernetes application directories and self-heal one bounded credential-lifecycle path, with pruning disabled.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Argo CD - Engineering capabilities - Bill Gernert">
-  <meta property="og:description" content="How I run Argo CD in AutomationLab - GitOps reconciliation with self-heal, so git is the only lever that moves the cluster.">
+  <meta property="og:description" content="How I use Argo CD to compare eight review-gated Kubernetes application directories and self-heal one bounded credential-lifecycle path, with pruning disabled.">
   <meta property="og:url" content="https://billgernert.com/capabilities/argo-cd">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -154,7 +154,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Argo CD - Engineering capabilities - Bill Gernert">
-  <meta name="twitter:description" content="How I run Argo CD in AutomationLab - GitOps reconciliation with self-heal, so git is the only lever that moves the cluster.">
+  <meta name="twitter:description" content="How I use Argo CD to compare eight review-gated Kubernetes application directories and self-heal one bounded credential-lifecycle path, with pruning disabled.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -203,7 +203,7 @@
     <header class="skill-head">
       <span class="badge" data-accent="green">CI/CD &amp; GitOps</span>
       <h1>Argo CD</h1>
-      <p class="descriptor">GitOps reconciliation across 6 Application and ApplicationSet definitions, keeping the cluster matching git - continuously, and by force. Git is the desired state; anything else is drift to be corrected.</p>
+      <p class="descriptor">GitOps comparison across eight review-gated application directories, plus one bounded credential-lifecycle path that self-heals. Pruning remains disabled.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
@@ -214,12 +214,12 @@
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Argo CD is the GitOps engine for the cluster. It continuously compares what is
-          <b>declared in git</b> against what is <b>running</b>, and reconciles the two so the
-          live state converges on the committed state. The repo is not a suggestion or a record
-          after the fact - it is the control input.</p>
-        <p>I use it because it makes the cluster <b>auditable and reproducible</b>: every change is
-          a commit, every rollback is a revert, and "what is supposed to be running?" has one
+        <p>Argo CD is the GitOps engine for its registered cluster scope. It continuously compares what is
+          <b>declared in git</b> against what is <b>running</b>. It reports differences for review-gated
+          applications and reconciles the bounded credential-lifecycle application automatically. The repo
+          is the control input, not a record written after the fact.</p>
+        <p>I use it because it makes its registered scope <b>auditable and reproducible</b>: a durable change is
+          a commit, a rollback is a revert, and "what is supposed to be running?" has one
           answer that lives in version control rather than in someone's memory of what they last
           applied by hand.</p>
       </section>
@@ -227,15 +227,14 @@
       <section class="block">
         <h2>How I use it in the lab</h2>
         <ul>
-          <li><b>Declared apps, reconciled continuously.</b> Cluster workloads are defined
-            declaratively in git; Argo CD watches the repo and the cluster and keeps them in
-            step.</li>
-          <li><b>Auto-sync with self-heal.</b> Approved changes roll out automatically, and
-            out-of-band drift is actively corrected back to the committed state rather than just
-            flagged.</li>
-          <li><b>Change is a pull request.</b> Because the repo is the control plane, a change to
-            the running cluster is a reviewed PR - the same guardrails as any other code lands on
-            infrastructure.</li>
+          <li><b>General applications are review-gated.</b> Eight registered directories are defined
+            in git. Argo CD watches the repo and cluster, reports where they differ, and waits for an
+            operator to review the object-level diff and start the sync.</li>
+          <li><b>One bounded path self-heals.</b> The credential-lifecycle application is already live
+            and changes frequently as rotators are proved, so Argo CD restores that path to its reviewed
+            main-branch definition automatically.</li>
+          <li><b>Pruning is disabled.</b> Automated reconciliation for credential lifecycle can repair
+            changed resources but cannot remove resources that disappear from git.</li>
           <li><b>Visible drift and health.</b> The sync/health view makes it obvious when
             something has diverged or a rollout is unhealthy, so problems surface instead of
             hiding.</li>
@@ -247,8 +246,8 @@
         <figure class="capability-diagram">
           <div class="capability-diagram-scroll">
             <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="argo-cd-flow-title argo-cd-flow-desc">
-              <title id="argo-cd-flow-title">Argo CD architecture: Continuous reconciliation loop</title>
-              <desc id="argo-cd-flow-desc">Argo CD compares Git with the cluster, syncs the declared state, detects later drift, and restores the cluster to the reviewed definition.</desc>
+              <title id="argo-cd-flow-title">Argo CD architecture: General application review loop</title>
+              <desc id="argo-cd-flow-desc">For eight general application directories, Argo CD compares Git with the cluster, reports drift, and waits for a reviewed sync.</desc>
               <defs>
                 <marker id="argo-cd-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
@@ -256,7 +255,7 @@
               </defs>
               <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
               <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
-              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">CONTINUOUS RECONCILIATION LOOP</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">GENERAL APPLICATION REVIEW LOOP</text>
               <g aria-hidden="true">
                 <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#argo-cd-flow-arrow)"/>
                 <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#argo-cd-flow-arrow)"/>
@@ -315,14 +314,14 @@
                     <tspan x="344" dy="0">A live object no longer matches</tspan>
                   </text>
                 </g>
-                <g aria-label="Self-heal: Restore the Git definition">
-                  <title>Self-heal: Restore the Git definition</title>
+                <g aria-label="Reviewed sync: Apply the approved definition">
+                  <title>Reviewed sync: Apply the approved definition</title>
                   <rect x="48" y="285" width="244" height="104" rx="8" fill="rgba(0,255,150,0.05)" stroke="#00ff96" stroke-width="1.5"/>
                   <text x="64" y="314" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
-                    <tspan x="64" dy="0">SELF-HEAL</tspan>
+                    <tspan x="64" dy="0">REVIEWED SYNC</tspan>
                   </text>
                   <text x="64" y="343" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
-                    <tspan x="64" dy="0">Restore the Git definition</tspan>
+                    <tspan x="64" dy="0">Apply the approved definition</tspan>
                   </text>
                 </g>
                 <line x1="28" y1="470" x2="872" y2="470" stroke="rgba(0,212,255,0.22)" stroke-width="1"/>
@@ -338,7 +337,7 @@
                 <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
             </svg>
           </div>
-          <figcaption>The reconcile loop compares Git desired state with the cluster, syncs changes, and corrects later drift. Cluster addresses and hostnames are omitted.</figcaption>
+          <figcaption>This diagram shows the review-gated path used by eight general application directories. A separate credential-lifecycle application self-heals within its bounded scope; pruning is disabled for both modes. Cluster addresses and hostnames are omitted.</figcaption>
         </figure>
       </section>
 
@@ -347,8 +346,8 @@
         <div class="frame">
           <div class="glyph" aria-hidden="true"></div>
           <span class="cap">Screenshot coming</span>
-          <span class="sub">The application view showing synced/healthy status and a drift being
-            reconciled away. Captured per the publishing checklist - hostnames and addresses
+          <span class="sub">The application view showing synced/healthy status and a drift awaiting
+            review. Captured per the publishing checklist - hostnames and addresses
             redacted.</span>
         </div>
       </section>
@@ -356,20 +355,16 @@
       <section class="block">
         <h2>Lessons learned &amp; gotchas</h2>
         <div class="callout">
-          <span class="tag">Gotcha - self-heal will undo your emergency hotfix</span>
-          The first time you fix something live - a quick edit straight to the cluster to stop
-          the bleeding - and watch Argo CD calmly <b>revert it</b> on the next reconcile, the
-          lesson lands hard. With self-heal on, the cluster is not the source of truth; git is. A
-          hand-applied change is drift by definition, and drift is exactly what self-heal exists
-          to erase. The fix is not to fight it or disable it in a panic - it is to make the change
-          <b>in git</b>, even in an incident, so the emergency fix and the desired state are the
-          same thing. GitOps means the repo is the steering wheel; touching the cluster directly
-          is grabbing the tyre.
+          <span class="tag">Gotcha - self-heal can turn adoption into deployment</span>
+          Several general application directories had not been applied through Argo CD when the comparison
+          path was introduced. Enabling self-heal at the same time could have applied unresolved values as a
+          side effect of adoption. Those eight paths therefore ship detection first and keep mutation behind
+          a reviewed sync. Self-heal is enabled only for the separate, bounded credential-lifecycle path.
         </div>
         <ul>
-          <li><b>Decide what self-heal is allowed to prune.</b> Reconciliation that removes
-            resources not in git is powerful and unforgiving - be deliberate about scope so a
-            reconcile never deletes something you meant to keep but forgot to declare.</li>
+          <li><b>Treat self-heal and prune as separate decisions.</b> The credential-lifecycle path can
+            repair drift but cannot delete resources absent from git. That keeps automated correction
+            bounded without granting automated removal.</li>
           <li><b>Argo syncs manifests, not everything.</b> It reconciles what is declared as
             Kubernetes state; out-of-band concerns it does not own (for example, a database schema
             behind an app) still need their own apply step. Do not assume a green sync means the
@@ -383,22 +378,21 @@
         <h2>Impact</h2>
         <div class="stats">
           <div class="stat">
-            <div class="num">Git</div>
-            <div class="label">single source of truth</div>
+            <div class="num">8</div>
+            <div class="label">registered app directories</div>
           </div>
           <div class="stat">
-            <div class="num">Auto</div>
-            <div class="label">drift correction</div>
+            <div class="num">1</div>
+            <div class="label">bounded self-heal app</div>
           </div>
           <div class="stat">
-            <div class="num">Revert</div>
-            <div class="label">= rollback</div>
+            <div class="num">Off</div>
+            <div class="label">automated pruning</div>
           </div>
         </div>
-        <p>Argo CD is what makes the cluster honest: the running state cannot quietly diverge from
-          what is committed, because divergence gets corrected on sight. The self-heal lesson is
-          the whole philosophy in one bruise - once the repo is the control plane, the discipline
-          is to always steer from there, especially under pressure, not to reach past it.</p>
+        <p>Argo CD makes divergence visible across its registered scope. Eight general application
+          directories remain behind an object-level review and manual sync; one credential-lifecycle
+          application corrects drift automatically. Neither mode permits automated pruning.</p>
       </section>
 
       <section class="block">

@@ -203,7 +203,7 @@
     <header class="skill-head">
       <span class="badge" data-accent="cyan">Security &amp; Identity</span>
       <h1>HashiCorp Vault</h1>
-      <p class="descriptor">The secrets backbone of the lab, reached through 19 committed runtime credential-fetch scripts - every pipeline and service authenticates with a scoped AppRole and reads only the paths it needs, nothing more.</p>
+      <p class="descriptor">The secrets backbone of the lab, reached through 19 committed runtime credential-fetch scripts. Registered pipelines and services authenticate with scoped AppRoles and read the paths assigned to their work.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
@@ -214,13 +214,12 @@
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Vault is the single source of truth for secrets in AutomationLab: API tokens,
+        <p>Vault is the custody system for automation secrets in AutomationLab: API tokens,
           per-host monitoring keys, service credentials, and the personal access tokens that
-          automation uses to open pull requests. Nothing sensitive lives in a repo, a pipeline
-          definition, or a container image - it lives in Vault and is fetched at the moment it is
-          needed.</p>
+          automation uses to open pull requests. Static secret values are kept out of repositories,
+          pipeline definitions, and container images; they are fetched from Vault when needed.</p>
         <p>The reason it matters is not "encryption at rest" - it is <b>identity and scope</b>.
-          Every consumer proves who it is, gets a short-lived token, and is authorized to read a
+          Each registered consumer proves who it is, gets a short-lived token, and is authorized to read a
           deliberately narrow slice of the secret tree. A leaked credential is then a bounded
           problem, not a master key.</p>
       </section>
@@ -232,7 +231,7 @@
             method - a role ID plus a secret ID - rather than a person logging in. The credentials
             are injected as environment or mounted secrets, never baked into an image.</li>
           <li><b>KV v2 for secret storage.</b> Secrets live in a versioned key-value store under
-            a consistent <code>&lt;service&gt;/...</code> path convention, so every secret has an
+            a consistent <code>&lt;service&gt;/...</code> path convention, so each managed secret has an
             obvious, predictable home and a version history to roll back to.</li>
           <li><b>Least-privilege policies.</b> Each role is bound to a policy that grants read on
             exactly the paths that role needs. A monitoring agent cannot read PR tokens; the PR

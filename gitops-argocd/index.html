@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GitOps with Argo CD - Bill Gernert</title>
-  <meta name="description" content="How GitOps actually works in this lab: Argo CD tracks eight service directories from git, reports drift, and deliberately changes nothing until a person syncs. Includes the live drift demo, the full path a code change travels, the failure modes, and the parts of the cluster Argo CD does not manage.">
+  <meta name="description" content="How GitOps works in this lab: eight application directories use reviewed syncs, one bounded credential-lifecycle path self-heals, and automated pruning stays off.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="GitOps with Argo CD - Bill Gernert">
-  <meta property="og:description" content="How GitOps actually works in this lab: Argo CD tracks eight service directories from git, reports drift, and deliberately changes nothing until a person syncs. Includes the live drift demo, the full path a code change travels, the failure modes, and the parts of the cluster Argo CD does not manage.">
+  <meta property="og:description" content="How GitOps works in this lab: eight application directories use reviewed syncs, one bounded credential-lifecycle path self-heals, and automated pruning stays off.">
   <meta property="og:url" content="https://billgernert.com/gitops-argocd/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GitOps with Argo CD - Bill Gernert">
-  <meta name="twitter:description" content="How GitOps actually works in this lab: Argo CD tracks eight service directories from git, reports drift, and deliberately changes nothing until a person syncs. Includes the live drift demo, the full path a code change travels, the failure modes, and the parts of the cluster Argo CD does not manage.">
+  <meta name="twitter:description" content="How GitOps works in this lab: eight application directories use reviewed syncs, one bounded credential-lifecycle path self-heals, and automated pruning stays off.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -226,16 +226,17 @@
     <div class="skill-body">
       <section class="block" id="story">
         <h2>I added Argo CD after deployment and desired state had started to separate</h2>
-        <p>Argo CD keeps part of my Kubernetes cluster matching what git says it should be. Nothing more than
-          that, and that turns out to be a lot. The manifests for eight service directories live in the lab
-          repo. Argo CD watches those files, compares them against what the cluster is actually running, and
-          reports where the two disagree. Whether it goes on to correct the cluster is a separate setting, and
-          in this lab that setting is off.</p>
+        <p>Argo CD keeps part of my Kubernetes cluster matching what git says it should be. The manifests for
+          eight general application directories live in the lab repo. Argo CD watches those files, compares
+          them against what the cluster is actually running, and reports where the two disagree. Those paths
+          wait for a reviewed sync. A separate credential-lifecycle application self-heals inside a bounded
+          monitoring scope because its rotators are already live and change frequently as they are proved.</p>
         <p>The boundary is worth stating plainly, because most GitOps writeups skip it. Not everything on this
           cluster is Argo CD's. Jenkins deploys itself and the metrics stack through its own Helm pipelines,
           and those are deliberately kept outside the GitOps surface so the two systems never fight over
-          ownership of the same objects. So git is the only door for the eight directories Argo CD tracks. It
-          is not yet the only door into the cluster, and this page will say so until it is.</p>
+          ownership of the same objects. Durable changes for the registered Argo CD paths begin in git. Other
+          cluster surfaces still use Jenkins or an operator runbook, so GitOps is a defined slice of the
+          cluster rather than a claim about the whole platform.</p>
         <p>The first thing to unlearn: Argo CD never builds anything. Jenkins builds the images, Kaniko does
           the container work inside the cluster, and the Gitea registry holds the result. Argo CD's whole job
           starts after all of that, when a manifest in git changes.</p>
@@ -251,14 +252,15 @@
           name: drift. Drift comes from two directions. Either git moved (someone merged a new image digest)
           and the cluster is behind, or the cluster moved (someone hand-edited a deployment, a node ate a
           pod's config) and git is being disobeyed. Argo CD treats both the same way. Git is right.</p>
-        <p>Self-heal is the setting that decides how hard git wins, and here it is off on every one of the
-          eight applications. That is a decision, not an unfinished job. Several of the tracked directories
-          have never been applied to this cluster at all, and they carry values meant to be resolved at apply
-          time, so switching self-heal on would have pushed every one of them live as a side effect of merely
-          adopting GitOps. That is a far bigger and less reversible change than the adoption itself. So the
-          safe half ships first: detection everywhere, action only on a reviewed sync. The audit story arrives
-          either way. If every change has to be a git commit to survive review, then git history is the change
-          log, with an author and a diff on every change.</p>
+        <p>Self-heal is the setting that decides how hard git wins. It is off for the eight general application
+          directories. Several had not been applied through Argo CD when the comparison path was introduced,
+          and they carry values meant to be resolved at apply time. Enabling self-heal there could have pushed
+          them live as a side effect of adoption. Those applications therefore ship detection first, with
+          action behind a reviewed sync.</p>
+        <p>The credential-lifecycle application has a narrower boundary. It alone uses automated self-heal,
+          within the monitoring namespace and the lab-raw-manifests project, while pruning remains disabled.
+          The root application also has no automated sync. This gives a frequently changing live control path
+          automated correction without widening that authority to the rest of the registered applications.</p>
       </section>
 
       <section class="block" id="platform">
@@ -271,7 +273,7 @@
             <desc id="flowdesc">Eleven steps in order: I commit and open a pull request; Gitea Actions gates
               the merge; I merge to main; Jenkins starts the build and Kaniko builds the image in cluster;
               the image is pushed to the Gitea registry and referred to by digest; a Gitea webhook tells Argo
-              CD to re-read git; Argo CD diffs desired state against the cluster; Argo CD reports out of sync
+              CD to re-read git; for a general application, Argo CD diffs desired state against the cluster and reports out of sync
               and changes nothing because self-heal is off; I read the diff and sync; Argo CD updates the
               Kubernetes object; Kubernetes rolls the pods and Traefik routes traffic to the new ones.</desc>
             <defs>
@@ -335,9 +337,9 @@
             <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>automatic after the step above lands</span></li>
             <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>my step</span></li>
           </ul>
-          <figcaption>Three of the eleven steps are mine, and the last of the three, the sync, is the
-            gate this lab keeps on purpose. Argo CD owns only the last four boxes; everything above them is
-            build and review.</figcaption>
+          <figcaption>This is the general application path: three of the eleven steps are mine, and the
+            last of the three, the sync, is a deliberate gate. The separate credential-lifecycle application
+            self-heals within its bounded scope and is not represented by this flow.</figcaption>
         </figure>
         <p>Two handoffs matter more than the rest. The first is the merge: nothing below it happens without
           the gates passing, so a leaked secret or a manifest that does not validate dies at the pull request.
@@ -366,13 +368,13 @@
         <p><b>Gitea.</b> Gitea is three things to this flow at once: the source of truth (the repo holding the
           manifests), the gatekeeper (Actions runs the merge checks), and the registry (the built images live
           there too). A push fires a webhook that tells Argo CD to re-read git, so the comparison is prompt
-          instead of waiting on the poll interval. Argo CD only ever reads that repository. Nothing in the
+          instead of waiting on the poll interval. Argo CD reads that repository, and nothing in the
           GitOps path writes a commit back.</p>
         <p><b>Jenkins.</b> Jenkins and Argo CD split the world, but not cleanly, and not yet. Jenkins builds
-          every image, and it still applies two Helm releases into the cluster itself, so it does still hold
-          cluster credentials. What it does not do is deploy any of the eight directories Argo CD tracks; no
-          Argo CD application points at a Jenkins-owned path, the Argo CD project is fenced to this one
-          repository and a named set of destinations, and no application is allowed to prune. Those three
+          the custom images in this delivery flow, and it still applies two Helm releases into the cluster itself, so it does still hold
+          cluster credentials. What it does not do is deploy the eight general directories or the bounded
+          credential-lifecycle path Argo CD tracks; no Argo CD application points at a Jenkins-owned path,
+          the Argo CD project is fenced to this repository and a named set of destinations, and no application is allowed to prune. Those three
           checks were run live. Narrowing Jenkins to build-only is the direction of travel, not the current
           state, so the honest version of the security argument is that the blast radius of a stolen pipeline
           credential got smaller, not that it went to zero.</p>
@@ -391,7 +393,8 @@
           <tr><td>On every repository push</td><td>The webhook tells Argo CD to read the registered revision again.</td><td>Applications remain synced or show the exact desired-state difference.</td></tr>
           <tr><td>On the reconciliation interval</td><td>Argo CD compares git with the Kubernetes API even when no webhook arrived.</td><td>A manual cluster edit becomes visible as drift.</td></tr>
           <tr><td>When a build publishes an image</td><td>The delivery path updates the manifest with the reviewed image digest.</td><td>Argo CD sees a desired-state change, but it does not build or sign the image.</td></tr>
-          <tr><td>When an application is out of sync</td><td>The operator reads the object-level diff and starts sync.</td><td>Argo CD applies only the registered application scope.</td></tr>
+          <tr><td>When a general application is out of sync</td><td>The operator reads the object-level diff and starts sync.</td><td>Argo CD applies the registered application scope after review.</td></tr>
+          <tr><td>When credential lifecycle drifts</td><td>Argo CD self-heals the dedicated application automatically.</td><td>The bounded monitoring path returns to its reviewed definition; pruning remains disabled.</td></tr>
           <tr><td>After sync</td><td>Kubernetes performs the rollout and reports workload health.</td><td>Argo CD returns to synced and healthy, or keeps the failed resource visible.</td></tr>
         </tbody></table></div>
       </section>
@@ -415,8 +418,8 @@
         <p><b>The registry is unreachable.</b> Symptoms: new pods stick pulling the image while old pods keep
           serving. Recovery: fix the registry; the rollout resumes on its own. This is the quiet argument for
           readiness probes: Kubernetes never routed traffic to the broken half.</p>
-        <p><b>Drift war.</b> This is the failure self-heal buys you, and because self-heal is off here it is
-          the one on this list I have not lived. The symptom would be a value snapping back seconds after you
+        <p><b>Drift war.</b> This is the failure self-heal can create. In this lab the risk is limited to the
+          credential-lifecycle application. A hand-edited value in that scope can snap back seconds after you
           change it, and the fix is to change the manifest rather than the cluster. If a controller and Argo
           CD genuinely disagree about a field, that field gets an ignore rule, which is a one-line declaration
           in the app's spec. The neighbouring lesson I did live is worth more: a sync only reconciles the
@@ -430,10 +433,11 @@
         <p>The alternative I actually had was Jenkins running apply and Helm, and it worked. It still runs,
           for the surfaces Argo CD does not manage. What it could not give me: a deploy path that survives
           Jenkins being compromised, drift detection between deploys, and a rollback that is just a git
-          revert. Push-based deployment means your build system holds keys to production forever. Pull-based
-          means the cluster reaches out to git, and the blast radius of a stolen build credential stops at a
-          git commit that still has to pass the gates. This lab is partway along that road, not at the end of
-          it, and the eight tracked directories are how far it has come.</p>
+          revert. A push-based deployment path keeps mutation credentials available to the build system.
+          Pull-based reconciliation lets the cluster read git instead. For the paths moved behind Argo CD, a
+          stolen build credential alone cannot mutate the registered resources; a git change still has to pass
+          the merge gates. This lab is partway along that road, not at the end of it: eight general directories
+          are review-gated and one credential-lifecycle path self-heals.</p>
         <p>When it is the wrong tool: anything that is not Kubernetes. Most of this lab is VMs, and forcing
           Argo CD into that story would be resume-driven engineering. Ansible reconciles the VM estate on a
           schedule for the same reason Argo CD reconciles the cluster continuously. Same idea, different
@@ -443,8 +447,8 @@
 
       <!-- OPERATOR-REVIEW: this section is opinion and first-person judgement, not fact-checked claims.
            On the post-publish eyeball, strike or rewrite anything here that is not yours. The factual
-           spine of it was verified against the repo (the empty-Secret adoption ruling, and the fact that
-           self-heal is off everywhere); the judgements and the advice are the part that needs your voice. -->
+           spine of it was verified against the repo (the empty-Secret adoption ruling and the two explicit
+           reconciliation modes); the judgements and the advice are the part that needs your voice. -->
       <section class="block" id="learned">
         <h2>What I would do differently</h2>
         <p>The concept that unlocked it for me was realizing reconciliation is not deployment. Deployment is
@@ -459,9 +463,10 @@
           ruling is the reason it is not adopted badly.</p>
         <p>The advice I would give: do not start with Argo CD. Start with your manifests in git and apply them
           from CI, feel the drift problem for real, then adopt reconciliation and let it sting you once.
-          Self-heal reverting your own hand-edit at two in the morning teaches GitOps better than any diagram,
-          including mine. I have not earned that lesson yet, because I left self-heal off on purpose. Turning
-          it on, one application at a time, is what this lab owes itself next.</p>
+          Self-heal reverting your own hand-edit at two in the morning teaches GitOps better than any diagram.
+          I enabled it first on the credential-lifecycle application because that path is live, narrow, and
+          changes frequently. Any expansion should remain an application-by-application decision after the
+          scope and object-level diff are understood.</p>
       </section>
 
       <section class="block" id="live" data-public-noc>

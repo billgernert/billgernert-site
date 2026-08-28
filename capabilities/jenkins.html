@@ -214,9 +214,9 @@
     <div class="skill-body">
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
-        <p>Jenkins is the automation engine of AutomationLab. Every meaningful action - stand up
-          a VM, register it for monitoring, configure it, decommission it, offboard a user - runs
-          as a Jenkins pipeline. It is the place where the lab's many tools (the IPAM, Terraform,
+        <p>Jenkins is the engine for finite AutomationLab workflows. Provisioning a VM, registering
+          it for monitoring, configuring it, decommissioning it, and offboarding a user run as
+          Jenkins pipelines. It is the place where the lab's tools (the IPAM, Terraform,
           the secrets manager, the monitoring API, configuration management, identity) are
           orchestrated into one repeatable flow with approval gates and an audit trail.</p>
         <p>I run it deliberately in the "boring, dependable" spot: the controller itself is
@@ -414,8 +414,8 @@
             <div class="label">closed on blank input</div>
           </div>
         </div>
-        <p>Jenkins is where the lab's guardrails actually live. Config-as-code makes the platform
-          reproducible; pipeline-as-code makes every change reviewable; and hardening the
+        <p>Jenkins is one place the lab's workflow guardrails run. Config-as-code makes the platform
+          reproducible; pipeline-as-code makes each finite workflow reviewable; and hardening the
           highest-stakes pipeline to fail closed is the difference between automation that is
           convenient and automation you can trust with destructive actions.</p>
       </section>

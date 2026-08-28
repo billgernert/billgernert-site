@@ -141,12 +141,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cloudflare Tunnel / Access - Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="How I expose the lab safely with Cloudflare - an outbound-only tunnel with no inbound firewall holes, and Access SSO on every app with service tokens for automation.">
+  <meta name="description" content="How I expose the lab through an outbound-only Cloudflare Tunnel, using Access for protected apps while the portfolio and sanitized status routes remain public.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Cloudflare Tunnel / Access - Engineering capabilities - Bill Gernert">
-  <meta property="og:description" content="How I expose the lab safely with Cloudflare - an outbound-only tunnel with no inbound firewall holes, and Access SSO on every app with service tokens for automation.">
+  <meta property="og:description" content="How I expose the lab through an outbound-only Cloudflare Tunnel, using Access for protected apps while the portfolio and sanitized status routes remain public.">
   <meta property="og:url" content="https://billgernert.com/capabilities/cloudflare">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -154,7 +154,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Cloudflare Tunnel / Access - Engineering capabilities - Bill Gernert">
-  <meta name="twitter:description" content="How I expose the lab safely with Cloudflare - an outbound-only tunnel with no inbound firewall holes, and Access SSO on every app with service tokens for automation.">
+  <meta name="twitter:description" content="How I expose the lab through an outbound-only Cloudflare Tunnel, using Access for protected apps while the portfolio and sanitized status routes remain public.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -203,7 +203,7 @@
     <header class="skill-head">
       <span class="badge" data-accent="cyan">Networking &amp; Edge</span>
       <h1>Cloudflare Tunnel / Access</h1>
-      <p class="descriptor">The lab's front door done zero-trust - an outbound-only tunnel so there are no inbound holes to attack, and identity-aware SSO on every published app.</p>
+      <p class="descriptor">The lab's public edge uses an outbound-only tunnel. Access protects administrative and private apps, while the portfolio and sanitized status routes remain public by design.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
@@ -217,12 +217,12 @@
         <p>Cloudflare Tunnel and Cloudflare Access are how the lab is reachable from the internet
           without punching holes in the firewall. A tunnel connector inside the network makes an
           <b>outbound</b> connection to Cloudflare; traffic to the public hostnames is delivered
-          back down that connection to the internal ingress. There is <b>no inbound port
-          open</b> on the edge at all.</p>
-        <p>In front of the apps, Cloudflare Access enforces SSO: every published service requires
-          an authenticated, authorized identity before a request ever reaches it. The two together
-          give me a public presence with a genuinely small attack surface - the origin is never
-          directly exposed, and nothing is anonymous.</p>
+          back down that connection to the internal ingress. There is no inbound application port
+          for these published routes.</p>
+        <p>Cloudflare Access enforces SSO in front of protected apps. The portfolio and approved,
+          sanitized status routes remain anonymous by design; other status-host routes fail closed.
+          The tunnel keeps the origin from being directly exposed while the public surface stays
+          explicit and narrow.</p>
       </section>
 
       <section class="block">
@@ -234,8 +234,8 @@
           <li><b>Ingress behind the tunnel.</b> The tunnel hands traffic to the internal reverse
             proxy, which routes to each service - so adding an app is an ingress rule, not a
             firewall change.</li>
-          <li><b>SSO on every app.</b> Access sits in front of each public hostname; interactive users
-            authenticate through the identity provider before the app is reached.</li>
+          <li><b>SSO on protected apps.</b> Access sits in front of administrative and private hostnames;
+            interactive users authenticate through the identity provider before the app is reached.</li>
           <li><b>TLS from the automated CA.</b> Certificates for internal names are issued and
             renewed automatically by cert-manager via a DNS-01 challenge, so nothing depends on a
             person remembering to rotate a cert.</li>
@@ -250,8 +250,8 @@
         <figure class="capability-diagram">
           <div class="capability-diagram-scroll">
             <svg class="capability-flow" viewBox="0 0 900 670" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cloudflare-flow-title cloudflare-flow-desc">
-              <title id="cloudflare-flow-title">Cloudflare Tunnel / Access architecture: Published app without an inbound port</title>
-              <desc id="cloudflare-flow-desc">An internet request reaches Cloudflare Access, passes the identity gate, crosses an outbound tunnel to internal ingress, and arrives at the application without an inbound origin rule.</desc>
+              <title id="cloudflare-flow-title">Cloudflare Tunnel / Access architecture: Protected app without an inbound port</title>
+              <desc id="cloudflare-flow-desc">A request for a protected application reaches Cloudflare Access, passes the identity gate, crosses an outbound tunnel to internal ingress, and arrives without an inbound origin rule.</desc>
               <defs>
                 <marker id="cloudflare-flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                   <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
@@ -259,7 +259,7 @@
               </defs>
               <rect x="8" y="8" width="884" height="654" rx="12" fill="#0a0e1a" stroke="rgba(0,212,255,0.35)" stroke-width="1.5"/>
               <text x="32" y="38" fill="#5f7799" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11" letter-spacing="3">ARCHITECTURE FLOW</text>
-              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">PUBLISHED APP WITHOUT AN INBOUND PORT</text>
+              <text x="32" y="68" fill="#00d4ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="18" letter-spacing="1.2">PROTECTED APP WITHOUT AN INBOUND PORT</text>
               <g aria-hidden="true">
                 <path d="M 292.0 157.0 L 328.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#cloudflare-flow-arrow)"/>
                 <path d="M 572.0 157.0 L 608.0 157.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#cloudflare-flow-arrow)"/>
@@ -267,14 +267,15 @@
                 <path d="M 608.0 337.0 L 572.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#cloudflare-flow-arrow)"/>
                 <path d="M 328.0 337.0 L 292.0 337.0" fill="none" stroke="#00d4ff" stroke-width="1.6" marker-end="url(#cloudflare-flow-arrow)"/>
               </g>
-                <g aria-label="Internet request: A reader opens the public service">
-                  <title>Internet request: A reader opens the public service</title>
+                <g aria-label="Internet request: A user opens the protected service">
+                  <title>Internet request: A user opens the protected service</title>
                   <rect x="48" y="105" width="244" height="104" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
                   <text x="64" y="134" fill="#e0e8ff" font-family="Share Tech Mono, ui-monospace, monospace" font-size="14" letter-spacing="0.7">
                     <tspan x="64" dy="0">INTERNET REQUEST</tspan>
                   </text>
                   <text x="64" y="163" fill="#8fa8c8" font-family="Exo 2, Segoe UI, sans-serif" font-size="11.5">
-                    <tspan x="64" dy="0">A reader opens the public service</tspan>
+                    <tspan x="64" dy="0">A user opens the protected</tspan>
+                    <tspan x="64" dy="16">service</tspan>
                   </text>
                 </g>
                 <g aria-label="Access SSO: Identity policy evaluates the request">
@@ -343,7 +344,7 @@
                 <text x="62" y="599" fill="#8fa8c8" font-family="Share Tech Mono, ui-monospace, monospace" font-size="11.5">Arrow. Direction of work or data.</text>
             </svg>
           </div>
-          <figcaption>The public path runs through Cloudflare Access and an outbound tunnel to internal ingress and the application. Hostnames, connector addresses, and certificate names are omitted.</figcaption>
+          <figcaption>The protected-application path runs through Cloudflare Access and an outbound tunnel to internal ingress and the application. Hostnames, connector addresses, and certificate names are omitted.</figcaption>
         </figure>
       </section>
 
@@ -388,19 +389,19 @@
         <div class="stats">
           <div class="stat">
             <div class="num">0</div>
-            <div class="label">inbound ports open</div>
+            <div class="label">inbound application ports</div>
           </div>
           <div class="stat">
             <div class="num">SSO</div>
-            <div class="label">on every public app</div>
+            <div class="label">on protected apps</div>
           </div>
           <div class="stat">
             <div class="num">Auto</div>
             <div class="label">TLS issuance / renewal</div>
           </div>
         </div>
-        <p>Cloudflare Tunnel and Access let the lab have a real public presence while keeping the
-          origin unreachable and every app behind an identity gate. The service-token lesson is the
+        <p>Cloudflare Tunnel and Access keep the origin unreachable while protected apps sit behind
+          an identity gate and approved public routes stay intentionally anonymous. The service-token lesson is the
           one that generalizes: a security control that breaks legitimate automation will get
           weakened by whoever is under deadline - so the durable answer is to give machines a proper
           credential, never to poke a hole in the wall.</p>
