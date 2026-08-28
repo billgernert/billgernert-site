@@ -326,7 +326,7 @@
         <div class="failure">
           <h3>The first gateway dashboard watched metrics this build did not expose</h3>
           <p>The dashboard and alerts used documented LiteLLM Prometheus series. The open-source gateway image returned no series for those names, so the panels showed no data and the alerts could never fire. The endpoint being reachable had been mistaken for evidence that it contained the measurements.</p>
-          <p>I replaced that path with an exporter that polls the gateway's spend API and emits the measurements the dashboard actually uses. The old scrape target was removed. The check now verifies returned series, not just an HTTP response.</p>
+          <p>I replaced that path with an exporter that polls the gateway's spend API and emits the measurements the dashboard actually uses. The old scrape target was removed. The check now verifies that the response contains the expected series.</p>
         </div>
       </section>
 

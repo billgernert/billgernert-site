@@ -359,8 +359,8 @@
           <span class="tag">Gotcha - a version in the listing is not a downloadable artifact</span>
           When pinning a tool version, "the version appears in the releases directory" is not the
           same as "the release exists." A version can be listed while the specific artifact you
-          need returns a 404. So I verify the actual <b>artifact URL returns 200</b> before pinning
-          to it - not just that the version number shows up in a directory listing. Skip that and a
+          need returns a 404. So I verify that the actual <b>artifact URL returns 200</b> before pinning
+          to it. Skip that and a
           pipeline that passed yesterday breaks on a fresh agent that has to download the pinned
           binary for the first time.
         </div>
@@ -373,7 +373,7 @@
             actually looked at before infrastructure moves.</li>
           <li><b>Roll-forward beats leaving wreckage.</b> A failed provision that cleans up to a
             known state is recoverable; a half-built VM with orphaned state is a manual mess. Write
-            the failure path, do not just hope for the happy one.</li>
+            the failure path explicitly.</li>
         </ul>
       </section>
 

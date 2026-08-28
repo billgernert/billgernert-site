@@ -217,8 +217,8 @@
         <p>Entra ID is the cloud identity plane for AutomationLab. On-prem Active Directory is the
           source of authority; an identity-sync bridge projects those accounts into Entra so cloud
           services can authenticate against the same identities. On top of that, <b>Conditional
-          Access</b> decides the terms under which access is actually granted - not just who you
-          are, but from where, on what, and with what assurance.</p>
+          Access</b> decides the terms under which access is actually granted, based on identity,
+          request location, device posture, and authentication assurance.</p>
         <p>I use it because modern access is not a binary "authenticated or not" - it is policy.
           Conditional Access is where "require a second factor," "only from a compliant device,"
           and "block risky sign-ins" get expressed and enforced for cloud-facing identity.</p>
@@ -372,7 +372,7 @@
           <li><b>Test policies on a scoped group first.</b> Rolling a new Conditional Access policy
             straight to all users is how tenant-wide lockouts happen. Pilot it on a small group,
             confirm the behaviour, then widen - the blast radius of an identity policy is everyone.</li>
-          <li><b>Exclusions are security-relevant, not just convenience.</b> Every account excluded
+          <li><b>Treat exclusions as security exceptions.</b> Every account excluded
             from a protective policy is an exception to your own rules - so exclusions are kept few,
             deliberate, and monitored, never quietly accumulated.</li>
           <li><b>Authority on one side, enforcement on the other.</b> Accounts are authoritative

@@ -374,7 +374,7 @@
         <h2>If I were recreating this</h2>
         <ol class="sequence">
           <li><strong>Start with the state boundary.</strong> Give each machine an isolated workspace and make the request select that workspace by a validated name.</li>
-          <li><strong>Inspect the plan, not just the exit code.</strong> A destructive workflow needs evidence that its saved plan contains a destructive action.</li>
+          <li><strong>Inspect the saved plan before approval.</strong> A destructive workflow needs evidence that its saved plan contains a destructive action.</li>
           <li><strong>Put approval after machine checks.</strong> A person should review a plan the system has already proven is readable, non-empty, and tied to the selected state.</li>
           <li><strong>Retire the durable record before reuse.</strong> Do not free an address or machine identifier while its reviewed inventory record is still current.</li>
           <li><strong>Design every cleanup step for reruns.</strong> Deleting an already-absent monitoring host or DNS record should be a safe no-op, while an unreachable owning system should remain a visible failure.</li>

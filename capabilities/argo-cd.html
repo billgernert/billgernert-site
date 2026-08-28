@@ -374,9 +374,8 @@
             Kubernetes state; out-of-band concerns it does not own (for example, a database schema
             behind an app) still need their own apply step. Do not assume a green sync means the
             whole world is in the desired state.</li>
-          <li><b>Drift is information, not just noise.</b> A resource that keeps drifting is often
-            telling you something is changing it out of band - chase the cause instead of only
-            re-syncing the symptom.</li>
+          <li><b>Investigate repeated drift.</b> A resource that keeps drifting often points to
+            an out-of-band change. Investigate that cause before re-syncing the symptom.</li>
         </ul>
       </section>
 

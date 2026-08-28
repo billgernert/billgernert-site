@@ -361,8 +361,8 @@
             record the backup job relied on was not being refreshed as part of that rebuild - so
             a legitimate rebuild looked identical to an untrusted host.</li>
           <li><b>Prevention:</b> fold host-key refresh into the rebuild automation so a rebuilt
-            host is re-trusted deterministically, and alert on backup <b>success</b>, not just
-            hard failure, so a silent stall surfaces on its own.</li>
+            host is re-trusted deterministically, and alert when a backup has not succeeded within
+            its expected window, so a silent stall surfaces on its own.</li>
         </ul>
         <p class="note">Details are deliberately generalized: no hostnames, addresses, or key
           fingerprints appear here or in any screenshot, per the publishing checklist.</p>

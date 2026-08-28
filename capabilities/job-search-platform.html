@@ -215,10 +215,9 @@
       <section class="block">
         <h2>What it is &amp; why I use it</h2>
         <p>The job-search platform is a self-hosted application I built to run on top of
-          AutomationLab. It matters here because it is the proof that the lab is a <b>platform</b>,
-          not just infrastructure for its own sake: a real app, with a database and a scheduled
-          data pipeline, deployed and operated with the same GitOps and pipeline discipline as
-          every other workload.</p>
+          AutomationLab. It matters here because the lab operates a stateful application with a
+          database and a scheduled data pipeline. The application uses the same GitOps and pipeline
+          discipline as every other workload.</p>
         <p>Building it end to end - schema, data collection, deployment - is also where a lot of
           the platform's rougher edges showed up first, because an application with persistent
           state exercises parts of the system that stateless services never touch.</p>
@@ -373,9 +372,9 @@
           <li><b>Verify schema against the database, not the repo.</b> The repo tells you what the
             schema should be; only the database tells you what it is. When something looks broken
             after a change, check the actual schema first.</li>
-          <li><b>An app with state is the honest test of a platform.</b> Stateless services hide a
-            lot of sins. A real database, real migrations, and a real schedule are what proved the
-            platform could carry production-shaped workloads, not just demos.</li>
+          <li><b>Stateful applications expose platform gaps.</b> Stateless services hide a
+            lot of sins. A database, migrations, and a schedule showed that the platform could carry
+            production-shaped workloads.</li>
         </ul>
       </section>
 

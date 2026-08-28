@@ -261,8 +261,7 @@
         <p>A vulnerability scanner runs on pull requests and reads the dependencies that go into the lab's
           container images. It flagged a known vulnerability in one of the build toolchain's dependencies. The
           fix was to fold the patched version into the build so the vulnerable code is no longer part of the
-          image, and the scan on the pull request then confirmed the finding was gone from the rebuilt image.
-          That is the scan doing its job: not just reporting a problem, but proving the fix.</p>
+          image, and the scan on the pull request then confirmed the finding was gone from the rebuilt image.</p>
         <p class="note">Where this stands right now, told straight. The image has been rebuilt with the fix and
           the scan confirms the vulnerability is gone from that rebuilt image. The running workload has not yet
           been repointed to the rebuilt image, so the fix is proven in the build but is not live in production

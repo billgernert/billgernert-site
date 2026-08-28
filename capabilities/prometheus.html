@@ -370,9 +370,9 @@
           it exists to catch.
         </div>
         <ul>
-          <li><b>Alert on the scrape, not just the value.</b> A target that has stopped responding
-            is often the most important alert of all, and it lives in scrape health, not in the
-            business metric.</li>
+          <li><b>Alert on scrape health.</b> A target that has stopped responding
+            is often the most important alert of all. Scrape health exposes that condition after
+            the business metric disappears.</li>
           <li><b>Watch cardinality.</b> A label with unbounded values (an id, a timestamp) quietly
             explodes the series count and the memory with it. Keep labels to bounded, meaningful
             dimensions - high cardinality is a slow-motion outage.</li>
