@@ -12,6 +12,37 @@ function frameAncestors(response) {
   return csp.split(";").map(part => part.trim()).find(part => part.startsWith("frame-ancestors ")) || "";
 }
 
+async function checkPrivatePathBoundary(path) {
+  // Cloudflare Access may challenge before the catch-all Worker can return 403.
+  // Accept only those two fail-closed outcomes and validate the challenge itself.
+  const response = await fetch(STATUS_ORIGIN + path, {
+    headers: { "User-Agent": "automationlab-public-noc-outside-check/1.0" },
+    redirect: "manual"
+  });
+  const cacheControl = response.headers.get("Cache-Control") || "";
+  if (!cacheControl.toLowerCase().includes("no-store")) {
+    throw new Error(`${path} block response may be cached`);
+  }
+  if (response.status === 403) return;
+  if (response.status !== 302) {
+    throw new Error(`${path} was not blocked; received HTTP ${response.status}`);
+  }
+
+  const challenge = response.headers.get("WWW-Authenticate") || "";
+  const location = response.headers.get("Location");
+  const expectedMetadata = `${STATUS_ORIGIN}/.well-known/cloudflare-access-protected-resource${path}`;
+  if (challenge !== `Cloudflare-Access resource_metadata="${expectedMetadata}"` || !location) {
+    throw new Error(`${path} returned an unrecognized redirect instead of an Access challenge`);
+  }
+
+  const login = new URL(location);
+  if (login.protocol !== "https:" || !login.hostname.endsWith(".cloudflareaccess.com") ||
+      login.pathname !== "/cdn-cgi/access/login/status.billgernert.com" ||
+      login.searchParams.get("redirect_url") !== path) {
+    throw new Error(`${path} returned an unexpected Access challenge target`);
+  }
+}
+
 async function checkSiteFrameHeaders() {
   const embedResponse = await fetch(MAP_EMBED_URL);
   if (!embedResponse.ok || frameAncestors(embedResponse) !== "frame-ancestors 'self'") {
@@ -81,11 +112,8 @@ async function checkMetadataBoundary() {
     throw new Error("public dashboard JSON exposed implementation metadata");
   }
 
-  const genericApi = await fetch(STATUS_ORIGIN + "/apis/dashboard.grafana.app/", {
-    redirect: "manual"
-  });
-  if (genericApi.status !== 403) {
-    throw new Error("generic Grafana dashboard API was not blocked at Access");
+  for (const path of ["/metrics", "/api/health", "/login", "/apis/dashboard.grafana.app/"]) {
+    await checkPrivatePathBoundary(path);
   }
 }
 
