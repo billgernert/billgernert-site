@@ -274,7 +274,7 @@
           reports for it. They measure different scopes and must never be added together. A request can
           also be refused by a layer other than the one it logs to, which is confusing the first time it
           happens.</p>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/litellm-budget-path.svg" alt="AI request passing an application credit gate, virtual-key budget and global ceiling before model routing" width="1160" height="700"><figcaption>The workload keeps its local gate as a backstop. LiteLLM adds per-consumer and combined-estate limits, then routes the allowed request to a local or hosted model under one API contract.</figcaption></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/litellm-budget-path.svg" alt="AI request passing an application credit gate, virtual-key budget and global ceiling before model routing" width="1160" height="700" loading="lazy"><figcaption>The workload keeps its local gate as a backstop. LiteLLM adds per-consumer and combined-estate limits, then routes the allowed request to a local or hosted model under one API contract.</figcaption></figure>
       </section>
 
       <section class="block" id="numbers">

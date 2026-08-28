@@ -216,7 +216,7 @@
 
       <section class="block" id="person">
         <h2>How one reviewed request becomes a usable account</h2>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/windows-identity-lifecycle.svg" alt="Windows identity lifecycle from a reviewed request through Active Directory and Entra to first login, followed by disablement and delayed deletion" width="1160" height="780"></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/windows-identity-lifecycle.svg" alt="Windows identity lifecycle from a reviewed request through Active Directory and Entra to first login, followed by disablement and delayed deletion" width="1160" height="780" loading="lazy"></figure>
         <ol class="sequence">
           <li><strong>Validate the request before creating anything.</strong> The pipeline checks the account name against Active Directory, validates the request schema, and loads the selected role. A duplicate name or malformed role stops before a password or account exists.</li>
           <li><strong>Create the first password without putting it in a build log.</strong> The pipeline generates a random password and stores it in Vault. A single-use, short-lived wrapped token crosses the stage boundary, so the next stage can retrieve the value without making it a normal pipeline variable.</li>
@@ -233,7 +233,7 @@
 
       <section class="block" id="server">
         <h2>A joined Windows server receives the same trust fabric</h2>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/windows-server-trust-path.svg" alt="A Windows server joins the directory, receives policy and certificates, enforces Duo on remote desktop, and is managed through an interim runner while Kerberos over HTTPS is rolled out" width="1160" height="730"></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/windows-server-trust-path.svg" alt="A Windows server joins the directory, receives policy and certificates, enforces Duo on remote desktop, and is managed through an interim runner while Kerberos over HTTPS is rolled out" width="1160" height="730" loading="lazy"></figure>
         <dl class="responsibilities">
           <div><dt>Machine identity</dt><dd>Joining the domain gives the server its own directory object and Kerberos identity. Automation and policy can address the machine without sharing a person’s login.</dd></div>
           <div><dt>Internal certificates</dt><dd>Active Directory Certificate Services is the private certificate authority. An approved template limits what a machine may request; auto-enrollment can issue and renew the certificate for a domain-joined Windows host.</dd></div>

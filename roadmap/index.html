@@ -224,7 +224,7 @@
 
       <section class="block" id="path">
         <h2>How private work becomes a public roadmap</h2>
-        <figure class="architecture"><img src="/assets/engineering-diagrams/roadmap-publication-path.svg" alt="Roadmap publication from private backlog through reviewed public descriptions, generation and scrub gates to a live dashboard and generated fallback" width="1160" height="720"></figure>
+        <figure class="architecture"><img src="/assets/engineering-diagrams/roadmap-publication-path.svg" alt="Roadmap publication from private backlog through reviewed public descriptions, generation and scrub gates to a live dashboard and generated fallback" width="1160" height="720" loading="lazy"></figure>
         <p>The tracked backlog is the authority for status, tier, and delivery date. The generator may count every valid item because integers do not reveal the item’s name. It may publish text only from an explicit public field on a completed item. There is no fallback to the raw title.</p>
         <p>The public field is an allowlist: the author has to write it for publication. A separate scrub then rejects known private strings across the complete staged site. The controls have different jobs. The allowlist limits which text is eligible; the scrub catches a mistake inside eligible text.</p>
         <p>The generator writes two public shapes. Prometheus series feed the Grafana dashboard for exploration. A marked block in this page receives a dated tier summary and recent outcomes. If the live dashboard cannot load, the reader still gets the last generated snapshot rather than a blank promise.</p>
