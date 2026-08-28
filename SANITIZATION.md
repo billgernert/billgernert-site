@@ -24,7 +24,8 @@ page deleted in the private repo is deleted here.
 | `_headers` | response headers (CSP + security headers) |
 | `_redirects` | the mirror redirect map (added to the gate with the new page dirs, 2026-07-27) |
 | `.well-known/` | the public security contact document |
-| `capabilities/` | the capability pages + the shared `style.css` |
+| `assets/` | the shared stylesheet and the scrub-gated scripts, diagrams, and share-card assets used by the public pages |
+| `capabilities/` | the capability pages |
 | `roadmap/` | the public roadmap (its facts block is generated) |
 | `public-roadmap/` | the born-generated milestone roadmap page |
 | `ai/` | how AI is used |

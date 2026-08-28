@@ -11,8 +11,9 @@ ready; until then these pages stand on their own under `/capabilities/`.
 ## Files
 
 ```
+site/assets/
+  site.css                  shared stylesheet (palette + type inherited from site/index.html)
 site/capabilities/
-  style.css                 shared stylesheet (palette + type inherited from site/index.html)
   index.html                category grid; every skill is a clickable card
   <skill>.html              one page per skill, all from the same template
   PUBLISHING-CHECKLIST.md   HARD scrub gate - read before publishing anything
