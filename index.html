@@ -770,7 +770,7 @@
         <div class="section-heading"><p class="section-label">Backup and DR</p><h2>The backups are restored every week, by a pipeline, without a person.</h2></div>
         <div class="recovery-copy">
           <p>Every week the recovery pipeline restores critical VMs into an isolated test path, boots them, checks the application, and removes the test copy. In the measured Vault run on 2026-07-12 the VM was destroyed outright and restored from that night's snapshot in 97 seconds. A canary secret written minutes before the destroy survived, and credential fetches worked after the service returned.</p>
-          <p class="generated-line">Weekly restore check: last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-31<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_LAST_RUN_SECONDS:START-->281<!--LIVE:RESTORE_LAST_RUN_SECONDS:END--> seconds</p>
+          <p class="generated-line">Weekly restore check: last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-31<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_LAST_RUN_SECONDS:START-->193<!--LIVE:RESTORE_LAST_RUN_SECONDS:END--> seconds</p>
           <p>The first implementation needed twelve reruns. Several checks could report success before they had verified the restored service. Those checks now test the service response and the canary value before the run is allowed to pass.</p>
           <div class="actions"><a class="button" href="/dr-restore-verify/">Read the recovery test</a><a class="button" href="/postmortems-index/">Read the postmortems</a></div>
         </div>
