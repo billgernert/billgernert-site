@@ -16,7 +16,7 @@
   "proxmox_node_count": 5,
   "restore_last_run_date": "2026-08-31",
   "restore_last_run_result": "PASS",
-  "restore_last_run_seconds": 193,
+  "restore_last_run_seconds": 775,
   "template_variant_count": 3,
   "unit_count": 1,
   "vault_node_count": 3
