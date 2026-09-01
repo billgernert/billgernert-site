@@ -191,33 +191,60 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
-    <main id="main" class="page-narrow">
+    <main id="main" class="page-narrow projects-index">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
       <span class="here">Projects</span>
     </nav>
 
-    <header class="skill-head"><span class="badge">Engineering project index</span><h1>Projects grouped by the problem they solve</h1><p class="descriptor lede">These projects are not grouped by product. Jenkins, Vault, Terraform, Ansible, Kubernetes, monitoring, and AI appear in several stories because each tool owns one part of a larger result. The four domains below answer what the work was for: building the platform, keeping it recoverable, managing trust, or moving changes through a controlled delivery path.</p><p class="descriptor lede">Each project page starts with the result, follows the workflow through the systems it changes, shows the evidence, and keeps the failures that changed the design. The same project may touch several disciplines, but it appears once under its primary engineering problem so this page stays useful while skimming.</p><p class="source-note">Generated from the registered project catalog. Project titles and routes stay in repository data so the site build can update this index without duplicating them by hand.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#platform">Platform</a><span class="sep">/</span><a href="#reliability">Reliability / DR</a><span class="sep">/</span><a href="#identity">Identity / Security</a><span class="sep">/</span><a href="#delivery">Automation / Delivery</a></nav>
+    <header class="skill-head projects-intro"><span class="badge">Engineering project index</span><h1>Projects grouped by the problem they solve</h1><p class="descriptor lede">These projects cross tools and disciplines, so I group them by what the work was for. Start with three projects that show the platform working end to end, or jump to one of the four engineering groups below.</p></header>
 <div class="skill-body">
 <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <!-- END generated: group-hub -->
       <!-- BEGIN generated: projects-index (generate-site-pages.py) -->
-      <section class="block" id="platform">
-        <span class="badge">Platform</span>
-        <h2>Build a consistent foundation and keep it describable</h2>
-        <p>These projects create the compute, operating-system, and inventory base that other automation assumes.</p>
+      <section class="projects-featured" aria-labelledby="projects-featured-title">
+        <div class="projects-section-heading">
+          <div><span class="project-section-label">Start here</span>
+            <h2 id="projects-featured-title">Three projects that show the platform in motion</h2></div>
+          <p>Each story starts with the result, follows the workflow across the systems it changes, and keeps the failure that changed the design.</p>
+        </div>
+        <div class="featured-projects">
+          <a class="featured-project-card featured-project-identity" href="/projects/certificate-secret-renewal/"><span class="featured-project-top"><span>Identity / Security</span><span class="featured-project-order">01</span></span><span class="featured-project-name">Automated certificate and secret renewal</span><span class="featured-project-desc">Certificates and secrets across the platform renew automatically ahead of expiry, so routine renewal does not become a fire drill.</span><span class="featured-project-action">Read the project &#8594;</span></a>
+          <a class="featured-project-card featured-project-platform" href="/projects/server-provisioning/"><span class="featured-project-top"><span>Platform</span><span class="featured-project-order">02</span></span><span class="featured-project-name">Automated server provisioning</span><span class="featured-project-desc">A request becomes one consistent server record across five systems, with a collision gate that refuses to reconcile a live host by accident.</span><span class="featured-project-action">Read the project &#8594;</span></a>
+          <a class="featured-project-card featured-project-platform" href="/projects/platform-map/"><span class="featured-project-top"><span>Platform</span><span class="featured-project-order">03</span></span><span class="featured-project-name">The platform map</span><span class="featured-project-desc">Inventory structure and monitoring state become a sanitized map. The story also follows the identifier leak that reached the public projection.</span><span class="featured-project-action">Read the project &#8594;</span></a>
+        </div>
+      </section>
+      <nav class="project-domain-nav" aria-labelledby="project-domain-nav-title">
+        <div class="project-domain-nav-head"><h2 id="project-domain-nav-title">Browse by engineering problem</h2><p>Jump directly to a group</p></div>
+        <div class="project-domain-nav-grid">
+          <a class="project-domain-nav-card project-domain-nav-platform" href="#platform"><span class="project-domain-nav-number">01</span><span class="project-domain-nav-title">Platform</span><span class="project-domain-nav-arrow" aria-hidden="true">&#8595;</span><span class="project-domain-nav-detail">Build the compute and inventory foundation</span></a>
+          <a class="project-domain-nav-card project-domain-nav-reliability" href="#reliability"><span class="project-domain-nav-number">02</span><span class="project-domain-nav-title">Reliability / DR</span><span class="project-domain-nav-arrow" aria-hidden="true">&#8595;</span><span class="project-domain-nav-detail">Detect failure and leave a tested path back</span></a>
+          <a class="project-domain-nav-card project-domain-nav-identity" href="#identity"><span class="project-domain-nav-number">03</span><span class="project-domain-nav-title">Identity / Security</span><span class="project-domain-nav-arrow" aria-hidden="true">&#8595;</span><span class="project-domain-nav-detail">Manage identities, secrets, and trust</span></a>
+          <a class="project-domain-nav-card project-domain-nav-delivery" href="#delivery"><span class="project-domain-nav-number">04</span><span class="project-domain-nav-title">Automation / Delivery</span><span class="project-domain-nav-arrow" aria-hidden="true">&#8595;</span><span class="project-domain-nav-detail">Move work through recorded gates</span></a>
+        </div>
+      </nav>
+      <header class="project-catalog-heading">
+        <span class="project-section-label">All projects</span>
+        <h2>The grouped project index</h2>
+        <p>A project may cross several disciplines, but it appears once under its primary engineering problem. The three featured projects remain in their groups so the index stays complete.</p>
+      </header>
+      <section class="block project-domain-section project-domain-platform" id="platform">
+        <header class="project-domain-header">
+          <div><span class="project-domain-number">01 / 04</span><span class="project-domain-label">Platform</span><h2>Build a consistent foundation and keep it describable</h2></div>
+          <p>These projects create the compute, operating-system, and inventory base that other automation assumes.</p>
+        </header>
         <ol class="project-domain">
-          <li id="server-provisioning" class="project-row"><a class="project-card" href="/projects/server-provisioning/"><span class="project-name">Automated server provisioning</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/server-provisioning">View the code &#8594;</a></li>
+          <li id="server-provisioning" class="project-row"><a class="project-card" href="/projects/server-provisioning/"><span class="project-name">Automated server provisioning</span><span class="project-state">Live in AutomationLab</span><span class="project-featured-note">Featured above</span><span class="project-desc">Builds a server as one consistent fact across five systems at once, with a collision gate that refuses to reconcile a live host by accident.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/server-provisioning">View the code &#8594;</a></li>
           <li id="template-factory" class="project-row"><a class="project-card" href="/projects/template-factory/"><span class="project-name">The template factory</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Golden Windows images are rebuilt from code on a schedule instead of hand-patched, and the build verifies itself before anything is promoted live.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/windows-template-factory">View the code &#8594;</a></li>
-          <li id="platform-map" class="project-row"><a class="project-card" href="/projects/platform-map/"><span class="project-name">The platform map</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Combines inventory structure with monitoring state, then publishes a sanitized projection. Its postmortem follows the identifier leak that reached that public projection.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/platform-map">View the code &#8594;</a></li>
+          <li id="platform-map" class="project-row"><a class="project-card" href="/projects/platform-map/"><span class="project-name">The platform map</span><span class="project-state">Live in AutomationLab</span><span class="project-featured-note">Featured above</span><span class="project-desc">Combines inventory structure with monitoring state, then publishes a sanitized projection. Its postmortem follows the identifier leak that reached that public projection.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/platform-map">View the code &#8594;</a></li>
         </ol>
       </section>
-      <section class="block" id="reliability">
-        <span class="badge">Reliability / DR</span>
-        <h2>Find failure early and leave a path back</h2>
-        <p>These projects deal with unhealthy systems, destructive cleanup, and the evidence needed before a backup or remediation can be trusted.</p>
+      <section class="block project-domain-section project-domain-reliability" id="reliability">
+        <header class="project-domain-header">
+          <div><span class="project-domain-number">02 / 04</span><span class="project-domain-label">Reliability / DR</span><h2>Find failure early and leave a path back</h2></div>
+          <p>These projects deal with unhealthy systems, destructive cleanup, and the evidence needed before a backup or remediation can be trusted.</p>
+        </header>
         <ol class="project-domain">
           <li id="restore-verification" class="project-row"><a class="project-card" href="/dr-restore-verify/"><span class="project-name">Restore verification</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Restores a protected guest into a fenced network, runs operating-system and service assertions, then destroys the copy and verifies that it is gone.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/restore-verify">View the code &#8594;</a></li>
           <li id="dead-man-monitoring" class="project-row"><a class="project-card" href="/dead-man-monitoring/"><span class="project-name">Dead-man monitoring</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Pushes completion age into Zabbix and uses separate alarms for missed work and a stopped sender.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/dead-man-monitoring">View the code &#8594;</a></li>
@@ -226,19 +253,21 @@
           <li id="aiops-triage" class="project-row"><a class="project-card" href="/projects/aiops-triage/"><span class="project-name">AIOps morning triage</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Collects overnight alerts, CI, and backup results, correlates them in code, and escalates only the hard cases to a subscription-backed model.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/aiops-morning-triage">View the code &#8594;</a></li>
         </ol>
       </section>
-      <section class="block" id="identity">
-        <span class="badge">Identity / Security</span>
-        <h2>Renew trust before people or services feel the expiry</h2>
-        <p>These projects manage the identities and trust relationships used by people, machines, and public services.</p>
+      <section class="block project-domain-section project-domain-identity" id="identity">
+        <header class="project-domain-header">
+          <div><span class="project-domain-number">03 / 04</span><span class="project-domain-label">Identity / Security</span><h2>Renew trust before people or services feel the expiry</h2></div>
+          <p>These projects manage the identities and trust relationships used by people, machines, and public services.</p>
+        </header>
         <ol class="project-domain">
           <li id="identity-lifecycle" class="project-row"><a class="project-card" href="/windows-identity/"><span class="project-name">Identity lifecycle</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Drives directory account creation, group membership, disablement, and removal from definitions in code, with a reversible snapshot before destructive cleanup.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/identity-lifecycle">View the code &#8594;</a></li>
-          <li id="certificate-secret-renewal" class="project-row"><a class="project-card" href="/projects/certificate-secret-renewal/"><span class="project-name">Automated certificate and secret renewal</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Certificates and secrets across the platform renew automatically ahead of expiry, instead of on a fire drill.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a></li>
+          <li id="certificate-secret-renewal" class="project-row"><a class="project-card" href="/projects/certificate-secret-renewal/"><span class="project-name">Automated certificate and secret renewal</span><span class="project-state">Live in AutomationLab</span><span class="project-featured-note">Featured above</span><span class="project-desc">Certificates and secrets across the platform renew automatically ahead of expiry, so routine renewal does not become a fire drill.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a></li>
         </ol>
       </section>
-      <section class="block" id="delivery">
-        <span class="badge">Automation / Delivery</span>
-        <h2>Move requests and model work through recorded gates</h2>
-        <p>These projects turn a request or data set into a reviewed output. Their main problem is orchestration: where evidence is collected, where judgment happens, which gate owns the decision, and how the result is recorded.</p>
+      <section class="block project-domain-section project-domain-delivery" id="delivery">
+        <header class="project-domain-header">
+          <div><span class="project-domain-number">04 / 04</span><span class="project-domain-label">Automation / Delivery</span><h2>Move requests and model work through recorded gates</h2></div>
+          <p>These projects turn a request or data set into a reviewed output. Their main problem is orchestration: where evidence is collected, where judgment happens, which gate owns the decision, and how the result is recorded.</p>
+        </header>
         <ol class="project-domain">
           <li id="unattended-fleet" class="project-row"><a class="project-card" href="/fleet/"><span class="project-name">The unattended fleet</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Moves written taskings through isolated worktrees, cross-vendor review, deterministic gates, and operator-held merge authority.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/fleet-control-plane">View the code &#8594;</a></li>
           <li id="job-reporting" class="project-row"><a class="project-card" href="/projects/job-reporting/"><span class="project-name">The job reporting pipeline</span><span class="project-state">Live in AutomationLab</span><span class="project-desc">Job search as a real pipeline: ingest, enrich, score, and report, with a truthfulness constraint hard-coded into the model prompt.</span><span class="project-arrow">Read project &#8594;</span></a><a class="project-code" href="https://github.com/billgernert/job-reporting-pipeline">View the code &#8594;</a></li>
