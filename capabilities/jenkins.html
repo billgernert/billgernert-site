@@ -203,11 +203,11 @@
     <header class="skill-head">
       <span class="badge" data-accent="green">CI/CD &amp; GitOps</span>
       <h1>Jenkins</h1>
-      <p class="descriptor">The config-as-code controller behind 44 pipelines that drive provisioning and lifecycle work in the lab - defined in git, restorable from git, and guarded by real approval controls.</p>
+      <p class="descriptor">How Jenkins and forge-native CI divide the work in AutomationLab, with jobs defined in git, secrets fetched at run time, and disposable Kubernetes agents running infrastructure changes.</p>
     </header>
     <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
     <div class="capability-rail" aria-label="Page topics">
-      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>Lessons learned and gotchas</span><span>Impact</span><span>Further reading</span></div>
+      <div class="capability-rail-labels" style="--rail-count:6"><span>What it is and why</span><span>How I use it in</span><span>Architecture</span><span>Lessons learned and gotchas</span><span>What I am adding next</span><span>Impact</span></div>
       <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
     </div>
     <!-- END generated: capability-rail -->
@@ -227,16 +227,26 @@
 
       <section class="block">
         <h2>How I use it in the lab</h2>
+        <p>Gitea Actions checks pull requests for secrets, vulnerable images, invalid configuration,
+          and failures in the offline test suite. Jenkins handles longer operational work that changes
+          infrastructure, runs on a schedule, waits for approval, or must keep state across several
+          systems. This gives code review and infrastructure orchestration separate, explicit jobs.</p>
         <ul>
           <li><b>Configuration as Code (JCasC).</b> The controller's configuration - security
             realm, credentials wiring, jobs, agent settings - lives in git and is applied
             declaratively. There is no hand-clicked controller state to lose.</li>
+          <li><b>Jobs from a seed definition.</b> Job DSL defines parameters, triggers, and pipeline
+            locations. Deleting a generated job in the UI does not repair itself immediately. The next
+            seed run, triggered by a repository change or started manually, recreates it from git.</li>
           <li><b>Pipeline-as-code.</b> Each job is a <code>Jenkinsfile-&lt;purpose&gt;</code> in
             the repo, reviewed like any other change. The provisioning flow, with its allocate
             -&gt; plan -&gt; approve -&gt; configure -&gt; register stages, is one such file.</li>
           <li><b>Secrets from Vault, not from Jenkins.</b> The controller authenticates to Vault
             with an AppRole and pulls credentials at run time, so tokens are not stored in job
             config or printed in logs.</li>
+          <li><b>Disposable agents.</b> Builds run in short-lived Kubernetes pods. Their images include
+            pinned tools such as Ansible and Terraform and are rebuilt through CI, so a failed or
+            outdated agent is replaced by a new image and pod.</li>
           <li><b>Approval gates for irreversible actions.</b> Destroying infrastructure or
             disabling an identity pauses for an operator decision - and, for the most sensitive flow,
             enforces segregation of duties (below).</li>
@@ -373,6 +383,16 @@
           allowlist rather than merely "not empty."
         </div>
         <ul>
+          <li><b>Triggers belong in the seed definition.</b> A cron trigger declared inside pipeline
+            code appears only after that pipeline has run once. A newly seeded cleanup job therefore
+            had no way to start its first run. Moving the trigger into Job DSL made it exist when the
+            job was created and made it inspectable before the schedule arrived.</li>
+          <li><b>Mutable image tags leave old agents running.</b> Reusing one tag for a rebuilt image
+            allowed nodes with cached layers to start the older image. Immutable build tags remove that
+            ambiguity, and promotion by digest will carry the same artifact through later stages.</li>
+          <li><b>Commit messages can change CI behavior.</b> A skip-CI marker in a commit message
+            suppressed workflow scheduling for a pull request. The repository now checks commit
+            messages because prose should not silently disable the required validation path.</li>
           <li><b>Segregation of duties must be enforced in code, not policy.</b> "Don't approve
             your own request" written in a runbook is a suggestion. The same rule as a pipeline
             check that compares the two identities and aborts on a match is a control.</li>
@@ -385,6 +405,39 @@
             natively, the bigger the prize it becomes. Pulling from Vault at run time keeps the
             controller from turning into the crown-jewels box.</li>
         </ul>
+      </section>
+
+      <section class="block">
+        <h2>What I am adding next</h2>
+        <p>The controller runs useful infrastructure work today, but several CI practices are still
+          incomplete. I keep these gaps visible so the page distinguishes current behavior from planned
+          work.</p>
+        <ul>
+          <li><b>Shared-library unit tests.</b> JenkinsPipelineUnit can run pipeline helpers on a plain
+            JVM with Jenkins steps mocked, which will catch a library regression before every job loads it.</li>
+          <li><b>Jenkins pull request builds.</b> A multibranch job will discover branches and pull
+            requests, test the merge preview, and return a required status to the forge.</li>
+          <li><b>JUnit results and quality gates.</b> Machine-readable reports will identify the failing
+            test and show trends instead of reducing every result to one process exit code.</li>
+          <li><b>Build once and promote by digest.</b> Later stages will deploy the exact image tested by
+            the first stage, with the previous digest available as the rollback target.</li>
+          <li><b>Concurrency controls in code.</b> Named resource locks, single-run recovery jobs, and
+            stale-build cancellation will replace the remaining scheduling assumptions.</li>
+          <li><b>Pipeline and delivery measurements.</b> Prometheus and Grafana will report queue time,
+            duration, and failure rate. Deployment frequency, lead time, change failure rate, and time to
+            recover will be reported only for workloads that have a defined production delivery event.</li>
+          <li><b>Matrix image builds.</b> Each supported operating system will run on its own disposable
+            agent so the weekly build finishes in the time of the slowest image rather than their sum.</li>
+          <li><b>A timed controller rebuild.</b> The exercise will remove the controller and its storage,
+            reinstall from committed configuration, seed every job, and run a real pipeline. Build history
+            is accepted as lost. The rebuild also depends on one credential outside git that lets the new
+            controller reach the secrets manager. That credential must already be available, so a combined
+            controller and secrets-manager outage has a real bootstrap-ordering constraint.</li>
+        </ul>
+        <figure class="capability-diagram">
+          <img src="/platform/img/jenkins-dashboard.png" alt="Jenkins job list grouped by operational domain, with scheduled jobs showing successful results" width="1050" height="545" loading="lazy">
+          <figcaption>The current controller view provides job-level status. The planned delivery dashboard will replace this figure when its public render is available.</figcaption>
+        </figure>
       </section>
 
       <section class="block">
