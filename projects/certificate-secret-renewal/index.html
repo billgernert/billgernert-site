@@ -190,21 +190,48 @@
     th, td { padding: .8rem; border-bottom: 1px solid rgba(174,187,208,.18); text-align: left; vertical-align: top; }
     th { color: #00d4ff; font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .06em; }
     td:first-child { color: #eef4fb; font-weight: 600; }
-    .dashboard-shell { margin: 1.2rem 0; border: 1px solid rgba(0,212,255,.38); background: #080d16; }
+    .dashboard-shell { margin: 1.2rem 0; overflow: hidden; border: 1px solid rgba(0,212,255,.38); background: #080d16; }
     .dashboard-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; border-bottom: 1px solid rgba(0,212,255,.24); }
     .dashboard-head p { margin: 0; color: var(--muted); }
     .dashboard-head a { white-space: nowrap; }
     .live-panel-label { margin: 0 0 .8rem; }
     .noc-badge { display: inline-flex; margin: 0 0 .8rem; padding: .3rem .55rem; border: 1px solid rgba(0,255,150,.45); border-radius: 999px; color: #00ff96; background: rgba(0,255,150,.08); font-family: "Share Tech Mono",monospace; font-size: .78rem; }
     .noc-badge.is-stale { border-color: rgba(143,168,200,.35); color: #8fa8c8; background: rgba(143,168,200,.08); }
-    .dashboard-frame { display: block; width: 100%; min-height: 980px; border: 0; background: #111827; }
+    .dashboard-frame { display: block; width: 100%; min-height: 980px; border: 0; border-radius: 0; background: #111827; }
     .read-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 1.2rem; }
     .read-card .question { color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .dashboard-intro { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(230px,.65fr); gap: 1.5rem; align-items: start; }
+    .full-dashboard-card { padding: 1rem; border: 1px solid rgba(0,212,255,.42); background: linear-gradient(135deg,rgba(0,212,255,.1),rgba(14,21,34,.9)); }
+    .full-dashboard-card p { color: var(--muted); font-size: .92rem; }
+    .full-dashboard-card .links { margin-bottom: 0; }
+    .privacy-note { margin-top: 1.5rem; padding: 1rem 1.1rem; border-left: 3px solid var(--good); background: rgba(0,255,150,.045); color: var(--muted); }
+    .panel-story { width: min(1180px,calc(100vw - 32px)); margin: 3.5rem 50% 0; transform: translateX(-50%); }
+    .panel-story + .panel-story { padding-top: 3.5rem; border-top: 1px solid rgba(0,212,255,.14); }
+    .panel-copy { width: min(900px,100%); margin: 0 auto 1.25rem; display: grid; grid-template-columns: minmax(0,1.35fr) minmax(240px,.65fr); gap: 2rem; align-items: start; }
+    .panel-copy h3 { margin: .3rem 0 .8rem; }
+    .panel-copy p:last-child { margin-bottom: 0; }
+    .read-note { padding: 1rem; border: 1px solid var(--line); background: var(--panel); }
+    .read-note .question { margin-bottom: .45rem; color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .read-note p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .panel-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .65rem .85rem; border-bottom: 1px solid rgba(0,212,255,.22); }
+    .panel-status p { margin: 0; }
+    .panel-status .live-status { font-size: .78rem; text-align: right; }
+    .panel-status .noc-badge { margin: 0; white-space: nowrap; }
+    .panel-frame-summary { min-height: 310px; }
+    .panel-frame-entra, .panel-frame-tokens { min-height: 820px; }
+    .panel-frame-wildcard, .panel-frame-portals { min-height: 660px; }
+    .panel-frame-trend { min-height: 620px; }
+    .stat-explanations { width: min(1180px,calc(100vw - 32px)); margin: 1rem 50% 0; transform: translateX(-50%); display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+    .stat-explanation { padding: 1.1rem; border: 1px solid var(--line); background: var(--panel); }
+    .stat-explanation h4 { margin: .25rem 0 .55rem; color: #eef4fb; font-size: 1.08rem; }
+    .stat-explanation p { margin: 0; color: var(--muted); font-size: .94rem; }
+    .panel-number { color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
     .failure { padding: 1.2rem; border: 1px solid rgba(255,92,122,.36); background: rgba(43,23,32,.38); }
     .failure h3 { color: #eef4fb; }
     .decision { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--warn); background: rgba(255,209,102,.07); }
     code { white-space: normal; overflow-wrap: anywhere; }
-    @media (max-width: 900px) { .read-grid { grid-template-columns: 1fr; } .responsibilities div { grid-template-columns: 1fr; gap: .35rem; } .dashboard-frame { min-height: 760px; } }
+    @media (max-width: 900px) { .read-grid, .stat-explanations { grid-template-columns: 1fr; } .dashboard-intro, .panel-copy { grid-template-columns: 1fr; } .responsibilities div { grid-template-columns: 1fr; gap: .35rem; } .panel-frame-summary { min-height: 430px; } .panel-frame-entra, .panel-frame-tokens { min-height: 700px; } }
+    @media (max-width: 620px) { .panel-status { align-items: flex-start; flex-direction: column; } .panel-status .live-status { text-align: left; } .panel-frame-summary { min-height: 680px; } }
   </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/certificate-secret-renewal/">
@@ -284,28 +311,80 @@
         </dl>
       </section>
 
-      <section class="block" id="dashboard" data-public-noc>
+      <section class="block" id="dashboard">
         <h2>This is what I watch while it runs</h2>
-        <p>Prometheus updates this dashboard from certificate handshakes, cert-manager state, Entra metadata, and Vault lifecycle metadata. The public view replaces operational names with descriptive labels and removes addresses, subjects, secret paths, provider identifiers, and management links.</p>
-        <p class="section-label live-panel-label">Renewal dashboard</p>
-        <div class="dashboard-shell">
-          <p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p>
-          <p class="live-status" data-live-status aria-live="polite">Checking the live renewal dashboard.</p>
-          <div class="dashboard-head"><p>Live public Grafana view</p><a href="https://billgernert.com/noc/open/certificates-secrets" target="_blank" rel="noreferrer">Open full screen</a></div>
-          <iframe class="dashboard-frame live-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/f8c8dadad49f4b02a18a60a2e9e2af46" title="Public certificate and PKI dashboard" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
-          <div class="live-fallback" data-live-fallback hidden><p>The live renewal dashboard is unavailable. This project page remains online independently of the lab, and it does not present stale dashboard data as current.</p></div>
-          <noscript><p>The live renewal dashboard requires JavaScript.</p></noscript>
+        <div class="dashboard-intro">
+          <div>
+            <p>Prometheus updates this dashboard from certificate handshakes, cert-manager state, Entra metadata, and Vault lifecycle metadata. The public view replaces operational names with descriptive labels and removes addresses, subjects, secret paths, provider identifiers, and management links.</p>
+            <p>The complete dashboard is still useful when I want to scan everything at once, change the time range, or filter a table. In the story below, I split the same live view into the questions I use when I read it.</p>
+          </div>
+          <aside class="full-dashboard-card">
+            <p class="section-label live-panel-label">Full live view</p>
+            <p>Open the complete Grafana dashboard in a separate tab.</p>
+            <p class="links"><a href="https://billgernert.com/noc/open/certificates-secrets" target="_blank" rel="noreferrer">Open full dashboard &#8599;</a></p>
+          </aside>
         </div>
+        <p class="privacy-note"><strong>How the labels work.</strong> Tracking says whether the item is active, deployed, in overlap, or outside an automatic path. Endpoint names such as Jenkins URL replace real addresses. Rotation process names the automation, attended step, or product-managed path without exposing a credential or provider identifier.</p>
 
-        <h3>How to read it</h3>
-        <div class="read-grid">
-          <article class="read-card"><p class="question">Is anything urgent?</p><h3>Start with the summary row</h3><p>Coverage, expiry, readiness, overdue rotation, and failed scrapes show whether the rest of the board needs attention.</p></article>
-          <article class="read-card"><p class="question">Which login secret is involved?</p><h3>Use the Entra SSO group</h3><p>Each application shows its nearest expiry and whether replacement is automatic, attended, product-managed, or not applicable.</p></article>
-          <article class="read-card"><p class="question">Did the wildcard reach every consumer?</p><h3>Compare source and deployments</h3><p>A destination with less time remaining than the source is still serving an older copy.</p></article>
-          <article class="read-card"><p class="question">Why are some portals separate?</p><h3>Use the independent certificate group</h3><p>Webmail, appliances, and internal-CA certificates have different issuers and renewal paths.</p></article>
-          <article class="read-card"><p class="question">What rotates a secret?</p><h3>Use the lifecycle tables</h3><p>An overlap row means the replacement is active and the predecessor awaits revalidation or retirement.</p></article>
-          <article class="read-card"><p class="question">Why is a row missing?</p><h3>Check exporter coverage</h3><p>A failed scrape, unclassified record, or undeclared target reports a coverage failure.</p></article>
-        </div>
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live summary panels</p><h3>Start with the four summary signals</h3><p>These four panels answer two questions before I read a table: is a deadline close, and can I trust the coverage underneath the board? A clean deadline count does not cancel a coverage failure.</p></div>
+            <aside class="read-note"><p class="question">What should stop the scan?</p><p>Any nonzero overdue or unclassified count needs a row-level explanation. A sudden drop in the reporting count also deserves attention because missing inventory can make the urgent counts look better than they are.</p></aside>
+          </div>
+          <div class="dashboard-shell">
+            <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the summary panels.</p></div>
+            <iframe class="dashboard-frame live-frame panel-frame-summary" data-live-frame data-src="https://status.billgernert.com/public-dashboards/d6c5779aac12e5e2d1b029e127708847" title="Live certificate and credential summary panels" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+            <div class="live-fallback" data-live-fallback hidden><p>The live summary panels are unavailable. The explanations below remain available without presenting cached values as current.</p></div>
+            <noscript><p>The live summary panels require JavaScript.</p></noscript>
+          </div>
+          <div class="stat-explanations">
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Portal certificates reporting</h4><p>This is the coverage baseline: the number of public portal certificate records reaching the scrubbed series. A drop matters even when no certificate is near expiry because the other counts can only describe records that arrived.</p></article>
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Portal certificates inside 30 days</h4><p>This is the immediate renewal queue. Zero means no reported portal certificate has crossed the 30-day window. I still compare the source and deployed copies below because both can be valid and carry different expiry dates.</p></article>
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Entra secret rotations overdue</h4><p>This counts Entra application credentials that passed the registered rotation point. The application table shows who owns the item and whether its replacement path is automatic, canary, attended, or product-managed.</p></article>
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Unclassified Vault records</h4><p>This is a coverage failure. The lifecycle exporter found a record without the classification needed to select a rotation path. The gap stays visible until the registry describes its owner, consumer, and change method.</p></article>
+          </div>
+        </article>
+
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live Grafana panel</p><h3>Entra SSO applications</h3><p>Each row is one application identity. Tracking says whether it has an active credential or needs none. Endpoint names the consumer in public terms. Rotation process tells me whether the full replacement path is automatic, still a canary, product-managed, or attended.</p><p>The final column is the nearest expiry or a status. I read it together with the process column because two credentials with the same remaining lifetime can require different actions.</p></div>
+            <aside class="read-note"><p class="question">What am I looking for?</p><p>An automatic row nearing its rotation point should move without operator work. An attended or canary row needs evidence that the consumer activated the replacement before the predecessor can be retired.</p></aside>
+          </div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the Entra SSO panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-entra" data-live-frame data-src="https://status.billgernert.com/public-dashboards/078da4f0fe53655e5a20dee5113de6d8" title="Live Entra SSO applications panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live Entra SSO panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live Entra SSO panel requires JavaScript.</p></noscript></div>
+        </article>
+
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live Grafana panel</p><h3>Wildcard certificate deployments</h3><p>This table puts the cert-manager source beside every copy that should match it. The source proves issuance. Each destination row represents what a Kubernetes ingress, server, or appliance is actually serving after its own reload path.</p><p>If a destination has less time remaining than the source, I treat it as a deployment or activation problem. The certificate may still be valid, but that consumer is serving the older lineage.</p></div>
+            <aside class="read-note"><p class="question">What makes this different?</p><p>The job checks the certificate returned by a new TLS handshake. A file copy or successful API response does not prove the running service loaded the replacement.</p></aside>
+          </div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the wildcard deployment panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-wildcard" data-live-frame data-src="https://status.billgernert.com/public-dashboards/8c537dadb28dfb0c2c752958d701f08b" title="Live wildcard certificate deployments panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live wildcard deployment panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live wildcard deployment panel requires JavaScript.</p></noscript></div>
+        </article>
+
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live Grafana panel</p><h3>Service token lifecycle</h3><p>Service tokens do not share one provider or one activation method, so this table is driven by the reviewed registry. Each row names the public service label, its current lifecycle state, the destination that consumes it, the registered rotation path, and the next expiry, rotation, or retirement point.</p><p>An overlap row means the replacement is active and the predecessor is still available for recovery. A pending or failed row means retirement has stopped until the worker can repeat every validation.</p></div>
+            <aside class="read-note"><p class="question">What does a quiet row mean?</p><p>Most days, no replacement is due. A normal row says the exporter can classify the item and the next lifecycle point is still ahead. It does not expose the token or its stored value.</p></aside>
+          </div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the service token panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-tokens" data-live-frame data-src="https://status.billgernert.com/public-dashboards/3e51f90147d38efdf3d8fb076ffcd34b" title="Live service token lifecycle panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live service token panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live service token panel requires JavaScript.</p></noscript></div>
+        </article>
+
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live Grafana panel</p><h3>Other portal certificates</h3><p>This table covers certificates that do not belong to the shared wildcard deployment. Webmail, appliances, and internal-CA portals can have different issuers, renewal tools, and reload requirements, so they stay separate from the source-and-copy comparison.</p><p>The expiry column still comes from what the endpoint serves. The rotation process column explains whether Windows enrollment, a Linux request, a product API, or an attended step owns the next change.</p></div>
+            <aside class="read-note"><p class="question">Why keep this separate?</p><p>A separate issuer is expected here. Combining these rows with the wildcard would hide which trust path and renewal mechanism applies when one portal approaches expiry.</p></aside>
+          </div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the other portal certificates panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-portals" data-live-frame data-src="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" title="Live other portal certificates panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live portal certificate panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live portal certificate panel requires JavaScript.</p></noscript></div>
+        </article>
+
+        <article class="panel-story" data-public-noc>
+          <div class="panel-copy">
+            <div><p class="panel-number">Live Grafana panel</p><h3>Certificate days remaining</h3><p>The tables show the current read. This chart adds the last 30 days so I can see whether remaining lifetime declines normally, jumps when a certificate renews, or splits when one served copy stops following its source.</p><p>The legend includes the latest and minimum value for each public label. A renewal creates an upward step. A line that keeps falling after the source jumps points back to the deployment table.</p></div>
+            <aside class="read-note"><p class="question">What is normal?</p><p>A steady decline between renewals is expected. The useful evidence is the renewal jump and whether every consumer lineage follows it within the allowed deployment window.</p></aside>
+          </div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the certificate trend panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-trend" data-live-frame data-src="https://status.billgernert.com/public-dashboards/c085e2a61f4655c4f50c67bd63f5ab9d" title="Live certificate days remaining panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live certificate trend panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live certificate trend panel requires JavaScript.</p></noscript></div>
+        </article>
+
         <p>The site build generates the dashboard structure and queries from the repository. Grafana reads the public Prometheus series, so operational identifiers do not reach the browser.</p>
       </section>
 
