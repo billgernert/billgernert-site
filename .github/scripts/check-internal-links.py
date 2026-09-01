@@ -7,7 +7,7 @@ internal reference verifies the target resolves inside the repo:
     fragment is given, an element with that id must exist in the target file;
   - a same-page #fragment: an element with that id must exist in this file.
 External links (http, https, protocol-relative //, mailto:, tel:, data:) and empty/JS hrefs are
-skipped - deployment and external availability are not this check's job (Cloudflare Pages owns
+skipped - deployment and external availability are not this check's job (Cloudflare Workers owns
 deploy; no network is touched). Exits non-zero and prints one line per broken link if any fail.
 
 Usage: python3 check-internal-links.py [ROOT]   (ROOT defaults to the current directory)
@@ -118,7 +118,7 @@ def _redirect_target_file(root, route):
     if route.endswith("/") or os.path.isdir(candidate):
         candidate = os.path.join(candidate, "index.html")
     elif not os.path.isfile(candidate) and os.path.isfile(candidate + ".html"):
-        # Cloudflare Pages clean URLs serve /name from the committed name.html document.
+        # Cloudflare static-asset clean URLs serve /name from the committed name.html document.
         candidate += ".html"
     root_real = os.path.realpath(root)
     candidate_real = os.path.realpath(candidate)

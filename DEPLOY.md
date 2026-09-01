@@ -1,30 +1,35 @@
-# Deploy - Cloudflare Pages
+# Deployment
 
-The site is static; Cloudflare Pages serves the repository root and redeploys on every push to the
-default branch. No build step.
+This repository is the deployment mirror for `billgernert.com`. Cloudflare Workers Builds is connected
+to `billgernert/billgernert-site` on the `main` branch and serves the approved static assets as a
+Cloudflare Worker. There is no application server or manual production upload from a workstation.
 
-## One-time connection
+## Publication flow
 
-1. Cloudflare dashboard -> **Workers & Pages** -> **Create** -> **Pages** -> **Connect to Git**.
-2. Authorize and select the **AutomationLab** repository (production branch: `main`).
-3. **Build settings:**
-   - Framework preset: **None**
-   - Build command: **(leave empty - there is no build)**
-   - Build output directory: **`/`** (the files are at the repo root)
-   - Root directory: **`/`**
-4. **Save and Deploy.** Pages serves the files and gives a `*.pages.dev` URL to preview.
-5. **Custom domain:** project -> **Custom domains** -> **Set up a custom domain** -> the configured public domain
-   (and optionally `www`). The domain's DNS is already on Cloudflare, so Pages creates the record and
-   provisions the certificate automatically.
-6. The `_headers` file (CSP + security headers) is applied automatically - no dashboard config.
+1. The reviewed source pipeline builds a fresh mirror of the declared site paths.
+2. Generated public evidence is injected before the final validation pass.
+3. The exact staged bytes pass the public-data scrub and site checks before any push occurs.
+4. The pipeline updates `main` in this repository.
+5. The push starts GitHub Actions and Cloudflare Workers Builds. These checks are independent and must
+   both complete successfully before the publication is considered verified.
 
-## Verify once: apex vs Access
+Sync-managed pages and assets must be changed in their source repository. The next publication replaces
+those paths here. `README.md`, `DEPLOY.md`, `LICENSE`, and `.github/` are public-only repository files and
+are changed through pull requests here.
 
-The landing page is the public **apex** domain and must **not** be behind a Cloudflare Access
-policy (it is public). App subdomains keep their Tunnel + Access; confirm no Access application
-matches the bare apex, and that the apex record points at the Pages project rather than a Tunnel
-route.
+## Cloudflare configuration record
 
-## Updates
+- Repository: `billgernert/billgernert-site`
+- Production branch: `main`
+- Static assets directory: repository root
+- Asset boundary: `.assetsignore` denies the repository by default and allows only declared website paths
+- Response controls: `_headers` and `_redirects`
+- Custom domain: `billgernert.com`
+- Access boundary: the public apex is outside Cloudflare Access; protected application subdomains keep
+  their own Access policies
 
-Every push to `main` auto-deploys. To change the page, edit `index.html` and push.
+## Verify a publication
+
+The GitHub commit should show successful checks for Cloudflare Workers Builds, HTML validation, and the
+internal link check. Then verify that `https://billgernert.com/` serves the expected commit's content and
+security headers. A failed or missing check is not a successful publication.

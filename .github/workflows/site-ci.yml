@@ -1,10 +1,8 @@
-# STAGED for the PUBLIC repo billgernert/parsec-lab - commit this to
-# .github/workflows/site-ci.yml in that repo (see docs/pipelines/public-ci.md). It is NOT wired
-# into the site-sync pipeline: CI config is the public repo's own concern and is deliberately kept
-# out of the sync allowlist to keep the scrub-gate surface minimal (item 77 decision).
+# Public-repository CI for billgernert/billgernert-site. This workflow is deliberately outside the
+# site-sync mapping, so changes to it are reviewed in this repository.
 #
-# Read-only verification of the static site on every push and PR. NO deploy steps (Cloudflare Pages
-# owns deployment) and NO secrets - `permissions: contents: read` is the whole grant.
+# Read-only verification of the static site on every push and PR. Cloudflare Workers Builds owns
+# deployment; this workflow needs no secrets and grants only `contents: read`.
 name: site-ci
 on:
   push:
