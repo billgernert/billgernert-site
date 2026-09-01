@@ -4,7 +4,7 @@
 # same-origin script (assets/motion.js, the generated entrance-motion engine). script-src stays
 # 'self' with no 'unsafe-inline', so the engine is a file and only its stylesheet is inline.
 # Interior pages link the shared stylesheet (assets/site.css), so style-src includes 'self'.
-# The only external requests are the parsec-lab brand fonts (Share Tech Mono + Exo 2) from
+# The only external requests are the site's brand fonts (Share Tech Mono + Exo 2) from
 # Google Fonts, so the CSP allows exactly those two hosts and nothing else.
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
