@@ -1,29 +1,24 @@
-# AutomationLab
+# billgernert.com
 
-A production-grade platform engineering environment I run at home.
+[![site-ci](https://github.com/billgernert/billgernert-site/actions/workflows/site-ci.yml/badge.svg)](https://github.com/billgernert/billgernert-site/actions/workflows/site-ci.yml)
 
-I operate this lab the way a real platform team operates production: everything is monitored, backed up, restore-tested, and automated. Every change goes through Git and a pull request. Every secret comes from a vault. Every pipeline is code.
+This repository is the public deployment mirror for [billgernert.com](https://billgernert.com), a
+portfolio about platform and infrastructure engineering across automation, recovery, identity, and
+observability.
 
-I built it to sharpen my platform engineering skills, and I write everything down so anyone can follow along, whether you're learning this stuff yourself or just curious how it fits together.
+## Publication boundary
 
-## The stack
+Mapped site content is authored and reviewed in its source repository. The publication pipeline
+assembles a fresh staging tree, injects approved generated evidence, applies a fail-closed public-data
+scan, and then updates this repository. The public-data contract is documented in
+[SANITIZATION.md](SANITIZATION.md).
 
-- **Virtualization:** 5-node Proxmox cluster, high availability and live migration *(Completed)*
-- **Kubernetes:** K3s with Argo CD for GitOps *(Completed)*
-- **CI/CD:** Jenkins *(Completed)*, Gitea Actions *(In Progress)*
-- **Infrastructure as Code:** Terraform, Ansible, Packer *(Completed)*
-- **Secrets & identity:** HashiCorp Vault, Active Directory, Entra ID SSO, enterprise PKI, MFA *(Completed)*
-- **Monitoring:** Zabbix *(Completed)*, Prometheus & Grafana *(Planned)*
-- **Source & registry:** self-hosted Gitea *(Completed)*
-- **AI/LLM:** local inference on my own GPU for self-healing and ops tooling *(In Progress)*
+The synchronized pages, assets, redirects, headers, and sitemap should not be edited here because the
+next publication replaces them. Public-only repository files such as this README, [DEPLOY.md](DEPLOY.md),
+and `.github/` are maintained through pull requests in this repository.
 
-## Write-ups
+## Verification
 
-I document each system the same way: what problem it solved, how it works, the decisions I made and why, and what I learned along the way.
-
-- **[The Self-Service Server Build Pipeline](writeups/provisioning-pipeline-writeup.md)** — submit a pull request and the pipeline turns it into a fully configured, monitored running server, with a clean teardown path *(Completed)*
-- *(more coming as I write them up)*
-
-## A note on how this is built
-
-I lean on AI tooling heavily in this lab, but with a firm rule: I verify everything before I trust it. Nothing gets committed straight to main, nothing ships without evidence it works. The goal is to move fast without cutting the corners that matter.
+GitHub Actions validates the HTML and internal link graph on pushes and pull requests. Cloudflare
+Workers Builds publishes the approved static assets from `main`. The resulting commit exposes both
+sets of checks in GitHub before a publication is treated as verified.
