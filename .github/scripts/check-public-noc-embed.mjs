@@ -81,6 +81,21 @@ async function checkMetadataBoundary() {
     throw new Error("public dashboard JSON exposed implementation metadata");
   }
 
+  const annotationsUrl = `${apiUrl}/annotations?from=0&to=1`;
+  const annotationsResponse = await fetch(annotationsUrl);
+  const annotationsBody = await annotationsResponse.text();
+  let annotations;
+  try {
+    annotations = JSON.parse(annotationsBody);
+  } catch (_) {
+    annotations = null;
+  }
+  if (!annotationsResponse.ok ||
+      annotationsResponse.headers.get("X-Public-NOC-Boundary") !== "metadata-v1" ||
+      !Array.isArray(annotations) || annotations.length !== 0) {
+    throw new Error("public dashboard annotations did not return the closed empty contract");
+  }
+
   const genericApi = await fetch(STATUS_ORIGIN + "/apis/dashboard.grafana.app/", {
     redirect: "manual"
   });
