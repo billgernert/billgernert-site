@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Automated server provisioning - Bill Gernert</title>
-  <meta name="description" content="How one server provisioning workflow runs through Jenkins or Backstage, and how NetBox, Vault, Terraform, Proxmox, Ansible, Zabbix, DNS, and Git interact during a build.">
+  <meta name="description" content="Try the working Jenkins and Backstage server provisioning demos, including resource choices, approval gates, and simulated build output.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Automated server provisioning - Bill Gernert">
-  <meta property="og:description" content="How one server provisioning workflow runs through Jenkins or Backstage, and how NetBox, Vault, Terraform, Proxmox, Ansible, Zabbix, DNS, and Git interact during a build.">
+  <meta property="og:description" content="Try the working Jenkins and Backstage server provisioning demos, including resource choices, approval gates, and simulated build output.">
   <meta property="og:url" content="https://billgernert.com/projects/server-provisioning/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Automated server provisioning - Bill Gernert">
-  <meta name="twitter:description" content="How one server provisioning workflow runs through Jenkins or Backstage, and how NetBox, Vault, Terraform, Proxmox, Ansible, Zabbix, DNS, and Git interact during a build.">
+  <meta name="twitter:description" content="Try the working Jenkins and Backstage server provisioning demos, including resource choices, approval gates, and simulated build output.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -205,6 +205,7 @@
     @media (max-width: 980px) { .phase-line { grid-template-columns: repeat(2,minmax(0,1fr)); } .phase:not(:last-child)::after { display: none; } }
     @media (max-width: 720px) { .compare, .phase-line { grid-template-columns: 1fr; } }
   </style>
+  <link rel="stylesheet" href="demo.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/server-provisioning/">
   <!-- END generated: canonical -->
@@ -243,8 +244,8 @@
     <header class="skill-head">
       <span class="badge">Technical project walkthrough</span>
       <h1>How I built one server provisioning workflow with two front doors</h1>
-      <p class="descriptor lede">A Windows or Linux request becomes a running virtual machine with an allocated address, infrastructure state, operating-system configuration, Zabbix monitoring, DNS, and a committed host record. Windows servers also join Active Directory and enforce Duo MFA for remote desktop logins, with the Windows features and tools selected on the form already installed. Jenkins can coordinate the run, or Backstage can open a reviewed request that Gitea Actions applies without Jenkins. Both routes use the same repository scripts, Terraform definition, and Ansible playbooks.</p>
-      <p class="source-note">Built from the current Jenkinsfiles, provisioning request schema, Backstage template, Gitea workflows, apply driver, Terraform configuration, Ansible playbooks, and the screenshots captured from the running interfaces.</p>
+      <p class="descriptor lede">A Windows or Linux request becomes a running virtual machine with an allocated address, infrastructure state, operating-system configuration, monitoring, backup coverage, and a committed host record. Windows servers also join Active Directory and enforce Duo MFA for remote desktop logins. Jenkins can coordinate the run, or Backstage can open a reviewed request that Gitea Actions applies without Jenkins.</p>
+      <p class="source-note">The controls below are browser-only simulations of the current request contracts. They do not connect to the lab or change infrastructure.</p>
       <div class="links story-code-action"><a href="https://github.com/billgernert/server-provisioning">View the code &#8594;</a></div>
     </header>
 
@@ -253,33 +254,105 @@
         <h2>At a glance</h2>
         <dl class="at-a-glance">
           <div><dt>Outcome</dt><dd>A Linux or Windows request reaches a running, monitored server and a committed host record through either Jenkins or Backstage with Gitea Actions.</dd></div>
-          <div><dt>Operating scope</dt><dd>The live workflow coordinates address allocation, Terraform, Proxmox, Ansible, Vault, DNS, monitoring, and Active Directory for Windows.</dd></div>
-          <div><dt>Evidence</dt><dd>The Backstage route completed a measured run in 5 minutes 21 seconds on 2026-08-23. The page also carries captures from both request paths and their approval gates.</dd></div>
+          <div><dt>Operating scope</dt><dd>The live workflow coordinates address allocation, Terraform, Proxmox, Ansible, Vault, monitoring, backup coverage, and Active Directory with Duo MFA for Windows.</dd></div>
+          <div><dt>Evidence</dt><dd>The Backstage route completed a measured run in 5 minutes 21 seconds on 2026-08-23. Each former interface capture on this page is now a working browser demo.</dd></div>
           <div><dt>Primary lesson</dt><dd>Both front doors revalidate collisions, and post-creation failures retain enough state for the next run to continue forward safely.</dd></div>
         </dl>
       </section>
 
       <section class="block" id="windows">
         <h2>The Windows form shows what the workflow can build</h2>
-        <p>I started this walkthrough with Windows because the form makes the scope visible before the job runs. The request names the machine and its role, sets compute and storage, chooses a tagged Windows Server template, and can add tools, Windows features, a data disk, nested virtualization, and a published DNS record. The help text puts each constraint next to the choice that activates it.</p>
-        <figure class="shot">
-          <img src="img/jenkins-windows-form.png" alt="Jenkins Windows provisioning form with compute, template, storage, tools, Windows features, nested virtualization, and DNS choices." width="1055" height="2019" loading="lazy">
-          <figcaption>The Jenkins Windows request form. Template choice, disk placement, optional software, Windows roles, and virtualization constraints are visible before the build starts. Captured 2026-08-23.</figcaption>
-        </figure>
-        <p>The Windows Jenkinsfile has more stages than the Linux one because template resolution, WinRM, password generation, and disk movement are Windows-only. Some disk work is conditional. Moving the operating-system disk runs only for node-local storage, and adding a data disk runs only when one was requested.</p>
-        <p>The pipeline resolves a template by tags instead of storing a template number in code. Terraform clones it on shared storage, then the job expands or moves disks as requested. A first-boot script brings up WinRM over HTTPS. Ansible uses that channel to rotate the bootstrap password, rename and join the computer to Active Directory, install the monitoring agent, configure time and firewall rules, enforce Duo on remote desktop logins, install allowlisted tools and roles, and initialize the optional data disk. Reboots happen inside the playbook where Windows requires them.</p>
-        <p>A per-host administrator password and monitoring key are created during the run and stored in Vault. The values do not become Jenkins parameters or Git content. The job retrieves them only for the stage that needs them.</p>
+        <div class="story-split">
+          <div><h3>What the request controls</h3><p>The form names the machine and its role, then sets compute, storage, and the Windows Server template. It can also add tools, Windows features, a data disk, and nested virtualization.</p></div>
+          <div><h3>What Jenkins checks first</h3><p>The job validates the hostname, required values, storage limits, and feature constraints before it reserves an address. The console follows that same order.</p></div>
+        </div>
+        <aside class="timing-note"><span>Build-time note</span><p>Use about five minutes as a baseline for a basic VM in the current lab. A measured Backstage run completed in 5 minutes 21 seconds on 2026-08-23. Tools, Windows features, data disks, resource changes, and required reboots add work, so the total time changes with the request. The demos compress that wait.</p></aside>
+
+        <div class="demo-window" id="windows-demo">
+          <div class="demo-toolbar"><span class="jenkins-mark" aria-hidden="true">J</span><span><small>Jenkins</small><strong>Pipeline [VM] Provision Windows</strong></span><span class="demo-tag">Interactive demo</span></div>
+          <div class="demo-layout">
+            <form class="demo-form" id="windows-form">
+              <p class="form-intro">This build requires parameters. Values stay in this browser.</p>
+              <div class="form-grid">
+                <label class="demo-field"><span>VM_NAME</span><small>Hostname without a domain.</small><input id="win-name" value="app-server-01" maxlength="15" required></label>
+                <label class="demo-field"><span>ROLE</span><small>Selects the target network.</small><select id="win-role"><option>infra</option><option>control</option><option>ci</option><option>kubernetes</option><option>identity</option><option>clients</option></select></label>
+                <label class="demo-field"><span>CORES</span><small>CPU cores.</small><select id="win-cores"><option>4</option><option>6</option><option>8</option></select></label>
+                <label class="demo-field"><span>MEMORY_GB</span><small>Memory in GB.</small><select id="win-memory"><option>4</option><option>6</option><option>8</option><option>10</option><option>12</option></select></label>
+                <label class="demo-field"><span>TEMPLATE_OS</span><small>Tagged Windows Server template.</small><select id="win-template"><option>2022</option><option>2025</option></select></label>
+                <label class="demo-field"><span>STORAGE</span><small>Changing storage updates both disk menus.</small><select id="win-storage"><option value="NFS">NFS, shared storage</option><option value="NVMe">NVMe, node-local and faster</option></select></label>
+                <label class="demo-field"><span>DISK_GB</span><small id="win-disk-help">NFS OS disk choices. Maximum 2000 GB.</small><select id="win-disk"></select></label>
+                <label class="demo-field"><span>DATA_DISK_GB</span><small id="win-data-help">Optional second disk. NFS maximum 2000 GB.</small><select id="win-data-disk"></select></label>
+              </div>
+              <fieldset class="demo-options"><legend>TOOLS</legend><p>Optional user tools installed through the allowlist.</p><div class="check-grid" id="win-tools">
+                <label><input type="checkbox" value="putty"> putty</label><label><input type="checkbox" value="notepadplusplus"> notepad++</label><label><input type="checkbox" value="7zip" checked> 7zip</label><label><input type="checkbox" value="googlechrome"> chrome</label><label><input type="checkbox" value="firefox"> firefox</label><label><input type="checkbox" value="git" checked> git</label><label><input type="checkbox" value="vscode"> vscode</label><label><input type="checkbox" value="wireshark"> wireshark</label><label><input type="checkbox" value="winscp"> winscp</label><label><input type="checkbox" value="sysinternals"> sysinternals</label><label><input type="checkbox" value="greenshot"> greenshot</label><label><input type="checkbox" value="powershell-core"> PowerShell</label>
+              </div></fieldset>
+              <fieldset class="demo-options"><legend>WINDOWS FEATURES</legend><p>Optional Windows roles and features.</p><div class="check-grid" id="win-features">
+                <label><input type="checkbox" value="IIS Web Server" checked> IIS Web Server</label><label><input type="checkbox" value="DNS Server"> DNS Server</label><label><input type="checkbox" value="DHCP Server"> DHCP Server</label><label><input type="checkbox" value="Active Directory Domain Services"> AD Domain Services</label><label><input type="checkbox" value="RSAT AD Tools"> RSAT AD Tools</label><label><input type="checkbox" value="Failover Clustering"> Failover Clustering</label><label><input type="checkbox" value="Hyper-V"> Hyper-V</label><label><input type="checkbox" value="SNMP Service"> SNMP Service</label><label><input type="checkbox" value="Telnet Client"> Telnet Client</label><label><input type="checkbox" value=".NET Framework 3.5"> .NET Framework 3.5</label>
+              </div></fieldset>
+              <label class="nested-row"><input type="checkbox" id="win-nested"><span><strong>NESTED_VIRT</strong><small>Required when Hyper-V is selected. Leave it off once to see the validation fail.</small></span></label>
+              <div class="build-row"><button type="submit" class="demo-button">Build</button><span>Demo only. No address, VM, credential, or DNS record is created.</span></div>
+            </form>
+            <aside class="run-panel" aria-live="polite">
+            <div class="run-head"><span><small>Console output</small><strong id="win-run-title">Waiting for a build</strong></span><span class="run-status idle" id="win-status">idle</span></div>
+              <div class="console" id="win-console" role="log"><p class="console-muted">Choose parameters and select Build. The demo validates the request before it simulates provisioning.</p></div>
+              <div class="email-gate is-hidden" id="win-email">
+                <div class="email-chrome"><span>Inbox</span><strong>Jenkins</strong><time>just now</time></div>
+                <div class="email-body"><span>Approval required</span><h4 id="email-title">Provision app-server-01</h4><p>Terraform finished planning this Windows Server request. Jenkins is waiting for an operator decision.</p><dl id="email-details"></dl><button type="button" class="demo-button" id="open-approval">Open Jenkins approval</button></div>
+              </div>
+              <div class="approval-gate is-hidden" id="win-approval"><span>Operator approval required</span><strong>Apply the saved Terraform plan?</strong><p>The plan requests one new VM using the parameters shown in the email.</p><div><button type="button" class="demo-button" id="approve-build">Approve and apply</button><button type="button" class="demo-button secondary" id="abort-build">Abort</button></div></div>
+              <button type="button" class="demo-button secondary reset-button is-hidden" id="reset-windows">Reset demo</button>
+            </aside>
+          </div>
+        </div>
+        <p class="demo-note">Change storage from NFS to NVMe. Both disk menus update, and the console reports the active limit when the build starts.</p>
+        <div class="explain-grid">
+          <div><h3>Conditional disk work</h3><p>The operating-system disk moves only for node-local storage. A second disk is created only when the request includes one.</p></div>
+          <div><h3>Template and first boot</h3><p>The pipeline resolves a template by tags. Terraform clones it, and a first-boot script brings up WinRM over HTTPS.</p></div>
+          <div><h3>Operating-system configuration</h3><p>Ansible rotates the password, joins Active Directory, installs monitoring, configures time and firewall rules, enables Duo for remote desktop, and installs the selected tools and roles.</p></div>
+          <div><h3>Credentials during the run</h3><p>Vault stores the per-host administrator password and monitoring key. The job retrieves each value only for the stage that needs it.</p></div>
+        </div>
       </section>
 
       <section class="block" id="linux">
         <h2>Linux uses the same backbone with fewer choices</h2>
-        <figure class="shot">
-          <img src="img/jenkins-form.png" alt="Jenkins Linux provisioning form with hostname, role, CPU, and memory choices." width="1055" height="615" loading="lazy">
-          <figcaption>The Jenkins Linux request form. It asks for the facts needed to size and place the machine, then leaves configuration to the versioned playbook. Captured 2026-08-23.</figcaption>
-        </figure>
-        <p>Linux uses a shared cloud image, so it does not need the Windows template-resolution, WinRM, password-generation, or disk-movement stages. A configuration profile can add a CI runner after the base operating system is ready.</p>
-        <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM and cloud-init sets the initial network and SSH access. Ansible waits for SSH, applies the base configuration, and installs the per-host monitoring key. The DNS and host-manifest stages are the same end of the story as Windows.</p>
-        <p>Jenkins is the coordinator in both versions. It renders parameters, starts an ephemeral provisioner pod in Kubernetes, checks gates, pauses for approval, keeps the stage log, and sends the result. It does not allocate an address, create a VM, configure an operating system, or invent credentials by itself. The systems below still own those operations.</p>
+        <p>The Linux path uses a fixed Rocky Linux 9 cloud image. It skips the Windows template-resolution, WinRM, password-generation, and disk-movement stages. A configuration profile can add a CI runner after the base operating system is ready.</p>
+        <div class="demo-window compact-demo" id="linux-demo">
+          <div class="demo-toolbar"><span class="jenkins-mark" aria-hidden="true">J</span><span><small>Jenkins</small><strong>Pipeline [VM] Provision Linux</strong></span><span class="demo-tag">Interactive demo</span></div>
+          <div class="compact-demo-grid">
+            <form class="demo-form" id="linux-form">
+              <div class="form-grid">
+                <label class="demo-field"><span>VM_NAME</span><small>Hostname for the new Linux VM.</small><input id="linux-name" value="runner-01" required></label>
+                <label class="demo-field"><span>ROLE</span><small>Selects the target network.</small><select id="linux-role"><option>infra</option><option>control</option><option selected>ci</option><option>kubernetes</option><option>identity</option><option>clients</option></select></label>
+                <label class="demo-field"><span>CORES</span><small>CPU cores.</small><select id="linux-cores"><option>1</option><option selected>2</option><option>4</option><option>6</option><option>8</option></select></label>
+                <label class="demo-field"><span>MEMORY_GB</span><small>Memory feeds the placement check.</small><select id="linux-memory"><option>1</option><option selected>2</option><option>4</option><option>6</option><option>8</option><option>12</option></select></label>
+                <label class="demo-field"><span>DISK_GB</span><small>Rocky Linux 9 expands to this size.</small><select id="linux-disk"><option>20</option><option>30</option><option>40</option><option>60</option><option>80</option><option>100</option><option>160</option><option>200</option></select></label>
+                <label class="demo-field"><span>CONFIGURATION</span><small>Optional versioned profile.</small><select id="linux-profile"><option value="base">Base server</option><option value="ci-runner">CI runner</option></select></label>
+              </div>
+              <div class="build-row"><button type="submit" class="demo-button">Build</button><span>No address or VM is created.</span></div>
+            </form>
+            <aside class="compact-console" aria-live="polite"><header><span>Console output</span><strong class="run-status idle" id="linux-status">idle</strong></header><div id="linux-console" role="log"><p class="console-muted">Select Build to run the browser-only validation.</p></div></aside>
+          </div>
+        </div>
+        <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM, cloud-init sets the initial network and SSH access, and Ansible applies the versioned base configuration.</p>
+        <p>Jenkins coordinates both operating-system paths. It renders parameters, starts the provisioner pod, checks gates, pauses for approval, keeps the stage log, and sends the result. The address, infrastructure state, VM, operating system, and credentials remain with their owning systems.</p>
+      </section>
+
+      <section class="block" id="inherited-services">
+        <h2>A new server inherits more than a virtual machine</h2>
+        <p>The build installs controls that belong on the guest. Hypervisor and estate jobs continue after the handoff. Duo applies to Windows remote desktop, and backup coverage starts at the hypervisor without an agent inside the guest.</p>
+        <div class="table-wrap service-table"><table>
+          <thead><tr><th>Capability</th><th>Linux</th><th>Windows</th><th>When it applies</th></tr></thead>
+          <tbody>
+            <tr><td>Identity and access</td><td>Managed SSH access and the Linux firewall baseline.</td><td>Active Directory membership, a unique administrator password, and Duo MFA for remote desktop.</td><td><span class="service-timing">During the build</span></td></tr>
+            <tr><td>Monitoring</td><td>Zabbix agent with a unique encrypted identity.</td><td>Zabbix agent with a unique encrypted identity.</td><td><span class="service-timing">During the build</span></td></tr>
+            <tr><td>Host baseline</td><td>Firewall rules, time sync, and Alloy log forwarding.</td><td>Firewall rules and domain time sync.</td><td><span class="service-timing">During the build</span></td></tr>
+            <tr><td>Backups</td><td>Nightly whole-VM backup and daily freshness reporting. A separate weekly restore test rotates through critical guests.</td><td>Nightly whole-VM backup and daily freshness reporting. A separate weekly restore test rotates through critical guests.</td><td><span class="service-timing">Inherited from Proxmox</span></td></tr>
+            <tr><td>Patching</td><td>Daily security-only updates and the controlled weekly patch path apply to managed inventory.</td><td>Weekly patch plans and approval-gated rolling updates apply to managed inventory.</td><td><span class="service-timing">After inventory admission</span></td></tr>
+            <tr><td>Security checks</td><td>Provisioning code and running container images have scheduled scans. Wazuh host enrollment is a separate path.</td><td>A weekly missing-update scan covers managed Windows inventory. Credentialed host CVE scanning is not yet live.</td><td><span class="service-timing">Scheduled, scope-dependent</span></td></tr>
+            <tr><td>Durable recovery data</td><td>The address, Terraform state, placement, sizing, and host manifest remain available for reruns.</td><td>The same machine record is kept, and the per-host administrator secret is retained for backup restores.</td><td><span class="service-timing">At successful handoff</span></td></tr>
+          </tbody>
+        </table></div>
+        <aside class="coverage-note"><strong>One current enrollment boundary</strong><p>Provisioning writes the host manifest, but patch and Windows update-scan jobs still select hosts from committed Ansible inventory. A new machine must be added to the correct managed group before those jobs cover it. Wazuh host enrollment is also separate today.</p></aside>
       </section>
 
       <section class="block" id="phases">
@@ -292,7 +365,7 @@
             <div class="phase"><span class="num">Phase 2</span><strong>Prove safe</strong><small>Check network support and ask every inventory whether the name already exists.</small></div>
             <div class="phase"><span class="num">Phase 3</span><strong>Reserve and plan</strong><small>Allocate the address, select capacity, choose a template when needed, and build the Terraform plan.</small></div>
             <div class="phase"><span class="num">Phase 4</span><strong>Approve and create</strong><small>Review the change, apply the saved plan, create the VM, and mark the creation boundary.</small></div>
-            <div class="phase"><span class="num">Phase 5</span><strong>Configure and connect</strong><small>Register monitoring, configure the guest, join supporting services, and publish DNS.</small></div>
+            <div class="phase"><span class="num">Phase 5</span><strong>Configure and connect</strong><small>Register monitoring, configure the guest, join supporting services, and write internal DNS.</small></div>
             <div class="phase"><span class="num">Phase 6</span><strong>Record and recover</strong><small>Commit the host manifest, report the result, and retain enough state for a safe rerun.</small></div>
           </div>
           <p class="phase-explain">Cyan marks the ordered automated path. Amber arrows show the handoff from one phase to the next. Each phase ends with enough recorded state for the next phase to know what happened.</p>
@@ -313,31 +386,64 @@
 
       <section class="block" id="backstage">
         <h2>Backstage provides the same workflow without Jenkins</h2>
-        <p>Backstage is an internal developer portal. In this project it does not provision a machine directly. Its software template collects the request, validates the form shape, writes a small declarative request file, and opens a pull request. After that handoff, Gitea Actions performs the checks and the apply. A measured run on 2026-08-23 completed in 5 minutes 21 seconds without calling Jenkins or using a Jenkins agent.</p>
-        <figure class="shot">
-          <img src="img/portal-templates.png" alt="Backstage template gallery with the server provisioning template." width="957" height="355" loading="lazy">
-          <figcaption>The Backstage template gallery. Selecting “Provision a new server” starts a request workflow, not an infrastructure change. Captured 2026-08-23.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/portal-form.png" alt="Backstage server request form with operating system, hostname, role, and sizing fields." width="1168" height="535" loading="lazy">
-          <figcaption>The portal asks for the same contract the pipeline understands. Its choices are tested against the request schema and the Jenkins parameters so the two front doors cannot quietly drift apart. Captured 2026-08-23.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/portal-review.png" alt="Backstage review screen showing the proposed server request before submission." width="1168" height="535" loading="lazy">
-          <figcaption>The Backstage review step confirms the request before opening a pull request. Submitting here still creates no address, state, credential, or VM. Captured 2026-08-23.</figcaption>
-        </figure>
+        <div class="story-split">
+          <div><h3>What the portal handles</h3><p>Backstage collects the server request and checks the form shape. The template then writes a small declarative request file.</p></div>
+          <div><h3>Where the portal stops</h3><p>Backstage opens a pull request and hands off. Gitea Actions performs the infrastructure checks and apply after review.</p></div>
+        </div>
 
-        <h3>The pull request is the first half of the control path</h3>
-        <p>The request file is the contract between the portal and the automation. A Gitea workflow validates it against the schema, checks that the role maps to a supported target, and runs the same fail-closed collision checker used by Jenkins. It then runs Terraform against an empty local backend with placeholder placement values. That plan checks configuration and sizing without reading shared state or reserving an address.</p>
-        <p>The check job authenticates to Vault with a portal-specific AppRole. Its policy can read the credentials needed for validation, but the pre-merge job does not write infrastructure or lifecycle records. A reviewer gets a pull request containing the requested machine and the four check results. Merging that request is the approval.</p>
+        <div class="backstage-window" id="backstage-demo">
+          <div class="backstage-topbar"><strong><span aria-hidden="true">◇</span> backstage</strong><nav><span>Home</span><span class="selected">Create</span><span>Catalog</span><span>Docs</span></nav><span class="demo-tag">Interactive demo</span></div>
+          <div class="backstage-screen" data-backstage-screen="gallery">
+            <div class="screen-heading"><span>Software templates</span><h3>Create a new component</h3><p>Choose a template to start a request.</p></div>
+            <button class="template-card" type="button" data-backstage-next="form"><span class="template-icon" aria-hidden="true">VM</span><span><strong>Provision a new server</strong><small>Request a Linux or Windows virtual machine through the reviewed provisioning workflow.</small><em>Start template</em></span></button>
+          </div>
+          <form class="backstage-screen is-hidden" data-backstage-screen="form" id="backstage-form">
+            <div class="backstage-steps"><span class="active">1</span><i></i><span>2</span><i></i><span>3</span></div>
+            <div class="screen-heading"><span>Step 1 of 3</span><h3>Describe the server</h3><p>The apply workflow validates these values again after review.</p></div>
+            <div class="portal-fields">
+              <label class="demo-field"><span>Operating system</span><small>Linux uses the fixed Rocky Linux 9 image.</small><select id="portal-os"><option value="windows">Windows Server</option><option value="linux">Linux, Rocky Linux 9</option></select></label>
+              <label class="demo-field"><span>Hostname</span><small>Short name without a domain.</small><input id="portal-name" value="web-portal-01" required></label>
+              <label class="demo-field"><span>Role</span><small>Selects the supported target network.</small><select id="portal-role"><option>infra</option><option>control</option><option>ci</option><option>kubernetes</option><option>identity</option><option>clients</option></select></label>
+              <label class="demo-field"><span>CPU cores</span><small>Choices follow the operating system.</small><select id="portal-cores"></select></label>
+              <label class="demo-field"><span>Memory</span><small>Choices follow the operating system.</small><select id="portal-memory"></select></label>
+              <label class="demo-field" id="portal-storage-field"><span>Storage</span><small>Changing this choice updates the root disk.</small><select id="portal-storage"><option value="NFS">NFS shared storage</option><option value="NVMe">NVMe node-local storage</option></select></label>
+              <label class="demo-field"><span>Root disk</span><small id="portal-disk-help">NFS choices. Maximum 2000 GB.</small><select id="portal-disk"></select></label>
+            </div>
+            <div class="portal-actions"><button type="button" class="demo-button secondary" data-backstage-next="gallery">Back</button><button type="submit" class="demo-button">Review request</button></div>
+          </form>
+          <div class="backstage-screen review-screen is-hidden" data-backstage-screen="review">
+            <div class="backstage-steps"><span class="done">✓</span><i class="done"></i><span class="active">2</span><i></i><span>3</span></div>
+            <div class="screen-heading"><span>Step 2 of 3</span><h3>Review the request</h3><p>Submitting opens a pull request. It does not create infrastructure.</p></div>
+            <dl class="review-grid" id="portal-review"></dl>
+            <div class="request-preview"><span id="request-file">server-request.yaml</span><code id="request-code"></code></div>
+            <div class="portal-actions"><button type="button" class="demo-button secondary" data-backstage-next="form">Back</button><button type="button" class="demo-button" data-backstage-next="submitted">Create request</button></div>
+          </div>
+          <div class="backstage-screen submitted-screen is-hidden" data-backstage-screen="submitted">
+            <div class="success-ring">✓</div><span>Step 3 of 3</span><h3>Request opened</h3><p id="submitted-copy"></p>
+            <div class="submitted-checks"><span>✓ Request schema</span><span>✓ Target support</span><span>✓ Collision check</span><span>✓ Terraform configuration</span></div>
+            <button type="button" class="demo-button secondary" data-backstage-next="gallery">Start again</button>
+          </div>
+        </div>
+        <p class="demo-note">Start the template, change the request, review it, and open the simulated pull request.</p>
 
-        <h3>The merge is the second half</h3>
-        <p>A separate Gitea Actions workflow notices the newly added request on the main branch. It installs the provisioning toolchain in the runner and passes the file to the portal apply driver. That driver revalidates the request, repeats the target and collision checks, allocates the address, selects the node, runs Terraform, registers Zabbix, configures the guest with Ansible, registers DNS over WinRM, and writes the host manifest.</p>
-        <p>The driver calls the same scripts and playbooks as the Jenkinsfiles. The orchestration code is different because Gitea Actions has no Jenkins stages or input step, but address allocation, collision detection, placement, infrastructure definition, guest configuration, and registration remain shared. A manual Actions dispatch can rerun a named request when a previous apply needs to continue.</p>
-        <figure class="shot">
-          <img src="img/apply-run.png" alt="Successful Gitea Actions apply workflow showing request detection, toolchain installation, provisioning, and manifest commit." width="963" height="353" loading="lazy">
-          <figcaption>The merge-triggered apply in Gitea Actions. This measured run completed in 5 minutes 21 seconds on 2026-08-23; the provisioning step used 4 minutes 27 seconds. Jenkins was not involved.</figcaption>
-        </figure>
+        <ol class="copy-steps">
+          <li><span>01</span><div><h3>The request file becomes the contract</h3><p>The file records the operating system, hostname, role, size, storage, and optional configuration selected in the portal.</p></div></li>
+          <li><span>02</span><div><h3>The pull request runs the safety checks</h3><p>Gitea Actions validates the schema and target, then runs the same fail-closed collision checker used by Jenkins. A configuration-only Terraform plan checks the request without reserving an address.</p></div></li>
+          <li><span>03</span><div><h3>The merge records approval</h3><p>The reviewer sees the requested machine and each check result in one pull request. Merging it starts the separate apply workflow.</p></div></li>
+        </ol>
+
+        <h3>The merge starts the apply workflow</h3>
+        <p>The apply driver revalidates the request, repeats the safety checks, allocates the address, selects the node, runs Terraform, registers monitoring, configures the guest with Ansible, and writes the host manifest. A manual Actions dispatch can continue a request after a partial run.</p>
+        <div class="actions-window" id="actions-demo">
+          <aside class="actions-sidebar"><span class="gitea-mark" aria-hidden="true">G</span><strong>Gitea Actions</strong><small>server-provisioning</small><nav><b>Actions</b><span>Pull requests</span><span>Code</span><span>Packages</span></nav></aside>
+            <div class="actions-main">
+            <header><span><small>Workflow run</small><strong>Apply approved server requests</strong><em>main · simulated request</em></span><div><button type="button" class="demo-button secondary" id="actions-pause">Pause</button><button type="button" class="demo-button secondary" id="actions-restart">Restart</button></div></header>
+            <div class="run-summary"><span id="actions-state">In progress</span><div class="progress-track"><i id="actions-progress"></i></div><em id="actions-percent">0%</em></div>
+            <div class="action-steps" id="action-steps"></div>
+            <div class="actions-log"><span>Provision request</span><code id="actions-log">Running: Detect changed requests</code></div>
+          </div>
+        </div>
+        <p class="demo-note">The simulated run advances on its own and starts again after it completes. Pause or restart it to inspect an individual stage.</p>
 
         <div class="compare">
           <article class="lane">
@@ -464,5 +570,6 @@
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </div>
+  <script src="demo.js"></script>
 </body>
 </html>
