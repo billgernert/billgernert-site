@@ -211,6 +211,7 @@
         <a href="#jenkins">The engine</a>
         <a href="#flow">How it fits together</a>
         <a href="#pattern">The five steps</a>
+        <a href="#developer-platform">Developer platform</a>
         <a href="#provisioning">Provisioning</a>
         <a href="#self-healing">Self-healing</a>
         <a href="#identity">Identity</a>
@@ -513,6 +514,45 @@
         <div class="links">
           <a href="/projects/server-provisioning/">The provisioning pipeline in full &#8594;</a>
           <a href="/capabilities/pipelines">Pipelines &#8594;</a>
+        </div>
+      </section>
+
+      <section class="block" id="developer-platform">
+        <h2>A paved road for application teams</h2>
+        <p>Most of the platform began as automation for operating the lab. The next layer treats an
+          application team as the customer. A developer should be able to start from a supported
+          service shape, see a proposed change in an isolated environment, and understand the
+          reliability target after the service is running.</p>
+
+        <h3>The golden path works as a scaffolder</h3>
+        <p>The <code>new-service</code> command renders the same Python service skeleton used by the
+          software catalog. The result includes an importable application, a digest-pinned container
+          base, CI scoped to that service, documentation, dependency updates, catalog metadata, and a
+          script that refers to a secrets path without writing the secret into source control. It can
+          create a branch and open a review request, or render locally for inspection. Repository
+          creation and an automatic production deployment are still outside this command, so this is
+          the service-entry part of the paved road rather than a one-click production claim.</p>
+
+        <h3>Preview environments are designed and held at the apply gate</h3>
+        <p>The committed Argo CD design watches review requests carrying an opt-in label and gives each
+          one its own namespace, route, quota, and limit range. An AppProject confines the controller
+          to preview namespaces, and a time-to-live cleanup job provides a second teardown path if
+          normal pruning misses one. The control plane remains on manual sync and has not completed the
+          live create, isolate, and teardown acceptance run. It is source-controlled work, not yet a
+          live developer service.</p>
+
+        <h3>Platform SLOs have definitions but no live error budgets yet</h3>
+        <p>Pyrra definitions cover CI job success, application restore success, source-control
+          availability, and the monitoring API. Pyrra would turn those definitions into Prometheus
+          recording rules and multi-window burn-rate alerts, then show remaining error budget in its
+          own interface. The definitions and metric adapters are committed, but the Pyrra layer has
+          not been applied. Until a controlled failure produces a burn alert and the budget view is
+          checked live, these are staged objectives rather than operating SLOs.</p>
+
+        <div class="links">
+          <a href="/capabilities/argo-cd">Argo CD &#8594;</a>
+          <a href="/capabilities/prometheus">Prometheus &#8594;</a>
+          <a href="/capabilities/grafana">Grafana &#8594;</a>
         </div>
       </section>
 
