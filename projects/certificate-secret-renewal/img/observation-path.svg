@@ -29,8 +29,7 @@
   <text class="footerText" x="65" y="770">Exporters observe live TLS, cert-manager, Microsoft Graph, and Vault without carrying secret values into metrics.</text>
   <text class="footerText" x="65" y="796">Prometheus stores and evaluates the measurements. Grafana presents full detail privately and scrubbed labels publicly.</text>
   <line x1="65" y1="824" x2="97" y2="824" stroke="#00d4ff" stroke-width="4"/><text class="legendText" x="112" y="828">Cyan. Metric collection and storage path.</text>
-  <line x1="65" y1="846" x2="97" y2="846" stroke="#00ff96" stroke-width="4"/><text class="legendText" x="112" y="850">Green. Public-safe projection after identifier removal.</text>
+  <line x1="65" y1="846" x2="97" y2="846" stroke="#00ff96" stroke-width="4"/><text class="legendText" x="112" y="850">Green. Public projection after identifier removal.</text>
   <rect x="65" y="860" width="32" height="16" rx="5" fill="#131d2d" stroke="#00d4ff"/><text class="legendText" x="112" y="872">Rounded box. Source, exporter, time-series store, or dashboard.</text>
   <line x1="65" y1="892" x2="97" y2="892" stroke="#00d4ff" stroke-width="3" marker-end="url(#a)"/><text class="legendText" x="112" y="896">Arrow. Direction of metric collection.</text>
 </svg>
-

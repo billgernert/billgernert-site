@@ -227,6 +227,7 @@
     .stat-explanation p { margin: 0; color: var(--muted); font-size: .94rem; }
     .panel-number { color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
     .failure { padding: 1.2rem; border: 1px solid rgba(255,92,122,.36); background: rgba(43,23,32,.38); }
+    .failure + .failure { margin-top: 1rem; }
     .failure h3 { color: #eef4fb; }
     .decision { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--warn); background: rgba(255,209,102,.07); }
     code { white-space: normal; overflow-wrap: anywhere; }
@@ -271,7 +272,7 @@
     <header class="skill-head">
       <span class="badge">Technical project walkthrough</span>
       <h1>How I automated certificate renewal and secret rotation</h1>
-      <p class="descriptor lede">Every public certificate renews itself and reaches every consumer that serves it. Every registered secret rotates on a 60-day cycle with a seven-day overlap. A real login proves each change, nobody touches any of it, and the dashboard below shows the current state.</p>
+      <p class="descriptor lede">The managed public certificate renews itself and reaches every registered consumer that serves it. Credential paths that have completed their canary rotate on a 60-day cycle with a seven-day overlap, and a real login or API request proves each change. Canary, attended, product-managed, and newly discovered paths stay visible instead of being called automatic before the evidence exists.</p>
       <p class="descriptor lede">This started with a wildcard certificate that could renew in Kubernetes but still had to reach web servers and appliances outside the cluster. I built the distribution and verification path first. I then used the same sequence for credentials: create a replacement, store it in Vault, update the application that uses it, test the application, and keep the previous credential long enough to recover from a bad change.</p>
       <p class="source-note">Built from the cert-manager configuration, Jenkins certificate synchronization pipeline, credential rotation registries, Vault lifecycle policy, and Prometheus exporters in the repository.</p>
       <div class="links story-code-action"><a href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a></div>
@@ -281,8 +282,8 @@
       <section class="block" id="glance">
         <h2>At a glance</h2>
         <dl class="at-a-glance">
-          <div><dt>Outcome</dt><dd>Public certificate copies renew ahead of expiry, and registered secrets rotate on a 60-day cycle with a seven-day recovery overlap.</dd></div>
-          <div><dt>Operating scope</dt><dd>The certificate source fans out to Kubernetes, servers, and appliances. Credential workers update Vault and the applications that consume each registered value.</dd></div>
+          <div><dt>Outcome</dt><dd>The shared public certificate renews ahead of expiry and reaches every registered consumer. Proven credential paths rotate on a 60-day cycle with a seven-day recovery overlap.</dd></div>
+          <div><dt>Operating scope</dt><dd>The certificate source fans out to Kubernetes, servers, and appliances. Credential workers update Vault and the applications registered for unattended activation; explicit exceptions remain on the same board.</dd></div>
           <div><dt>Evidence</dt><dd>The live dashboard measures source and served expiry, rotation state, and coverage. Fresh TLS handshakes and real authentication requests test what consumers use.</dd></div>
           <div><dt>Primary lesson</dt><dd>Issuance or provider success is supporting evidence. The job verifies the live consumer before it retires the working predecessor.</dd></div>
         </dl>
@@ -305,6 +306,7 @@
           <div><dt>Let’s Encrypt and Cloudflare</dt><dd>Let’s Encrypt signs the public certificate. Cloudflare publishes the temporary DNS record that shows the requester can change DNS for the requested name.</dd></div>
           <div><dt>cert-manager</dt><dd>This Kubernetes controller watches the desired Certificate, handles Let’s Encrypt validation and renewal, and writes <code>tls.crt</code> and <code>tls.key</code> into one source Secret. It does not distribute that pair outside its namespace.</dd></div>
           <div><dt>Jenkins</dt><dd>The scheduled job validates the source pair, updates registered copies, runs the reload each service requires, checks the certificate served on the network, and removes temporary files.</dd></div>
+          <div><dt>Console discovery</dt><dd>This Kubernetes workload compares Cloudflare DNS and Kubernetes Ingress names with the declared console inventory every five minutes. It monitors a new trusted endpoint immediately but cannot change that endpoint or call its renewal automatic.</dd></div>
           <div><dt>Vault</dt><dd>The secrets manager stores active values and lifecycle state. Each worker uses an AppRole, a policy-limited machine login, so it can reach its own records without broad access.</dd></div>
           <div><dt>Active Directory Certificate Services</dt><dd>AD CS issues internal certificates. Windows renews from domain templates; Linux submits an approved request and trusts the same enterprise root.</dd></div>
           <div><dt>Prometheus and Grafana</dt><dd>Prometheus collects source, live TLS, Entra, and Vault metadata. Grafana turns those measurements into the operator view and the scrubbed public dashboard.</dd></div>
@@ -328,8 +330,8 @@
 
         <article class="panel-story" data-public-noc>
           <div class="panel-copy">
-            <div><p class="panel-number">Live summary panels</p><h3>Start with the four summary signals</h3><p>These four panels answer two questions before I read a table: is a deadline close, and can I trust the coverage underneath the board? A clean deadline count does not cancel a coverage failure.</p></div>
-            <aside class="read-note"><p class="question">What should stop the scan?</p><p>Any nonzero overdue or unclassified count needs a row-level explanation. A sudden drop in the reporting count also deserves attention because missing inventory can make the urgent counts look better than they are.</p></aside>
+            <div><p class="panel-number">Live summary panels</p><h3>Start with the five summary signals</h3><p>These five panels answer two questions before I read a table: is a deadline close, and can I trust the declared and newly discovered coverage underneath the board? A clean deadline count does not cancel a coverage failure.</p></div>
+            <aside class="read-note"><p class="question">What should stop the scan?</p><p>Any new-console, overdue, or unclassified count needs a row-level explanation. A sudden drop in the declared reporting count also deserves attention because missing inventory can make the urgent counts look better than they are.</p></aside>
           </div>
           <div class="dashboard-shell">
             <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the summary panels.</p></div>
@@ -338,8 +340,9 @@
             <noscript><p>The live summary panels require JavaScript.</p></noscript>
           </div>
           <div class="stat-explanations">
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Portal certificates reporting</h4><p>This is the coverage baseline: the number of public portal certificate records reaching the scrubbed series. A drop matters even when no certificate is near expiry because the other counts can only describe records that arrived.</p></article>
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Declared portal certificates reporting</h4><p>This is the coverage baseline for consoles already in the reviewed inventory. A drop matters even when no certificate is near expiry because the other counts can only describe records that arrived.</p></article>
             <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Portal certificates inside 30 days</h4><p>This is the immediate renewal queue. Zero means no reported portal certificate has crossed the 30-day window. I still compare the source and deployed copies below because both can be valid and carry different expiry dates.</p></article>
+            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>New consoles needing onboarding</h4><p>This is the number of trusted HTTPS endpoints found in DNS or Kubernetes but absent from the declared lifecycle inventory. The public metric carries only the count. The private table keeps the endpoint, first-seen time, served expiry, and discovery source needed for enrollment.</p></article>
             <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Entra secret rotations overdue</h4><p>This counts Entra application credentials that passed the registered rotation point. The application table shows who owns the item and whether its replacement path is automatic, canary, attended, or product-managed.</p></article>
             <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Unclassified Vault records</h4><p>This is a coverage failure. The lifecycle exporter found a record without the classification needed to select a rotation path. The gap stays visible until the registry describes its owner, consumer, and change method.</p></article>
           </div>
@@ -371,15 +374,15 @@
 
         <article class="panel-story" data-public-noc>
           <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Other portal certificates</h3><p>This table covers certificates that do not belong to the shared wildcard deployment. Webmail, appliances, and internal-CA portals can have different issuers, renewal tools, and reload requirements, so they stay separate from the source-and-copy comparison.</p><p>The expiry column still comes from what the endpoint serves. The rotation process column explains whether Windows enrollment, a Linux request, a product API, or an attended step owns the next change.</p></div>
-            <aside class="read-note"><p class="question">Why keep this separate?</p><p>A separate issuer is expected here. Combining these rows with the wildcard would hide which trust path and renewal mechanism applies when one portal approaches expiry.</p></aside>
+            <div><p class="panel-number">Live Grafana panel</p><h3>Other managed certificates</h3><p>This table covers certificates that do not belong to the shared wildcard deployment. Mail obtains its own short-lived Let’s Encrypt certificate through ACME. Vault uses the internal certificate authority with attended renewal. The two directory services use automatically deployed internal certificates.</p><p>The expiry column still comes from what the endpoint serves. Different horizons are expected here because the issuer, certificate lifetime, renewal tool, and service reload are different for each path.</p></div>
+            <aside class="read-note"><p class="question">Why keep this separate?</p><p>Combining these rows with the wildcard would hide which trust path owns the next renewal. It would also make a long-lived internal certificate look suspicious beside a deliberately short-lived public certificate.</p></aside>
           </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the other portal certificates panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-portals" data-live-frame data-src="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" title="Live other portal certificates panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live portal certificate panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live portal certificate panel requires JavaScript.</p></noscript></div>
+          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the other managed certificates panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-portals" data-live-frame data-src="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" title="Live other managed certificates panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live managed certificate panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live managed certificate panel requires JavaScript.</p></noscript></div>
         </article>
 
         <article class="panel-story" data-public-noc>
           <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Certificate days remaining</h3><p>The tables show the current read. This chart adds the last 30 days so I can see whether remaining lifetime declines normally, jumps when a certificate renews, or splits when one served copy stops following its source.</p><p>The legend includes the latest and minimum value for each public label. A renewal creates an upward step. A line that keeps falling after the source jumps points back to the deployment table.</p></div>
+            <div><p class="panel-number">Live Grafana panel</p><h3>Certificate days remaining</h3><p>The tables show the current read. This chart adds the last 30 days for the declared web consoles and the two directory-service certificates. It shows whether remaining lifetime declines normally, jumps when a certificate renews, or splits when one served copy stops following its source.</p><p>The legend includes the latest and minimum value for each public label. A renewal creates an upward step. A wildcard line that keeps falling after the source jumps points back to the deployment table. An internal certificate follows its own authority and should not jump with the wildcard.</p></div>
             <aside class="read-note"><p class="question">What is normal?</p><p>A steady decline between renewals is expected. The useful evidence is the renewal jump and whether every consumer lineage follows it within the allowed deployment window.</p></aside>
           </div>
           <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the certificate trend panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-trend" data-live-frame data-src="https://status.billgernert.com/public-dashboards/c085e2a61f4655c4f50c67bd63f5ab9d" title="Live certificate days remaining panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live certificate trend panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live certificate trend panel requires JavaScript.</p></noscript></div>
@@ -418,6 +421,12 @@
         </tbody></table></div>
         <p>Atomic replacement swaps complete files, so a service cannot read a half-written pair. A forced-command SSH key can run the certificate helper but cannot open a general shell.</p>
         <p>OPNsense stores certificates as Trust objects. Its API updates one object and restarts only the web interface.</p>
+
+        <h3>A new console starts as discovered, not managed</h3>
+        <p>Static inventory is reliable only when someone remembers to update it. I added a discovery workload that reads two places where a new console must appear: the public DNS inventory and Kubernetes Ingress objects. Every five minutes it removes names already covered by the reviewed probes, opens a normal trusted TLS connection to each remaining name, and records only endpoints whose hostname and certificate chain validate.</p>
+        <p>A passing handshake creates monitoring, not renewal authority. The private dashboard marks the endpoint <strong>New</strong>, records when it first appeared and when its served certificate expires, and labels the rotation process <strong>Needs onboarding</strong>. The public dashboard publishes only the number of waiting consoles, so the coverage gap is visible without publishing a hostname.</p>
+        <p>Enrollment is a reviewed repository change. It records the certificate issuer and source, the destination that receives the replacement, the reload or restart action, the outside TLS probe, and the rollback path. On the next discovery pass, the endpoint leaves the New queue and appears in the managed table whose renewal process now owns it.</p>
+        <div class="decision"><strong>Discovery rule:</strong> finding a trusted certificate means “watch this now.” It never means “change this service automatically.” The automatic label appears only after the complete delivery and validation contract is committed and proven.</div>
       </section>
 
       <section class="block" id="internal">
@@ -466,6 +475,7 @@
         <div class="table-wrap"><table><thead><tr><th>Question</th><th>Signal</th><th>Why it exists</th></tr></thead><tbody>
           <tr><td>What certificate is the service presenting?</td><td>Blackbox exporter TLS handshake expiry</td><td>Catches stale files, missed reloads, the wrong SNI certificate, and broken trust</td></tr>
           <tr><td>Did cert-manager issue a usable source?</td><td>Certificate readiness and expiration metrics</td><td>Separates an issuance failure from a fan-out failure</td></tr>
+          <tr><td>Did a new HTTPS console appear?</td><td>DNS and Kubernetes discovery followed by a trusted TLS handshake</td><td>Starts monitoring before an undeclared endpoint can silently age outside the managed inventory</td></tr>
           <tr><td>Which Entra credentials exist and when do they expire?</td><td>Read-only Microsoft Graph metadata exporter</td><td>Finds new, unmapped, overlapping, approaching, or overdue credentials without reading secret values</td></tr>
           <tr><td>Is every Vault record classified and on the promised path?</td><td>Metadata-only Vault lifecycle exporter</td><td>Turns new or unclassified records into visible gaps rather than silent inventory growth</td></tr>
           <tr><td>Did a rotation finish or stop in overlap?</td><td>Value-free rotation-state records</td><td>Shows active, overlap, pending, failed, and retirement timing without leaking the credential</td></tr>
@@ -477,6 +487,7 @@
         <p>Most of the time, no rotation is happening. The controllers and exporters watch. Jenkins wakes only when a schedule or an operator starts a run.</p>
         <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody>
           <tr><td>Continuously</td><td>cert-manager watches the Certificate; exporters refresh live TLS and metadata; Prometheus evaluates alerts.</td><td>Sources and consumers remain observable between changes.</td></tr>
+          <tr><td>Every five minutes</td><td>Console discovery compares DNS and Kubernetes Ingress with the declared probe inventory, then validates TLS for unknown names.</td><td>A trusted new console appears as Needs onboarding without granting the workload permission to change it.</td></tr>
           <tr><td>Monthly</td><td>Jenkins validates and deploys the wildcard.</td><td>Destinations either remain matched or receive the newer source.</td></tr>
           <tr><td>Daily</td><td>Credential workers evaluate due, pending, and retirement-ready entries.</td><td>An item that is not due causes no replacement.</td></tr>
           <tr><td>During overlap</td><td>The replacement is active and the predecessor remains available.</td><td>A failure leaves both credentials in place.</td></tr>
@@ -500,20 +511,38 @@
       <section class="block" id="broke">
         <h2>What broke</h2>
         <div class="failure">
-          <h3>Summary</h3>
+          <h3>The observer failed and made healthy services look down</h3>
+          <h4>Summary</h4>
           <p>A certificate-monitoring merge left two modules under the same YAML key. The blackbox exporter refused to start. Prometheus then lost the shared probe target, and the NOC made many healthy services look down.</p>
 
-          <h3>What made it confusing</h3>
+          <h4>What made it confusing</h4>
           <p>The failure was in the observation path, not in every application. The dashboard initially could not distinguish “the probes are unavailable” from “every service failed.” That distinction now matters in both the tests and the dashboard coverage signals.</p>
 
-          <h3>Root cause</h3>
+          <h4>Root cause</h4>
           <p>Each parent branch contained one valid module. The merge kept both definitions. The old YAML test used a parser that silently accepted the last duplicate key, so CI approved a configuration the exporter rejected.</p>
 
-          <h3>Recovery</h3>
+          <h4>Recovery</h4>
           <p>The two definitions were reconciled, dependent probes were checked, the generated ConfigMap revision changed, and the exporter rolled out. A direct probe and the Prometheus target then returned healthy.</p>
 
-          <h3>Prevention</h3>
+          <h4>Prevention</h4>
           <p>CI now performs strict duplicate-key validation. The dashboard also treats missing coverage as its own failure class, so a dead observer cannot masquerade as a fleet-wide outage.</p>
+        </div>
+        <div class="failure">
+          <h3>The private inventory was right while the public table was stale</h3>
+          <h4>Summary</h4>
+          <p>The private certificate inventory had the complete wildcard fan-out, but the public table showed only part of it. The missing rows made a correct deployment look incomplete.</p>
+
+          <h4>What made it confusing</h4>
+          <p>The Grafana dashboard synchronized successfully, so the visible layout looked current. Its public queries depended on separate Prometheus recording rules that had not been reconciled. Updating one half of the view did not update the data projection underneath it.</p>
+
+          <h4>Root cause</h4>
+          <p>The dashboard and its privacy-filtered recording rules had different deployment owners. The public rule set required an operator apply, while the dashboard followed the normal synchronization job.</p>
+
+          <h4>Recovery</h4>
+          <p>I reconciled the wildcard inventory, regenerated the public rules, and verified one source plus every registered consumer in the rendered table. I then placed the public projection under its own Argo CD application.</p>
+
+          <h4>Prevention</h4>
+          <p>Argo CD now continuously reconciles the public recording rules. Tests derive certificate coverage from the same declared probe inventory, so a new probe cannot pass without a lifecycle classification.</p>
         </div>
       </section>
 
