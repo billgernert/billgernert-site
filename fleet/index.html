@@ -273,7 +273,49 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Agent orchestration walkthrough</span><h1>How the repository coordinates an unattended multi-vendor agent fleet</h1><p class="descriptor lede">Written taskings enter isolated git worktrees. Build lanes implement the work, reviewer lanes using a different model provider judge those branches, deterministic checks decide whether the pull request is eligible, and a narrowly scoped merge executor performs the merge. Gitea holds the live pull-request facts; repository files and local ledgers preserve the rest of the operating record.</p><p class="descriptor lede">The Fleet is live in AutomationLab and deliberately exploratory. Its lane mix and dispatch controls continue to change as failures expose weak assumptions, particularly around starvation recovery and an external watcher. A worker can still re-read its assignment, repository policy, operator ruling, review, test result, and pull-request state without relying on a model to remember a conversation.</p><p class="source-note">Built from the orchestration charter, cycle prompt, tasking templates, launcher implementations, run ledger, fleet site specification, usage collector, merge gates, and dated dispatch incidents.</p><div class="links story-code-action"><a href="https://github.com/billgernert/fleet-control-plane">View the code &#8594;</a></div></header>
-<nav class="crumbs" aria-label="On this page"><a href="#glance">At a glance</a><span class="sep">/</span><a href="#result">The result</a><span class="sep">/</span><a href="#worker">Workers</a><span class="sep">/</span><a href="#clocks">Clocks</a><span class="sep">/</span><a href="#review">Review</a><span class="sep">/</span><a href="#merge">Merge</a><span class="sep">/</span><a href="#broke">What broke</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#glance">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">At a glance</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#worker">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Workers</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#clocks">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Clocks</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#review">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Review</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#merge">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Merge</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#broke">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">What broke</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="glance"><h2>At a glance</h2><dl class="responsibilities at-a-glance"><div><dt>Outcome</dt><dd>A written assignment becomes one branch, one pull request, independent review, deterministic eligibility checks, and an operator-authorized merge path.</dd></div><div><dt>Operating scope</dt><dd>Scheduled workers run on Windows and Linux, with Gitea holding remote state and local locks and ledgers holding process state.</dd></div><div><dt>Evidence</dt><dd>The tasking, diff, verdict, CI results, current head, merge decision, and dispatch reason remain inspectable after each model process exits.</dd></div><div><dt>Primary lesson</dt><dd>Models handle code reading and judgment. Scripts enforce exact policy and reread live state immediately before an action.</dd></div></dl></section>
 <section class="block" id="result"><h2>The durable record does the coordinating</h2><div class="story-opening"><p>A browser chat can carry a lot of context, but it is a weak place to store the state of an unattended delivery system. The next process cannot reliably inspect an earlier conversation, and a reviewer cannot diff a remembered instruction.</p><p>The fleet writes the work down. A tasking names one objective, relevant files, boundaries, evidence, and stop conditions. The worker changes one branch in one worktree. Its pull request becomes the durable completion signal. Reviewers leave verdicts on that pull request, CI attaches results to its commit, and the merge executor reads the current state immediately before acting.</p><p>The models handle work that benefits from code reading and judgment. Small scripts handle facts that should not vary by model: whether dispatch is paused, whether a PID is live, whether a pull request already exists, whether the branch is current, whether CI passed, and whether the reviewer is authorized to merge.</p></div></section>

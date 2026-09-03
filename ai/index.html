@@ -199,7 +199,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Applied AI walkthrough</span><h1>How models fit inside the platform without owning it</h1><p class="descriptor lede">Models build and review repository changes, correlate overnight operational evidence, classify scanner output, enrich incidents, and help produce reports. They run behind the same identities, budgets, tests, logs, and approval boundaries as other automation. A model can propose work or open a pull request. It cannot grant itself access, suppress a failed gate, or treat missing evidence as permission.</p><p class="descriptor lede">There are two execution paths. Subscription-backed command-line agents handle repository work in isolated lanes. Operational pipelines send bounded inference requests through a gateway that can choose a private local model or an approved external provider. Measured provider capacity controls dispatch, and a failed usage collector closes the gate.</p><p class="source-note">Built from the unattended fleet, AIOps collector and triage pipeline, LiteLLM gateway, subscription-usage exporter, scanner disposition policy, incident analyst, job-reporting project, and dated silence postmortem.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#build">Building</a><span class="sep">/</span><a href="#ops">Operations</a><span class="sep">/</span><a href="#routing">Routing</a><span class="sep">/</span><a href="#trust">Trust</a><span class="sep">/</span><a href="#broke">What broke</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#build">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Building</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#ops">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Operations</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#routing">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Routing</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#trust">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Trust</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#broke">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">What broke</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="result"><h2>The model receives a job, not general authority</h2><div class="story-opening"><p>I use models for work that benefits from reading a large amount of context and making a bounded judgment. That includes reviewing a code change against a tasking, grouping several alerts that share a cause, explaining an unfamiliar failure, or ranking a record against written criteria.</p><p>The surrounding pipeline handles collection, identity, secrets, budgets, retries, storage, and the final action. This keeps model output in the part of the system where uncertainty is expected. A deterministic check still decides whether CI passed, whether the requested files were in scope, whether a provider has capacity, whether a scanner ran, and whether an operator approved a remediation.</p><p>The result is visible in ordinary engineering objects. Build work becomes a pull request. Morning triage becomes a dated digest and finding records. Scanner classification stays attached to the original scanner finding. Incident analysis appears beside the alert it explains.</p></div></section>
 <section class="block" id="paths"><h2>Two model paths serve different kinds of work</h2><figure class="architecture"><img src="/assets/engineering-diagrams/ai-routing-path.svg" alt="Applied AI paths separating subscription-backed repository agents from gateway-routed operational inference, with common policy and evidence controls" width="1160" height="720" loading="lazy"></figure><div class="comparison"><div><h3>Repository agents</h3><p>Codex and Claude command-line clients run in isolated worktrees under written taskings. Subscription usage is measured as worker capacity. Branch protection, CI, cross-vendor review, and merge authority govern the result.</p></div><div><h3>Operational inference</h3><p>Collectors and application code send a bounded request through LiteLLM, a gateway that presents one API surface and applies routing, key, and budget policy to approved models.</p></div></div><p>The two paths are not interchangeable. Subscription login for a command-line coding agent is not an API credential for an in-cluster service. The gateway manages API consumers; the fleet launcher manages CLI sessions and their subscription windows.</p></section>

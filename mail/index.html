@@ -200,7 +200,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Technical platform walkthrough</span><h1>How I run mail across a public edge and a private mailbox server</h1><p class="descriptor lede">Internet mail lands on a small cloud relay with a stable public address. That relay filters the connection and forwards accepted messages over a private mesh network to the mailbox server in the lab. Mail clients use the same private path through TLS passthrough, while webmail arrives through the platform’s identity-protected tunnel.</p><p class="descriptor lede">Outbound mail takes the reverse path. The mailbox server sends through the relay, and the relay uses one authorized public address to reach a delivery provider. Active Directory supplies mailbox identity over encrypted LDAP, Entra supplies web sign-in, and the public dashboard measures the complete route without exposing addresses or message data.</p><p class="source-note">Built from the current mail-flow architecture, hardening playbooks, identity rotation path, relay monitoring, delivery scripts, and public mail dashboard wiring.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#inbound">Inbound</a><span class="sep">/</span><a href="#outbound">Outbound</a><span class="sep">/</span><a href="#identity">Identity</a><span class="sep">/</span><a href="#trust">Sender trust</a><span class="sep">/</span><a href="#live">Dashboard</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#inbound">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Inbound</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#outbound">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Outbound</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#identity">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Identity</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#trust">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Sender trust</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#live">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Dashboard</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="result"><h2>The public relay and the mailbox host do different work</h2><div class="story-opening"><p>A mail server must accept connections from arbitrary mail systems on the internet. My home connection is the wrong place to terminate that traffic. Its address can change, residential reputation is poor, and an outage or firewall change would directly affect delivery.</p><p>The cloud edge gives the domain a stable MX destination. MX is the DNS record that tells other mail systems where incoming messages should go. The edge runs Postfix and postscreen. Postfix speaks SMTP and routes messages. Postscreen rejects obviously abusive connections before they consume the heavier mail-processing path.</p><p>The edge does not own mailboxes. Accepted mail crosses a private mesh network to the on-premises backend. The backend stores messages, authenticates users, runs the content filter, and serves IMAP and submission. Splitting the roles keeps public connection handling away from mailbox storage and directory credentials.</p></div><div class="evidence"><strong>Current user experience.</strong> A directory account has a mailbox without a second mail password. Webmail uses Entra sign-in. A fresh private-session login passed after the Roundcube application secret was rotated, so the result was validated at the inbox rather than at the credential provider.</div></section>
 <section class="block" id="parts"><h2>The mail path has six owners</h2><dl class="responsibilities"><div><dt>Cloud edge relay</dt><dd>Publishes the MX destination, runs Postfix and postscreen, forwards accepted inbound mail privately, passes client TLS through, and supplies the stable outbound address.</dd></div><div><dt>Mailbox backend</dt><dd>Runs docker-mailserver, stores mail, serves SMTP submission and IMAP, and sends outbound messages back through the edge.</dd></div><div><dt>Amavis</dt><dd>Processes message content on the backend and can quarantine malformed or suspicious mail. The live verification corrected older documentation that named Rspamd.</dd></div><div><dt>Roundcube</dt><dd>Provides the browser mail client. It reads the same IMAP mailboxes and submits through the same SMTP path as other clients.</dd></div><div><dt>Directory and identity</dt><dd>Active Directory validates mailbox credentials over LDAPS. Entra and Cloudflare Access handle browser sign-in before Roundcube.</dd></div><div><dt>Outbound delivery provider</dt><dd>Accepts mail from the relay’s authorized address and carries the reputation and delivery path used for internet recipients.</dd></div></dl></section>

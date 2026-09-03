@@ -199,7 +199,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Technical platform walkthrough</span><h1>How I removed the secrets server as a single point of failure</h1><p class="descriptor lede">The lab now asks one stable Vault address for credentials even when a cluster node fails. The cluster copies accepted writes across <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> nodes, unseals itself after a reboot, and moves the service address away from a node that is alive but unable to serve secrets.</p><p class="descriptor lede">This rebuild started because the old server concentrated two risks. Every pipeline stopped during its reboot, and the file that unlocked its encrypted storage lived on the same disk captured by the backup. I moved the data into a Raft cluster, moved unseal authority to a separate Transit service, and tested the failure case that a normal ping check misses.</p><p class="source-note">Built from the Vault HA design, apply record, sizing decision, recovery design, monitoring rules, and the current site source in the repository.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#cluster">Cluster</a><span class="sep">/</span><a href="#unseal">Unseal</a><span class="sep">/</span><a href="#failover">Failover</a><span class="sep">/</span><a href="#recovery">Recovery</a><span class="sep">/</span><a href="#broke">What broke</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#cluster">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Cluster</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#unseal">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Unseal</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#failover">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Failover</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#recovery">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Recovery</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#broke">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">What broke</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="result"><h2>Vault is behind nearly every automated change</h2><div class="story-opening"><p>Provisioning, backups, certificate deployment, monitoring, and identity jobs fetch credentials when they run. A pipeline authenticates with a narrow machine role, reads the fields allowed for that job, and keeps the values in memory. The same password or token does not have to be copied into every Jenkins credential, configuration file, or script.</p><p>That is useful centralization, and it also makes availability matter. When the old single Vault server rebooted, a backup job could not authenticate to the backup API, a certificate job could not read deployment credentials, and provisioning could not reach its infrastructure providers. The pipelines were healthy. Their shared dependency was not.</p><p>The old server automated its own unseal by reading an unlock key from its local disk. Vault data was encrypted, but a full image backup contained both the encrypted data and the material needed to open it. That backup-store dependency was never an explicit design decision. It appeared because local auto-unseal was convenient.</p></div><div class="evidence"><strong>Current result.</strong> The service runs on <!--LIVE:VAULT_NODE_COUNT:START-->3<!--LIVE:VAULT_NODE_COUNT:END--> separately placed nodes. A migration comparison found no missing secret paths. A node sealed while its operating system remained reachable lost the shared address, and another node continued serving requests. A restarted node returned unsealed without an operator entering a key.</div></section>
 <section class="block" id="parts"><h2>Five mechanisms solve five different problems</h2><dl class="responsibilities"><div><dt>Vault</dt><dd>Authenticates people and workloads, enforces path policies, encrypts stored data, and serves the secrets each caller is allowed to read.</dd></div><div><dt>Integrated Raft</dt><dd>Replicates Vault's ordered changes. The active node proposes a write and a majority records it before the write is accepted.</dd></div><div><dt>Transit auto-unseal</dt><dd>A separate, limited Vault service performs the cryptographic operation that opens a cluster node. The unseal key is not stored on the cluster node.</dd></div><div><dt>Keepalived and VRRP</dt><dd>The cluster nodes elect the owner of one shared service address. Health checks lower the priority of a node whose Vault process is sealed or unavailable.</dd></div><div><dt>Prometheus and blackbox exporter</dt><dd>Measure seal state, cluster health, served TLS certificates, and missing endpoints. A stopped observer is reported separately from an unhealthy Vault service.</dd></div></dl></section>

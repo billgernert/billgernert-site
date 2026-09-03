@@ -199,7 +199,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Security engineering walkthrough</span><h1>How security decisions are enforced in the lab</h1><p class="descriptor lede">A person signs in once, applications receive only the identity claims they need, workloads fetch credentials through narrow Vault roles, and infrastructure jobs stop when approval, inventory, budget, or verification is missing. Public traffic reaches applications through an outbound tunnel, so there is no ordinary inbound application port to discover.</p><p class="descriptor lede">The controls are split across layers because they answer different questions. Edge access decides who may reach an application. The pipeline decides whether the requested change is complete and approved. Vault limits which credential the workload can read. The target system applies the final permission. I learned why that separation matters when an approval check I wrote could fail open on execution paths with no requester identity.</p><p class="source-note">Built from the security page, identity lifecycle policy, publication gates, workload policies, certificate automation, edge access configuration, and the dated approval-gate failure in the repository.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#layers">Layers</a><span class="sep">/</span><a href="#identity">Identity</a><span class="sep">/</span><a href="#gates">Gates</a><span class="sep">/</span><a href="#bug">The bug</a><span class="sep">/</span><a href="#running">How it runs</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#layers">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Layers</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#identity">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Identity</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#gates">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Gates</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#bug">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The bug</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#running">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">How it runs</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="result"><h2>The security model starts with boundaries, not products</h2><div class="story-opening"><p>The lab is public enough to be useful and private enough to operate. The portfolio and scrubbed dashboards are intentionally readable. Management interfaces, infrastructure APIs, secrets, identities, and operational dashboards sit behind controls that can identify the caller and deny the request.</p><p>I use several products because one product cannot answer every question. Cloudflare Access can decide whether a signed-in person belongs to an allowed group, but it cannot decide whether a Terraform destroy plan is safe. Vault can decide whether a Jenkins workload may read a provider token, but it cannot know whether the operator approved the target. CI can scan a public page for internal strings, but it cannot validate the certificate a browser receives after deployment.</p><p>The design therefore follows the request. Each control has one place in the path, one failure behavior, and evidence that can be checked after the request finishes.</p></div></section>
 <section class="block" id="layers"><h2>A request crosses four independent decisions</h2><figure class="architecture"><img src="/assets/engineering-diagrams/security-control-path.svg" alt="Security control path from identity at the edge through a pipeline gate and Vault role to the target system, with audit evidence beside the path" width="1100" height="590" loading="lazy"></figure><dl class="responsibilities"><div><dt>Edge identity</dt><dd>Cloudflare Access redirects protected browser requests to Entra ID. Sign-in and group membership are checked before traffic reaches the application.</dd></div><div><dt>Pipeline policy</dt><dd>Jenkins or Gitea Actions validates the request, approval, collision result, budget, plan, and expected change before it calls an infrastructure API.</dd></div><div><dt>Workload identity</dt><dd>A Kubernetes service account, Vault AppRole, or forced-command SSH identity identifies one automation path. It cannot borrow a broad operator login.</dd></div><div><dt>Target authorization</dt><dd>The provider, operating system, Kubernetes API, or application accepts only the actions granted to that machine identity.</dd></div><div><dt>Independent observation</dt><dd>Monitoring, live login probes, audit logs, and repository checks record what the request changed and whether the consumer worked afterward.</dd></div></dl><p>A request is allowed only when each applicable layer can answer. An unavailable identity provider, unreadable budget, failed collision source, missing approver, or unknown target state stops the path that depends on it.</p></section>

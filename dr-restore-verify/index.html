@@ -200,7 +200,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Disaster recovery walkthrough</span><h1>How I verify that a backup becomes a working server</h1><p class="descriptor lede">The scheduled job rotates through a recovery manifest, restores a protected guest from backup into a fenced scratch network, boots it, runs operating-system and service assertions, removes the temporary copy, and confirms that the copy is gone. The report and dashboard below show the outcome without exposing the systems being recovered.</p><p class="descriptor lede">The path took twelve reruns to reach the intended assertion set. The failures were not variations of one bug. The job bypassed its scoped credential, the runbook assumed missing preconditions, effective permissions collapsed to an empty intersection, TLS verification targeted the wrong identity, and a bare boolean destroyed the reason a restore assertion failed.</p><p class="descriptor">last run <!--LIVE:RESTORE_LAST_RUN_DATE:START-->2026-08-31<!--LIVE:RESTORE_LAST_RUN_DATE:END--> · <!--LIVE:RESTORE_LAST_RUN_RESULT:START-->PASS<!--LIVE:RESTORE_LAST_RUN_RESULT:END--> · <!--LIVE:RESTORE_LAST_RUN_SECONDS:START-->677<!--LIVE:RESTORE_LAST_RUN_SECONDS:END--> seconds</p><p class="source-note">Built from the weekly restore design, Jenkins pipeline, restore verifier, dated live-fire result, failure saga, backup digest template, and public recovery dashboard.</p><div class="links story-code-action"><a href="https://github.com/billgernert/restore-verify">View the code &#8594;</a></div></header>
-<nav class="crumbs" aria-label="On this page"><a href="#result">The result</a><span class="sep">/</span><a href="#path">Restore path</a><span class="sep">/</span><a href="#email">Email</a><span class="sep">/</span><a href="#saga">What broke</a><span class="sep">/</span><a href="#dashboard">Dashboard</a><span class="sep">/</span><a href="#running">How it runs</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#result">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The result</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#path">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Restore path</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#email">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Email</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#saga">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">What broke</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#dashboard">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Dashboard</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#running">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">How it runs</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <section class="block" id="result"><h2>Backup verification and restore verification answer different questions</h2><div class="story-opening"><p>Proxmox Backup Server can verify that stored chunks and indexes are readable. That is necessary, but it does not show that Proxmox can reconstruct a guest, that the guest boots, or that the application inside it can perform its job.</p><p>The scheduled restore pipeline closes that gap. It chooses the next protected guest, chooses a backup source, creates a temporary guest under a reserved scratch identity, attaches it to a network with no production uplink, and boots it. Common assertions inspect the operating system. A service profile adds the checks that matter for the recovered workload.</p><p>The temporary machine is destroyed after success or failure. Cleanup then asks the platform whether the guest is absent. The delete command returning zero is supporting evidence; the absence check is the teardown result.</p></div><div class="evidence"><strong>Separate live-fire measurement.</strong> On 2026-07-12, a controlled Vault recovery reached initialized and unsealed state in 97 seconds. That was a destructive single-service exercise. The weekly pipeline uses fenced copies so it can keep testing different protected systems without placing duplicates on the production network.</div></section>
 <section class="block" id="owners"><h2>PBS, Proxmox, Jenkins, and the guest each own one part</h2><dl class="responsibilities"><div><dt>Recovery manifest</dt><dd>Names the protected system class, eligible backup sources, required assertions, and scratch constraints. Rotation prevents the easiest guest from being tested forever.</dd></div><div><dt>Proxmox Backup Server</dt><dd>Stores deduplicated backups, verifies stored data, and supplies the selected snapshot for restore.</dd></div><div><dt>Proxmox</dt><dd>Creates the scratch guest, attaches the fenced network, starts and stops it, reports guest state, and removes it.</dd></div><div><dt>Jenkins</dt><dd>Coordinates preflight, selection, restore, boot, verification, evidence, notification, and unconditional cleanup.</dd></div><div><dt>Guest agent and verifier</dt><dd>Expose boot, filesystem, operating-system, identity, and service facts from inside the restored machine.</dd></div><div><dt>Prometheus and Grafana</dt><dd>Record run result, duration, age, coverage, and failure state independently of the email report.</dd></div></dl></section>

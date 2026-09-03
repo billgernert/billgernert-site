@@ -199,7 +199,44 @@
     </nav>
 
     <header class="skill-head"><span class="badge">Platform architecture walkthrough</span><h1>How the lab fits together from the public edge to recovery</h1><p class="descriptor lede">A browser request enters through an outbound tunnel, crosses identity policy, and reaches an application in Kubernetes. Infrastructure jobs start in Jenkins or Gitea Actions, read credentials from Vault, change virtual machines through Terraform and Proxmox, and configure operating systems with Ansible. Monitoring observes each layer, and the recovery path can reconstruct protected guests from two backup stores.</p><p class="descriptor lede">The map below is organized by responsibility. The <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node Proxmox cluster supplies compute. K3s supplies the application platform across <!--LIVE:KUBERNETES_NODE_COUNT:START-->3<!--LIVE:KUBERNETES_NODE_COUNT:END--> nodes, including <!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:START-->1<!--LIVE:KUBERNETES_CONTROL_NODE_COUNT:END--> control node. Directory, certificate, secret, mail, monitoring, backup, and AI services sit beside those paths because applications depend on them without owning them.</p><p class="source-note">Built from the current architecture page, generated topology facts, provisioning and certificate paths, Vault HA design, segmented network inventory, monitoring stack, and recovery workflow.</p></header>
-<nav class="crumbs" aria-label="On this page"><a href="#map">The map</a><span class="sep">/</span><a href="#browser">Browser request</a><span class="sep">/</span><a href="#change">Infrastructure change</a><span class="sep">/</span><a href="#recovery">Recovery</a><span class="sep">/</span><a href="#regions">Regions</a><span class="sep">/</span><a href="#failure">Failure boundaries</a></nav>
+<nav class="crumbs" aria-label="On this page">
+  <div class="section-nav-head">
+    <h2>Browse this page</h2>
+    <p>Jump directly to a section</p>
+  </div>
+  <div class="section-nav-grid">
+    <a class="section-nav-card" href="#map">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">The map</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#browser">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Browser request</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#change">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Infrastructure change</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#recovery">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Recovery</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#regions">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Regions</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+    <a class="section-nav-card" href="#failure">
+<span class="section-nav-number" aria-hidden="true"></span>
+      <span class="section-nav-title">Failure boundaries</span>
+      <span class="section-nav-arrow" aria-hidden="true">&#8595;</span>
+    </a>
+  </div>
+</nav>
 <div class="skill-body">
 <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Live</b>:</p>
