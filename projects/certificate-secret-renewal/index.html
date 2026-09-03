@@ -544,6 +544,23 @@
           <h4>Prevention</h4>
           <p>Argo CD now continuously reconciles the public recording rules. Tests derive certificate coverage from the same declared probe inventory, so a new probe cannot pass without a lifecycle classification.</p>
         </div>
+        <div class="failure">
+          <h3>A correct edge certificate looked like a failed wildcard deployment</h3>
+          <h4>Summary</h4>
+          <p>On 2026-09-03, the first synchronization run for a newly registered console updated its Kubernetes Secret but failed the final fingerprint comparison.</p>
+
+          <h4>What made it confusing</h4>
+          <p>The public hostname intentionally terminated at a content-delivery edge. A client received the edge provider's valid public certificate, while the Kubernetes ingress correctly held the wildcard certificate. Comparing those fingerprints made a healthy layered certificate path look broken.</p>
+
+          <h4>Root cause</h4>
+          <p>The verifier assumed public DNS always reached the certificate consumer directly. That assumption was true for the earlier routes and false for the new edge-protected route.</p>
+
+          <h4>Recovery</h4>
+          <p>I verified the source Secret, destination Secret, and Traefik origin independently. All three matched. I then changed the deployment check to reach the Kubernetes origin while keeping the public hostname as SNI, the name supplied during the TLS handshake.</p>
+
+          <h4>Prevention</h4>
+          <p>The deployment pipeline now distinguishes origin proof from public-edge proof. Jenkins checks that the application origin loaded the wildcard. Blackbox monitoring separately checks that the public edge presents a trusted certificate for the hostname and reports its own expiry.</p>
+        </div>
       </section>
 
       <section class="block" id="different">
