@@ -253,9 +253,9 @@
       <section class="block" id="glance">
         <h2>At a glance</h2>
         <dl class="at-a-glance">
-          <div><dt>Outcome</dt><dd>A Linux or Windows request reaches a running, monitored server and a committed host record through either Jenkins or Backstage with Gitea Actions.</dd></div>
-          <div><dt>Operating scope</dt><dd>The live workflow coordinates address allocation, Terraform, Proxmox, Ansible, Vault, monitoring, backup coverage, and Active Directory with Duo MFA for Windows.</dd></div>
-          <div><dt>Evidence</dt><dd>The Backstage route completed a measured run in 5 minutes 21 seconds on 2026-08-23. Each former interface capture on this page is now a working browser demo.</dd></div>
+          <div><dt>Outcome</dt><dd>A Linux or Windows request reaches a running server with monitoring, Wazuh, an initial security update, verified backup coverage, private DNS, and a committed host record.</dd></div>
+          <div><dt>Operating scope</dt><dd>The live workflow coordinates address allocation, Terraform, Proxmox, Ansible, Vault, monitoring, Wazuh, patching, backup coverage, and Active Directory with Duo MFA for Windows.</dd></div>
+          <div><dt>Evidence</dt><dd>Live Jenkins proof runs for Linux and Windows Server 2022 both completed on 2026-09-03 through security readiness, private DNS, and durable host-manifest publication. The Backstage route completed a measured run in 5 minutes 21 seconds on 2026-08-23.</dd></div>
           <div><dt>Primary lesson</dt><dd>Both front doors revalidate collisions, and post-creation failures retain enough state for the next run to continue forward safely.</dd></div>
         </dl>
       </section>
@@ -308,7 +308,7 @@
         <div class="explain-grid">
           <div><h3>Conditional disk work</h3><p>The operating-system disk moves only for node-local storage. A second disk is created only when the request includes one.</p></div>
           <div><h3>Template and first boot</h3><p>The pipeline resolves a template by tags. Terraform clones it, and a first-boot script brings up WinRM over HTTPS.</p></div>
-          <div><h3>Operating-system configuration</h3><p>Ansible rotates the password, joins Active Directory, installs monitoring, configures time and firewall rules, enables Duo for remote desktop, and installs the selected tools and roles.</p></div>
+          <div><h3>Operating-system configuration</h3><p>Ansible rotates the password, joins Active Directory, installs Zabbix and Wazuh, configures time and firewall rules, enables Duo for remote desktop, and installs the selected tools and roles. Later gates apply the initial security update and verify Defender, monitoring, Wazuh, firewall, reboot, and backup readiness.</p></div>
           <div><h3>Credentials during the run</h3><p>Vault stores the per-host administrator password and monitoring key. The job retrieves each value only for the stage that needs it.</p></div>
         </div>
       </section>
@@ -333,7 +333,7 @@
             <aside class="compact-console" aria-live="polite"><header><span>Console output</span><strong class="run-status idle" id="linux-status">idle</strong></header><div id="linux-console" role="log"><p class="console-muted">Select Build to run the browser-only validation.</p></div></aside>
           </div>
         </div>
-        <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM, cloud-init sets the initial network and SSH access, and Ansible applies the versioned base configuration.</p>
+        <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM, cloud-init sets the initial network and SSH access, and Ansible applies the versioned base configuration. Later gates apply the initial security update and verify monitoring, Wazuh, SELinux, firewall, patch timer, reboot, and backup readiness.</p>
         <p>Jenkins coordinates both operating-system paths. It renders parameters, starts the provisioner pod, checks gates, pauses for approval, keeps the stage log, and sends the result. The address, infrastructure state, VM, operating system, and credentials remain with their owning systems.</p>
       </section>
 
@@ -344,15 +344,15 @@
           <thead><tr><th>Capability</th><th>Linux</th><th>Windows</th><th>When it applies</th></tr></thead>
           <tbody>
             <tr><td>Identity and access</td><td>Managed SSH access and the Linux firewall baseline.</td><td>Active Directory membership, a unique administrator password, and Duo MFA for remote desktop.</td><td><span class="service-timing">During the build</span></td></tr>
-            <tr><td>Monitoring</td><td>Zabbix agent with a unique encrypted identity.</td><td>Zabbix agent with a unique encrypted identity.</td><td><span class="service-timing">During the build</span></td></tr>
+            <tr><td>Monitoring and detection</td><td>Zabbix and Wazuh agents with managed host identities.</td><td>Zabbix and Wazuh agents with managed host identities.</td><td><span class="service-timing">During the build</span></td></tr>
             <tr><td>Host baseline</td><td>Firewall rules, time sync, and Alloy log forwarding.</td><td>Firewall rules and domain time sync.</td><td><span class="service-timing">During the build</span></td></tr>
-            <tr><td>Backups</td><td>Nightly whole-VM backup and daily freshness reporting. A separate weekly restore test rotates through critical guests.</td><td>Nightly whole-VM backup and daily freshness reporting. A separate weekly restore test rotates through critical guests.</td><td><span class="service-timing">Inherited from Proxmox</span></td></tr>
-            <tr><td>Patching</td><td>Daily security-only updates and the controlled weekly patch path apply to managed inventory.</td><td>Weekly patch plans and approval-gated rolling updates apply to managed inventory.</td><td><span class="service-timing">After inventory admission</span></td></tr>
-            <tr><td>Security checks</td><td>Provisioning code and running container images have scheduled scans. Wazuh host enrollment is a separate path.</td><td>A weekly missing-update scan covers managed Windows inventory. Credentialed host CVE scanning is not yet live.</td><td><span class="service-timing">Scheduled, scope-dependent</span></td></tr>
+            <tr><td>Backups</td><td>Nightly whole-VM backup and daily freshness reporting. Provisioning verifies backup coverage before handoff.</td><td>Nightly whole-VM backup and daily freshness reporting. Provisioning verifies backup coverage before handoff.</td><td><span class="service-timing">Verified during the build</span></td></tr>
+            <tr><td>Patching</td><td>An initial security update and reboot check run before handoff. Automatic security updates and the controlled weekly patch path continue from the host manifest.</td><td>An initial security update and reboot check run before handoff. Weekly patch plans, update scans, and approval-gated rolling updates continue from the host manifest.</td><td><span class="service-timing">Build and estate schedule</span></td></tr>
+            <tr><td>Security checks</td><td>Wazuh must report the host active. SELinux, the default-drop firewall, patch timer, and required services must pass readiness.</td><td>Wazuh must report the host active. Defender, all firewall profiles, default-block policy, and required services must pass readiness.</td><td><span class="service-timing">Readiness gate</span></td></tr>
             <tr><td>Durable recovery data</td><td>The address, Terraform state, placement, sizing, and host manifest remain available for reruns.</td><td>The same machine record is kept, and the per-host administrator secret is retained for backup restores.</td><td><span class="service-timing">At successful handoff</span></td></tr>
           </tbody>
         </table></div>
-        <aside class="coverage-note"><strong>One current enrollment boundary</strong><p>Provisioning writes the host manifest, but patch and Windows update-scan jobs still select hosts from committed Ansible inventory. A new machine must be added to the correct managed group before those jobs cover it. Wazuh host enrollment is also separate today.</p></aside>
+        <aside class="coverage-note"><strong>The host manifest is the enrollment boundary</strong><p>Provisioning enrolls Wazuh during the build, then records patch, Wazuh, backup, and compliance policy in the final host manifest. Patch and Windows update-scan jobs render their managed inventory from those manifests, so a successful build does not need a second hand-edited inventory admission.</p></aside>
       </section>
 
       <section class="block" id="phases">
@@ -365,7 +365,7 @@
             <div class="phase"><span class="num">Phase 2</span><strong>Prove safe</strong><small>Check network support and ask every inventory whether the name already exists.</small></div>
             <div class="phase"><span class="num">Phase 3</span><strong>Reserve and plan</strong><small>Allocate the address, select capacity, choose a template when needed, and build the Terraform plan.</small></div>
             <div class="phase"><span class="num">Phase 4</span><strong>Approve and create</strong><small>Review the change, apply the saved plan, create the VM, and mark the creation boundary.</small></div>
-            <div class="phase"><span class="num">Phase 5</span><strong>Configure and connect</strong><small>Register monitoring, configure the guest, join supporting services, and write internal DNS.</small></div>
+            <div class="phase"><span class="num">Phase 5</span><strong>Configure and connect</strong><small>Configure the guest, apply the first patch, prove operational readiness, verify backup coverage, and write internal DNS.</small></div>
             <div class="phase"><span class="num">Phase 6</span><strong>Record and recover</strong><small>Commit the host manifest, report the result, and retain enough state for a safe rerun.</small></div>
           </div>
           <p class="phase-explain">Cyan marks the ordered automated path. Amber arrows show the handoff from one phase to the next. Each phase ends with enough recorded state for the next phase to know what happened.</p>
@@ -379,13 +379,13 @@
           <li><strong>Prove the request is safe.</strong> The target check rejects a role whose network path is not supported. The collision checker asks address management, the hypervisor, monitoring, committed host manifests, and configuration inventory whether the name already exists. A confirmed match stops the build. An unavailable source is unknown, and unknown also stops the build. These checks run before a new address is reserved.</li>
           <li><strong>Reserve capacity and produce a plan.</strong> NetBox reserves the next free address in the role’s allowed prefix. The job derives the gateway and VM identifier from that allocation, then selects an online hypervisor with enough free memory and disk. Terraform opens one workspace for the requested machine and stores its state in PostgreSQL. Vault supplies the provider and backend credentials at run time. Jenkins saves the plan that the approval step will review.</li>
           <li><strong>Approve and create.</strong> Jenkins sends the request details and a link to a bounded approval gate. If Terraform says an existing machine would be replaced, the message and button use destructive wording. Approval applies the saved plan. Once the hypervisor has created the VM, the job records that boundary so later cleanup cannot release an address that a live machine still uses.</li>
-          <li><strong>Configure and connect the guest.</strong> Zabbix receives a host object and a newly generated per-host key. Vault keeps that key for the agent configuration. Linux is configured over SSH. Windows waits for repeated successful WinRM checks before Ansible starts because first boot can briefly open and close the port. Ansible handles the operating system; a DNS-specific step then creates the forward record and creates a reverse record only when the matching reverse zone exists.</li>
+          <li><strong>Configure and connect the guest.</strong> Zabbix receives a host object and a newly generated per-host key. Vault keeps that key for the agent configuration. Linux is configured over SSH. Windows waits for repeated successful WinRM checks before Ansible starts because first boot can briefly open and close the port. Ansible configures the operating system and Wazuh, applies the initial security update, and proves OS, monitoring, reboot, and backup readiness. A DNS-specific step then creates the forward record and creates a reverse record only when the matching reverse zone exists.</li>
           <li><strong>Write the durable record.</strong> The final stage creates a host manifest in Git with the selected node, address, sizing, role, and build reference. A later run reads that manifest and reuses the recorded node rather than accidentally planning a move.</li>
         </ol>
       </section>
 
       <section class="block" id="backstage">
-        <h2>Backstage provides the same workflow without Jenkins</h2>
+        <h2>Backstage provides a reviewed request route without Jenkins</h2>
         <div class="story-split">
           <div><h3>What the portal handles</h3><p>Backstage collects the server request and checks the form shape. The template then writes a small declarative request file.</p></div>
           <div><h3>Where the portal stops</h3><p>Backstage opens a pull request and hands off. Gitea Actions performs the infrastructure checks and apply after review.</p></div>
@@ -453,7 +453,7 @@
               <li>The pipeline validates, checks, reserves, and plans.</li>
               <li>An operator approves inside the Jenkins run.</li>
               <li>The saved plan is applied from the provisioner pod.</li>
-              <li>A Windows agent handles AD-integrated DNS.</li>
+              <li>The provisioner reaches AD-integrated DNS over WinRM.</li>
               <li>Jenkins keeps the stage log and notification.</li>
             </ol>
           </article>
@@ -485,7 +485,7 @@
             <tr><td>Terraform and PostgreSQL</td><td>The requested VM definition and per-machine infrastructure state</td><td>Terraform creates a plan and sends the approved change through the Proxmox provider. PostgreSQL stores one workspace per machine.</td><td>No infrastructure change is allowed without usable state and a valid plan.</td></tr>
             <tr><td>Proxmox</td><td>The VM, its placement, disks, virtual hardware, and power state</td><td>The provider creates or reconciles the VM. Helper scripts resolve templates, clear inherited tags, and handle requested disk work.</td><td>The creation marker records whether later recovery is dealing with a reservation or a live VM.</td></tr>
             <tr><td>Ansible and the guest</td><td>The operating-system configuration</td><td>Ansible connects through SSH for Linux or WinRM for Windows and applies the versioned roles for that operating system.</td><td>The VM remains allocated. A rerun resumes configuration instead of pretending the machine does not exist.</td></tr>
-            <tr><td>Zabbix</td><td>The monitored host and its encrypted agent identity</td><td>The registration script creates the host and stores a unique key in Vault before Ansible configures the agent.</td><td>The machine is not considered finished because it would exist without monitoring.</td></tr>
+            <tr><td>Zabbix and Wazuh</td><td>The monitored host, its encrypted monitoring identity, and its detection group</td><td>The workflow registers monitoring, configures both agents, and then requires each service to report the host ready.</td><td>The machine is not considered finished because it would exist without monitoring or host detection.</td></tr>
             <tr><td>Active Directory and DNS</td><td>Windows computer membership and authoritative name records</td><td>The Windows playbook joins the domain. The DNS stage writes forward records and reports reverse records separately.</td><td>A live VM may exist, so the workflow preserves its address and reports the integration stage that needs a rerun.</td></tr>
           </tbody>
         </table></div>
@@ -498,7 +498,7 @@
           <thead><tr><th>When</th><th>What runs</th><th>What happens next</th></tr></thead>
           <tbody>
             <tr><td>On request</td><td>Jenkins validates its submitted parameters, or Backstage writes a request and opens a pull request. Target and collision checks run before infrastructure is changed.</td><td>A rejected or unverifiable request stops before an address is reserved. A valid request continues to planning and review.</td></tr>
-            <tr><td>On approval</td><td>Jenkins applies the saved Terraform plan after its input gate, or merging the Backstage request starts the Gitea Actions apply workflow.</td><td>The workflow allocates or confirms the machine state, configures the guest, registers monitoring and DNS, and writes the host manifest.</td></tr>
+            <tr><td>On approval</td><td>Jenkins applies the saved Terraform plan after its input gate, or merging the Backstage request starts the Gitea Actions apply workflow.</td><td>The workflow allocates or confirms the machine state and configures the guest. Jenkins also applies the initial security update, proves operational readiness and backup coverage, registers private DNS, and writes the host manifest.</td></tr>
             <tr><td>On failure before creation</td><td>The unsuccessful handler checks the creation marker and calls the idempotent NetBox release path.</td><td>The reserved address is released because no VM uses it. The request can start again as a clean build.</td></tr>
             <tr><td>On failure after creation</td><td>The workflow keeps the VM, its address, Terraform workspace, and completed registrations. The failed stage remains visible in the run log.</td><td>Cleanup does not dismantle a live machine. The next run continues forward from the recorded state.</td></tr>
             <tr><td>On rerun</td><td>The safety checks run again. An approved reconcile reuses the existing address, live or manifested node, per-machine workspace, and idempotent registration steps.</td><td>The workflow finishes the missing integration or configuration work and commits the host manifest when the full path succeeds.</td></tr>

@@ -180,9 +180,11 @@
         '[Create] VM creation boundary recorded',
         '[Configure] Ansible configured Windows Server',
         '[Protect] Active Directory join and Duo MFA for remote desktop complete',
-        '[Protect] firewall and time-sync baseline applied',
-        '[Monitor] host registration complete with a unique encrypted identity',
-        '[Backup] nightly whole-VM coverage inherited from Proxmox',
+        '[Protect] initial security update applied; no reboot pending',
+        '[Monitor] Zabbix and Wazuh readiness passed',
+        '[Protect] Defender and default-block firewall readiness passed',
+        '[Backup] required whole-VM coverage verified',
+        '[DNS] private forward and reverse records registered',
         '[Record] host manifest ready',
         'SUCCESS: simulated provisioning completed.'
       ], function () {
@@ -239,7 +241,7 @@
       ];
       if (invalidName) lines.push('ERROR: Use a lowercase hostname with letters, numbers, and single hyphens.');
       else if (unsupportedRole) lines.push('ERROR: The selected role does not have a supported provisioning path.');
-      else lines.push('[Safety] target path supported', '[Safety] collision sources returned clear', '[Plan] base roles: firewall, time sync, monitoring, and log forwarding', '[Plan] nightly VM backup coverage detected', 'SUCCESS: request is ready for planning. Demo stopped here.');
+      else lines.push('[Safety] target path supported', '[Safety] collision sources returned clear', '[Plan] base roles: firewall, time sync, Zabbix, Wazuh, patch policy, and log forwarding', '[Plan] required whole-VM backup coverage will be verified before handoff', 'SUCCESS: request is ready for planning. Demo stopped here.');
 
       lines.forEach(function (line, index) {
         timers.push(window.setTimeout(function () {
