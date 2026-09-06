@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { isExpectedPublicNocDenial } from "./public-noc-response-policy.mjs";
 
 const SITE_URL = "https://billgernert.com/noc/";
 const HOME_URL = "https://billgernert.com/";
@@ -100,7 +101,7 @@ async function checkMetadataBoundary() {
     redirect: "manual"
   });
   if (genericApi.status !== 403) {
-    throw new Error("generic Grafana dashboard API was not blocked at Access");
+    throw new Error("generic Grafana dashboard API did not return the required edge denial (HTTP " + genericApi.status + ")");
   }
 }
 
@@ -113,7 +114,8 @@ async function checkEmbed() {
     const page = await context.newPage();
     page.on("response", response => {
       const url = new URL(response.url());
-      if (url.origin === STATUS_ORIGIN && response.status() === 403) {
+      if (url.origin === STATUS_ORIGIN && response.status() === 403 &&
+          !isExpectedPublicNocDenial(url, response.request().method(), response.status())) {
         forbidden.push(url.pathname);
       }
       if (url.origin === STATUS_ORIGIN &&
