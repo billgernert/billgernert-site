@@ -296,7 +296,7 @@
             <div class="run-head"><span><small>Console output</small><strong id="win-run-title">Waiting for a build</strong></span><span class="run-status idle" id="win-status">idle</span></div>
               <div class="console" id="win-console" role="log" tabindex="0" aria-label="Windows simulated Jenkins console"><p class="console-muted">Choose parameters and select Build. The demo validates the request before it simulates provisioning.</p></div>
               <div class="email-gate is-hidden" id="win-email">
-                <div class="email-chrome"><span>Inbox</span><strong>Jenkins</strong><time>just now</time></div>
+                <div class="email-chrome"><span>Inbox</span><strong>Jenkins</strong><span class="email-time">just now</span></div>
                 <div class="email-body"><span>Approval required</span><h4 id="email-title">Provision app-server-01</h4><p>Terraform finished planning this Windows Server request. Jenkins is waiting for an operator decision.</p><dl id="email-details"></dl><button type="button" class="demo-button" id="open-approval">Open Jenkins approval</button></div>
               </div>
               <div class="approval-gate is-hidden" id="win-approval"><span>Operator approval required</span><strong>Apply the saved Terraform plan?</strong><p>The plan requests one new VM using the parameters shown in the email.</p><div><button type="button" class="demo-button" id="approve-build">Approve and apply</button><button type="button" class="demo-button secondary" id="abort-build">Abort</button></div></div>

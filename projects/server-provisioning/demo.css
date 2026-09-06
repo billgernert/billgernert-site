@@ -78,7 +78,7 @@
 .console-line.skipped { color: #9baec4; }
 .email-gate { margin: 0 1rem 1rem; border: 1px solid rgba(174,187,208,.28); background: #f5f7fa; color: #19212d; }
 .email-chrome { display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; padding: .6rem .75rem; border-bottom: 1px solid #d3dae3; background: #e8ecf2; font-size: .72rem; }
-.email-chrome time { color: #687484; }
+.email-chrome .email-time { color: #687484; }
 .email-body { padding: .9rem; }
 .email-body > span,
 .approval-gate > span { color: #9b6700; font: .7rem 'Share Tech Mono', monospace; letter-spacing: .06em; text-transform: uppercase; }
