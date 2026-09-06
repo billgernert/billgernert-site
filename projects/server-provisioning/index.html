@@ -391,6 +391,7 @@
 
       <section class="block" id="backstage">
         <h2>Backstage provides a reviewed request route without Jenkins</h2>
+        <p>The lab is Jenkins-heavy, so I built the second route to learn how the provisioning workflow would operate without Jenkins. It also gave me practical experience with Gitea Actions while keeping the same request contract and infrastructure tooling underneath.</p>
         <div class="story-split">
           <div><h3>What the portal handles</h3><p>Backstage collects the server request and checks the form shape. The template then writes a small declarative request file.</p></div>
           <div><h3>Where the portal stops</h3><p>Backstage opens a pull request and hands off. Gitea Actions performs the infrastructure checks and apply after review.</p></div>
