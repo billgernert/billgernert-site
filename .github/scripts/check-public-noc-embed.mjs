@@ -153,6 +153,17 @@ async function checkEmbed() {
     const mapFrame = mapHandle && await mapHandle.contentFrame();
     if (!mapFrame) throw new Error("live map frame did not attach");
     await mapFrame.locator("#viewport g.node").first().waitFor({ state: "visible", timeout: 60000 });
+
+    // A visible SVG node alone can pass even when wrapped details collapse
+    // the homepage canvas. Check the available drawing area and full details.
+    for (const width of [375, 390, 844, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await mapFrame.waitForFunction(() => {
+        const stage = document.querySelector(".map-stage").getBoundingClientRect();
+        const detail = document.getElementById("detail").getBoundingClientRect();
+        return stage.height >= 470 && detail.bottom <= window.innerHeight + 1;
+      }, null, { timeout: 10000 });
+    }
   } finally {
     await browser.close();
   }
