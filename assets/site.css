@@ -1161,6 +1161,8 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
   gap: 1rem;
 }
 .capability-detail .skill-body > * { grid-column: 1 / -1; }
+/* Keep the long Jenkins recovery account in reading order without half-width gaps. */
+.jenkins-writeup.capability-detail .skill-body { grid-template-columns: 1fr; }
 .capability-detail .skill-body > .block {
   grid-column: auto;
   min-width: 0;
