@@ -32,7 +32,10 @@
     row.className = 'console-line';
     if (line.indexOf('SUCCESS') !== -1) row.classList.add('good');
     if (line.indexOf('ERROR') !== -1) row.classList.add('bad');
-    if (line.indexOf('ABORTED') !== -1) row.classList.add('warn');
+    if (line.indexOf('ABORTED') !== -1 || line.indexOf('changed:') === 0) row.classList.add('warn');
+    if (line.indexOf('ok:') === 0) row.classList.add('good');
+    if (line.indexOf('skipping:') === 0) row.classList.add('skipped');
+    if (/^(PLAY|TASK)\b/.test(line)) row.classList.add('task');
     row.setAttribute('data-line', String(consoleElement.children.length + 1).padStart(2, '0'));
     row.textContent = line;
     consoleElement.appendChild(row);
@@ -41,6 +44,81 @@
 
   function checkedCount(container) {
     return container.querySelectorAll('input[type="checkbox"]:checked').length;
+  }
+
+  function selectedValues(container) {
+    return Array.from(container.querySelectorAll('input[type="checkbox"]:checked'), function (input) {
+      return input.value;
+    });
+  }
+
+  // A short, synthetic playbook transcript. Counts describe only the tasks shown.
+  function playbookLog(name, title) {
+    var lines = ['PLAY [' + title + ']'];
+    var counts = { ok: 0, changed: 0, skipped: 0 };
+    return {
+      task: function (label, result) {
+        result = result || 'changed';
+        lines.push('TASK [' + label + ']', result + ': [' + name + ']');
+        if (result === 'skipping') counts.skipped += 1;
+        else {
+          counts.ok += 1;
+          if (result === 'changed') counts.changed += 1;
+        }
+      },
+      finish: function () {
+        return lines.concat(['PLAY RECAP', name + ' : ok=' + counts.ok + ' changed=' + counts.changed +
+          ' unreachable=0 failed=0 skipped=' + counts.skipped]);
+      }
+    };
+  }
+
+  function windowsConfiguration(config) {
+    var play = playbookLog(config.name, 'Configure Windows Server ' + config.template);
+    play.task('Gathering Facts', 'ok');
+    play.task('Rotate local administrator password and reconnect');
+    play.task('Extend C: to ' + config.disk + ' GB');
+    play.task('Set hostname and join Active Directory');
+    play.task('Reboot after domain join and wait for WinRM', 'ok');
+    play.task('Install and start Zabbix Agent 2');
+    play.task('Configure domain time synchronization');
+    play.task('Configure Windows Firewall with default inbound block');
+    play.task('Install Duo MFA for remote desktop');
+    if (config.tools.length) {
+      play.task('Prepare Chocolatey for selected tools');
+      config.tools.forEach(function (tool) { play.task('Install tool: ' + tool); });
+    } else play.task('Install optional tools (none selected)', 'skipping');
+    if (config.features.length) {
+      config.features.forEach(function (feature) { play.task('Install Windows feature: ' + feature); });
+      play.task('Check feature reboot requirements and reconnect if needed', 'ok');
+    } else play.task('Install optional Windows features (none selected)', 'skipping');
+    if (config.dataDisk !== '0') play.task('Initialize and format ' + config.dataDisk + ' GB NTFS data disk');
+    else play.task('Initialize optional data disk (none selected)', 'skipping');
+    play.task('Install and enroll Wazuh agent');
+    return play.finish();
+  }
+
+  function linuxConfiguration(name, profile) {
+    var play = playbookLog(name, 'Configure Rocky Linux 9');
+    play.task('Gathering Facts', 'ok');
+    play.task('Configure DNS resolver and install baseline packages');
+    play.task('Configure firewalld: allow SSH before default deny');
+    play.task('Install and configure chrony time synchronization');
+    play.task('Install and start Zabbix Agent 2');
+    play.task('Install Grafana Alloy for log forwarding');
+    play.task('Configure automatic security patch policy');
+    play.task('Install and enroll Wazuh agent');
+    var lines = play.finish();
+    if (profile === 'ci-runner') {
+      var runner = playbookLog(name, 'Configure CI runner');
+      runner.task('Gathering Facts', 'ok');
+      runner.task('Verify runner firewall baseline', 'ok');
+      runner.task('Install and start Docker CE');
+      runner.task('Install Gitea Actions runner');
+      runner.task('Register and start CI runner service');
+      lines = lines.concat(runner.finish());
+    }
+    return lines;
   }
 
   function initWindowsDemo() {
@@ -56,6 +134,7 @@
     var approval = byId('win-approval');
     var reset = byId('reset-windows');
     var timers = [];
+    var runConfig = null;
 
     function clearTimers() {
       timers.forEach(window.clearTimeout);
@@ -132,6 +211,11 @@
 
       var name = byId('win-name').value.trim();
       var role = byId('win-role').value;
+      runConfig = {
+        name: name, template: byId('win-template').value, storage: storage.value,
+        disk: disk.value, dataDisk: dataDisk.value, nested: byId('win-nested').checked,
+        tools: selectedValues(byId('win-tools')), features: selectedValues(byId('win-features'))
+      };
       var features = byId('win-features');
       var hyperV = features.querySelector('input[value="Hyper-V"]').checked;
       var invalidName = !/^[a-z0-9][a-z0-9-]{0,14}$/i.test(name);
@@ -171,29 +255,37 @@
     });
 
     byId('approve-build').addEventListener('click', function () {
+      if (status.textContent !== 'approval' || !runConfig) return;
       email.classList.add('is-hidden');
       approval.classList.add('is-hidden');
       setRunStatus(status, 'running');
-      runSequence([
+      var lines = [
         '[Input] Approved by operator',
         '[Apply] saved Terraform plan accepted',
         '[Create] VM creation boundary recorded',
-        '[Configure] Ansible configured Windows Server',
-        '[Protect] Active Directory join and Duo MFA for remote desktop complete',
-        '[Protect] initial security update applied; no reboot pending',
+        '[Connect] wait for Windows WinRM over HTTPS'
+      ];
+      if (runConfig.storage === 'NVMe') lines.push('[Storage] move OS disk to NVMe');
+      if (runConfig.dataDisk !== '0') lines.push('[Storage] attach ' + runConfig.dataDisk + ' GB data disk');
+      if (runConfig.nested) lines.push('[Create] nested virtualization enabled');
+      lines.push('[Configure] Ansible playbook (simplified simulation)');
+      lines = lines.concat(windowsConfiguration(runConfig), [
+        '[Protect] initial security updates applied; required reboots completed',
         '[Monitor] Zabbix and Wazuh readiness passed',
-        '[Protect] Defender and default-block firewall readiness passed',
+        '[Protect] Defender, firewall, domain time, and reboot readiness passed',
         '[Backup] required whole-VM coverage verified',
         '[DNS] private forward and reverse records registered',
         '[Record] host manifest ready',
         'SUCCESS: simulated provisioning completed.'
-      ], function () {
+      ]);
+      runSequence(lines, function () {
         setRunStatus(status, 'passed');
         reset.classList.remove('is-hidden');
-      }, 350);
+      }, 180);
     });
 
     byId('abort-build').addEventListener('click', function () {
+      if (status.textContent !== 'approval') return;
       email.classList.add('is-hidden');
       approval.classList.add('is-hidden');
       appendConsoleLine(consoleElement, '[Input] Aborted by operator');
@@ -205,6 +297,7 @@
 
     reset.addEventListener('click', function () {
       clearTimers();
+      runConfig = null;
       lockForm(false);
       setRunStatus(status, 'idle');
       byId('win-run-title').textContent = 'Waiting for a build';
@@ -220,38 +313,100 @@
     if (!form) return;
     var consoleElement = byId('linux-console');
     var status = byId('linux-status');
+    var approval = byId('linux-approval');
     var timers = [];
+    var runConfig = null;
+
+    function lockForm(locked) {
+      form.querySelectorAll('input, select, button').forEach(function (control) { control.disabled = locked; });
+    }
+
+    function runSequence(lines, done) {
+      lines.forEach(function (line, index) {
+        timers.push(window.setTimeout(function () {
+          appendConsoleLine(consoleElement, line);
+          if (index === lines.length - 1) done();
+        }, 180 * (index + 1)));
+      });
+    }
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
       timers.forEach(window.clearTimeout);
       timers = [];
       consoleElement.replaceChildren();
+      approval.classList.add('is-hidden');
       setRunStatus(status, 'running');
-      form.querySelectorAll('input, select, button').forEach(function (control) { control.disabled = true; });
-      var name = byId('linux-name').value.trim();
-      var role = byId('linux-role').value;
-      var invalidName = !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(name);
-      var unsupportedRole = supportedRoles.indexOf(role) === -1;
+      lockForm(true);
+      runConfig = {
+        name: byId('linux-name').value.trim(), role: byId('linux-role').value,
+        cores: byId('linux-cores').value, memory: byId('linux-memory').value,
+        disk: byId('linux-disk').value, profile: byId('linux-profile').value
+      };
+      var invalidName = !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(runConfig.name);
+      var unsupportedRole = supportedRoles.indexOf(runConfig.role) === -1;
+      var summary = runConfig.name + ' | ' + runConfig.role + ' | Rocky Linux 9 | ' +
+        runConfig.cores + ' cores / ' + runConfig.memory + ' GB memory | ' + runConfig.disk + ' GB disk | ' + runConfig.profile;
       var lines = [
         '[Pipeline] Start of Pipeline',
-        '[Validate] ' + name + ' | ' + role + ' | Rocky Linux 9',
-        '[Validate] hostname and requested size accepted',
-        '[Validate] configuration profile: ' + byId('linux-profile').value
+        '[Validate] ' + summary,
+        '[Validate] hostname and requested size',
+        '[Validate] configuration profile: ' + runConfig.profile
       ];
       if (invalidName) lines.push('ERROR: Use a lowercase hostname with letters, numbers, and single hyphens.');
       else if (unsupportedRole) lines.push('ERROR: The selected role does not have a supported provisioning path.');
-      else lines.push('[Safety] target path supported', '[Safety] collision sources returned clear', '[Plan] base roles: firewall, time sync, Zabbix, Wazuh, patch policy, and log forwarding', '[Plan] required whole-VM backup coverage will be verified before handoff', 'SUCCESS: request is ready for planning. Demo stopped here.');
-
-      lines.forEach(function (line, index) {
-        timers.push(window.setTimeout(function () {
-          appendConsoleLine(consoleElement, line);
-          if (index === lines.length - 1) {
-            setRunStatus(status, invalidName || unsupportedRole ? 'failed' : 'passed');
-            form.querySelectorAll('input, select, button').forEach(function (control) { control.disabled = false; });
-          }
-        }, 300 * (index + 1)));
+      else lines = lines.concat([
+        '[Safety] target path supported',
+        '[Safety] collision sources returned clear',
+        '[Plan] saved Terraform plan: 1 to add, 0 to change, 0 to destroy',
+        '[Input] Approval required before Terraform apply'
+      ]);
+      runSequence(lines, function () {
+        if (invalidName || unsupportedRole) {
+          setRunStatus(status, 'failed');
+          lockForm(false);
+          return;
+        }
+        setRunStatus(status, 'approval');
+        byId('linux-plan-summary').textContent = summary + '. Plan: 1 to add, 0 to change, 0 to destroy.';
+        approval.classList.remove('is-hidden');
       });
+    });
+
+    byId('approve-linux').addEventListener('click', function () {
+      if (status.textContent !== 'approval' || !runConfig) return;
+      approval.classList.add('is-hidden');
+      setRunStatus(status, 'running');
+      var lines = [
+        '[Input] Approved by operator',
+        '[Apply] saved Terraform plan accepted',
+        '[Create] Rocky Linux 9 VM created',
+        '[Cloud-init] configure network, SSH, and expand root filesystem to ' + runConfig.disk + ' GB',
+        '[Connect] wait for SSH',
+        '[Configure] Ansible playbook (simplified simulation)'
+      ].concat(linuxConfiguration(runConfig.name, runConfig.profile), [
+        '[Protect] initial security updates applied; required reboots completed',
+        '[Monitor] Zabbix, Wazuh, and Alloy readiness passed',
+        '[Protect] SELinux, firewall, patch policy, and reboot readiness passed',
+        '[Backup] required whole-VM coverage verified',
+        '[DNS] private forward and reverse records registered',
+        '[Record] host manifest ready',
+        'SUCCESS: simulated provisioning completed.'
+      ]);
+      runSequence(lines, function () {
+        setRunStatus(status, 'passed');
+        lockForm(false);
+      });
+    });
+
+    byId('abort-linux').addEventListener('click', function () {
+      if (status.textContent !== 'approval') return;
+      approval.classList.add('is-hidden');
+      appendConsoleLine(consoleElement, '[Input] Aborted by operator');
+      appendConsoleLine(consoleElement, '[Cleanup] reserved address released; no VM was created');
+      appendConsoleLine(consoleElement, 'ABORTED: simulated provisioning stopped at the approval gate.');
+      setRunStatus(status, 'aborted');
+      lockForm(false);
     });
   }
 

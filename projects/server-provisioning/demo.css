@@ -74,6 +74,8 @@
 .console-line.good { color: #00ff96; }
 .console-line.bad { color: #ff7a92; }
 .console-line.warn { color: #ffd166; }
+.console-line.task { color: #8bdfee; margin-top: .65rem; }
+.console-line.skipped { color: #9baec4; }
 .email-gate { margin: 0 1rem 1rem; border: 1px solid rgba(174,187,208,.28); background: #f5f7fa; color: #19212d; }
 .email-chrome { display: grid; grid-template-columns: 1fr 1fr auto; gap: .6rem; padding: .6rem .75rem; border-bottom: 1px solid #d3dae3; background: #e8ecf2; font-size: .72rem; }
 .email-chrome time { color: #687484; }
@@ -96,7 +98,7 @@
 .compact-demo-grid { display: grid; grid-template-columns: 1.08fr .92fr; }
 .compact-console { min-width: 0; border-left: 1px solid rgba(0,212,255,.24); background: #070b13; }
 .compact-console header { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1rem; border-bottom: 1px solid rgba(174,187,208,.16); color: #00d4ff; font: .72rem 'Share Tech Mono', monospace; text-transform: uppercase; }
-.compact-console > div { min-height: 15rem; padding: 1rem; font: .74rem/1.6 'Share Tech Mono', monospace; }
+.compact-console > [role="log"] { min-height: 15rem; max-height: 34rem; overflow: auto; padding: 1rem; font: .74rem/1.6 'Share Tech Mono', monospace; }
 
 .service-table { margin-top: 1.5rem; }
 .service-table td:first-child { min-width: 9rem; }

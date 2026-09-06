@@ -294,7 +294,7 @@
             </form>
             <aside class="run-panel" aria-live="polite">
             <div class="run-head"><span><small>Console output</small><strong id="win-run-title">Waiting for a build</strong></span><span class="run-status idle" id="win-status">idle</span></div>
-              <div class="console" id="win-console" role="log"><p class="console-muted">Choose parameters and select Build. The demo validates the request before it simulates provisioning.</p></div>
+              <div class="console" id="win-console" role="log" tabindex="0" aria-label="Windows simulated Jenkins console"><p class="console-muted">Choose parameters and select Build. The demo validates the request before it simulates provisioning.</p></div>
               <div class="email-gate is-hidden" id="win-email">
                 <div class="email-chrome"><span>Inbox</span><strong>Jenkins</strong><time>just now</time></div>
                 <div class="email-body"><span>Approval required</span><h4 id="email-title">Provision app-server-01</h4><p>Terraform finished planning this Windows Server request. Jenkins is waiting for an operator decision.</p><dl id="email-details"></dl><button type="button" class="demo-button" id="open-approval">Open Jenkins approval</button></div>
@@ -304,7 +304,7 @@
             </aside>
           </div>
         </div>
-        <p class="demo-note">Change storage from NFS to NVMe. Both disk menus update, and the console reports the active limit when the build starts.</p>
+        <p class="demo-note">Choose tools, Windows features, or a data disk, then approve the simulated build. The console shows a short Ansible playbook with the selected installation steps and skips unused options. Feature installation does not configure a server role or promote a domain controller.</p>
         <div class="explain-grid">
           <div><h3>Conditional disk work</h3><p>The operating-system disk moves only for node-local storage. A second disk is created only when the request includes one.</p></div>
           <div><h3>Template and first boot</h3><p>The pipeline resolves a template by tags. Terraform clones it, and a first-boot script brings up WinRM over HTTPS.</p></div>
@@ -330,9 +330,14 @@
               </div>
               <div class="build-row"><button type="submit" class="demo-button">Build</button><span>No address or VM is created.</span></div>
             </form>
-            <aside class="compact-console" aria-live="polite"><header><span>Console output</span><strong class="run-status idle" id="linux-status">idle</strong></header><div id="linux-console" role="log"><p class="console-muted">Select Build to run the browser-only validation.</p></div></aside>
+            <aside class="compact-console" aria-live="polite">
+              <header><span>Console output</span><strong class="run-status idle" id="linux-status">idle</strong></header>
+              <div id="linux-console" role="log" tabindex="0" aria-label="Linux simulated Jenkins console"><p class="console-muted">Select Build to plan the request, then approve it to see Ansible configuration.</p></div>
+              <div class="approval-gate is-hidden" id="linux-approval"><span>Operator approval required</span><strong>Apply the saved Terraform plan?</strong><p id="linux-plan-summary"></p><div><button type="button" class="demo-button" id="approve-linux">Approve and apply</button><button type="button" class="demo-button secondary" id="abort-linux">Abort</button></div></div>
+            </aside>
           </div>
         </div>
+        <p class="demo-note">Choose Base server or CI runner to change the playbook output. Both install monitoring and the security baseline; CI runner also installs Docker and the Actions runner. The build waits for your approval before it simulates creating or configuring the VM.</p>
         <p>The short form is intentional. The role selects the allowed network, and the requested memory feeds the placement check. Terraform creates the VM, cloud-init sets the initial network and SSH access, and Ansible applies the versioned base configuration. Later gates apply the initial security update and verify monitoring, Wazuh, SELinux, firewall, patch timer, reboot, and backup readiness.</p>
         <p>Jenkins coordinates both operating-system paths. It renders parameters, starts the provisioner pod, checks gates, pauses for approval, keeps the stage log, and sends the result. The address, infrastructure state, VM, operating system, and credentials remain with their owning systems.</p>
       </section>
