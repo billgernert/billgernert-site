@@ -267,7 +267,7 @@
         <dl class="at-a-glance">
           <div><dt>Outcome</dt><dd>One daily report separates actionable work, incomplete evidence, and known noise before the workday starts.</dd></div>
           <div><dt>Operating scope</dt><dd>The live job reads alerting, monitoring, CI, and backup evidence, stores its own history, uses bounded model analysis, and stops at a report.</dd></div>
-          <div><dt>Evidence</dt><dd>The page injects the latest run totals from live facts. A public dashboard and per-source heartbeats show whether collection and triage actually ran.</dd></div>
+          <div><dt>Evidence</dt><dd>The site build fills in the latest run totals from live facts. The public dashboard shows remaining subscription usage; private per-source heartbeats show whether collection actually ran.</dd></div>
           <div><dt>Primary lesson</dt><dd>A quiet source and a collector that stopped are different states. Each collector records a heartbeat before an empty result can be treated as quiet.</dd></div>
         </dl>
       </section>
@@ -289,16 +289,18 @@
       </section>
 
       <section class="block" id="dashboard">
-        <h2>The dashboard proves the chain is alive</h2>
-        <p>The email is useful evidence that a report was delivered, but delivery alone does not prove every source was collected or every classifier ran. The public Grafana view keeps the operating evidence beside the story: current service health, model-capacity observations, the latest triage result, triage activity, and aggregate alert severity. Internal finding text, prompts, host identities, and management links remain private.</p>
-        <p class="live-note"><strong>How to read it:</strong> begin with the latest triage result, then check that activity is current and that no shared service is down. Capacity panels explain whether a hard case could receive a second opinion. Alert-severity panels describe the wider environment; they do not prove the triage job itself ran.</p>
+        <h2>Provider usage replaces API cost</h2>
+        <p>I now switch between ChatGPT and Claude subscriptions based on which eligible provider has the most usage remaining. Ollama still handles the first classification locally; hard cases can receive a second opinion through the subscription router. There is no metered API fallback.</p>
+        <p>The router compares weekly usage remaining after setting aside each provider's reserve for interactive work. The five-hour allowance breaks a tie. Failed, stale, incomplete, or reserve-breaching usage observations make a provider ineligible.</p>
+        <p class="live-note"><strong>How to read it:</strong> the gauges show weekly and five-hour usage remaining for each provider. The pace charts compare weekly allowance with the rate needed to last until reset. These are subscription percentages, not API costs, and they do not prove that a triage run completed.</p>
         <div data-public-noc>
-          <p class="live-status" data-live-status aria-live="polite">Checking the live AIOps dashboard.</p>
-          <iframe class="live-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/25832766d83242fd95c6136c5d9fe83f" title="Public AIOps and alerting dashboard" loading="lazy" referrerpolicy="no-referrer" hidden></iframe>
-          <div class="live-fallback" data-live-fallback hidden><p>The live AIOps dashboard is unavailable. No cached triage state is presented as current.</p></div>
-          <noscript><p>The live AIOps dashboard requires JavaScript.</p></noscript>
+          <p class="live-status" data-live-status aria-live="polite">Checking the live subscription-usage dashboard.</p>
+          <iframe class="live-frame" data-live-frame data-src="https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d" title="Live public ChatGPT and Claude subscription usage dashboard" loading="lazy" referrerpolicy="no-referrer" hidden></iframe>
+          <div class="live-fallback" data-live-fallback hidden><p>The live subscription-usage dashboard is unavailable. No cached usage is presented as current.</p></div>
+          <noscript><p>The live subscription-usage dashboard requires JavaScript.</p></noscript>
         </div>
-        <p>The private health path goes one step deeper. Each collector writes a run heartbeat before it asks its source for findings. A current heartbeat with zero findings means the source was reached and the period was quiet. A missing or stale heartbeat means the evidence was never gathered. That distinction cannot be inferred from an empty chart.</p>
+        <p>The public view contains aggregate provider usage. Finding text, prompts, host identities, and management links remain private.</p>
+        <p>Run health is tracked separately. Each collector writes a private run heartbeat before it asks its source for findings. A current heartbeat with zero findings means the source was reached and the period was quiet. A missing or stale heartbeat means the evidence was never gathered. That distinction cannot be inferred from an empty chart.</p>
       </section>
 
       <section class="block" id="pipeline">
