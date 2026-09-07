@@ -164,14 +164,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="demo.css">
   <style>
     :root { --panel:rgba(14,21,34,.84); --line:rgba(0,212,255,.28); --muted:#aebbd0; --good:#00ff96; --warn:#ffd166; --bad:#ff5c7a; }
 
         .lede { max-width:78ch; font-size:1.16rem; }
         .source-note { margin:.9rem 0 0; padding:.7rem .85rem; border-left:3px solid #00d4ff; background:rgba(0,212,255,.055); color:var(--muted); font-size:.9rem; }
-        .shot { margin:1.5rem 0 2.5rem; }
-        .shot img { display:block; width:100%; height:auto; border:1px solid var(--line); background:#090e18; }
-        figcaption { margin-top:.7rem; color:var(--muted); font-size:.92rem; line-height:1.55; }
         .gate { margin:1.4rem 0 2.2rem; padding:1.25rem; border:1px solid rgba(255,209,102,.48); background:#090e18; }
         .gate h3 { margin-top:0; }
         .gate-flow { display:grid; grid-template-columns:1.15fr .8fr 1fr; gap:.8rem; align-items:stretch; margin:1.1rem 0; }
@@ -261,7 +259,7 @@
         <dl class="at-a-glance">
           <div><dt>Outcome</dt><dd>A reviewed request removes a virtual machine and its supporting records in a bounded order that can resume after a partial failure.</dd></div>
           <div><dt>Operating scope</dt><dd>The Linux and Windows paths coordinate Terraform state, Proxmox, address management, monitoring, DNS, Git, and the Windows directory record.</dd></div>
-          <div><dt>Evidence</dt><dd>Offline fixtures prove delete, empty-plan, and unreadable-plan behavior, and the page shows the running job form. A verified live decommission run is still owed.</dd></div>
+          <div><dt>Evidence</dt><dd>Offline fixtures prove delete, empty-plan, and unreadable-plan behavior. The working browser demo below follows those outcomes through the approval and cleanup stages. A verified live decommission run is still owed.</dd></div>
           <div><dt>Primary lesson</dt><dd>A successful Terraform exit cannot prove that anything will be deleted. The saved plan must contain a real delete before the approval gate opens.</dd></div>
         </dl>
       </section>
@@ -269,10 +267,42 @@
       <section class="block" id="request">
         <h2>One name starts a bounded teardown</h2>
         <p>The operator supplies the machine name because that name is also the Terraform workspace. A workspace is the isolated state record for one machine. Selecting it tells Terraform which infrastructure record to read and prevents a request for one server from silently drifting into another server’s state.</p>
-        <figure class="shot">
-          <img src="img/jenkins-decommission-form.png" alt="Jenkins decommission form with one machine-name field and a build button." width="1055" height="320" loading="lazy">
-          <figcaption>The Linux decommission form. Its small surface is deliberate: the workflow derives the address and every cleanup target from the selected machine’s recorded state. Captured from the running Jenkins job on 2026-08-22.</figcaption>
-        </figure>
+        <div class="demo-window" id="decommission-demo">
+          <div class="demo-toolbar">
+            <span class="jenkins-mark" aria-hidden="true">J</span>
+            <span><small>Jenkins</small><strong id="decommission-job-title">Pipeline [VM] Decommission Linux</strong></span>
+            <span class="demo-tag">Interactive demo</span>
+          </div>
+          <div class="job-switch" role="group" aria-label="Choose a decommission job">
+            <button type="button" class="job-choice selected" data-decommission-os="linux" aria-pressed="true">Linux job</button>
+            <button type="button" class="job-choice" data-decommission-os="windows" aria-pressed="false">Windows job</button>
+            <p>Linux and Windows are separate Jenkins jobs. This switch changes which cleanup path the browser simulates.</p>
+          </div>
+          <div class="demo-layout">
+            <form class="demo-form" id="decommission-form">
+              <p class="form-intro">The real job asks for one value. The machine name selects its isolated Terraform workspace and recorded address.</p>
+              <div class="form-grid">
+                <label class="demo-field"><span>VM_NAME</span><small>Hostname and Terraform workspace to remove.</small><input id="decommission-name" name="vm_name" value="runner-01" autocomplete="off" required></label>
+                <label class="demo-field"><span>DEMO_SCENARIO</span><small>This browser-only control changes the simulated plan evidence.</small><select id="decommission-scenario"><option value="delete">Saved plan contains one delete</option><option value="empty">Saved plan contains no deletes</option><option value="unreadable">Saved plan cannot be read</option><option value="missing">Workspace does not exist</option></select></label>
+              </div>
+              <div class="destructive-note"><strong>Permanent operation</strong><p>A passing plan still waits for an operator. Aborting at the gate leaves the VM and its records intact.</p></div>
+              <div class="build-row"><button type="submit" class="demo-button danger">Build</button><span>Demo only. No VM, address, record, workspace, or credential is changed.</span></div>
+            </form>
+            <aside class="run-panel" aria-label="Simulated Jenkins decommission output">
+              <div class="run-head"><span><small>Console output</small><strong id="decommission-run-title">Waiting for a request</strong></span><span class="run-status idle" id="decommission-status" aria-live="polite">idle</span></div>
+              <div class="console" id="decommission-console" role="log" aria-live="polite"><p class="console-muted">Choose a job and plan result, then select Build. The demo proves the destroy plan before it opens the approval gate.</p></div>
+              <div class="email-gate is-hidden" id="decommission-email">
+                <div class="email-chrome"><span>From: AutomationLab</span><span>To: Platform operations</span><span class="email-time">now</span></div>
+                <div class="email-body"><span>Approval email</span><h4 id="decommission-email-title">Destroy request</h4><p>The saved plan contains a deletion. Review the selected machine before opening the Jenkins input step.</p><dl id="decommission-email-details"></dl><button type="button" class="demo-button danger" id="open-destroy-approval">Review and destroy</button></div>
+              </div>
+              <div class="approval-gate is-hidden" id="decommission-approval">
+                <span>Jenkins input step</span><strong>Confirm permanent destruction</strong><p id="decommission-approval-copy"></p><div><button type="button" class="demo-button danger" id="approve-destroy">Permanently destroy</button><button type="button" class="demo-button secondary" id="abort-destroy">Abort</button></div>
+              </div>
+              <button type="button" class="demo-button secondary reset-button is-hidden" id="reset-decommission">Run another scenario</button>
+            </aside>
+          </div>
+        </div>
+        <p class="demo-note">Try an empty, unreadable, or missing plan first. Those cases stop before email or approval. A saved plan with a deletion reaches the email and operator gate, then follows the operating-system-specific cleanup path.</p>
         <p>The first stages validate the name, check out the reviewed automation, select the matching workspace, and read the machine’s recorded address. Terraform then creates a saved destroy plan. Nothing has been deleted yet. The plan is a reviewable description of what Terraform intends to remove, and the same saved file is applied after approval so the request cannot be approved against one plan and executed against another.</p>
         <p>Linux and Windows use the same control path. Windows adds two cleanup responsibilities because the machine also has an Active Directory computer object and a per-host monitoring key.</p>
       </section>
@@ -285,12 +315,12 @@
           <div class="gate-flow">
             <div class="gate-node"><span class="label">Input</span><strong>Selected machine workspace</strong><p>The machine name selects one isolated Terraform state record. A missing workspace fails here.</p></div>
             <div class="gate-node check"><span class="label">Content check</span><strong>Read the saved plan</strong><p>The validator scans the plan’s action list for a delete, including replacement actions that delete and recreate.</p></div>
-            <div class="gate-branches"><div class="branch"><span class="label">Delete found</span><strong>Ask for approval</strong><p>The exact saved plan can continue to the human gate.</p></div><div class="branch stop"><span class="label">Empty or unreadable</span><strong>Stop the build</strong><p>No approval email, no apply, and no cleanup that could dismantle the wrong records.</p></div></div>
+            <div class="gate-branches"><div class="branch"><span class="label">Delete found</span><strong>Ask for approval</strong><p>The exact saved plan can continue to the operator gate.</p></div><div class="branch stop"><span class="label">Empty or unreadable</span><strong>Stop the build</strong><p>No approval email, no apply, and no cleanup that could dismantle the wrong records.</p></div></div>
           </div>
           <p class="diagram-foot">The workspace proves which machine is targeted. The plan validator proves that Terraform intends to delete something from that machine’s state. Both checks must pass. A successful command exit by itself is not enough.</p>
         </div>
         <p>The validator has three outcomes. A readable plan containing a delete passes. A readable plan with no delete reports that the destroy plan is empty. A missing, truncated, or malformed plan reports that the evidence cannot be trusted. Both non-passing outcomes stop the stage.</p>
-        <p>The human gate comes after this machine check. Jenkins emails the machine name and recorded address, then waits for an explicit destroy action. The wait is bounded. Rejecting the request or letting the approval expire stops before Terraform applies the plan. The human decides whether the requested destruction is appropriate; the code proves there is an actual destruction to review.</p>
+        <p>The operator gate comes after this machine check. Jenkins emails the machine name and recorded address, then waits for an explicit destroy action. The wait is bounded. Rejecting the request or letting the approval expire stops before Terraform applies the plan. The operator decides whether the requested destruction is appropriate; the code proves there is an actual destruction to review.</p>
       </section>
 
       <section class="block" id="order">
@@ -419,5 +449,6 @@
       <p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p>
     </footer>
   </div>
+  <script src="demo.js"></script>
 </body>
 </html>
