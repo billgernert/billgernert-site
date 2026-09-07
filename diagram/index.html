@@ -182,8 +182,8 @@
       </a>
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
-        <a href="/platform/">Platform</a>
-        <a href="/live/" class="active" aria-current="page">Live</a>
+        <a href="/platform/" class="active" aria-current="page">Platform</a>
+        <a href="/live/">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
         <a href="https://github.com/billgernert" rel="me">GitHub</a>
@@ -238,11 +238,14 @@
 </nav>
 <div class="skill-body">
 <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
-      <p class="note">Also in <b>Live</b>:</p>
+      <p class="note">Also in <b>Platform</b>:</p>
       <ol class="project-list">
-        <li><b>Platform map.</b> The zooming, health-aware atlas of the running lab. <a href="/map/">Read more &#8594;</a></li>
-        <li><b>NOC.</b> The public dashboard entry point, where no-data stays visibly unknown. <a href="/noc/">Read more &#8594;</a></li>
-        <li><b>Postmortems.</b> Long-form failure writeups and the follow-on work they produced. <a href="/postmortems-index/">Read more &#8594;</a></li>
+        <li><b>Engineering capabilities.</b> A short overview of the skills used across the projects. <a href="/capabilities/">Read more &#8594;</a></li>
+        <li><b>Roadmap.</b> What is already live, what is still being built, and where the next trade-offs sit. <a href="/roadmap/">Read more &#8594;</a></li>
+        <li><b>Vault.</b> The secrets system, its measured recovery, and the limits that are still named plainly. <a href="/vault/">Read more &#8594;</a></li>
+        <li><b>Windows identity.</b> Directory, certificate authority, MFA, and the identity failure that is still shown as an active investigation. <a href="/windows-identity/">Read more &#8594;</a></li>
+        <li><b>Mail.</b> Self-hosted mail with the delivery path, DNS records, and operational limits explained. <a href="/mail/">Read more &#8594;</a></li>
+        <li><b>Recovery test.</b> The restore check that destroys a VM on purpose and times the recovery path. <a href="/dr-restore-verify/">Read more &#8594;</a></li>
       </ol>
       <!-- END generated: group-hub -->
 <section class="block" id="map"><h2>The map separates traffic, execution, trust, and evidence</h2><figure class="architecture"><img src="/assets/engineering-diagrams/lab-architecture-path.svg" alt="AutomationLab architecture from public edge through Kubernetes and shared services to Proxmox compute, monitoring, and backup" width="1200" height="980" loading="lazy"></figure><p>Reading downward follows a normal application request. Reading across the middle shows the shared services an application or pipeline calls. Reading upward from the bottom follows monitoring and recovery evidence back to the operator.</p><p>The diagram uses roles rather than internal names. The live operator map carries hostnames, addresses, guest placement, and management links. The public page keeps the relationship and leaves out the identifiers needed to operate the environment.</p></section>
@@ -270,6 +273,7 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Platform</span>
           <a href="/platform/">How it works</a>
+          <a href="/diagram/">Architecture</a>
           <a href="/capabilities/">Capabilities</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/vault/">Vault</a>
@@ -283,7 +287,6 @@
         <div class="sitemap-group">
           <span class="sitemap-label">Live and about</span>
           <a href="/live/">Live</a>
-          <a href="/diagram/">Architecture</a>
           <a href="/noc/">NOC</a>
           <a href="/about/">About Bill</a>
         </div>
