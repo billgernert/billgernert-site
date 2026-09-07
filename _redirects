@@ -29,7 +29,7 @@
 /capabilities/jenkins /projects/jenkins/ 301
 /capabilities/jenkins.html /projects/jenkins/ 301
 /capabilities/jenkins/ /projects/jenkins/ 301
-# Compatibility endpoint still used by the public NOC subscription-usage tile.
+# Legacy compatibility endpoint; the NOC links through /noc/open/ai-usage.
 /fleet/open/usage https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d 302
 /fleet /projects/ 301
 /fleet/ /projects/ 301
@@ -40,6 +40,7 @@
 
 # Public NOC drill-downs cross this site-owned redirect so Grafana performs a fresh document load
 # inside the existing iframe instead of reusing query results from the previous public dashboard.
+/noc/open/ai-usage https://status.billgernert.com/public-dashboards/20b91a8562b94bbeafea959117ea703d 302
 /noc/open/overview https://status.billgernert.com/public-dashboards/8ffc7b1093f14876901d5371b8861ba7 302
 /noc/open/infrastructure https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66 302
 /noc/open/kubernetes https://status.billgernert.com/public-dashboards/e1b338bf0d0d428882e10c4b24194126 302
