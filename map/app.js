@@ -9,118 +9,6 @@
     (publicView ? "/api/v1/public-topology" : "/api/v1/topology");
   const snapshotCacheKey = publicView ? "automation-lab-public-topology-v1" : null;
   const state = { snapshot: null, byId: new Map(), focus: null, path: [], selected: null, scale: 1, x: 0, y: 0, dragging: false, routeLive: false };
-  const SERVICE_GUIDES = [
-  {
-    "key": "overview",
-    "name": "AutomationLab",
-    "title": "A platform from request to recovery",
-    "purpose": "I connect infrastructure, delivery, identity, monitoring, and recovery into repeatable operating workflows.",
-    "design": "The map joins existing systems so a service can be understood in its operating context.",
-    "proof": "Service health shows the latest observation. It does not prove recovery or compliance.",
-    "link": "/platform/",
-    "linkText": "Read how the platform works"
-  },
-  {
-    "key": "infrastructure",
-    "name": "Infrastructure",
-    "title": "A repeatable foundation for services",
-    "purpose": "Virtual machines, containers, and storage provide the capacity that services run on.",
-    "design": "Provisioning and configuration are separate steps, so the same baseline can be applied again.",
-    "proof": "Utilization and power state describe capacity. They do not establish application availability.",
-    "link": "/projects/server-provisioning/",
-    "linkText": "Explore server provisioning"
-  },
-  {
-    "key": "kubernetes",
-    "name": "Kubernetes",
-    "title": "Follow an application into its runtime",
-    "purpose": "Kubernetes runs container workloads and reports their desired and observed state.",
-    "design": "Workloads, services, and storage are grouped so runtime problems can be investigated in context.",
-    "proof": "Readiness is an operating signal. End-to-end application checks provide a different kind of evidence.",
-    "link": "/gitops-argocd/",
-    "linkText": "Read the GitOps design"
-  },
-  {
-    "key": "delivery",
-    "name": "Delivery pipelines",
-    "title": "Trace a change from source to service",
-    "purpose": "Source control, Jenkins, the registry, and Argo CD connect changes to running applications.",
-    "design": "Versioned pipelines make the build and delivery steps inspectable and repeatable.",
-    "proof": "A successful pipeline describes that run. A successful deployment also needs runtime validation.",
-    "link": "/projects/",
-    "linkText": "Read the project stories"
-  },
-  {
-    "key": "identity",
-    "name": "Identity & PKI",
-    "title": "Identity as a platform dependency",
-    "purpose": "Directory services and certificate infrastructure support access to the platform.",
-    "design": "Identity and certificate lifecycles are visible alongside the services that rely on them.",
-    "proof": "Reachability does not demonstrate every sign-in path or authorization rule.",
-    "link": "/windows-identity/",
-    "linkText": "Read the identity design"
-  },
-  {
-    "key": "security",
-    "name": "Security & credentials",
-    "title": "Understand the controls and their limits",
-    "purpose": "Secrets management, credential lifecycle automation, and detection support platform security.",
-    "design": "Controls have different responsibilities. Their reachability and their effectiveness must be assessed separately.",
-    "proof": "This map is not a security certification. Use the documented control scope and verification methods.",
-    "link": "/security/",
-    "linkText": "Read the security approach"
-  },
-  {
-    "key": "certificates",
-    "name": "Certificates",
-    "title": "Follow the certificate lifecycle",
-    "purpose": "Certificate monitoring connects issuance, distribution, and expiry to the services that use certificates.",
-    "design": "Issuing a certificate and serving that certificate are separate steps that need separate checks.",
-    "proof": "Expiry information alone does not prove successful distribution or renewal.",
-    "link": "/projects/certificate-secret-renewal/",
-    "linkText": "Explore certificate renewal"
-  },
-  {
-    "key": "recovery",
-    "name": "PBS Backup & Recovery",
-    "title": "A backup matters when it can be restored",
-    "purpose": "Backup services and restore workflows provide a path to recover platform workloads.",
-    "design": "Backup storage, verification, and restore checks are distinct parts of recovery readiness.",
-    "proof": "A reachable backup service or green job is not proof of a successful application restore.",
-    "link": "/dr-restore-verify/",
-    "linkText": "Read the recovery method"
-  },
-  {
-    "key": "network",
-    "name": "Network",
-    "title": "See the logical connectivity layers",
-    "purpose": "Routing, DNS, and IP address management connect services across the platform.",
-    "design": "Availability checks help separate service failures from connectivity failures.",
-    "proof": "A successful probe establishes the tested path at the observed time, not every network path.",
-    "link": "/diagram/",
-    "linkText": "Explore the logical architecture"
-  },
-  {
-    "key": "mail",
-    "name": "Mail",
-    "title": "Close the notification path",
-    "purpose": "Mail carries platform notifications and operational alerts.",
-    "design": "Delivery telemetry complements service checks so notification failures can be investigated.",
-    "proof": "An available mail service does not prove that a particular notification reached its recipient.",
-    "link": "/mail/",
-    "linkText": "Read the mail design"
-  },
-  {
-    "key": "ai",
-    "name": "AI operations",
-    "title": "Put automation in an operating context",
-    "purpose": "AI services and supporting workflows are observed alongside their infrastructure and budgets.",
-    "design": "Budget and service signals make resource constraints visible to the operator.",
-    "proof": "Gateway health and spend measurements do not establish the correctness of an AI response.",
-    "link": "/ai/",
-    "linkText": "Read the applied AI approach"
-  }
-];
   const NS = "http://www.w3.org/2000/svg";
   const ICONS = {
     lab: "brand", "automation-lab": "brand", network: "network", compute: "proxmox", kubernetes: "kubernetes",
@@ -463,7 +351,7 @@
   }
   function addNode(node, point, role) {
     const icon = iconForNode(node);
-    const group = element("g", {class: `node ${node.state} ${role}`, transform: `translate(${point.x} ${point.y})`, role: "button", tabindex: "0", "data-icon": icon, "data-component-id": node.id, "aria-label": `${node.name}, ${node.state}, ${node.metric}`});
+    const group = element("g", {class: `node ${node.state} ${role}`, transform: `translate(${point.x} ${point.y})`, role: "button", tabindex: "0", "data-icon": icon, "aria-label": `${node.name}, ${node.state}, ${node.metric}`});
     const title = element("title"); title.textContent = `${node.name} · ${node.metric}`; group.appendChild(title);
     const radius = role === "center" ? 31 : 22;
     group.appendChild(element("circle", {class: "halo", r: radius + 10}));
@@ -481,156 +369,14 @@
     group.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectNode(node); } });
     viewport.appendChild(group);
   }
-  function make(tag, value, className) {
-    const result = document.createElement(tag);
-    if (value) result.textContent = value;
-    if (className) result.className = className;
-    return result;
-  }
-  const explorer = { query: "", domain: "", list: false, journey: null, step: 0 };
-  const JOURNEYS = {
-    provision: { title: "Provision a server", link: "/projects/server-provisioning/", steps: [
-      ["delivery", "1. Validate the request", "Select the operating system and supported target, then validate inputs before provisioning."],
-      ["infrastructure", "2. Create the machine", "Use a versioned template and provisioning workflow to create the requested machine."],
-      ["identity", "3. Apply the baseline", "Configuration steps depend on the operating system and selected options. Follow the project walkthrough for Windows and Linux."],
-      ["network", "4. Validate and hand over", "Check connectivity and the configured services. A created machine still needs validation before handover."]
-    ]},
-    recover: { title: "Recover a service", link: "/dr-restore-verify/", steps: [
-      ["recovery", "1. Establish the recovery scope", "Choose the workload and recovery point. Confirm which data and service checks the exercise will cover."],
-      ["infrastructure", "2. Restore into a test environment", "Restore the workload into an isolated environment using the documented recovery procedure."],
-      ["recovery", "3. Verify the restored service", "Validate recovered data and application behavior. Storage reachability alone is not a restore test."],
-      ["delivery", "4. Record the outcome", "Record the run, scope, duration, validation results, and remaining limitations. A documented method is not a measured result."]
-    ]}
-  };
-  function initializeExplorer() {
-    const host = document.getElementById("map-explorer"); if (!host) return;
-    const controls = make("div", "", "explorer-controls");
-    const label = make("label", "Find a component"); const search = make("input");
-    search.type = "search"; search.id = "component-search"; search.placeholder = "Search services, products, or components";
-    label.htmlFor = search.id; label.appendChild(search); controls.appendChild(label);
-    const filterLabel = make("label", "Capability"); const filter = make("select"); filter.id = "capability-filter";
-    filterLabel.htmlFor = filter.id; const all = make("option", "All capabilities"); all.value = ""; filter.appendChild(all);
-    SERVICE_GUIDES.filter(item => item.key !== "overview").forEach(item => { const option = make("option", item.name); option.value = item.key; filter.appendChild(option); });
-    filterLabel.appendChild(filter); controls.appendChild(filterLabel);
-    const toggle = make("button", "List view"); toggle.type = "button"; toggle.id = "view-toggle"; toggle.setAttribute("aria-pressed", "false");
-    toggle.onclick = () => { explorer.list = !explorer.list; toggle.textContent = explorer.list ? "Map view" : "List view"; toggle.setAttribute("aria-pressed", String(explorer.list)); document.querySelector(".map-stage").hidden = explorer.list; renderNodeList(); };
-    controls.appendChild(toggle); host.appendChild(controls);
-    const tours = make("div", "", "journey-launchers"); tours.appendChild(make("span", "Follow a workflow"));
-    for (const [key, journey] of Object.entries(JOURNEYS)) {
-      const button = make("button", journey.title); button.type = "button"; button.onclick = () => { explorer.journey = key; explorer.step = 0; renderJourney(true); };
-      tours.appendChild(button);
-    }
-    host.appendChild(tours);
-    const panel = make("section", "", "journey-panel"); panel.id = "journey-panel"; panel.hidden = true; panel.setAttribute("aria-label", "Guided workflow"); host.appendChild(panel);
-    const results = make("section", "", "component-results"); results.id = "component-results"; results.hidden = true; results.setAttribute("aria-label", "Component list");
-    const count = make("p"); count.id = "component-count"; count.setAttribute("role", "status"); results.appendChild(count);
-    const list = make("ul"); list.id = "component-list"; results.appendChild(list); host.appendChild(results);
-    search.addEventListener("input", () => { explorer.query = search.value.trim().toLowerCase(); renderNodeList(); });
-    filter.addEventListener("change", () => { explorer.domain = filter.value; renderNodeList(); });
-  }
-  function renderJourney(navigate = false) {
-    const panel = document.getElementById("journey-panel"); if (!panel || !explorer.journey) return;
-    const journey = JOURNEYS[explorer.journey]; const step = journey.steps[explorer.step]; panel.replaceChildren(); panel.hidden = false;
-    panel.appendChild(make("p", "GUIDED EXPLANATION · No infrastructure actions", "eyebrow"));
-    panel.appendChild(make("h2", journey.title));
-    const heading = make("h3", step[1]); heading.tabIndex = -1; panel.appendChild(heading); panel.appendChild(make("p", step[2]));
-    const footer = make("div", "", "journey-actions");
-    const previous = make("button", "Previous"); previous.type = "button"; previous.disabled = explorer.step === 0; previous.onclick = () => { explorer.step -= 1; renderJourney(true); };
-    const next = make("button", explorer.step === journey.steps.length - 1 ? "Finish tour" : "Next step"); next.type = "button";
-    next.onclick = () => { if (explorer.step === journey.steps.length - 1) { explorer.journey = null; panel.hidden = true; document.getElementById("component-search").focus(); } else { explorer.step += 1; renderJourney(true); } };
-    const close = make("button", "Close tour"); close.type = "button"; close.onclick = () => { explorer.journey = null; panel.hidden = true; document.getElementById("component-search").focus(); };
-    const link = make("a", "Read the documented workflow ↗"); link.href = journey.link; if (!publicView) { link.href = "https://billgernert.com" + journey.link; link.target = "_blank"; link.rel = "noreferrer"; }
-    footer.append(previous, make("span", `${explorer.step + 1} / ${journey.steps.length}`), next, close, link); panel.appendChild(footer);
-    if (navigate && state.snapshot) {
-      const guide = SERVICE_GUIDES.find(item => item.key === step[0]); const node = state.snapshot.nodes.find(item => item.name === guide.name);
-      if (node) selectRoute(node.id);
-    }
-    heading.focus({ preventScroll: true });
-  }
-  function renderNodeList() {
-    const host = document.getElementById("component-results"); if (!host || !state.snapshot) return;
-    host.hidden = !(explorer.list || explorer.query || explorer.domain);
-    if (host.hidden) return;
-    const candidates = explorer.query || explorer.domain ? state.snapshot.nodes : (nodeById(state.focus)?.children || []).map(nodeById).filter(Boolean);
-    const matches = candidates.filter(node => (!explorer.query || `${node.name} ${node.details?.kind || ""}`.toLowerCase().includes(explorer.query)) &&
-      (!explorer.domain || guideFor(node).key === explorer.domain));
-    const list = document.getElementById("component-list"); list.replaceChildren();
-    document.getElementById("component-count").textContent = `${matches.length} components${matches.length > 100 ? " · Showing the first 100. Refine your search." : ""}${matches.length === 0 ? " · Try another search or capability." : ""}`;
-    for (const node of matches.slice(0, 100)) {
-      const li = make("li"); const button = make("button"); button.type = "button"; button.setAttribute("data-component-id", node.id);
-      button.append(make("strong", node.name), make("span", `${node.state} · ${node.metric}`, "detail-secondary"));
-      button.onclick = () => { selectRoute(node.id); document.getElementById("service-story")?.scrollIntoView({ block: "nearest" }); };
-      li.appendChild(button); list.appendChild(li);
+  function selectNode(node) {
+    state.selected = node.id; updateDetail(node);
+    if ((node.children || []).length) {
+      if (state.path[state.path.length - 1] !== node.id) state.path.push(node.id);
+      state.focus = node.id; render();
     }
   }
-  function renderExplorerDetail(node) {
-    const host = document.getElementById("service-story"); if (!host) return;
-    const guide = guideFor(node); host.replaceChildren();
-    const context = make("div"); context.appendChild(make("p", guide.name, "eyebrow")); context.appendChild(make("h2", guide.title));
-    context.appendChild(make("p", guide.purpose)); context.appendChild(make("p", guide.design));
-    if (node.name !== guide.name) context.appendChild(make("p", `${node.name} is shown in the ${guide.name} context. ${node.children?.length || 0} direct components.`, "detail-secondary"));
-    const link = make("a", guide.linkText + " ↗"); link.href = (publicView ? "" : "https://billgernert.com") + guide.link; context.appendChild(link);
-    const evidence = make("div", "", "evidence-note"); evidence.appendChild(make("h3", "What the evidence means")); evidence.appendChild(make("p", guide.proof));
-    const recorded = guide.key === "recovery" ? document.getElementById("recorded-restore-evidence") : null;
-    if (recorded) {
-      const copy = recorded.cloneNode(true); copy.removeAttribute("id"); copy.hidden = false;
-      copy.querySelectorAll("[id]").forEach(item => item.removeAttribute("id")); evidence.appendChild(copy);
-    } else evidence.appendChild(make("p", "Linked material: design and verification method. No dated run evidence is attached to this card.", "detail-secondary"));
-    const observed = node.sampled_at ? new Date(typeof node.sampled_at === "number" ? node.sampled_at * 1000 : node.sampled_at) : null;
-    evidence.appendChild(make("p", observed && Number.isFinite(observed.getTime()) ? `Signal observed ${observed.toLocaleString()}` : "No direct observation timestamp for this component.", "detail-secondary"));
-    const relations = make("div", "", "relation-links");
-    for (const [key, label] of [["dependencies", "Depends on"], ["affected", "May affect"]]) {
-      const nodes = (node[key] || []).map(nodeById).filter(Boolean);
-      if (!nodes.length) continue;
-      relations.appendChild(make("strong", label));
-      nodes.forEach(related => { const button = make("button", related.name); button.type = "button"; button.onclick = () => selectRoute(related.id); relations.appendChild(button); });
-    }
-    if (!relations.children.length) relations.appendChild(make("p", "No explicit dependency relationships are recorded here. This does not imply that the component is independent.", "detail-secondary"));
-    evidence.appendChild(relations); host.append(context, evidence);
-  }
-
-  function pathTo(id) {
-    if (!state.snapshot || !state.byId.has(id)) return [];
-    const queue = [[state.snapshot.root]];
-    const seen = new Set();
-    for (let i = 0; i < queue.length; i += 1) {
-      const path = queue[i]; const tail = path[path.length - 1];
-      if (tail === id) return path;
-      if (seen.has(tail)) continue;
-      seen.add(tail);
-      for (const child of nodeById(tail)?.children || []) if (!seen.has(child)) queue.push([...path, child]);
-    }
-    return [state.snapshot.root, id];
-  }
-  function guideFor(node) {
-    const path = pathTo(node.id).reverse();
-    for (const id of path) {
-      const name = nodeById(id)?.name.toLowerCase();
-      const guide = SERVICE_GUIDES.find(item => item.name.toLowerCase() === name);
-      if (guide && guide.key !== "overview") return guide;
-    }
-    return SERVICE_GUIDES[0];
-  }
-  function routeId() {
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    const service = params.get("service");
-    const guide = SERVICE_GUIDES.find(item => item.key === service);
-    if (guide) return state.snapshot?.nodes.find(node => node.name.toLowerCase() === guide.name.toLowerCase())?.id;
-    return params.get("node");
-  }
-  function selectRoute(id, writeHistory = true) {
-    const node = nodeById(id); if (!node) return;
-    state.selected = id; state.focus = id; state.path = pathTo(id);
-    if (writeHistory) {
-      const guide = SERVICE_GUIDES.find(item => item.name.toLowerCase() === node.name.toLowerCase());
-      const params = new URLSearchParams(); params.set(guide ? "service" : "node", guide ? guide.key : id);
-      window.history.pushState(null, "", "#" + params.toString());
-    }
-    render();
-  }
-  function selectNode(node) { selectRoute(node.id); }
   function updateDetail(node) {
-    renderExplorerDetail(node);
     const details = node.details || {};
     const setDetail = (id, value) => { const target = document.getElementById(id); target.textContent = value; target.title = value; };
     const setSegmentedDetail = (id, value) => {
@@ -672,11 +418,10 @@
       if (index) { const separator = document.createElement("span"); separator.textContent = "›"; host.appendChild(separator); }
       const node = nodeById(id); const button = document.createElement("button"); button.type = "button"; button.textContent = index === 0 ? "AutomationLab platform map" : node.name;
       if (index === state.path.length - 1) button.className = "current";
-      button.addEventListener("click", () => selectRoute(id)); host.appendChild(button);
+      button.addEventListener("click", () => { state.path = state.path.slice(0, index + 1); state.focus = id; state.selected = id; render(); }); host.appendChild(button);
     });
   }
-  function render(preserveView = false) {
-    const focusedId = preserveView ? document.activeElement?.getAttribute("data-component-id") : null;
+  function render() {
     viewport.replaceChildren(); renderBreadcrumbs();
     const focus = nodeById(state.focus); if (!focus) return;
     const box = svg.getBoundingClientRect(); const span = Math.min(box.width, box.height);
@@ -691,15 +436,14 @@
     children.forEach(node => addNode(node, childPoints.get(node.id), "child"));
     relations.forEach(node => addNode(node, relationPoints.get(node.id), "relation"));
     addNode(focus, {x: 0, y: 0}, "center");
-    updateDetail(nodeById(state.selected) || focus); renderNodeList(); if (!preserveView) resetView(); else setTransform();
-    if (focusedId) Array.from(document.querySelectorAll("[data-component-id]")).find(item => item.getAttribute("data-component-id") === focusedId && !item.closest("[hidden]"))?.focus({ preventScroll: true });
+    updateDetail(nodeById(state.selected) || focus); resetView();
   }
   async function load() {
     const error = document.getElementById("error");
     try {
       const response = await fetch(topologyEndpoint, {cache: "no-store"}); if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const snapshot = await response.json();
-      if (!Number.isFinite(Date.parse(snapshot.generated_at)) || Date.parse(snapshot.generated_at) > Date.now() + 30000 || Date.now() - Date.parse(snapshot.generated_at) > 120000 || snapshot.schema_version !== 1 || !Array.isArray(snapshot.nodes) || !snapshot.nodes.length ||
+      if (snapshot.schema_version !== 1 || !Array.isArray(snapshot.nodes) || !snapshot.nodes.length ||
           !snapshot.nodes.some(node => node.id === snapshot.root)) throw new Error("invalid topology schema");
       state.snapshot = snapshot; state.byId = new Map(snapshot.nodes.map(node => [node.id, node]));
       if (snapshotCacheKey) {
@@ -708,11 +452,7 @@
       if (!state.focus || !state.byId.has(state.focus)) { state.focus = snapshot.root; state.path = [snapshot.root]; state.selected = snapshot.root; }
       state.routeLive = true; updateMapBadge();
       const updated = document.getElementById("updated"); if (updated) updated.textContent = `Updated ${new Date(snapshot.generated_at).toLocaleTimeString()}`;
-      if (error) error.hidden = true;
-      const requested = routeId();
-      if (requested && state.byId.has(requested) && requested !== state.focus) selectRoute(requested, false);
-      else { state.path = pathTo(state.focus); render(true); }
-      if (!state.x && !state.y) resetView();
+      if (error) error.hidden = true; render();
     } catch (reason) {
       let restored = false;
       if (snapshotCacheKey && !state.snapshot) {
@@ -735,7 +475,7 @@
   }
   function updateMapBadge(restored = false) {
     const badge = document.getElementById("mode-badge"); if (!badge) return;
-    if (publicView && state.routeLive && state.snapshot && Date.now() - Date.parse(state.snapshot.generated_at) <= 120000) {
+    if (publicView && state.routeLive && state.snapshot) {
       const age = Math.max(0, Math.floor((Date.now() - new Date(state.snapshot.generated_at).getTime()) / 1000));
       badge.textContent = state.snapshot.degraded ? `Live and interactive, degraded, updated ${age}s ago` : `Live and interactive, updated ${age}s ago`;
     } else if (publicView) {
@@ -752,7 +492,5 @@
   document.getElementById("zoom-out").addEventListener("click", () => { state.scale = Math.max(.55, state.scale / 1.2); setTransform(); });
   document.getElementById("reset-view").addEventListener("click", resetView);
   const refresh = document.getElementById("refresh"); if (refresh) refresh.addEventListener("click", load);
-  window.addEventListener("resize", () => render());
-  window.addEventListener("popstate", () => selectRoute(routeId() || state.snapshot?.root, false));
-  initializeExplorer(); load(); window.setInterval(load, 15000); window.setInterval(updateMapBadge, 1000);
+  window.addEventListener("resize", render); load(); window.setInterval(load, 15000); window.setInterval(updateMapBadge, 1000);
 })();

@@ -166,73 +166,67 @@
   <link rel="stylesheet" href="/assets/site.css">
   <script src="../../assets/live-dashboard.js" defer></script>
   <style>
-    :root { --panel: rgba(14,21,34,.84); --line: rgba(0,212,255,.28); --muted: #aebbd0; --good: #00ff96; --warn: #ffd166; --bad: #ff5c7a; }
-    .lede { max-width: 76ch; font-size: 1.16rem; }
-    .read-card { padding: 1.15rem; border: 1px solid var(--line); background: var(--panel); }
-    .read-card h3 { margin-top: 0; color: #eef4fb; }
-    .source-note { margin: .9rem 0 0; padding: .7rem .85rem; border-left: 3px solid #00d4ff; background: rgba(0,212,255,.055); color: var(--muted); font-size: .9rem; }
-    .architecture { margin: 1.5rem 0 2.25rem; }
-    .architecture img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #090e18; }
-    figcaption { margin-top: .7rem; color: var(--muted); font-size: .92rem; line-height: 1.55; }
-    .story-opening { max-width: 78ch; }
-    .story-opening p:first-child { font-size: 1.12rem; color: #eef4fb; }
-    .responsibilities { margin: 1.5rem 0 2rem; border-top: 1px solid rgba(0,212,255,.22); }
-    .responsibilities div { display: grid; grid-template-columns: minmax(150px,.7fr) minmax(0,2fr); gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid rgba(0,212,255,.16); }
-    .responsibilities dt { color: #00d4ff; font: 600 .85rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .06em; }
-    .responsibilities dd { margin: 0; }
-    .sequence { counter-reset: step; margin: 1.2rem 0 2rem; padding: 0; list-style: none; }
-    .sequence li { position: relative; margin: 0; padding: .35rem 0 1.45rem 4rem; }
-    .sequence li:not(:last-child)::after { content: ""; position: absolute; left: 1.25rem; top: 2.7rem; bottom: .15rem; width: 1px; background: rgba(0,212,255,.32); }
-    .sequence li::before { counter-increment: step; content: counter(step); position: absolute; left: .15rem; top: .2rem; display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border: 1px solid #00d4ff; border-radius: 50%; color: #00d4ff; font: 700 1rem 'Share Tech Mono',monospace; }
-    .sequence strong { color: #eef4fb; }
-    .table-wrap { overflow-x: auto; margin: 1.2rem 0; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: .8rem; border-bottom: 1px solid rgba(174,187,208,.18); text-align: left; vertical-align: top; }
-    th { color: #00d4ff; font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .06em; }
-    td:first-child { color: #eef4fb; font-weight: 600; }
-    .dashboard-shell { margin: 1.2rem 0; overflow: hidden; border: 1px solid rgba(0,212,255,.38); background: #080d16; }
-    .dashboard-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem 1rem; border-bottom: 1px solid rgba(0,212,255,.24); }
-    .dashboard-head p { margin: 0; color: var(--muted); }
-    .dashboard-head a { white-space: nowrap; }
-    .live-panel-label { margin: 0 0 .8rem; }
-    .noc-badge { display: inline-flex; margin: 0 0 .8rem; padding: .3rem .55rem; border: 1px solid rgba(0,255,150,.45); border-radius: 999px; color: #00ff96; background: rgba(0,255,150,.08); font-family: "Share Tech Mono",monospace; font-size: .78rem; }
-    .noc-badge.is-stale { border-color: rgba(143,168,200,.35); color: #8fa8c8; background: rgba(143,168,200,.08); }
-    .dashboard-frame { display: block; width: 100%; min-height: 980px; border: 0; border-radius: 0; background: #111827; }
-    .read-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 1.2rem; }
-    .read-card .question { color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
-    .dashboard-intro { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(230px,.65fr); gap: 1.5rem; align-items: start; }
-    .full-dashboard-card { padding: 1rem; border: 1px solid rgba(0,212,255,.42); background: linear-gradient(135deg,rgba(0,212,255,.1),rgba(14,21,34,.9)); }
-    .full-dashboard-card p { color: var(--muted); font-size: .92rem; }
-    .full-dashboard-card .links { margin-bottom: 0; }
-    .privacy-note { margin-top: 1.5rem; padding: 1rem 1.1rem; border-left: 3px solid var(--good); background: rgba(0,255,150,.045); color: var(--muted); }
-    .panel-story { width: min(1180px,calc(100vw - 32px)); margin: 3.5rem 50% 0; transform: translateX(-50%); }
-    .panel-story + .panel-story { padding-top: 3.5rem; border-top: 1px solid rgba(0,212,255,.14); }
-    .panel-copy { width: min(900px,100%); margin: 0 auto 1.25rem; display: grid; grid-template-columns: minmax(0,1.35fr) minmax(240px,.65fr); gap: 2rem; align-items: start; }
-    .panel-copy h3 { margin: .3rem 0 .8rem; }
-    .panel-copy p:last-child { margin-bottom: 0; }
-    .read-note { padding: 1rem; border: 1px solid var(--line); background: var(--panel); }
-    .read-note .question { margin-bottom: .45rem; color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
-    .read-note p { margin: 0; color: var(--muted); font-size: .95rem; }
-    .panel-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .65rem .85rem; border-bottom: 1px solid rgba(0,212,255,.22); }
+    .lede { max-width: 76ch; font-size: 1.17rem; }
+    .skill-head { padding-top: 0; }
+    .skill-body p, .skill-head p { margin-bottom: 1rem; }
+    .policy-copy { color: #b7c8e0; font-size: 1rem; }
+    .policy-copy a { text-decoration: underline; text-underline-offset: 3px; }
+    .review-links { display: flex; flex-wrap: wrap; gap: 12px 25px; margin: 18px 0 0; }
+    .review-links a { font-family: var(--mono); font-size: .9rem; }
+    .dashboard-wide { width: min(1180px,calc(100vw - 32px)); margin: 22px 50% 0; transform: translateX(-50%); }
+    .dashboard-shell { margin: 0; border: 1px solid var(--border-strong); background: #0a0e1a; overflow: hidden; }
+    .dashboard-head { padding: 15px 18px; display: flex; gap: 16px; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .dashboard-head h3 { margin: 0; font-family: var(--mono); font-size: .95rem; color: var(--cyan); }
+    .dashboard-head a { font-size: .9rem; white-space: nowrap; }
+    .panel-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .65rem .85rem; border-bottom: 1px solid var(--border); }
     .panel-status p { margin: 0; }
     .panel-status .live-status { font-size: .78rem; text-align: right; }
-    .panel-status .noc-badge { margin: 0; white-space: nowrap; }
-    .panel-frame-summary { min-height: 310px; }
-    .panel-frame-entra, .panel-frame-tokens { min-height: 820px; }
+    .noc-badge { display: inline-flex; padding: .3rem .55rem; border: 1px solid rgba(0,255,150,.45); border-radius: 999px; color: #00ff96; background: rgba(0,255,150,.08); font: .78rem var(--mono); white-space: nowrap; }
+    .noc-badge.is-stale { border-color: rgba(143,168,200,.35); color: #8fa8c8; background: rgba(143,168,200,.08); }
+    .dashboard-frame { width: 100%; display: block; border: 0; background: #111217; }
     .panel-frame-wildcard, .panel-frame-portals { min-height: 660px; }
     .panel-frame-trend { min-height: 620px; }
-    .stat-explanations { width: min(1180px,calc(100vw - 32px)); margin: 1rem 50% 0; transform: translateX(-50%); display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
-    .stat-explanation { padding: 1.1rem; border: 1px solid var(--line); background: var(--panel); }
-    .stat-explanation h4 { margin: .25rem 0 .55rem; color: #eef4fb; font-size: 1.08rem; }
-    .stat-explanation p { margin: 0; color: var(--muted); font-size: .94rem; }
-    .panel-number { color: var(--warn); font: .78rem 'Share Tech Mono',monospace; text-transform: uppercase; letter-spacing: .08em; }
-    .failure { padding: 1.2rem; border: 1px solid rgba(255,92,122,.36); background: rgba(43,23,32,.38); }
-    .failure + .failure { margin-top: 1rem; }
-    .failure h3 { color: #eef4fb; }
-    .decision { margin: 1rem 0; padding: 1rem; border-left: 4px solid var(--warn); background: rgba(255,209,102,.07); }
+    .panel-frame-entra, .panel-frame-tokens { min-height: 820px; }
+    .live-fallback, .dashboard-shell noscript p { margin: 0; padding: 18px; }
+    .privacy-note { font-size: .9rem; color: var(--muted); }
+    .architecture { margin: 26px 0; }
+    .architecture img { display: block; width: 100%; height: auto; border: 1px solid var(--border); }
+    figcaption { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+    .sequence { list-style: none; padding: 0 !important; counter-reset: step; margin: 22px 0 !important; }
+    .sequence li { position: relative; padding: 0 0 18px 49px; margin: 0 0 12px !important; font-weight: 400 !important; }
+    .sequence li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; color: var(--cyan); font: 1.2rem var(--mono); border: 1px solid var(--border-strong); padding: 3px 11px; }
+    .sequence strong { color: #fff; }
+    .table-wrap { overflow-x: auto; margin: 22px 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--border-quiet); text-align: left; vertical-align: top; }
+    th { font: .87rem var(--mono); color: var(--cyan); }
+    td { min-width: 150px; font-size: .96rem; }
+    td:first-child { color: #eef4fb; font-weight: 500; }
+    .decision { margin: 22px 0; padding: 16px 19px; background: rgba(0,212,255,.05); border-left: 3px solid var(--cyan); }
+    .responsibilities { margin: 22px 0; }
+    .responsibilities > div { display: grid; grid-template-columns: 190px 1fr; gap: 20px; border-bottom: 1px solid var(--border); padding: 15px 0; }
+    .responsibilities dt { font-family: var(--mono); color: var(--cyan); }
+    .responsibilities dd { margin: 0; }
+    .technical-details { margin: 22px 0; border-top: 1px solid var(--border); }
+    .technical-details > summary { padding: 17px 0; color: var(--cyan); cursor: pointer; font-size: 1.05rem; }
+    .technical-details[open] > summary { margin-bottom: 8px; }
+    .technical-details .block { margin-top: 20px; }
+    .technical-details .block > h2 { display: none; }
+    .failure { margin: 20px 0 30px; padding-left: 20px; border-left: 2px solid var(--border-strong); }
+    .failure h3 { margin-bottom: 14px; }
+    .failure h4 { font-size: 1rem; margin: 15px 0 6px; }
+    .failure p { color: #b7c8e0; }
     code { white-space: normal; overflow-wrap: anywhere; }
-    @media (max-width: 900px) { .read-grid, .stat-explanations { grid-template-columns: 1fr; } .dashboard-intro, .panel-copy { grid-template-columns: 1fr; } .responsibilities div { grid-template-columns: 1fr; gap: .35rem; } .panel-frame-summary { min-height: 430px; } .panel-frame-entra, .panel-frame-tokens { min-height: 700px; } }
-    @media (max-width: 620px) { .panel-status { align-items: flex-start; flex-direction: column; } .panel-status .live-status { text-align: left; } .panel-frame-summary { min-height: 680px; } }
+    [hidden] { display: none !important; }
+    @media (max-width: 700px) {
+      .dashboard-head, .panel-status { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .panel-status .live-status { text-align: left; }
+      .responsibilities > div { grid-template-columns: 1fr; gap: 6px; }
+      .lede { font-size: 1.08rem; }
+      .crumbs { font-size: .8rem; letter-spacing: .5px; }
+      .table-wrap table { min-width: 650px; }
+      .dashboard-wide { width: calc(100vw - 28px); }
+    }
   </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/certificate-secret-renewal/">
@@ -260,25 +254,66 @@
       </nav>
     </header>
     <main id="main" class="page-narrow">
-    <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">billgernert.com</a>
-      <span class="sep">/</span>
-      <a href="/projects/">Projects</a>
-      <span class="sep">/</span>
-      <span class="here">Certificate and secret renewal</span>
-    </nav>
-
-    <header class="skill-head">
-      <span class="badge">Technical project walkthrough</span>
-      <h1>How I automated certificate renewal and secret rotation</h1>
-      <p class="descriptor lede">The managed public certificate renews itself and reaches every registered consumer that serves it. Credential paths that have completed their canary rotate on a 60-day cycle with a seven-day overlap, and a real login or API request proves each change. Canary, attended, product-managed, and newly discovered paths stay visible instead of being called automatic before the evidence exists.</p>
-      <p class="descriptor lede">This started with a wildcard certificate that could renew in Kubernetes but still had to reach web servers and appliances outside the cluster. I built the distribution and verification path first. I then used the same sequence for credentials: create a replacement, store it in Vault, update the application that uses it, test the application, and keep the previous credential long enough to recover from a bad change.</p>
-      <p class="source-note">Built from the cert-manager configuration, Jenkins certificate synchronization pipeline, credential rotation registries, Vault lifecycle policy, and Prometheus exporters in the repository.</p>
-      <div class="links story-code-action"><a href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a></div>
-    </header>
-
-    <div class="skill-body">
-      <section class="block" id="glance">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/">billgernert.com</a><span class="sep">/</span><a href="/projects/">Projects</a><span class="sep">/</span><span class="here">Certificate and secret renewal</span></nav><header class="skill-head"><span class="badge">Certificate and secret renewal</span>
+<h1>Certificate automation with Kubernetes, Jenkins, and Ansible</h1>
+<p class="descriptor lede">I built a certificate lifecycle that renews one wildcard, deploys it across Kubernetes, Linux servers, and appliances, and verifies what each service actually presents over TLS. Jenkins coordinates the pipeline; cert-manager handles issuance; Ansible handles registered Linux deployments; Prometheus and Grafana track the result.</p>
+<p class="policy-copy">Shorter certificate lifetimes reduce the window for stolen keys and stale ownership information, but increase renewal work. <a href="https://letsencrypt.org/2025/12/02/from-90-to-45">Let’s Encrypt is moving its default certificates to 45 days in 2028</a>. I wanted the repeatable work in automation.</p>
+<div class="review-links"><a href="https://github.com/billgernert/certificate-secret-renewal">View the code &#8594;</a><a href="#dashboard">Live Grafana ↓</a><a href="#secrets-story">Secret rotation ↓</a></div>
+</header><div class="skill-body"><section class="block" id="certificate-story"><h2>A renewed certificate still had to reach every service</h2>
+<p>The wildcard renewed in Kubernetes, but its copies also lived on Linux web servers and appliances. A healthy cert-manager resource did not tell me whether Ansible had updated a host, whether Nginx had reloaded, or whether an appliance was still serving the old certificate.</p>
+<p>I also found two valid wildcard certificates behind Traefik. It could select the older one even when an application namespace held a newer copy. I changed the design to <strong>one cert-manager owner, one source TLS Secret, and verified distribution to every registered consumer</strong>.</p>
+</section>
+<section class="block" id="certificate-how"><h2>How Kubernetes, Jenkins, and Ansible do the work</h2>
+<ol class="sequence">
+<li><strong>Kubernetes and cert-manager renew the source.</strong> cert-manager uses the ACME protocol with Let’s Encrypt. A scoped Cloudflare API credential creates the DNS-01 TXT challenge. The signed certificate and private key land in a Kubernetes TLS Secret as <code>tls.crt</code> and <code>tls.key</code>.</li>
+<li><strong>Jenkins validates and distributes the certificate.</strong> The certificate-sync pipeline reads that Secret, checks the certificate/key pair and remaining validity with OpenSSL, and updates the existing TLS Secrets in registered Kubernetes namespaces. Traefik watches those Secrets and loads the replacement.</li>
+<li><strong>Jenkins runs Ansible for the Linux consumers.</strong> The <code>wildcard-cert-portals.yml</code> playbook deploys to Gitea, NetBox, Greenbone, and Wazuh, one host at a time. Ansible replaces complete certificate files, applies ownership and permissions, and runs the service’s reload or restart handler. Restricted SSH helpers and product APIs handle the appliance paths.</li>
+<li><strong>OpenSSL and Prometheus verify the running service.</strong> Fresh TLS handshakes check the served certificate against the source. Behind Cloudflare, the pipeline checks the origin using the application hostname as SNI; public probes check the edge separately. Blackbox exporter, Prometheus alerts, and Grafana expose expiry, deployment drift, and missing coverage.</li>
+</ol>
+<p class="decision"><strong>The completion check:</strong> a successful Jenkins stage or Ansible file copy is not enough. The service has to load the replacement, and a new TLS connection has to prove it.</p>
+</section><section class="block" id="dashboard"><h2>Did Kubernetes, Ansible, and the appliance adapters deploy the same certificate?</h2><p>This Grafana table puts the wildcard source beside the certificates served by its consumers. If a destination still presents the previous certificate, I check the Jenkins distribution stage, Ansible handler, or appliance reload. Source issuance and consumer activation are separate checks.</p><p class="privacy-note">These panels expose expiry and lifecycle metadata with public labels. Certificate subjects, internal hostnames, secret values, and credential IDs are not shown.</p>
+<p class="links"><a href="https://billgernert.com/noc/open/certificates-secrets" target="_blank" rel="noreferrer">Open full dashboard &#8599;</a></p><div class="dashboard-wide"><figure class="dashboard-shell story-dashboard" data-public-noc>
+  <div class="dashboard-head"><h3>Wildcard certificate deployments</h3><a href="https://status.billgernert.com/public-dashboards/8c537dadb28dfb0c2c752958d701f08b" target="_blank" rel="noreferrer">Open this live panel &#8599;</a></div>
+  <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard before loading.</p></div>
+  <iframe class="dashboard-frame live-frame panel-frame-wildcard" data-live-frame data-src="https://status.billgernert.com/public-dashboards/8c537dadb28dfb0c2c752958d701f08b" title="Live wildcard certificate deployments panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+  <div class="live-fallback" data-live-fallback hidden><p>The live panel is unavailable. Open the panel directly or try again when the dashboard service recovers.</p></div>
+  <noscript><p>JavaScript is required to check and embed the live dashboard. Use the panel link above to open Grafana directly.</p></noscript>
+</figure></div></section><section class="block" id="other-certificates"><h2>Mail, Vault, and Active Directory have their own renewal paths</h2><p>The shared wildcard is only one part of the inventory. Mail renews through its own Let’s Encrypt ACME client. Vault uses an internal CA with attended renewal. The directory services use the Windows certificate path. I keep those paths separate in Grafana so each certificate has a clear issuer, renewal process, and served expiry.</p><div class="dashboard-wide"><figure class="dashboard-shell story-dashboard" data-public-noc>
+  <div class="dashboard-head"><h3>Other managed certificates</h3><a href="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" target="_blank" rel="noreferrer">Open this live panel &#8599;</a></div>
+  <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard before loading.</p></div>
+  <iframe class="dashboard-frame live-frame panel-frame-portals" data-live-frame data-src="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" title="Live other managed certificates panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+  <div class="live-fallback" data-live-fallback hidden><p>The live panel is unavailable. Open the panel directly or try again when the dashboard service recovers.</p></div>
+  <noscript><p>JavaScript is required to check and embed the live dashboard. Use the panel link above to open Grafana directly.</p></noscript>
+</figure></div></section><section class="block" id="expiry-monitoring"><h2>Prometheus shows whether the renewal reached the running services</h2><p>Blackbox exporter opens fresh TLS connections while cert-manager exports source expiry. Prometheus stores those measurements and evaluates alerts; Grafana shows the trend. A renewal produces an upward step. A served copy that keeps declining after the source renews needs investigation. Cloudflare edge and origin certificates are checked separately.</p><div class="dashboard-wide"><figure class="dashboard-shell story-dashboard" data-public-noc>
+  <div class="dashboard-head"><h3>Certificate days remaining</h3><a href="https://status.billgernert.com/public-dashboards/c085e2a61f4655c4f50c67bd63f5ab9d" target="_blank" rel="noreferrer">Open this live panel &#8599;</a></div>
+  <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard before loading.</p></div>
+  <iframe class="dashboard-frame live-frame panel-frame-trend" data-live-frame data-src="https://status.billgernert.com/public-dashboards/c085e2a61f4655c4f50c67bd63f5ab9d" title="Live certificate days remaining panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+  <div class="live-fallback" data-live-fallback hidden><p>The live panel is unavailable. Open the panel directly or try again when the dashboard service recovers.</p></div>
+  <noscript><p>JavaScript is required to check and embed the live dashboard. Use the panel link above to open Grafana directly.</p></noscript>
+</figure></div></section>
+<section class="block" id="secrets-story"><h2>Secrets had the same problem: replacement was only the first step</h2>
+<p>Once certificate distribution worked, I applied the same pattern to <strong>Microsoft Entra client secrets, API tokens, and service credentials</strong>. Creating a new credential at the provider did not update the Kubernetes workload or Linux application that used it. I needed a controlled handoff from the provider to Vault to the consumer.</p>
+<h3>Jenkins coordinates rotation; Vault holds the lifecycle state</h3>
+<p>A <strong>Jenkins worker</strong> reads a reviewed registry entry that names the provider, Vault field, application, activation method, and validation checks. A scoped <strong>Vault AppRole</strong> gives that worker the access it needs. The provider creates a replacement, and a compare-and-set write updates the registered Vault field without overwriting another process’s changes.</p>
+<div class="dashboard-wide"><figure class="dashboard-shell story-dashboard" data-public-noc>
+  <div class="dashboard-head"><h3>Entra SSO applications</h3><a href="https://status.billgernert.com/public-dashboards/078da4f0fe53655e5a20dee5113de6d8" target="_blank" rel="noreferrer">Open this live panel &#8599;</a></div>
+  <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard before loading.</p></div>
+  <iframe class="dashboard-frame live-frame panel-frame-entra" data-live-frame data-src="https://status.billgernert.com/public-dashboards/078da4f0fe53655e5a20dee5113de6d8" title="Live Entra SSO applications panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+  <div class="live-fallback" data-live-fallback hidden><p>The live panel is unavailable. Open the panel directly or try again when the dashboard service recovers.</p></div>
+  <noscript><p>JavaScript is required to check and embed the live dashboard. Use the panel link above to open Grafana directly.</p></noscript>
+</figure></div><h3>Kubernetes and application adapters activate the replacement</h3>
+<p>For a <strong>Kubernetes</strong> consumer, the adapter updates one key in an existing Secret and rolls the owning <strong>Deployment or StatefulSet</strong>. A Linux adapter sends the value through standard input to a restricted SSH helper. Other applications read Vault at startup or use a provider API. Each path ends with workload health checks and a real login or API request.</p>
+<h3>Overlap gives me a recovery path</h3>
+<p>Proven paths rotate on a <strong>60-day cycle</strong> with a <strong>seven-day overlap</strong>. The previous credential remains available while the replacement is in use. The worker repeats its checks before retiring the exact predecessor. A failed check stops retirement and leaves the rotation pending.</p>
+<p><strong>Prometheus and Grafana</strong> expose active, overlap, pending, and overdue states from Entra and Vault metadata. Canary, attended, and product-managed paths remain explicitly labeled. A worker is automatic only after the complete activation, verification, and retirement sequence has passed.</p>
+</section><section class="block" id="rotation-dashboard"><h2>Grafana keeps active credentials, overlap, and exceptions visible</h2><p>The service-token panel shows the registered rotation process, consumer state, and next lifecycle action. An overlap row means the replacement is active and the predecessor remains available. Pending means a required stage still needs to pass. I use the row to find the responsible Jenkins worker and its validation logs.</p><div class="dashboard-wide"><figure class="dashboard-shell story-dashboard" data-public-noc>
+  <div class="dashboard-head"><h3>Service token lifecycle</h3><a href="https://status.billgernert.com/public-dashboards/3e51f90147d38efdf3d8fb076ffcd34b" target="_blank" rel="noreferrer">Open this live panel &#8599;</a></div>
+  <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the live dashboard before loading.</p></div>
+  <iframe class="dashboard-frame live-frame panel-frame-tokens" data-live-frame data-src="https://status.billgernert.com/public-dashboards/3e51f90147d38efdf3d8fb076ffcd34b" title="Live service token lifecycle panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
+  <div class="live-fallback" data-live-fallback hidden><p>The live panel is unavailable. Open the panel directly or try again when the dashboard service recovers.</p></div>
+  <noscript><p>JavaScript is required to check and embed the live dashboard. Use the panel link above to open Grafana directly.</p></noscript>
+</figure></div></section><section class="block" id="engineering-notes"><h2>Implementation details and failure cases</h2>
+<details class="technical-details"><summary>Outcome, operating scope, and evidence</summary><section class="block" id="glance">
         <h2>At a glance</h2>
         <dl class="at-a-glance">
           <div><dt>Outcome</dt><dd>The shared public certificate renews ahead of expiry and reaches every registered consumer. Proven credential paths rotate on a 60-day cycle with a seven-day recovery overlap.</dd></div>
@@ -286,111 +321,7 @@
           <div><dt>Evidence</dt><dd>The live dashboard measures source and served expiry, rotation state, and coverage. Fresh TLS handshakes and real authentication requests test what consumers use.</dd></div>
           <div><dt>Primary lesson</dt><dd>Issuance or provider success is supporting evidence. The job verifies the live consumer before it retires the working predecessor.</dd></div>
         </dl>
-      </section>
-
-      <section class="block" id="result">
-        <h2>The certificate could renew while its copies grew old</h2>
-        <div class="story-opening">
-          <p>The first version of this system was ordinary: obtain a certificate, copy it where it belongs, and remember to repeat the job before it expires. That worked until the wildcard existed in Kubernetes namespaces, Linux web servers, and appliances that all reloaded certificates differently.</p>
-          <p>Renewal covered the source certificate, but it did not prove that a copy reached a service or that the service reloaded it. A current file could sit behind a process that was still serving the previous file. A healthy cert-manager resource could coexist with a stale VM. I also found that two valid wildcard issuers behind Traefik could make the ingress controller choose the older certificate.</p>
-          <p>I built the certificate path around those failures first. Once that worked, I used the same shape for secrets: create one replacement, move it through a controlled path, activate it in the real consumer, test the consumer, and keep the predecessor until rollback is no longer needed.</p>
-          <p>Today, someone using an application keeps using the same URL. The application reloads or rolls out in the background. If validation fails, the job stops before retirement and leaves the working material in place.</p>
-        </div>
-      </section>
-
-      <section class="block" id="where">
-        <h2>The tools each own one part of the job</h2>
-        <p>I separated issuance, storage, deployment, and observation because a failure in one part needs a different response from a failure in another. These are the products involved and the work each one performs.</p>
-        <dl class="responsibilities">
-          <div><dt>Let’s Encrypt and Cloudflare</dt><dd>Let’s Encrypt signs the public certificate. Cloudflare publishes the temporary DNS record that shows the requester can change DNS for the requested name.</dd></div>
-          <div><dt>cert-manager</dt><dd>This Kubernetes controller watches the desired Certificate, handles Let’s Encrypt validation and renewal, and writes <code>tls.crt</code> and <code>tls.key</code> into one source Secret. It does not distribute that pair outside its namespace.</dd></div>
-          <div><dt>Jenkins</dt><dd>The scheduled job validates the source pair, updates registered copies, runs the reload each service requires, checks the certificate served on the network, and removes temporary files.</dd></div>
-          <div><dt>Console discovery</dt><dd>This Kubernetes workload compares Cloudflare DNS and Kubernetes Ingress names with the declared console inventory every five minutes. It monitors a new trusted endpoint immediately but cannot change that endpoint or call its renewal automatic.</dd></div>
-          <div><dt>Vault</dt><dd>The secrets manager stores active values and lifecycle state. Each worker uses an AppRole, a policy-limited machine login, so it can reach its own records without broad access.</dd></div>
-          <div><dt>Active Directory Certificate Services</dt><dd>AD CS issues internal certificates. Windows renews from domain templates; Linux submits an approved request and trusts the same enterprise root.</dd></div>
-          <div><dt>Prometheus and Grafana</dt><dd>Prometheus collects source, live TLS, Entra, and Vault metadata. Grafana turns those measurements into the operator view and the scrubbed public dashboard.</dd></div>
-        </dl>
-      </section>
-
-      <section class="block" id="dashboard">
-        <h2>This is what I watch while it runs</h2>
-        <div class="dashboard-intro">
-          <div>
-            <p>Prometheus updates this dashboard from certificate handshakes, cert-manager state, Entra metadata, and Vault lifecycle metadata. The public view replaces operational names with descriptive labels and removes addresses, subjects, secret paths, provider identifiers, and management links.</p>
-            <p>The complete dashboard is still useful when I want to scan everything at once, change the time range, or filter a table. In the story below, I split the same live view into the questions I use when I read it.</p>
-          </div>
-          <aside class="full-dashboard-card">
-            <p class="section-label live-panel-label">Full live view</p>
-            <p>Open the complete Grafana dashboard in a separate tab.</p>
-            <p class="links"><a href="https://billgernert.com/noc/open/certificates-secrets" target="_blank" rel="noreferrer">Open full dashboard &#8599;</a></p>
-          </aside>
-        </div>
-        <p class="privacy-note"><strong>How the labels work.</strong> Tracking says whether the item is active, deployed, in overlap, or outside an automatic path. Endpoint names such as Jenkins URL replace real addresses. Rotation process names the automation, attended step, or product-managed path without exposing a credential or provider identifier.</p>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live summary panels</p><h3>Start with the five summary signals</h3><p>These five panels answer two questions before I read a table: is a deadline close, and can I trust the declared and newly discovered coverage underneath the board? A clean deadline count does not cancel a coverage failure.</p></div>
-            <aside class="read-note"><p class="question">What should stop the scan?</p><p>Any new-console, overdue, or unclassified count needs a row-level explanation. A sudden drop in the declared reporting count also deserves attention because missing inventory can make the urgent counts look better than they are.</p></aside>
-          </div>
-          <div class="dashboard-shell">
-            <div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the summary panels.</p></div>
-            <iframe class="dashboard-frame live-frame panel-frame-summary" data-live-frame data-src="https://status.billgernert.com/public-dashboards/d6c5779aac12e5e2d1b029e127708847" title="Live certificate and credential summary panels" referrerpolicy="no-referrer" loading="lazy" hidden></iframe>
-            <div class="live-fallback" data-live-fallback hidden><p>The live summary panels are unavailable. The explanations below remain available without presenting cached values as current.</p></div>
-            <noscript><p>The live summary panels require JavaScript.</p></noscript>
-          </div>
-          <div class="stat-explanations">
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Declared portal certificates reporting</h4><p>This is the coverage baseline for consoles already in the reviewed inventory. A drop matters even when no certificate is near expiry because the other counts can only describe records that arrived.</p></article>
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Portal certificates inside 30 days</h4><p>This is the immediate renewal queue. Zero means no reported portal certificate has crossed the 30-day window. I still compare the source and deployed copies below because both can be valid and carry different expiry dates.</p></article>
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>New consoles needing onboarding</h4><p>This is the number of trusted HTTPS endpoints found in DNS or Kubernetes but absent from the declared lifecycle inventory. The public metric carries only the count. The private table keeps the endpoint, first-seen time, served expiry, and discovery source needed for enrollment.</p></article>
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Entra secret rotations overdue</h4><p>This counts Entra application credentials that passed the registered rotation point. The application table shows who owns the item and whether its replacement path is automatic, canary, attended, or product-managed.</p></article>
-            <article class="stat-explanation"><p class="panel-number">Summary signal</p><h4>Unclassified Vault records</h4><p>This is a coverage failure. The lifecycle exporter found a record without the classification needed to select a rotation path. The gap stays visible until the registry describes its owner, consumer, and change method.</p></article>
-          </div>
-        </article>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Entra SSO applications</h3><p>Each row is one application identity. Tracking says whether it has an active credential or needs none. Endpoint names the consumer in public terms. Rotation process tells me whether the full replacement path is automatic, still a canary, product-managed, or attended.</p><p>The final column is the nearest expiry or a status. I read it together with the process column because two credentials with the same remaining lifetime can require different actions.</p></div>
-            <aside class="read-note"><p class="question">What am I looking for?</p><p>An automatic row nearing its rotation point should move without operator work. An attended or canary row needs evidence that the consumer activated the replacement before the predecessor can be retired.</p></aside>
-          </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the Entra SSO panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-entra" data-live-frame data-src="https://status.billgernert.com/public-dashboards/078da4f0fe53655e5a20dee5113de6d8" title="Live Entra SSO applications panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live Entra SSO panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live Entra SSO panel requires JavaScript.</p></noscript></div>
-        </article>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Wildcard certificate deployments</h3><p>This table puts the cert-manager source beside every copy that should match it. The source proves issuance. Each destination row represents what a Kubernetes ingress, server, or appliance is actually serving after its own reload path.</p><p>If a destination has less time remaining than the source, I treat it as a deployment or activation problem. The certificate may still be valid, but that consumer is serving the older lineage.</p></div>
-            <aside class="read-note"><p class="question">What makes this different?</p><p>The job checks the certificate returned by a new TLS handshake. A file copy or successful API response does not prove the running service loaded the replacement.</p></aside>
-          </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the wildcard deployment panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-wildcard" data-live-frame data-src="https://status.billgernert.com/public-dashboards/8c537dadb28dfb0c2c752958d701f08b" title="Live wildcard certificate deployments panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live wildcard deployment panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live wildcard deployment panel requires JavaScript.</p></noscript></div>
-        </article>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Service token lifecycle</h3><p>Service tokens do not share one provider or one activation method, so this table is driven by the reviewed registry. Each row names the public service label, its current lifecycle state, the destination that consumes it, the registered rotation path, and the next expiry, rotation, or retirement point.</p><p>An overlap row means the replacement is active and the predecessor is still available for recovery. A pending or failed row means retirement has stopped until the worker can repeat every validation.</p></div>
-            <aside class="read-note"><p class="question">What does a quiet row mean?</p><p>Most days, no replacement is due. A normal row says the exporter can classify the item and the next lifecycle point is still ahead. It does not expose the token or its stored value.</p></aside>
-          </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the service token panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-tokens" data-live-frame data-src="https://status.billgernert.com/public-dashboards/3e51f90147d38efdf3d8fb076ffcd34b" title="Live service token lifecycle panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live service token panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live service token panel requires JavaScript.</p></noscript></div>
-        </article>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Other managed certificates</h3><p>This table covers certificates that do not belong to the shared wildcard deployment. Mail obtains its own short-lived Let’s Encrypt certificate through ACME. Vault uses the internal certificate authority with attended renewal. The two directory services use automatically deployed internal certificates.</p><p>The expiry column still comes from what the endpoint serves. Different horizons are expected here because the issuer, certificate lifetime, renewal tool, and service reload are different for each path.</p></div>
-            <aside class="read-note"><p class="question">Why keep this separate?</p><p>Combining these rows with the wildcard would hide which trust path owns the next renewal. It would also make a long-lived internal certificate look suspicious beside a deliberately short-lived public certificate.</p></aside>
-          </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the other managed certificates panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-portals" data-live-frame data-src="https://status.billgernert.com/public-dashboards/047510291e396f689d5c92f9379faf04" title="Live other managed certificates panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live managed certificate panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live managed certificate panel requires JavaScript.</p></noscript></div>
-        </article>
-
-        <article class="panel-story" data-public-noc>
-          <div class="panel-copy">
-            <div><p class="panel-number">Live Grafana panel</p><h3>Certificate days remaining</h3><p>The tables show the current read. This chart adds the last 30 days for the declared web consoles and the two directory-service certificates. It shows whether remaining lifetime declines normally, jumps when a certificate renews, or splits when one served copy stops following its source.</p><p>The legend includes the latest and minimum value for each public label. A renewal creates an upward step. A wildcard line that keeps falling after the source jumps points back to the deployment table. An internal certificate follows its own authority and should not jump with the wildcard.</p></div>
-            <aside class="read-note"><p class="question">What is normal?</p><p>A steady decline between renewals is expected. The useful evidence is the renewal jump and whether every consumer lineage follows it within the allowed deployment window.</p></aside>
-          </div>
-          <div class="dashboard-shell"><div class="panel-status"><p class="noc-badge" data-live-badge aria-live="polite">Checking live state.</p><p class="live-status" data-live-status aria-live="polite">Checking the certificate trend panel.</p></div><iframe class="dashboard-frame live-frame panel-frame-trend" data-live-frame data-src="https://status.billgernert.com/public-dashboards/c085e2a61f4655c4f50c67bd63f5ab9d" title="Live certificate days remaining panel" referrerpolicy="no-referrer" loading="lazy" hidden></iframe><div class="live-fallback" data-live-fallback hidden><p>The live certificate trend panel is unavailable. Its explanation remains available without presenting cached values as current.</p></div><noscript><p>The live certificate trend panel requires JavaScript.</p></noscript></div>
-        </article>
-
-        <p>The site build generates the dashboard structure and queries from the repository. Grafana reads the public Prometheus series, so operational identifiers do not reach the browser.</p>
-      </section>
-
-      <section class="block" id="certificate">
+      </section></details><details class="technical-details"><summary>Certificate architecture, Ansible delivery, and service reloads</summary><section class="block" id="certificate">
         <h2>One wildcard certificate now feeds every copy</h2>
         <p>The wildcard covers the first level of application names. Let’s Encrypt signs it, cert-manager renews it in Kubernetes, Cloudflare carries the DNS validation record, and Jenkins sends the resulting certificate and key to the services that use them.</p>
         <p>This division matters because cert-manager finishes its work at the source Secret. It has no knowledge of a certificate file on a Linux VM, an appliance certificate object, or a copy in another Kubernetes namespace. The Jenkins job knows those destinations and how each service reloads.</p>
@@ -421,23 +352,19 @@
         <p>Atomic replacement swaps complete files, so a service cannot read a half-written pair. A forced-command SSH key can run the certificate helper but cannot open a general shell.</p>
         <p>OPNsense stores certificates as Trust objects. Its API updates one object and restarts only the web interface.</p>
 
-        <h3>A new console starts as discovered, not managed</h3>
+        <details class="technical-details"><summary>How newly discovered consoles enter the managed inventory</summary>
         <p>Static inventory is reliable only when someone remembers to update it. I added a discovery workload that reads two places where a new console must appear: the public DNS inventory and Kubernetes Ingress objects. Every five minutes it removes names already covered by the reviewed probes, opens a normal trusted TLS connection to each remaining name, and records only endpoints whose hostname and certificate chain validate.</p>
         <p>A passing handshake creates monitoring, not renewal authority. The private dashboard marks the endpoint <strong>New</strong>, records when it first appeared and when its served certificate expires, and labels the rotation process <strong>Needs onboarding</strong>. The public dashboard publishes only the number of waiting consoles, so the coverage gap is visible without publishing a hostname.</p>
         <p>Enrollment is a reviewed repository change. It records the certificate issuer and source, the destination that receives the replacement, the reload or restart action, the outside TLS probe, and the rollback path. On the next discovery pass, the endpoint leaves the New queue and appears in the managed table whose renewal process now owns it.</p>
         <div class="decision"><strong>Discovery rule:</strong> finding a trusted certificate means “watch this now.” It never means “change this service automatically.” The automatic label appears only after the complete delivery and validation contract is committed and proven.</div>
-      </section>
-
-      <section class="block" id="internal">
+      </details></section></details><details class="technical-details"><summary>Internal PKI: AD CS, Windows auto-enrollment, and Linux CSRs</summary><section class="block" id="internal">
         <h2>Public and internal certificates solve different trust problems</h2>
         <p>Public browsers already trust Let’s Encrypt. Private services use Active Directory Certificate Services, Microsoft’s domain certificate authority, whose root is distributed to managed computers.</p>
         <figure class="architecture"><img src="img/internal-trust-path.svg" alt="Separate public Let’s Encrypt and internal AD CS trust paths" width="1440" height="870" loading="lazy"></figure>
         <p>Windows auto-enrollment uses Group Policy and an AD CS template, which defines purpose, names, lifetime, and enrollment permission. Windows requests and renews without moving the private key between machines.</p>
         <p>Linux creates its private key locally and submits a CSR, a request containing the public key and names. AD CS returns the signed certificate and chain; Linux installs them and reloads the service.</p>
         <p>Blackbox exporter validates the name, trust chain, and live expiry on both paths, catching an expired leaf, untrusted chain, or missed reload. Some internal leaves are still watched rather than automatically renewed.</p>
-      </section>
-
-      <section class="block" id="secrets">
+      </section></details><details class="technical-details"><summary>Secret rotation architecture, Vault writes, and activation adapters</summary><section class="block" id="secrets">
         <h2>Secrets needed the same handoff and a different last mile</h2>
         <p>A client secret is a password an application uses when it authenticates as itself. API tokens and service keys serve a similar purpose for other products. Creating a replacement at the provider does not make an application use it. The replacement still has to reach the application’s configuration, the process has to reload, and a real authentication request has to succeed.</p>
         <p>I call the system that creates and revokes a credential its provider. Microsoft Graph manages the Entra client secrets. Grafana, Zabbix, Jenkins, NetBox, Cloudflare, OPNsense, and LiteLLM expose product APIs for their own credentials. Where a product has no secret-safe update API, a small helper on the host accepts the value through standard input and can change one allowlisted setting.</p>
@@ -463,9 +390,7 @@
           <tr><td>Provider-hosted configuration</td><td>One exact identity-provider or integration resource through its API</td><td>Read-back of stable metadata plus a new authorization or service request</td></tr>
           <tr><td>Product with no secret-safe interface</td><td>No unattended mutation</td><td>Attended activation remains visible until the product offers a safe input path</td></tr>
         </tbody></table></div>
-      </section>
-
-      <section class="block" id="observation">
+      </section></details><details class="technical-details"><summary>Prometheus, Blackbox exporter, and coverage signals</summary><section class="block" id="observation">
         <h2>I verify the result outside the process that made the change</h2>
         <p>Jenkins could prove that it wrote a file or Secret, but not what a browser received. The observation path measures the service independently.</p>
         <figure class="architecture"><img src="img/observation-path.svg" alt="Monitoring path from live services and metadata exporters through Prometheus to the private and public Grafana views" width="1440" height="920" loading="lazy"></figure>
@@ -479,9 +404,7 @@
           <tr><td>Is every Vault record classified and on the promised path?</td><td>Metadata-only Vault lifecycle exporter</td><td>Turns new or unclassified records into visible gaps rather than silent inventory growth</td></tr>
           <tr><td>Did a rotation finish or stop in overlap?</td><td>Value-free rotation-state records</td><td>Shows active, overlap, pending, failed, and retirement timing without leaking the credential</td></tr>
         </tbody></table></div>
-      </section>
-
-      <section class="block" id="running">
+      </section></details><details class="technical-details"><summary>Jenkins schedules and renewal cadence</summary><section class="block" id="running">
         <h2>How it runs now</h2>
         <p>Most of the time, no rotation is happening. The controllers and exporters watch. Jenkins wakes only when a schedule or an operator starts a run.</p>
         <div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody>
@@ -492,22 +415,7 @@
           <tr><td>During overlap</td><td>The replacement is active and the predecessor remains available.</td><td>A failure leaves both credentials in place.</td></tr>
           <tr><td>After a change</td><td>The worker checks authentication, binding, workload health, and the real route.</td><td>The dashboard records completion, overlap, or the pending stage.</td></tr>
         </tbody></table></div>
-      </section>
-
-      <section class="block" id="recreate">
-        <h2>If I were recreating this from scratch</h2>
-        <ol class="sequence">
-          <li><strong>Write the inventory first.</strong> List every certificate source, every served endpoint, every provider credential, every Vault record, and every process that consumes it. Mark unknowns as gaps.</li>
-          <li><strong>Choose one authority per certificate identity.</strong> Use Let’s Encrypt for public names and an enterprise CA for private identities. Never let two controllers issue the same wildcard into one ingress selection space.</li>
-          <li><strong>Build custody before rotation.</strong> Put provider authority and active credentials in Vault. Give each worker a separate AppRole and explicit path policy. Keep secret values out of Git, logs, metrics, and process arguments.</li>
-          <li><strong>Define the consumer contract.</strong> For each item, name the destination field, activation method, reload scope, health probe, real authentication probe, rollback, and predecessor retirement identifier.</li>
-          <li><strong>Canary one path at a time.</strong> Create a replacement, update one consumer, validate, keep overlap, revalidate, then retire the exact predecessor. Promote the path to automatic only after that complete sequence passes.</li>
-          <li><strong>Observe from outside.</strong> Probe the certificate from the wire and exercise the login or API route. Source files and provider success responses are supporting evidence, not the final answer.</li>
-          <li><strong>Make coverage fail closed.</strong> Alert on missing exporters, new unmapped registrations, unclassified Vault records, missing endpoints, and drift between a source and its consumers.</li>
-        </ol>
-      </section>
-
-      <section class="block" id="broke">
+      </section><p>The current monthly distribution schedule must be reassessed as certificate lifetimes shrink. Automated issuance alone does not establish that the distribution cadence is sufficient.</p></details><details class="technical-details"><summary>What broke and how I fixed it</summary><section class="block" id="broke">
         <h2>What broke</h2>
         <div class="failure">
           <h3>The observer failed and made healthy services look down</h3>
@@ -560,14 +468,7 @@
           <h4>Prevention</h4>
           <p>The deployment pipeline now distinguishes origin proof from public-edge proof. Jenkins checks that the application origin loaded the wildcard. Blackbox monitoring separately checks that the public edge presents a trusted certificate for the hostname and reports its own expiry.</p>
         </div>
-      </section>
-
-      <section class="block" id="different">
-        <h2>What I would do differently</h2>
-        <p>I would instrument rotation events while building the workers. The dashboard measures current state, but attempt and retry history still comes from Jenkins logs.</p>
-        <p>I would also separate “implemented” from “automatic” earlier. A worker becomes automatic after activation, real authentication, overlap, revalidation, and exact predecessor retirement have all passed.</p>
-      </section>
-    </div>
+      </section></details></section></div>
     </main>
 
     <footer>
