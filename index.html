@@ -710,7 +710,6 @@
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/">Platform</a>
-        <a href="/fleet/">Fleet</a>
         <a href="/live/">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
@@ -792,7 +791,7 @@
         <div class="section-heading capability-heading"><h3>Tools I use to build, secure, and operate systems</h3></div>
         <div class="capabilities-grid">
           <article class="capability experience-item"><h3><a href="/capabilities/terraform">Cloud &amp; IaC</a></h3><p>AWS, Azure (Entra ID, Intune, O365), Terraform, Packer, Ansible</p></article>
-          <article class="capability experience-item"><h3><a href="/capabilities/jenkins">CI/CD &amp; GitOps</a></h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
+          <article class="capability experience-item"><h3><a href="/projects/jenkins/">CI/CD &amp; GitOps</a></h3><p>Jenkins (shared libraries, JCasC), Argo CD, Gitea Actions, GitOps workflows, Kaniko</p></article>
           <article class="capability experience-item"><h3><a href="/capabilities/kubernetes-k3s">Containers &amp; orchestration</a></h3><p>Kubernetes (K3s), Helm, Docker, cert-manager, External Secrets</p></article>
           <article class="capability experience-item"><h3><a href="/capabilities/python-tooling">Languages &amp; APIs</a></h3><p>Python, PowerShell, Groovy, REST APIs, Microsoft Graph API, Go (familiar)</p></article>
           <article class="capability experience-item"><h3><a href="/capabilities/active-directory">Identity &amp; security</a></h3><p>Active Directory, Entra ID, hybrid identity (AD Connect), SAML/OIDC SSO, MFA, Conditional Access, gMSA, HashiCorp Vault, PKI (AD CS, step-ca, Let's Encrypt)</p></article>
@@ -806,7 +805,7 @@
           <article class="project-row"><h3><a href="/projects/self-healing-monitoring/">Self-healing monitoring</a></h3><p>applies allowlisted OS-aware repairs and escalates the rest.</p></article>
           <article class="project-row"><h3><a href="/projects/decommission/">Safe decommission</a></h3><p>removes the VM, monitoring, DNS, secrets and address in the checked order.</p></article>
           <article class="project-row"><h3><a href="/windows-identity/">Identity lifecycle</a></h3><p>creates and disables users from role definitions with a restorable snapshot before offboarding.</p></article>
-          <article class="project-row"><h3><a href="/fleet/">Unattended builder fleet</a></h3><p>approved AI builders behind review gates, with the postmortem for the day it went wrong.</p></article>
+          <article class="project-row"><h3><a href="/projects/jenkins/">Jenkins automation</a></h3><p>versioned jobs, approval gates, and Linux, Windows, and Kubernetes workers behind everyday infrastructure work.</p></article>
           <article class="project-row"><h3><a href="/projects/aiops-triage/">AIOps morning triage</a></h3><p>correlates monitoring, metrics, CI and backup findings in code.</p></article>
         </div>
         <div class="actions"><a class="button" href="/projects/">All project stories</a><a class="button" href="/roadmap/">Read the roadmap</a></div>
@@ -817,6 +816,7 @@
       <nav class="sitemap" aria-label="Site map">
         <div class="sitemap-group">
           <span class="sitemap-label">Projects</span>
+          <a href="/projects/jenkins/">Jenkins</a>
           <a href="/projects/">Project stories</a>
           <a href="/projects/server-provisioning/">Server provisioning</a>
           <a href="/projects/certificate-secret-renewal/">Certificate and secret renewal</a>
@@ -830,7 +830,6 @@
         </div>
         <div class="sitemap-group">
           <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
           <a href="/security/">Security</a>
           <a href="/ai/">Applied AI</a>
           <a href="/dead-man-monitoring/">Dead-man monitoring</a>

@@ -32,7 +32,6 @@
 !/dr-restore-verify/
 !/engineering/
 !/everything-as-code/
-!/fleet/
 !/gitops-argocd/
 !/lab-mcp-server/
 !/litellm/

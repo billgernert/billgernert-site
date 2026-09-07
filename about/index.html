@@ -182,7 +182,6 @@
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/">Platform</a>
-        <a href="/fleet/">Fleet</a>
         <a href="/live/">Live</a>
         <a href="/about/" class="active" aria-current="page">About</a>
         <span class="topnav-spacer"></span>
@@ -226,15 +225,15 @@
 
       <section class="block" id="what-the-lab-taught-me">
         <h2>What the lab taught me</h2>
-        <p>A platform changes the pace of everything. When inventory, secrets, the pipeline and the monitoring read from the same source, one project stops waiting on another. I was carrying four or five major systems at once, and it worked, because each one could trust the records the others left behind. Server provisioning, certificate renewal, the restore check, the <a href="/noc/">NOC</a> and the <a href="/fleet/">builder fleet</a> all moved in the same stretch of weeks. I had never worked that way before, and I do not want to go back.</p>
+        <p>A platform changes the pace of everything. When inventory, secrets, the pipeline and the monitoring read from the same source, one project stops waiting on another. I was carrying four or five major systems at once, and it worked, because each one could trust the records the others left behind. Server provisioning, certificate renewal, the restore check, the <a href="/noc/">NOC</a> and the <a href="/projects/jenkins/">Jenkins delivery platform</a> all moved in the same stretch of weeks. I had never worked that way before, and I do not want to go back.</p>
 
         <p>Efficiency compounds. Every job that ran on its own gave back the hours it used to cost, and those hours went into the next job. Triaging alerts, fixing a broken pipeline, sharpening a dashboard: all of it got cheap enough to stop competing with the projects. The more the platform finished, the more I wanted to build on it.</p>
 
-        <p>Blockers are everywhere, and they are rarely the code. They are the missing record, the credential nobody rotated, the approval that lives in one person's head. In the lab, the biggest blocker is me. I own every system, review my own work and hold every credential, which is a security flaw as much as a bottleneck. The <a href="/fleet/">builder fleet's</a> review gates and the <a href="/operations/accepted-risk/">accepted-risk register</a> exist to bound exactly that.</p>
+        <p>Blockers are everywhere, and they are rarely the code. They are the missing record, the credential nobody rotated, the approval that lives in one person's head. In the lab, the biggest blocker is me. I own every system, review my own work and hold every credential, which is a security flaw as much as a bottleneck. The <a href="/projects/jenkins/">delivery platform's</a> review gates and the <a href="/operations/accepted-risk/">accepted-risk register</a> exist to bound exactly that.</p>
 
         <p>Security means something different when the public websites are yours. Every exposed endpoint and every default I forgot to change was mine to find, and I found several. The <a href="/security/">Security page</a> is the record. The public status host now has no login path for anyone, and I am prouder of that sentence than of most of the features.</p>
 
-        <p>AI belongs where it makes the work more accurate, takes the repetition, and helps me think: brainstorming, research, a second set of eyes on a design. Repetition is also how people learn, so I am deliberate about what I hand off. Pushing it means finding where the guardrails need to be and what autonomy really costs. The <a href="/ai/">Applied AI</a> and <a href="/fleet/">Fleet</a> pages show where I landed, including the <a href="/writeups/postmortem-2026-08-04/">postmortem</a> for the day I got it wrong.</p>
+        <p>AI belongs where it makes the work more accurate, takes the repetition, and helps me think: brainstorming, research, a second set of eyes on a design. Repetition is also how people learn, so I am deliberate about what I hand off. Pushing it means finding where the guardrails need to be and what autonomy really costs. The <a href="/ai/">Applied AI</a> page shows where I landed, including the <a href="/writeups/postmortem-2026-08-04/">postmortem</a> for the day I got it wrong.</p>
 
         <p>I brought the Windows side into the lab on purpose. Active Directory, AD CS, Entra sign-in and the Windows template factory are here because hybrid shops still run them and I know them cold. But Kubernetes, Argo CD, cert-manager, Vault and the cloud-image provisioning path are the part I rebuilt most often and enjoyed most. Windows automation fights the tooling. Linux automation is the tooling.</p>
 
@@ -261,6 +260,7 @@
       <nav class="sitemap" aria-label="Site map">
         <div class="sitemap-group">
           <span class="sitemap-label">Projects</span>
+          <a href="/projects/jenkins/">Jenkins</a>
           <a href="/projects/">Project stories</a>
           <a href="/projects/server-provisioning/">Server provisioning</a>
           <a href="/projects/certificate-secret-renewal/">Certificate and secret renewal</a>
@@ -274,7 +274,6 @@
         </div>
         <div class="sitemap-group">
           <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
           <a href="/security/">Security</a>
           <a href="/ai/">Applied AI</a>
           <a href="/dead-man-monitoring/">Dead-man monitoring</a>

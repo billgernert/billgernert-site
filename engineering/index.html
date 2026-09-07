@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Engineering - Bill Gernert</title>
-  <meta name="description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the unattended fleet, and the observability surfaces that show what is measured.">
+  <meta name="description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the observability surfaces that show what is measured.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Engineering - Bill Gernert">
-  <meta property="og:description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the unattended fleet, and the observability surfaces that show what is measured.">
+  <meta property="og:description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the observability surfaces that show what is measured.">
   <meta property="og:url" content="https://billgernert.com/engineering/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Engineering - Bill Gernert">
-  <meta name="twitter:description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the unattended fleet, and the observability surfaces that show what is measured.">
+  <meta name="twitter:description" content="The Engineering hub for AutomationLab: the public architecture map, the security model, applied AI, the observability surfaces that show what is measured.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -181,8 +181,7 @@
       </a>
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
-        <a href="/platform/">Platform</a>
-        <a href="/fleet/" class="active" aria-current="page">Fleet</a>
+        <a href="/platform/" class="active" aria-current="page">Platform</a>
         <a href="/live/">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
@@ -208,7 +207,6 @@
         <a href="#architecture">Architecture</a>
         <a href="#security">Security</a>
         <a href="#ai">AI</a>
-        <a href="#fleet">Fleet</a>
         <a href="#observability">Observability</a>
       </div>
     </header>
@@ -217,7 +215,6 @@
       <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
       <p class="note">Also in <b>Engineering</b>:</p>
       <ol class="project-list">
-        <li><b>Fleet.</b> The provider-neutral builder fleet: one control plane, written taskings, cross-vendor review, and operator-held merges. <a href="/fleet/">Read more &#8594;</a></li>
         <li><b>Security.</b> The controls that fail closed, the audit that broke one, and the boundaries that stay load-bearing. <a href="/security/">Read more &#8594;</a></li>
         <li><b>Applied AI.</b> Build-time and operational AI, with budgets, logs, and the hard line between proposing and doing. <a href="/ai/">Read more &#8594;</a></li>
         <li><b>Watchdog.</b> Monitoring for the monitoring path itself, so silence never reads as green. <a href="/dead-man-monitoring/">Read more &#8594;</a></li>
@@ -261,19 +258,7 @@
         </div>
       </section>
 
-      <section class="block" id="fleet">
-        <h2>Unattended fleet</h2>
-        <p>The Fleet page narrows from AI in general to the build workflow itself: the cross-provider
-          authoring and review loop, the four-hour cycle, the fact that work is stored as files in git
-          instead of chat memory, and the outage week that forced the current source-of-truth posture.
-          Codex and Claude are interchangeable lane providers, while the control boundary requires another
-          provider to review the branch.</p>
-        <div class="links">
-          <a href="/fleet/">Unattended fleet &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="observability">
+<section class="block" id="observability">
         <h2>Observability</h2>
         <p>Observability is split between what you can see at a glance and what catches silence. The NOC
           page is the public overview, built around one screen and the rule that no-data never reads as
@@ -292,6 +277,7 @@
       <nav class="sitemap" aria-label="Site map">
         <div class="sitemap-group">
           <span class="sitemap-label">Projects</span>
+          <a href="/projects/jenkins/">Jenkins</a>
           <a href="/projects/">Project stories</a>
           <a href="/projects/server-provisioning/">Server provisioning</a>
           <a href="/projects/certificate-secret-renewal/">Certificate and secret renewal</a>
@@ -305,7 +291,6 @@
         </div>
         <div class="sitemap-group">
           <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
           <a href="/security/">Security</a>
           <a href="/ai/">Applied AI</a>
           <a href="/dead-man-monitoring/">Dead-man monitoring</a>

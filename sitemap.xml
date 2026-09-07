@@ -18,7 +18,6 @@
   <url><loc>https://billgernert.com/capabilities/grafana</loc></url>
   <url><loc>https://billgernert.com/capabilities/helm</loc></url>
   <url><loc>https://billgernert.com/capabilities/incident-postmortem</loc></url>
-  <url><loc>https://billgernert.com/capabilities/jenkins</loc></url>
   <url><loc>https://billgernert.com/capabilities/job-search-platform</loc></url>
   <url><loc>https://billgernert.com/capabilities/kaniko</loc></url>
   <url><loc>https://billgernert.com/capabilities/kubernetes-k3s</loc></url>
@@ -38,7 +37,6 @@
   <url><loc>https://billgernert.com/dr-restore-verify/</loc></url>
   <url><loc>https://billgernert.com/engineering/</loc></url>
   <url><loc>https://billgernert.com/everything-as-code/</loc></url>
-  <url><loc>https://billgernert.com/fleet/</loc></url>
   <url><loc>https://billgernert.com/gitops-argocd/</loc></url>
   <url><loc>https://billgernert.com/lab-mcp-server/</loc></url>
   <url><loc>https://billgernert.com/litellm/</loc></url>
@@ -54,6 +52,7 @@
   <url><loc>https://billgernert.com/projects/api-to-usage/</loc></url>
   <url><loc>https://billgernert.com/projects/certificate-secret-renewal/</loc></url>
   <url><loc>https://billgernert.com/projects/decommission/</loc></url>
+  <url><loc>https://billgernert.com/projects/jenkins/</loc></url>
   <url><loc>https://billgernert.com/projects/job-reporting/</loc></url>
   <url><loc>https://billgernert.com/projects/platform-map/</loc></url>
   <url><loc>https://billgernert.com/projects/self-healing-monitoring/</loc></url>

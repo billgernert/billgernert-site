@@ -40,7 +40,7 @@ page deleted in the private repo is deleted here.
 | `mail/` | the self-hosted mail page |
 | `dead-man-monitoring/` | the watchdog page about monitoring the monitoring path |
 | `about/` | the about/experience page |
-| the per-topic portfolio pages: `claude-code/`, `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each listed page is scrub-gated like every other page |
+| the per-topic portfolio pages: `gitops-argocd/`, `supply-chain-security/`, `dr-restore-verify/`, `ai-guardrails/`, `everything-as-code/`, `lab-mcp-server/`, `security/`, `windows-identity/`, `postmortems-index/` | each a standalone sync-managed portfolio page (top-level page dir with its own `index.html`); added to the gate's three dir lists by the 2026-07-27 `/claude-code/`-404 fix, so each listed page is scrub-gated like every other page |
 | the system showcase pages: `litellm/`, `renovate/` | each a standalone sync-managed page; added to the gate's three dir lists by the 2026-08-10 showcase-pages change, so each listed page is scrub-gated like every other page |
 | `SANITIZATION.md` | this file, published by the gate it describes |
 

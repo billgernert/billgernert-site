@@ -141,12 +141,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Engineering capabilities - Bill Gernert</title>
-  <meta name="description" content="Engineering capabilities from AutomationLab, with a hands-on writeup for each subsystem used to run the self-hosted platform.">
+  <meta name="description" content="The platform, reliability, identity, security, and automation skills I use, with projects that show the work.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Engineering capabilities - Bill Gernert">
-  <meta property="og:description" content="Engineering capabilities from AutomationLab, with a hands-on writeup for each subsystem used to run the self-hosted platform.">
+  <meta property="og:description" content="The platform, reliability, identity, security, and automation skills I use, with projects that show the work.">
   <meta property="og:url" content="https://billgernert.com/capabilities/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -154,7 +154,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Engineering capabilities - Bill Gernert">
-  <meta name="twitter:description" content="Engineering capabilities from AutomationLab, with a hands-on writeup for each subsystem used to run the self-hosted platform.">
+  <meta name="twitter:description" content="The platform, reliability, identity, security, and automation skills I use, with projects that show the work.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -165,6 +165,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
+  <style>
+    .capabilities-overview { max-width: 820px; }
+    .capabilities-overview .index-hero { margin-bottom: 2rem; }
+    .capabilities-overview .category { margin: 0; padding: 1.5rem 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: none; }
+    .capabilities-overview .category h2 { margin: 0 0 .75rem; }
+    .capabilities-overview .category p { margin: .6rem 0; }
+    .capabilities-overview .category .tools { color: var(--muted); }
+  </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/capabilities/">
   <!-- END generated: canonical -->
@@ -183,7 +191,6 @@
       <nav class="topnav" aria-label="Primary navigation">
         <a href="/projects/">Projects</a>
         <a href="/platform/" class="active" aria-current="page">Platform</a>
-        <a href="/fleet/">Fleet</a>
         <a href="/live/">Live</a>
         <a href="/about/">About</a>
         <span class="topnav-spacer"></span>
@@ -191,206 +198,35 @@
         <a href="https://www.linkedin.com/in/billgernert" rel="me">LinkedIn</a>
       </nav>
     </header>
-    <main id="main">
-    <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="/">billgernert.com</a>
-      <span class="sep">/</span>
-      <span class="here">Engineering capabilities</span>
-    </nav>
-
+    <main id="main" class="page-narrow capabilities-overview">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">billgernert.com</a><span class="sep">/</span><span class="here">Capabilities</span></nav>
     <header class="index-hero">
-      <p class="eyebrow">Engineering capabilities &#183; hands-on, from a running platform</p>
-      <h1>What I actually operate</h1>
-      <p class="lede">
-        Every card below is a capability I use to run AutomationLab as if it were production.
-        Each one links to its own writeup: what it is, how I wire it into the lab, the
-        architecture, what broke and what I learned. 27 capabilities cataloged, with the
-        diagrams and screenshots on each writeup still filling in.
-      </p>
-      <div class="count-strip">
-        <span><b>6</b> categories</span>
-        <span><b>27</b> capabilities</span>
-        <span><b>1</b> lab, operated end to end</span>
-      </div>
-      <div class="links">
-        <a href="/roadmap/">See how it is all planned &#8594;</a>
-      </div>
+      <h1>What I build and operate</h1>
+      <p>I build infrastructure, automate its day-to-day work, and test how it recovers. These are the skills I use across AutomationLab, with projects that show the decisions, results, and lessons behind them.</p>
     </header>
-    <!-- BEGIN generated: capability-rail (generate-site-pages.py) -->
-    <div class="capability-rail" aria-label="Page topics">
-      <div class="capability-rail-labels" style="--rail-count:6"><span>Platform and Orchestration</span><span>CI/CD and GitOps</span><span>Security and Identity</span><span>Observability</span><span>Networking and Edge</span><span>Automation and Tooling</span></div>
-      <div class="capability-track" aria-hidden="true"><i class="capability-node" style="--node-left:0.0000%"></i><i class="capability-node" style="--node-left:20.0000%"></i><i class="capability-node" style="--node-left:40.0000%"></i><i class="capability-node" style="--node-left:60.0000%"></i><i class="capability-node" style="--node-left:80.0000%"></i><i class="capability-node" style="--node-left:100.0000%"></i></div>
-    </div>
-    <!-- END generated: capability-rail -->
-    <section class="category" id="platform-orchestration" data-accent="cyan">
-      <h2>Platform &amp; Orchestration</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/kubernetes-k3s" data-status="live">
-          <span class="name">Kubernetes / K3s</span>
-          <span class="desc">Lightweight K3s cluster that runs the platform's services.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/proxmox" data-status="live">
-          <span class="name">Proxmox VE</span>
-          <span class="desc"><!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node HA cluster; the compute foundation for the lab's VM estate.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/terraform" data-status="live">
-          <span class="name">Terraform</span>
-          <span class="desc">Per-VM workspaces provision infrastructure from declared state.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/ansible" data-status="live">
-          <span class="name">Ansible</span>
-          <span class="desc">Post-provision configuration and role-based host hardening.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/helm" data-status="live">
-          <span class="name">Helm</span>
-          <span class="desc">Packaged, versioned releases for cluster workloads.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
+    <section class="category" id="platform">
+      <h2>Platform</h2>
+      <p>I turn a server request into a configured Windows or Linux machine with addressing, inventory, and monitoring. I keep the infrastructure and configuration in code so later changes follow the same recorded path.</p>
+      <p class="tools"><strong>Tools:</strong> Proxmox, Kubernetes / K3s, Terraform, Ansible, Helm, NetBox.</p>
+      <a href="/projects/server-provisioning/">See the server provisioning project &#8594;</a>
     </section>
-
-    <section class="category" id="cicd-gitops" data-accent="green">
-      <h2>CI/CD &amp; GitOps</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/jenkins" data-status="live">
-          <span class="name">Jenkins</span>
-          <span class="desc">Config-as-code controller for provisioning and finite operational workflows.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/kaniko" data-status="live">
-          <span class="name">Kaniko</span>
-          <span class="desc">Daemonless, in-cluster container image builds.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/argo-cd" data-status="live">
-          <span class="name">Argo CD</span>
-          <span class="desc">GitOps reconciliation keeps the cluster matching git.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/gitea" data-status="live">
-          <span class="name">Gitea</span>
-          <span class="desc">Self-hosted git, PRs, and branch protection as the source of truth.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/pipelines" data-status="live">
-          <span class="name">Pipelines</span>
-          <span class="desc">The provisioning flow itself: allocate, plan, approve, configure.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
+    <section class="category" id="reliability">
+      <h2>Reliability and recovery</h2>
+      <p>I connect monitoring to investigation and bounded remediation. I test backups by restoring them, and watch for missed work so a silent pipeline cannot look healthy.</p>
+      <p class="tools"><strong>Tools:</strong> Zabbix, Prometheus, Grafana, Proxmox Backup Server, Python.</p>
+      <a href="/dr-restore-verify/">See the restore verification project &#8594;</a>
     </section>
-
-    <section class="category" id="security-identity" data-accent="cyan">
-      <h2>Security &amp; Identity</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/vault" data-status="live">
-          <span class="name">HashiCorp Vault</span>
-          <span class="desc">AppRole-brokered secrets for registered pipelines and services.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/active-directory" data-status="live">
-          <span class="name">Active Directory</span>
-          <span class="desc">On-prem identity and the automated user lifecycle.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/ad-cs-pki" data-status="live">
-          <span class="name">AD CS / PKI</span>
-          <span class="desc">Internal certificate authority backing trust in the lab.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/entra-id" data-status="live">
-          <span class="name">Entra ID</span>
-          <span class="desc">Hybrid identity synced from on-prem AD via AD Connect.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/duo-mfa" data-status="live">
-          <span class="name">Duo MFA</span>
-          <span class="desc">Multi-factor enforcement on privileged access paths.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/devsecops" data-status="live">
-          <span class="name">DevSecOps</span>
-          <span class="desc">Security scanning as required checks in the merge path.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
+    <section class="category" id="identity">
+      <h2>Identity and security</h2>
+      <p>I automate account lifecycles, certificate renewal, and credential rotation, with approval gates around destructive changes. I make expiry, failed renewal, and exceptions visible before they interrupt access.</p>
+      <p class="tools"><strong>Tools:</strong> Active Directory, Entra ID, AD CS, Vault, Duo, cert-manager, Cloudflare.</p>
+      <a href="/projects/certificate-secret-renewal/">See the certificate and secret renewal project &#8594;</a>
     </section>
-
-    <section class="category" id="observability" data-accent="green">
-      <h2>Observability</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/grafana" data-status="live">
-          <span class="name">Grafana</span>
-          <span class="desc">Dashboards over the lab, including a custom Infinity data source.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/prometheus" data-status="live">
-          <span class="name">Prometheus</span>
-          <span class="desc">Metrics collection and alerting rules for cluster health.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/zabbix" data-status="live">
-          <span class="name">Zabbix</span>
-          <span class="desc">API-driven monitoring with a classify-and-heal engine.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/incident-postmortem" data-status="live">
-          <span class="name">Incident &amp; Postmortem</span>
-          <span class="desc">Blameless practice: real outages, real writeups, real fixes.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="category" id="networking-edge" data-accent="cyan">
-      <h2>Networking &amp; Edge</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/cloudflare" data-status="live">
-          <span class="name">Cloudflare Tunnel / Access</span>
-          <span class="desc">Outbound tunnel, Access for protected apps, and explicit public routes.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/opnsense" data-status="live">
-          <span class="name">OPNsense</span>
-          <span class="desc">Firewall and routing between segmented VLANs.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/split-horizon-dns" data-status="live">
-          <span class="name">Split-horizon DNS</span>
-          <span class="desc">One name, two answers: internal vs. external resolution.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/vlans" data-status="live">
-          <span class="name">VLANs</span>
-          <span class="desc">Segmented network design separating infra, compute, identity.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="category" id="automation-tooling" data-accent="green">
-      <h2>Automation &amp; Tooling</h2>
-      <div class="skill-grid">
-        <a class="skill-card" href="/capabilities/python-tooling" data-status="live">
-          <span class="name">Python tooling</span>
-          <span class="desc">The glue scripts that automate the pipelines end to end.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/job-search-platform" data-status="live">
-          <span class="name">Job-search platform</span>
-          <span class="desc">A self-hosted app built and operated on the same platform.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-        <a class="skill-card" href="/capabilities/netbox-ipam" data-status="live">
-          <span class="name">NetBox IPAM</span>
-          <span class="desc">Source-of-truth IP allocation feeding the provisioning flow.</span>
-          <span class="arrow">Read writeup &#8594;</span>
-        </a>
-      </div>
+    <section class="category" id="delivery">
+      <h2>Automation and delivery</h2>
+      <p>I turn recurring operational tasks into versioned pipelines with validated inputs, review gates, and retained results. I use separate environments and workers suited to each workload to test changes before production.</p>
+      <p class="tools"><strong>Tools:</strong> Jenkins, Gitea Actions, Argo CD, Kaniko, Python, PowerShell.</p>
+      <a href="/projects/jenkins/">See the Jenkins project &#8594;</a>
     </section>
     </main>
 
@@ -399,6 +235,7 @@
       <nav class="sitemap" aria-label="Site map">
         <div class="sitemap-group">
           <span class="sitemap-label">Projects</span>
+          <a href="/projects/jenkins/">Jenkins</a>
           <a href="/projects/">Project stories</a>
           <a href="/projects/server-provisioning/">Server provisioning</a>
           <a href="/projects/certificate-secret-renewal/">Certificate and secret renewal</a>
@@ -412,7 +249,6 @@
         </div>
         <div class="sitemap-group">
           <span class="sitemap-label">Engineering</span>
-          <a href="/fleet/">Fleet</a>
           <a href="/security/">Security</a>
           <a href="/ai/">Applied AI</a>
           <a href="/dead-man-monitoring/">Dead-man monitoring</a>
