@@ -165,7 +165,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
   <style>
-body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif}.page{max-width:1100px;margin:auto;padding:28px}.note,.box,.diagram,.failure{border:1px solid #24445f;border-radius:10px;background:#0b1728;padding:22px}.note{border-left:3px solid #ffb84d}.badge,.kicker{font:12px "Share Tech Mono";letter-spacing:.13em;text-transform:uppercase;color:#00ff96}h1{font-size:58px;line-height:1.02;margin:.3em 0}h2{font-size:34px;margin-top:2.2em}h3{font-size:23px}.lead{font-size:23px;color:#b7c9d8}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.cards div{border:1px solid #24445f;border-radius:8px;padding:18px;background:#0b1728}.cards b{display:block;color:#fff;margin-bottom:8px}.sequence{list-style:none;padding:0;counter-reset:step}.sequence li{position:relative;padding:0 0 28px 64px;counter-increment:step}.sequence li:before{content:counter(step);position:absolute;left:0;top:0;width:36px;height:36px;border:1px solid #00d4ff;border-radius:50%;display:grid;place-items:center;color:#00d4ff;font:700 16px "Share Tech Mono"}.sequence li:not(:last-child):after{content:"";position:absolute;left:18px;top:38px;bottom:0;border-left:1px solid #24445f}.sequence strong{color:#fff}.table-wrap{overflow:auto;border:1px solid #24445f;border-radius:9px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:14px;border-bottom:1px solid #24445f;vertical-align:top}th{color:#00d4ff;font:12px "Share Tech Mono";text-transform:uppercase;letter-spacing:.08em}.diagram{padding:18px;margin:22px 0}.diagram img{display:block;width:100%;height:auto}.diagram figcaption{font:13px "Share Tech Mono";color:#91a8bc;margin-top:12px}.wire{stroke:#00ff96;stroke-width:3;fill:none}.node{fill:#10233a;stroke:#2e5879;stroke-width:2}.hot{fill:#08243a;stroke:#00d4ff;stroke-width:2}.warn{fill:#2a2111;stroke:#ffb84d;stroke-width:2}.t{fill:#e8f3ff;font:600 18px "Exo 2"}.s{fill:#91a8bc;font:13px "Share Tech Mono"}.footer{margin-top:60px;border-top:1px solid #24445f;padding-top:20px;color:#91a8bc}.token{border:1px dashed #00d4ff;padding:2px 7px;color:#00d4ff;font:14px "Share Tech Mono"}@media(max-width:760px){.cards{grid-template-columns:1fr}h1{font-size:42px}}
+
+.skill-head{padding-top:0}.skill-head h1{max-width:780px}.skill-head p,.skill-body p{margin-bottom:1rem}.descriptor{font-weight:400}.review-links{display:flex;flex-wrap:wrap;gap:12px 26px;margin-top:22px;font: .95rem var(--mono)}.architecture{margin:26px 0}.diagram-scroll{border:1px solid var(--border);background:#0b1728;overflow-x:auto}.architecture img{display:block;width:100%;height:auto}.architecture figcaption{font-size:.9rem;color:var(--muted);margin-top:10px}.decision{margin:22px 0;padding:18px 22px;border-left:3px solid var(--green);background:var(--green-wash)}.decision strong{display:block;color:#fff;margin-bottom:8px}.responsibilities{margin:26px 0}.responsibilities>div{display:grid;grid-template-columns:210px 1fr;gap:22px;padding:17px 0;border-bottom:1px solid var(--border)}.responsibilities dt{font:1rem var(--mono);color:var(--cyan)}.responsibilities dd{margin:0}.technical-details{margin:26px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}.technical-details summary{padding:18px 0;cursor:pointer;color:var(--cyan);font-size:1.05rem}.technical-details ul{padding-bottom:12px}.technical-details li{margin:14px 0!important;font-weight:400!important}code{overflow-wrap:anywhere}.badge{font-size:.875rem}.crumbs{font-size:.875rem}
+@media(max-width:700px){.responsibilities>div{grid-template-columns:1fr;gap:7px}.diagram-scroll img{min-width:740px}.decision{padding:16px 18px}.review-links{gap:14px}.skill-head h1{font-size:clamp(2.1rem,9vw,3rem)}}
+
   </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/template-factory/">
@@ -202,28 +205,55 @@ body{margin:0;background:#08111f;color:#dce9f5;font:18px/1.58 "Exo 2",sans-serif
     </nav>
 
     <header class="skill-head">
-      <span class="badge">Project story</span><h1>The Windows template factory</h1>
-<p class="lead">The template factory rebuilds Windows golden images without taking the current provisioning image out of service.</p>
-<div class="box"><strong>How it is built, in one paragraph</strong><p>A weekly Jenkins pipeline starts an ephemeral Packer agent in Kubernetes. For each supported Windows release, it chooses the inactive template slot, builds and patches a new image there, verifies the result against Proxmox, and only then moves the live tag. Provisioning resolves that tag instead of a fixed virtual-machine ID, so a failed build leaves the last verified image in place.</p></div>
-<p>Measured from the generated project inventory at publish: <span class="token"><!--LIVE:TEMPLATE_VARIANT_COUNT:START-->3<!--LIVE:TEMPLATE_VARIANT_COUNT:END--></span> managed Windows variants. The successful build measured on 2026-08-25 took 6,422 seconds, about 107 minutes.</p>
-      <div class="links story-code-action"><a href="https://github.com/billgernert/windows-template-factory">View the code &#8594;</a></div>
-    </header>
-
-    <div class="skill-body">
-      <h2>How to read it in thirty seconds</h2><div class="cards"><div><b>The live tag is the contract</b>Provisioning asks for a role tag, not a numbered template.</div><div><b>The inactive slot is the workshop</b>Packer can rebuild it without touching the image currently serving clones.</div><div><b>Promotion is the safety gate</b>The tag moves only after the new object is verified as a template.</div></div>
-
-<h2>Where the factory runs</h2><p>Jenkins owns the schedule and creates a short-lived agent pod in the cluster. The pod carries Packer, the Proxmox plugin, Vault tooling, Python, and SSH. Packer drives the unattended Windows installation and in-guest preparation. A separate lifecycle script reads authoritative Proxmox state and controls staging, verification, promotion, and cleanup.</p>
-<figure class="diagram"><img src="img/template-factory-runtime.svg" alt="Jenkins starts a Kubernetes Packer agent that builds and promotes a Proxmox template" width="1060" height="300" loading="lazy"><figcaption>Figure 1. Jenkins is the conductor. The disposable agent does the build, while the lifecycle engine decides whether the result may become live.</figcaption></figure>
-
-<h2>The seven-step template run</h2><ol class="sequence"><li><strong>Jenkins checks out the repository.</strong><p>The pipeline, Packer definition, build scripts, and per-release variables come from source control.</p></li><li><strong>The backup guard checks the build window.</strong><p>The lifecycle engine refuses to start a release when an active or approaching backup would overlap the long image build.</p></li><li><strong>The inactive slot becomes staging.</strong><p>The current live tag identifies the slot in service. The other slot receives a neutral staging tag.</p></li><li><strong>Packer builds a clean Windows image.</strong><p>The guest installs updates and runtime tooling, settles pending work, then runs Sysprep generalize and shuts down.</p></li><li><strong>The lifecycle engine verifies the result.</strong><p>It reads the current node configuration rather than the lagging cluster resource cache, because that cache can briefly report a converted template as an ordinary virtual machine.</p></li><li><strong>The live tag moves.</strong><p>The verified staging template receives the live role tag first. The former live template is then marked as the previous fallback. If the promoted image proves bad, the live tag moves back to the previous image and provisioning follows it.</p></li><li><strong>Failure cleans staging and preserves service.</strong><p>A failed, timed-out, or aborted build is removed from the staging slot. The live tag never moved, so provisioning keeps using the previous verified template.</p></li></ol>
-
-<h2>The tag move is the deployment</h2><figure class="diagram"><img src="img/template-factory-promotion.svg" alt="The current template remains live while staging is built and verified" width="1060" height="330" loading="lazy"><figcaption>Figure 2. The current image and the candidate coexist. Promotion changes the resolver's answer only after verification.</figcaption></figure>
-
-<h2>How it runs now</h2><div class="table-wrap"><table><thead><tr><th>When</th><th>What runs</th><th>What a quiet result means</th></tr></thead><tbody><tr><td>Weekly</td><td>Jenkins starts the template pipeline and handles supported releases one at a time.</td><td>No concurrent build can compete for a staging slot or overload the shared build path.</td></tr><tr><td>Before each release</td><td>The backup guard reads current and scheduled Proxmox backup activity.</td><td>The image build begins only when its full safety horizon is clear.</td></tr><tr><td>During the build</td><td>Packer installs Windows, updates it, adds runtime initialization, and generalizes the guest.</td><td>The live tag still points at the previous verified image.</td></tr><tr><td>After verification</td><td>The lifecycle engine moves the live tag and marks the former live image as previous.</td><td>New provisioning runs resolve the new template without changing their own configuration.</td></tr><tr><td>On failure</td><td>The pipeline captures diagnostics and cleans the staging object.</td><td>Provisioning remains available through the unchanged live tag.</td></tr></tbody></table></div>
-
-<h2>What the first design got wrong</h2><div class="failure"><h3>The patch-in-place loop accumulated state</h3><p>The first design repeatedly booted, patched, generalized, and shut down the same template. Sysprep limits, pending Windows work, and one failed patch cycle could turn image maintenance into a provisioning dependency.</p><h3>The replacement</h3><p>I separated the candidate from the current image. The factory now rebuilds into an inactive slot and treats tag promotion as a controlled deployment.</p><h3>The prevention built into the run</h3><p>Neutral staging tags, authoritative verification, serial builds, bounded timeouts, backup-window checks, and cleanup all fail before the live tag moves.</p></div>
-<h2>What I would do differently</h2><p>I would have designed the image as a replaceable release artifact from the beginning. The important abstraction was never the template number. It was the stable role that provisioning needed, backed by a verified current image and a recoverable previous image.</p>
-    </div>
+  <span class="badge">Template factory</span>
+  <h1>The Windows template factory</h1>
+  <p class="descriptor">I use <strong>Jenkins, Kubernetes, and Packer</strong> to rebuild Windows Server templates in Proxmox <strong>every week</strong>. Each replacement is installed, updated, generalized, and verified before provisioning starts using it.</p>
+  <p>The current template stays available throughout the build. Provisioning resolves a stable OS tag, so I can replace the image underneath it without changing the provisioning pipeline.</p>
+  <div class="links story-code-action"><a href="https://github.com/billgernert/windows-template-factory">View the code &#8594;</a></div>
+</header>
+<div class="skill-body">
+<section class="block" id="how">
+  <h2>Jenkins runs the factory. Packer builds the image.</h2>
+  <p>A weekly <strong>Jenkins pipeline</strong> checks out the Packer definitions and build scripts from Git, then starts disposable build agents in <strong>Kubernetes</strong>. Each Windows release has its own agent and a pair of template slots in <strong>Proxmox</strong>.</p>
+  <p><strong>Packer</strong> installs Windows into the inactive slot, applies Windows Updates, adds runtime initialization tooling, and runs <strong>Sysprep</strong> to generalize the guest. Vault supplies the build credentials. A Python lifecycle script checks the resulting template against the Proxmox API before it can be promoted.</p>
+  <figure class="architecture"><div class="diagram-scroll" tabindex="0" role="region" aria-label="Factory runtime diagram"><img src="img/template-factory-runtime.svg" alt="Jenkins starts a disposable Kubernetes Packer agent to build and verify a Windows template in Proxmox." width="1060" height="300" loading="lazy"></div><figcaption>Jenkins schedules the work; the Kubernetes agent runs Packer; the lifecycle script controls promotion.</figcaption></figure>
+</section>
+<section class="block" id="availability">
+  <h2>A slow build does not hold up provisioning</h2>
+  <p><strong>Last successful build: <!--LIVE:TEMPLATE_LAST_SUCCESS_DATE:START-->September 1, 2026<!--LIVE:TEMPLATE_LAST_SUCCESS_DATE:END--> · about <!--LIVE:TEMPLATE_LAST_SUCCESS_MINUTES:START-->70<!--LIVE:TEMPLATE_LAST_SUCCESS_MINUTES:END--> minutes.</strong> That is time spent preparing the next image. A request for a new server can still clone the current verified template while that work runs.</p>
+  <p>The separation comes from <strong>template tags</strong>. Provisioning asks for a role such as <code>os-2025</code> instead of a fixed VM ID. That tag stays on the current template while its replacement is built in the inactive slot.</p>
+  <div class="decision"><strong>There is always a verified template available during a rebuild.</strong> The candidate receives the live tag only after verification. The previous image is then marked as the fallback. If the build fails, the live tag stays where it was and provisioning continues from the same image.</div>
+  <figure class="architecture"><div class="diagram-scroll" tabindex="0" role="region" aria-label="Template promotion diagram"><img src="img/template-factory-promotion.svg" alt="Current and candidate templates coexist. The live tag moves to the candidate after verification, and the previous image remains a fallback." width="1060" height="330" loading="lazy"></div><figcaption>Build in the inactive slot. Verify the replacement. Move the tag. Keep the previous image for recovery.</figcaption></figure>
+  <p>I still care about build time for capacity and backup scheduling. It just does not put image maintenance in the path of every new server request.</p>
+</section>
+<section class="block" id="updates">
+  <h2>The templates are updated, not left to age</h2>
+  <p><strong>Weekly rebuilds</strong> create a fresh Windows image and apply updates before promotion. New servers inherit the updated baseline as soon as their provisioning run resolves the new live tag.</p>
+  <p>For an <strong>on-demand patch</strong>, a separate Jenkins job clones the current template into a working VM. <strong>Ansible applies Windows Updates over WinRM</strong>, runs Sysprep, and shuts the guest down before it is converted back into a template and promoted.</p>
+  <p>Both paths prepare the replacement separately from the image serving provisioning. Updating a template changes the baseline for future clones; existing servers still need their own patching.</p>
+  <dl class="responsibilities">
+    <div><dt>Jenkins + Kubernetes</dt><dd>Schedule the rebuild and provide disposable, isolated Packer agents.</dd></div>
+    <div><dt>Packer + Sysprep</dt><dd>Build a clean, updated Windows image that is ready to clone.</dd></div>
+    <div><dt>Ansible + WinRM</dt><dd>Apply updates to a working copy when I need an on-demand template patch.</dd></div>
+    <div><dt>Proxmox + tags</dt><dd>Keep the current image available and let provisioning follow the verified replacement.</dd></div>
+  </dl>
+</section>
+<section class="block" id="lesson">
+  <h2>Why I stopped patching the same image in place</h2>
+  <p>The first version repeatedly booted, patched, generalized, and shut down the same template. Pending Windows work and Sysprep failures accumulated until image maintenance could block provisioning.</p>
+  <p>I changed the design so that an image is a replaceable release artifact. The build can fail without taking the current template with it. The stable interface is the OS tag, backed by a verified image.</p>
+  <details class="technical-details"><summary>Build safeguards and recovery</summary>
+    <ul>
+      <li><strong>Build definitions.</strong> The repository contains <!--LIVE:TEMPLATE_VARIANT_COUNT:START-->3<!--LIVE:TEMPLATE_VARIANT_COUNT:END--> Windows variant definitions; the Jenkins matrix selects the weekly releases.</li>
+      <li><strong>Check the backup window.</strong> The factory reads active and scheduled Proxmox backups before starting a long build.</li>
+      <li><strong>Keep releases isolated.</strong> Each OS uses a separate template pair and Kubernetes agent. Matrix builds can run alongside one another; overlapping pipeline runs are disabled.</li>
+      <li><strong>Verify authoritative state.</strong> The lifecycle script reads the node configuration, because the cluster cache can briefly report a converted template as a VM.</li>
+      <li><strong>Bound failed work.</strong> Per-image timeouts stop a stalled build. Failure cleanup targets staging and leaves the current live template in place.</li>
+      <li><strong>Recover a promoted weekly image.</strong> Move the live role tag back to the retained previous template so subsequent provisioning uses it.</li>
+    </ul>
+  </details>
+</section>
+</div>
     </main>
 
     <footer>
