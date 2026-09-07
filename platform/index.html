@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Platform - Bill Gernert</title>
-  <meta name="description" content="Jenkins is the engine AutomationLab runs on: what triggers it, the five steps every job follows, the systems it calls, and where it hands off to Argo CD. Then the six subsystems built on top of it.">
+  <meta name="description" content="How Gitea, Jenkins, and Ansible work together in AutomationLab: reviewed code, CI checks, infrastructure jobs, and Linux and Windows configuration.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Platform - Bill Gernert">
-  <meta property="og:description" content="Jenkins is the engine AutomationLab runs on: what triggers it, the five steps every job follows, the systems it calls, and where it hands off to Argo CD. Then the six subsystems built on top of it.">
+  <meta property="og:description" content="How Gitea, Jenkins, and Ansible work together in AutomationLab: reviewed code, CI checks, infrastructure jobs, and Linux and Windows configuration.">
   <meta property="og:url" content="https://billgernert.com/platform/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Platform - Bill Gernert">
-  <meta name="twitter:description" content="Jenkins is the engine AutomationLab runs on: what triggers it, the five steps every job follows, the systems it calls, and where it hands off to Argo CD. Then the six subsystems built on top of it.">
+  <meta name="twitter:description" content="How Gitea, Jenkins, and Ansible work together in AutomationLab: reviewed code, CI checks, infrastructure jobs, and Linux and Windows configuration.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -164,13 +164,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
-  <link rel="stylesheet" href="platform.css?v=platform-hub-1">
+  <link rel="stylesheet" href="platform.css?v=platform-foundations-2">
   <script src="../assets/live-dashboard.js" defer></script>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/platform/">
   <!-- END generated: canonical -->
 </head>
-<body class="platform-hub">
+<body class="platform-hub" id="lab-platform">
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="page">
     <header class="site-header">
@@ -192,331 +192,142 @@
       </nav>
     </header>
     <main id="main" class="page-narrow">
-    <nav class="crumbs" aria-label="Breadcrumb">
+<nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">billgernert.com</a>
       <span class="sep">/</span>
       <span class="here">Platform</span>
     </nav>
-
-    <header class="skill-head">
-      <span class="badge">How it works</span>
-      <h1>The platform</h1>
-      <p class="descriptor">Jenkins is the engine this <!--LIVE:PROXMOX_NODE_COUNT:START-->5<!--LIVE:PROXMOX_NODE_COUNT:END-->-node lab runs on. When a server gets built, a
-        certificate renews, a backup is verified, or a user account is created, a Jenkins job started it
-        and a Jenkins job proved it finished. This page walks through how that engine works, then through
-        the six subsystems built on top of it. Where a design has a limit, it is named here rather than
-        rounded up.</p>
-      <div class="links">
-        <a href="#jenkins">The engine</a>
-        <a href="#flow">How it fits together</a>
-        <a href="#pattern">The five steps</a>
-        <a href="#developer-platform">Developer platform</a>
-        <a href="#provisioning">Provisioning</a>
-        <a href="#self-healing">Self-healing</a>
-        <a href="#identity">Identity</a>
-        <a href="#aiops">AIOps</a>
-        <a href="#observability">Observability</a>
-        <a href="#secrets">Secrets</a>
-      </div>
-    </header>
-
-    <div class="capability-rail platform-rail" aria-label="Platform topics">
-      <div class="capability-rail-labels" style="--rail-count:6">
-        <span>Engine</span>
-        <span>Change path</span>
-        <span>Recovery</span>
-        <span>Identity</span>
-        <span>Observability</span>
-        <span>Secrets</span>
-      </div>
-      <div class="capability-track" aria-hidden="true">
-        <i class="capability-node" style="--node-left:0%"></i>
-        <i class="capability-node" style="--node-left:20%"></i>
-        <i class="capability-node" style="--node-left:40%"></i>
-        <i class="capability-node" style="--node-left:60%"></i>
-        <i class="capability-node" style="--node-left:80%"></i>
-        <i class="capability-node" style="--node-left:100%"></i>
-      </div>
-    </div>
-
-    <div class="skill-body">
-      <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
-      <p class="note">Also in <b>Platform</b>:</p>
-      <ol class="project-list">
-        <li><b>Engineering capabilities.</b> A short overview of the skills used across the projects. <a href="/capabilities/">Read more &#8594;</a></li>
-        <li><b>Roadmap.</b> What is already live, what is still being built, and where the next trade-offs sit. <a href="/roadmap/">Read more &#8594;</a></li>
-        <li><b>Vault.</b> The secrets system, its measured recovery, and the limits that are still named plainly. <a href="/vault/">Read more &#8594;</a></li>
-        <li><b>Windows identity.</b> Directory, certificate authority, MFA, and the identity failure that is still shown as an active investigation. <a href="/windows-identity/">Read more &#8594;</a></li>
-        <li><b>Mail.</b> Self-hosted mail with the delivery path, DNS records, and operational limits explained. <a href="/mail/">Read more &#8594;</a></li>
-        <li><b>Recovery test.</b> The restore check that destroys a VM on purpose and times the recovery path. <a href="/dr-restore-verify/">Read more &#8594;</a></li>
-      </ol>
-      <!-- END generated: group-hub -->
-
-      <section class="block" id="jenkins">
-        <h2>Jenkins is the engine</h2>
-        <p>Jenkins is an automation server: you give it a job, it runs that job to completion, and it
-          tells you whether the job worked. In this lab it owns finite workflows such as provisioning,
-          decommissioning, recovery, and identity changes. Argo CD owns continuous reconciliation for
-          its registered Kubernetes scope. A finite estate change follows a Jenkins job or a reviewed
-          operator runbook instead of an undocumented console path.</p>
-        <p>That constraint is the whole design. Each Jenkins change has a run number, a log, an
-          operator who triggered it, and an exit code. The pipeline definitions and reviewed runbooks
-          document how those changes work, while Argo CD records drift and sync state for its scope.</p>
-        <figure class="shot">
-          <img src="img/jenkins-dashboard.png" alt="The Jenkins job list with domain tabs across the top and green scheduled jobs below." width="1050" height="545" loading="lazy">
-          <figcaption>The controller's job list. The tabs are the lab's domains; every row is a change or a check with a run number behind it. Captured 2026-08-23.</figcaption>
-        </figure>
-        <!-- BEGIN generated: platform-counts (generate-site-pages.py) -->
-      <p class="descriptor">Counted from the repository every time this page is built: <b>92</b> pipeline definitions, <b>64</b> of them wired into the seed script as code today, and <b>304</b> helper scripts the pipelines call. These three numbers are generated, never typed, so the page cannot quietly drift away from the tree it describes.</p>
-      <!-- END generated: platform-counts -->
-        <p>The gap between those first two numbers is deliberate and worth explaining, because it is the
-          honest version of "jobs as code". Every job's definition lives in git, in a Job DSL seed script
-          that can recreate the controller's jobs from scratch. But cutting the existing live jobs over
-          to that script is done one batch at a time, each batch checked against the running job first,
-          because a single seed run rewrites a job's whole configuration and a mistake there is silent.
-          Six rows are active in the seed today. The rest sit in the same file, commented and ready,
-          waiting their turn. A big-bang cutover of all of them would be faster and would prove nothing.</p>
-        <div class="links">
-          <a href="/projects/jenkins/">Jenkins &#8594;</a>
-          <a href="/everything-as-code/">Everything as code &#8594;</a>
-          <a href="/capabilities/pipelines">Pipelines &#8594;</a>
+<header class="lab-hero">
+<span class="lab-badge">How it works</span>
+<h1>The platform</h1>
+<p class="lab-lede">I built AutomationLab around <strong>Gitea, Jenkins, and Ansible.</strong> Gitea holds the code and review history, Jenkins coordinates the jobs, and Ansible configures the hosts. CI checks connect a proposed change to the version I’m willing to run.</p>
+</header>
+<section class="lab-foundations" aria-label="The core of AutomationLab">
+<article class="lab-tool" id="gitea">
+<span class="lab-eyebrow">Source and review</span>
+<h2>Gitea</h2>
+<p>Pipeline definitions, playbooks, and infrastructure code live together. A pull request holds the change, its discussion, and the check results before it reaches protected main.</p>
+<p class="lab-tool-note">Branches · Pull requests · Required checks</p><a href="/capabilities/gitea">Gitea in the lab →</a>
+</article>
+<article class="lab-tool" id="jenkins">
+<span class="lab-eyebrow">Jobs and approval</span>
+<h2>Jenkins</h2>
+<p>Jenkins tests proposed changes and runs infrastructure workflows. It coordinates the tools, stops for approval where needed, and retains logs and reports with the run.</p>
+<p class="lab-tool-note">Jenkinsfiles · Shared libraries · Job DSL</p><a href="/projects/jenkins/">Inside Jenkins →</a>
+</article>
+<article class="lab-tool" id="ansible">
+<span class="lab-eyebrow">Host configuration</span>
+<h2>Ansible</h2>
+<p>Playbooks and roles configure Linux and Windows hosts from reviewed files. The same configuration can be applied again during a rebuild or a scoped repair.</p>
+<p class="lab-tool-note">Inventory · Playbooks · Reusable roles</p><a href="/capabilities/ansible">Ansible in the lab →</a>
+</article>
+</section>
+<span id="flow">
+</span>
+<span id="pattern">
+</span>
+<section id="ci" class="lab-panel lab-ci" aria-labelledby="lab-ci-title">
+<span class="lab-eyebrow">Before a change reaches main</span>
+<h2 id="lab-ci-title">CI checks are part of the change path.</h2>
+<p>Gitea Actions and Jenkins report check results on the pull request. Checks cover the proposed code and the files generated from it, so review includes more than reading a diff.</p>
+<div class="lab-checks" role="group" aria-label="Examples of repository checks">
+<div><strong>Lint and validation</strong>
+<span>YAML, Ansible, shell, and Kubernetes manifests</span>
+</div>
+<div><strong>Security and policy</strong>
+<span>Secret scanning and infrastructure policy checks</span>
+</div>
+<div><strong>Tests</strong>
+<span>Behavior checks for the affected code</span>
+</div>
+<div><strong>Generated files</strong>
+<span>Freshness, references, and public-site safety</span>
+</div>
+</div>
+<p class="lab-gate"><strong>Required checks gate the merge.</strong> Results belong to a specific commit. A changed pull-request head needs results for that new revision, followed by review before merge.</p>
+</section>
+<section id="provisioning" class="lab-panel">
+<span class="lab-eyebrow">From code to a running server</span>
+<div class="lab-example">
+<div>
+<h2>A Linux or Windows build</h2>
+<p>Jenkins runs the provisioning workflow from reviewed definitions. NetBox allocates the address, Terraform plans the infrastructure change, and I approve the plan before apply.</p>
+<p>Proxmox creates the VM. Ansible then configures its operating system, with monitoring registered before the agent starts. A basic build takes about five to ten minutes.</p><a class="lab-link" href="/projects/server-provisioning/">Follow the provisioning job →</a>
+</div>
+<ol class="lab-sequence" aria-label="Provisioning responsibilities">
+<li><strong>01 / Gitea holds the definition</strong>
+<span>The pipeline and roles have a reviewed revision.</span>
+</li>
+<li><strong>02 / Jenkins runs the request</strong>
+<span>Validate inputs, prepare the plan, and wait for approval.</span>
+</li>
+<li><strong>03 / Ansible configures the host</strong>
+<span>Apply the OS-specific roles after the VM exists.</span>
+</li>
+<li><strong>04 / Keep the result</strong>
+<span>Retain the run log and host record. After apply, a failed run keeps the VM so the next run can continue.</span>
+</li>
+</ol>
+</div>
+</section>
+<section class="lab-panel">
+<span class="lab-eyebrow">The rest of the platform</span>
+<h2>The services those workflows use</h2>
+<p class="lab-support-intro">Vault supplies credentials, the monitoring stack checks the estate, and <a href="#developer-platform">Argo CD reconciles Kubernetes workloads</a>.</p>
+<div class="lab-support">
+<div>
+<details id="secrets">
+<summary>Secrets and recovery</summary>
+<div class="lab-expanded">
+<p>Pipelines fetch credentials from Vault at run time. A measured recovery brought the secrets VM back initialized and unsealed in 97 seconds, with the canary secret intact. That was a single-node VM restore, not an HA failover.</p><a href="/vault/">Vault and the recovery test →</a>
+</div>
+</details>
+<div class="lab-summary">Runtime credentials, renewal jobs, and tested backups.</div>
+</div>
+<div>
+<span id="self-healing">
+</span>
+<span id="live-infrastructure">
+</span>
+<details id="observability">
+<summary>Monitoring and repair</summary>
+<div class="lab-expanded">
+<p>Zabbix and Prometheus collect signals, and Grafana brings them together. Host repairs normally wait for approval; one scoped service restart has a two-attempt cap. The repair engine does not yet verify health after dispatch.</p><a href="/live/">View the live platform →</a>
+</div>
+<section class="block" id="live-infrastructure" data-public-noc>
+        <h2>Live infrastructure evidence</h2>
+        <p>This public dashboard shows node availability, guest state, per-node CPU and memory,
+          storage use, and recovery-test state under stable descriptive aliases. Hypervisor names,
+          numeric guest IDs, addresses, exporter labels, and management URLs are removed before the
+          dashboard can query the data.</p>
+        <p class="live-status" data-live-status aria-live="polite">Checking the live infrastructure dashboard.</p>
+        <iframe class="live-frame" data-live-frame
+          data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
+          title="Public infrastructure dashboard" referrerpolicy="no-referrer" hidden></iframe>
+        <div class="live-fallback" data-live-fallback hidden>
+          <p>The live infrastructure dashboard is unavailable. No cached node or guest state is presented as current.</p>
         </div>
+        <noscript><p>The live infrastructure dashboard requires JavaScript.</p></noscript>
       </section>
-
-      <section class="block" id="flow">
-        <h2>How Jenkins fits into AutomationLab</h2>
-        <p>The diagram below is the whole engine on one page: what starts a job, what the job does, which
-          systems it talks to, what it leaves behind, and the point where it stops and Argo CD takes over.
-          The numbered markers are explained underneath. Boxes with a link go to the page that tells that
-          system's story.</p>
-
-        <svg class="topology-diagram" viewBox="0 0 900 1520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="How Jenkins fits into AutomationLab: four triggers feed the Jenkins engine, which calls Vault, NetBox, Terraform and Proxmox, Ansible, Zabbix, the backup APIs and mail and directory services, and ends at a commit in git where Argo CD takes over reconciling the Kubernetes cluster">
-          <defs>
-            <marker id="jf-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#00d4ff"/>
-            </marker>
-            <marker id="jf-arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#00ff96"/>
-            </marker>
-            <marker id="jf-arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#0066ff"/>
-            </marker>
-          </defs>
-
-          <!-- band 1: triggers -->
-          <text x="16" y="24" fill="#4a6080" font-family="Share Tech Mono, monospace" font-size="12" letter-spacing="3">WHERE IT STARTS</text>
-          <rect x="16" y="38" width="212" height="86" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-          <text x="32" y="62" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">I START IT</text>
-          <text x="32" y="82" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">Build with Parameters:</text>
-          <text x="32" y="98" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">server name, role, size</text>
-          <text x="32" y="114" fill="#00ff96" font-family="Exo 2, sans-serif" font-size="11.5">destructive work waits for me</text>
-
-          <rect x="240" y="38" width="212" height="86" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-          <text x="256" y="62" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">A SCHEDULE FIRES</text>
-          <text x="256" y="82" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">weekly restore verify,</text>
-          <text x="256" y="98" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">nightly reconciles,</text>
-          <text x="256" y="114" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">daily backup digest</text>
-
-          <rect x="464" y="38" width="212" height="86" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-          <text x="480" y="62" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">THE SEED JOB</text>
-          <text x="480" y="82" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">defines jobs from git, so a</text>
-          <text x="480" y="98" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">rebuilt controller comes back</text>
-          <text x="480" y="114" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">with its jobs already there</text>
-
-          <rect x="688" y="38" width="196" height="86" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-          <text x="704" y="62" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">A REPO EVENT</text>
-          <text x="704" y="82" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">a merge to main that</text>
-          <text x="704" y="98" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">needs work done, such as</text>
-          <text x="704" y="114" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">publishing this site</text>
-
-          <circle cx="26" cy="146" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="150" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">1</text>
-          <text x="44" y="150" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">four ways in, and nothing else</text>
-          <line x1="450" y1="160" x2="450" y2="186" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#jf-arr)"/>
-
-          <!-- band 2: the engine -->
-          <rect x="16" y="190" width="868" height="368" rx="12" fill="rgba(0,212,255,0.04)" stroke="#00d4ff" stroke-width="2.5"/>
-          <text x="450" y="222" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="20" letter-spacing="3" text-anchor="middle">JENKINS</text>
-          <text x="450" y="244" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="12" text-anchor="middle">the controller and its build agents are Kubernetes pods, configured from git</text>
-          <line x1="40" y1="260" x2="860" y2="260" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
-
-          <text x="40" y="284" fill="#00d4ff" font-family="Share Tech Mono, monospace" font-size="12" letter-spacing="2">WHAT THE JOBS DO</text>
-          <a href="/projects/server-provisioning/"><title>Automated server provisioning: one pipeline run builds a server as one consistent fact across five systems.</title>
-            <text x="52" y="308" fill="#00d4ff" font-family="Exo 2, sans-serif" font-size="13">build a server, Linux or Windows &#8594;</text></a>
-          <text x="52" y="330" fill="#e0e8ff" font-family="Exo 2, sans-serif" font-size="13">decommission one, with a gate that refuses an empty plan</text>
-          <a href="#self-healing"><title>Self-healing: the engine classifies each failure, fixes drift at the server, and queues host changes for approval.</title>
-            <text x="52" y="352" fill="#00d4ff" font-family="Exo 2, sans-serif" font-size="13">detect a broken host, propose the repair, heal what I approve &#8594;</text></a>
-          <text x="52" y="374" fill="#e0e8ff" font-family="Exo 2, sans-serif" font-size="13">rebuild golden Windows images on a schedule</text>
-          <a href="/dr-restore-verify/"><title>The weekly restore verify: a real backup is restored to a real machine and checked.</title>
-            <text x="52" y="396" fill="#00d4ff" font-family="Exo 2, sans-serif" font-size="13">restore a real backup every week and prove it came back &#8594;</text></a>
-          <text x="52" y="418" fill="#e0e8ff" font-family="Exo 2, sans-serif" font-size="13">renew certificates, create and offboard user accounts</text>
-
-          <line x1="40" y1="438" x2="860" y2="438" stroke="rgba(0,212,255,0.25)" stroke-width="1"/>
-          <text x="40" y="462" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="12" letter-spacing="2">THE RULES EVERY JOB INHERITS</text>
-          <text x="52" y="486" fill="#00ff96" font-family="Exo 2, sans-serif" font-size="12.5">a shared library gives every pipeline the same secret fetching and notification</text>
-          <text x="52" y="508" fill="#00ff96" font-family="Exo 2, sans-serif" font-size="12.5">gates fail closed: a check that cannot produce an answer stops the job</text>
-          <text x="52" y="530" fill="#00ff96" font-family="Exo 2, sans-serif" font-size="12.5">every finished job emits a success metric that something else watches</text>
-
-          <circle cx="26" cy="580" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="584" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">2</text>
-          <text x="44" y="584" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">jobs start, do the work, verify it, and stop</text>
-          <line x1="450" y1="594" x2="450" y2="620" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#jf-arr)"/>
-
-          <!-- band 3: systems called -->
-          <text x="16" y="644" fill="#4a6080" font-family="Share Tech Mono, monospace" font-size="12" letter-spacing="3">WHAT IT CALLS</text>
-          <a href="/vault/"><title>Vault, the secrets server: issues credentials at run time and never lets them touch disk.</title>
-            <rect x="16" y="658" width="424" height="68" rx="8" fill="rgba(0,255,150,0.04)" stroke="#00ff96" stroke-width="1.5"/>
-            <text x="32" y="682" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">VAULT &#8594;</text>
-            <text x="32" y="702" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">issues every credential at run time and takes it back;</text>
-            <text x="32" y="718" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">nothing is stored on the build agent or in the repo</text></a>
-
-          <a href="/capabilities/netbox-ipam"><title>NetBox, the IP address management system: the record of which address belongs to which machine.</title>
-            <rect x="460" y="658" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="476" y="682" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">NETBOX &#8594;</text>
-            <text x="476" y="702" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">decides which address a new machine gets,</text>
-            <text x="476" y="718" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">and takes it back when the machine is destroyed</text></a>
-
-          <a href="/capabilities/terraform"><title>Terraform and Proxmox: the plan and apply that actually creates the virtual machine.</title>
-            <rect x="16" y="738" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="32" y="762" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">TERRAFORM, THEN PROXMOX &#8594;</text>
-            <text x="32" y="782" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">one workspace per machine, so a bad apply is</text>
-            <text x="32" y="798" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">scoped to that machine and not the fleet</text></a>
-
-          <a href="/capabilities/ansible"><title>Ansible: configures the machine Terraform built.</title>
-            <rect x="460" y="738" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="476" y="762" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">ANSIBLE &#8594;</text>
-            <text x="476" y="782" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">configures what Terraform built: roles,</text>
-            <text x="476" y="798" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">firewall rules, and the monitoring agent</text></a>
-
-          <a href="/capabilities/zabbix"><title>Zabbix: monitoring, registered at build time with a key unique to that host.</title>
-            <rect x="16" y="818" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="32" y="842" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">ZABBIX &#8594;</text>
-            <text x="32" y="862" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">every machine is registered for monitoring during</text>
-            <text x="32" y="878" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">the build, with a key unique to that host</text></a>
-
-          <a href="/dr-restore-verify/"><title>The backup and hypervisor APIs: backup verification and the weekly live restore.</title>
-            <rect x="460" y="818" width="424" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="476" y="842" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">THE BACKUP APIS &#8594;</text>
-            <text x="476" y="862" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">backup checks, node selection, templates,</text>
-            <text x="476" y="878" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">and the weekly restore of a real machine</text></a>
-
-          <a href="/mail/"><title>The self-hosted mail platform and the directory services: approval mail out, user lifecycle in.</title>
-            <rect x="16" y="898" width="868" height="68" rx="8" fill="rgba(0,212,255,0.05)" stroke="#00d4ff" stroke-width="1.5"/>
-            <text x="32" y="922" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="14">MAIL, AND THE DIRECTORY SERVICES &#8594;</text>
-            <text x="32" y="942" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">approval requests and digests go out through the lab's own mail platform;</text>
-            <text x="32" y="958" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">joiner and leaver pipelines write into the on-premises and cloud directories</text></a>
-
-          <circle cx="26" cy="988" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="992" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">3</text>
-          <text x="44" y="992" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">Jenkins orchestrates, it does not own: it holds no secrets and assigns no addresses</text>
-          <line x1="450" y1="1002" x2="450" y2="1028" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#jf-arr)"/>
-
-          <!-- band 4: git, the handoff, argo -->
-          <text x="16" y="1052" fill="#4a6080" font-family="Share Tech Mono, monospace" font-size="12" letter-spacing="3">WHERE IT ENDS</text>
-          <a href="/everything-as-code/"><title>Everything as code: the repository is the single source of truth, and every change is a reviewed pull request.</title>
-            <rect x="16" y="1066" width="868" height="86" rx="10" fill="rgba(0,212,255,0.06)" stroke="#00d4ff" stroke-width="2.5"/>
-            <text x="450" y="1094" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="17" letter-spacing="2" text-anchor="middle">GIT &#8594;</text>
-            <text x="450" y="1116" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">pipeline code, playbooks, infrastructure definitions, cluster manifests, and the job definitions themselves</text>
-            <text x="450" y="1138" fill="#00ff96" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">jobs read from it at the start, and write their results back to it as reviewed changes</text></a>
-
-          <circle cx="26" cy="1176" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="1180" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">4</text>
-          <text x="44" y="1180" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">every job begins and ends in the same place</text>
-
-          <line x1="16" y1="1200" x2="884" y2="1200" stroke="rgba(0,255,150,0.5)" stroke-width="1" stroke-dasharray="6 5"/>
-          <text x="450" y="1220" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11.5" letter-spacing="2" text-anchor="middle">THE HANDOFF: JENKINS STOPS AT THE COMMIT</text>
-
-          <a href="/gitops-argocd/"><title>GitOps with Argo CD: how the cluster is kept matching what git says it should be.</title>
-            <rect x="16" y="1236" width="868" height="92" rx="10" fill="rgba(0,102,255,0.07)" stroke="#0066ff" stroke-width="2"/>
-            <text x="450" y="1264" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="17" letter-spacing="2" text-anchor="middle">ARGO CD &#8594;</text>
-            <text x="450" y="1286" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">watches git and keeps the Kubernetes cluster matching it, continuously</text>
-            <text x="450" y="1308" fill="#00d4ff" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">there is no job to run here: drift itself is the trigger</text></a>
-          <line x1="450" y1="1152" x2="450" y2="1236" stroke="#0066ff" stroke-width="2" marker-end="url(#jf-arrb)"/>
-
-          <a href="/diagram/"><title>The lab architecture: the cluster, the network segments, and where each system sits.</title>
-            <rect x="16" y="1358" width="868" height="76" rx="10" fill="rgba(0,212,255,0.04)" stroke="#4a6080" stroke-width="1.5"/>
-            <text x="450" y="1386" fill="#e0e8ff" font-family="Share Tech Mono, monospace" font-size="15" letter-spacing="2" text-anchor="middle">THE KUBERNETES CLUSTER &#8594;</text>
-            <text x="450" y="1408" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">the monitoring stack, the gateways, the apps, and Jenkins itself:</text>
-            <text x="450" y="1424" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5" text-anchor="middle">the engine is a workload of the platform it runs</text></a>
-          <line x1="450" y1="1328" x2="450" y2="1358" stroke="#0066ff" stroke-width="2" marker-end="url(#jf-arrb)"/>
-
-          <circle cx="26" cy="1462" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="1466" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">5</text>
-          <text x="44" y="1466" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">two engines, one source of truth: Jenkins for work that finishes, Argo CD for work that never does</text>
-          <circle cx="26" cy="1494" r="10" fill="none" stroke="#00ff96" stroke-width="1.5"/>
-          <text x="26" y="1498" fill="#00ff96" font-family="Share Tech Mono, monospace" font-size="11" text-anchor="middle">6</text>
-          <text x="44" y="1498" fill="#4a6080" font-family="Exo 2, sans-serif" font-size="11.5">and the loop closes: that cluster is where Jenkins itself runs</text>
-        </svg>
-
-        <p><b>1. Four ways in, and nothing else.</b> Jenkins wakes up for exactly four reasons: I press
-          Build with Parameters, a schedule fires, the seed job regenerates jobs from git, or a merge to
-          the main branch needs work done. Anything that destroys something waits at an approval gate
-          with the plan in front of me first.</p>
-        <p><b>2. Jobs start, do the work, verify it, and stop.</b> That is what Jenkins is good at and it
-          is the reason the cluster does not use it for everything. A provisioning run has a beginning
-          and an end. Keeping a cluster matching its definition does not, which is the next marker.</p>
-        <p><b>3. Jenkins orchestrates, it does not own.</b> It holds no secrets, because Vault issues
-          them at run time. It assigns no addresses, because NetBox decides those. It builds nothing
-          directly, because Terraform and Ansible do that. What Jenkins owns is the sequence, the gates,
-          and the evidence. When a check cannot produce an answer, the job stops instead of guessing.</p>
-        <p><b>4. Every job begins and ends in the same place.</b> A job reads its configuration from git
-          at the start, and writes its result back to git at the end: the record of the machine it built,
-          the report it generated, the image digest it pinned. Nothing in the estate is configured by
-          hand in a web interface, so the repository is not a description of the lab, it is the lab.</p>
-        <p><b>5. Two engines, one source of truth.</b> Argo CD begins where Jenkins stops. Jenkins
-          finishes at a commit; Argo CD watches git and continuously pulls the Kubernetes cluster back
-          into line with it. There is no job to run, because drift itself is the trigger. Imperative work
-          that finishes goes to Jenkins, and convergent work that never finishes goes to Argo CD.</p>
-        <p><b>6. And the loop closes.</b> The cluster Argo CD reconciles is the cluster Jenkins runs on.
-          The controller and its build agents are pods like anything else, which is uncomfortable in
-          exactly the way it should be: the engine is a workload of the platform it operates.</p>
-      </section>
-
-      <section class="block" id="legend">
-        <h2>Reading the diagram</h2>
-        <p>Colour carries meaning in every diagram on this site, and it means the same thing here.</p>
-        <ul class="legend-swatches" aria-label="Platform diagram legend">
-          <li><span class="legend-swatch" data-swatch="cyan" aria-hidden="true"></span><span>Jenkins and job-driven work</span></li>
-          <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>rules, proofs, and markers</span></li>
-          <li><span class="legend-swatch" data-swatch="blue" aria-hidden="true"></span><span>Argo CD and continuous reconciliation</span></li>
-          <li><span class="legend-swatch" data-swatch="green" aria-hidden="true"></span><span>dashed line: handoff at the commit</span></li>
-        </ul>
-        <p class="legend-note">Arrow in a title means that box links to its page.</p>
-      </section>
-
-      <section class="block" id="pattern">
-        <h2>The five steps every job follows</h2>
-        <p>Pipelines in this lab are not written from scratch each time. They follow the same five steps
-          in the same order, and the reason is that each step is where a specific class of mistake gets
-          caught. The provisioning pipeline, the longest one in the lab, is the clearest example, so its
-          real stages are named here.</p>
-        <p><b>1. Read the configuration from git.</b> The job checks out the repository first, before it
-          does anything else. There is no other source of configuration, so there is nothing to
-          reconcile.</p>
-        <p><b>2. Ask the systems that hold the truth.</b> Provisioning validates the target, runs a name
-          collision check against every system that could already know the name, allocates an address
-          from NetBox, and picks a hypervisor node. An unreachable system counts as a collision rather
-          than a silent all-clear, which is the difference between a check and a formality.</p>
-        <p><b>3. Pass the gates.</b> Input validation, the collision result, and then an explicit
-          approval stage where the plan waits for me to read it. Nothing destructive happens on the far
-          side of a gate that has not returned an answer.</p>
-        <p><b>4. Act through the tools.</b> Terraform plans, then Terraform applies, then Ansible
-          configures what was built. Jenkins is running the sequence, not doing the work.</p>
-        <p><b>5. Record what happened.</b> The machine is registered for monitoring, a DNS record is
-          created, and a machine-readable record of the host is committed back to git. A job that changed
-          the estate and left no record of it would be the same as no job at all.</p>
-        <p>The step boundaries are also where failure is handled, and the rule is roll-forward rather
-          than rollback. The apply is the line: fail before it and the reserved address is released, so
-          nothing is left orphaned; fail after it and the machine is kept, because re-running the same
-          request continues from where it stopped. A live machine never gets rolled back underneath
-          itself.</p>
-        <div class="links">
-          <a href="/projects/server-provisioning/">The provisioning pipeline in full &#8594;</a>
-          <a href="/capabilities/pipelines">Pipelines &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="developer-platform">
+</details>
+<div class="lab-summary">Signals, dashboards as code, and scoped repairs.</div>
+</div>
+<div>
+<details id="identity">
+<summary>Identity and access</summary>
+<div class="lab-expanded">
+<p>Joiner and leaver pipelines manage Active Directory and Entra ID. Offboarding saves an account snapshot before removing access. A blank requester now stops the approval gate after an audit found it could bypass the identity check.</p><a href="/windows-identity/">Windows identity →</a>
+</div>
+</details>
+<div class="lab-summary">Account lifecycle jobs with approval and recovery records.</div>
+</div>
+<div>
+<span id="aiops">
+</span>
+<details>
+<summary>Kubernetes and applications</summary>
+<div class="lab-expanded">
+<section class="block" id="developer-platform">
         <h2>A paved road for application teams</h2>
         <p>Most of the platform began as automation for operating the lab. The next layer treats an
           application team as the customer. A developer should be able to start from a supported
@@ -548,188 +359,32 @@
           not been applied. Until a controlled failure produces a burn alert and the budget view is
           checked live, these are staged objectives rather than operating SLOs.</p>
 
-        <div class="links">
-          <a href="/capabilities/argo-cd">Argo CD &#8594;</a>
-          <a href="/capabilities/prometheus">Prometheus &#8594;</a>
-          <a href="/capabilities/grafana">Grafana &#8594;</a>
-        </div>
-      </section>
 
-      <section class="block" id="provisioning">
-        <h2>Provisioning is a pipeline, not a checklist</h2>
-        <p>A basic Windows or Linux build finishes in about five to ten minutes.</p>
-        <p>A request for a VM becomes a single pipeline run. Before anything is allocated, a collision
-          check asks every system that could already know the name, and an unreachable system counts as
-          a collision rather than a silent all-clear. Then an address is allocated from the IPAM system
-          of record, a node is chosen, and a plan is built in that machine's own infrastructure-as-code
-          workspace. I approve the plan, it applies, the host is registered for monitoring with a
-          unique per-host key minted straight into the secrets manager, and only then does configuration
-          management run, so the agent is trusted before it ever starts.</p>
-        <p><b>Failure is roll-forward, not rollback.</b> The apply is the boundary: fail before it and
-          the reserved address is released, so nothing is orphaned; fail after it and the machine is
-          kept, because re-running the same request continues from where it stopped. A live VM never
-          gets rolled back underneath itself. Decommission reverses the build in the safe order,
-          releasing the address only once the machine is actually gone.</p>
-        <p>Both Linux and Windows are first-class, and they differ where it matters: Windows clones a
-          template built as code by its own image pipeline, while Linux boots a shared cloud image with
-          no golden-template dependency. Each VM getting its own state workspace is the point: a bad
-          apply is scoped to one machine instead of the fleet.</p>
-        <div class="links">
-          <a href="/capabilities/terraform">Terraform &#8594;</a>
-          <a href="/capabilities/netbox-ipam">NetBox IPAM &#8594;</a>
-          <a href="/capabilities/ansible">Ansible &#8594;</a>
-          <a href="/capabilities/proxmox">Proxmox &#8594;</a>
-        </div>
       </section>
+</div>
+</details>
+<div class="lab-summary">Continuous reconciliation and the developer platform.</div>
+</div>
+</div>
+</section>
 
-      <section class="block" id="self-healing">
-        <h2>A platform that heals itself, and says so</h2>
-        <p>The monitoring path can repair a defined set of failures. An engine reads each failure and classifies it,
-          then splits the work: drift it can correct at the server, such as a moved address or a stale
-          key, it fixes directly, and anything needing a touch on the host itself is queued as a plan.
-          That plan is emailed in full and waits at an approval gate I hold; unapproved, it times out and
-          not one host is touched. Dispatch is OS-aware, taking a different route to Linux and to
-          Windows, and deliberately running only the roles that repair monitoring, never the
-          provisioning roles that would be destructive on a live host.</p>
-        <p><b>The audit trail is honest about its own limits.</b> Every run records an outcome per host,
-          and the vocabulary is exactly what the engine can actually observe: applied, dispatched, or
-          escalated. It does not claim a heal went green, because it does not yet watch the host
-          afterwards, and inventing that verdict would make the record a liability. One narrow case runs
-          with nobody in the loop at all, restarting a single stateless service: it is fenced by a
-          maintenance-window guard, a hard two-attempt cap so it can never loop, and an allowlist on the
-          host permitting exactly one command and nothing else.</p>
-        <div class="links">
-          <a href="/capabilities/zabbix">Zabbix &#8594;</a>
-          <a href="/capabilities/ansible">Ansible &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="identity">
-        <h2>Identity, from first day to last</h2>
-        <p>Joiners and leavers are pipelines, driven by declarative role definitions rather than
-          per-person judgement: a role maps to its groups, its mail lists, and its app assignments. On
-          the way in, an account is created in the authoritative on-prem directory, then the cloud side
-          waits out directory-sync latency before assigning cloud groups and single-sign-on tiles.
-          Temporary credentials are minted with a short time-to-live and one-time use.</p>
-        <p><b>On the way out, nothing is deleted.</b> Offboarding disables first: strip the groups,
-          datestamp the record, move the object aside, and commit a machine-readable snapshot of the
-          account <em>before</em> the first group comes off, so a wrong offboard is a restore rather than
-          an incident. Deletion happens only after a 30-day grace period, and only for accounts with a
-          clean paper trail. An account that someone re-enabled, or one that arrived outside the
-          pipeline, is flagged as an anomaly and left alone: the sweep only removes what it can
-          explain.</p>
-        <p><b>The best story here is a bug I found in my own control.</b> Deprovisioning is gated by
-          two-person approval, restricted to an admin allowlist, and the requester cannot approve their
-          own request. An audit of that gate found it fail-<em>open</em>: when the requester was blank,
-          which happens on API, timer, and replay-triggered runs, the identity check short-circuited and
-          a single actor could approve their own offboard. It now hard-fails on a blank requester, so
-          every path reaches the gate with a name attached. A control nobody audits is a control nobody
-          has.</p>
-        <div class="links">
-          <a href="/capabilities/active-directory">Active Directory &#8594;</a>
-          <a href="/capabilities/entra-id">Entra ID &#8594;</a>
-          <a href="/capabilities/ad-cs-pki">AD CS and PKI &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="aiops">
-        <h2>AIOps: triage that earns its place</h2>
-        <p>Collectors sweep monitoring, metrics, CI, and backups into one findings table, each run
-          leaving a heartbeat so a quiet night is distinguishable from a broken collector. A local model
-          classifies each finding, correlation is done deterministically in code rather than asked of
-          the model, and a short digest lands before the day starts, carrying a health banner so a
-          degraded run is visibly red instead of silently empty. When something fires, an analyzer
-          returns a probable cause and a single suggested first check, inline with the alert.</p>
-        <p><b>Scanner triage fails closed.</b> Vulnerability and secret-scanner output is sorted into
-          exploitable-in-context versus likely-noise, but only a valid noise verdict may ever downgrade
-          a finding: if the model is down, times out, or answers with nonsense, the finding stays real.
-          Secret values are dropped before the model sees them at all. Untrusted text is fenced and
-          treated as data, and there is no path from model output to execution: the output becomes a
-          row, an email, or an issue, never a command. Every verdict is a database row rather than a log
-          line, and the boundary between proposing and doing is hard.</p>
-        <div class="links">
-          <a href="/ai/">How I use AI &#8594;</a>
-          <a href="/capabilities/devsecops">DevSecOps &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="observability">
-        <h2>Observability, and one screen to start from</h2>
-        <p>Three tools with distinct jobs: agent-based monitoring for the traditional fleet, Prometheus
-          for the Kubernetes and virtualization estate, and Grafana as the single pane over both.
-          Dashboards are code, not clicks: committed JSON becomes a config object the platform
-          hot-loads, so the repository is the source of truth and a dashboard edited in the UI has
-          nowhere to hide.</p>
-        <p><b>The overview screen is generated, and it polices itself.</b> A generator builds the
-          operations overview from the dashboards themselves, refusing to build if a dashboard is
-          missing its domain tag or a domain has no single primary, and CI regenerates it to fail on
-          drift. A nightly job compares the live dashboard against the generated one and raises a
-          problem when they disagree. One rule was learned the hard way and is now enforced in tests:
-          no-data must never render green. A tile with no signal is grey, because a green light that
-          means "I have no idea" is worse than no light at all. Alerting is deliberately email only,
-          through one auditable path.</p>
-        <div class="links">
-          <a href="/capabilities/grafana">Grafana &#8594;</a>
-          <a href="/capabilities/prometheus">Prometheus &#8594;</a>
-          <a href="/capabilities/zabbix">Zabbix &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block" id="live-infrastructure" data-public-noc>
-        <h2>Live infrastructure evidence</h2>
-        <p>This public dashboard shows node availability, guest state, per-node CPU and memory,
-          storage use, and recovery-test state under stable descriptive aliases. Hypervisor names,
-          numeric guest IDs, addresses, exporter labels, and management URLs are removed before the
-          dashboard can query the data.</p>
-        <p class="live-status" data-live-status aria-live="polite">Checking the live infrastructure dashboard.</p>
-        <iframe class="live-frame" data-live-frame
-          data-src="https://status.billgernert.com/public-dashboards/ebfc9c9489ce46b4ad1b515601a92c66"
-          title="Public infrastructure dashboard" referrerpolicy="no-referrer" hidden></iframe>
-        <div class="live-fallback" data-live-fallback hidden>
-          <p>The live infrastructure dashboard is unavailable. No cached node or guest state is presented as current.</p>
-        </div>
-        <noscript><p>The live infrastructure dashboard requires JavaScript.</p></noscript>
-      </section>
-
-      <section class="block" id="secrets">
-        <h2>Secrets, and a recovery I actually proved</h2>
-        <p>Vault owns automation-secret custody. Pipelines fetch what they need at run time and avoid
-          writing values to workspaces, command arguments, or the repository. Some consumers must store
-          active credentials or certificate material; lifecycle jobs control, rotate, and verify those
-          deployed copies. Two independent scanners backstop the repository rule, one at commit time and
-          one at write time.</p>
-        <p><b>Then I destroyed it on purpose.</b> Recovery claims are worthless until tested, so the
-          secrets VM was not drained or gracefully shut down, it was destroyed outright, then restored
-          from that night's snapshot. It came back initialized and unsealed <b>97 seconds</b> later, and
-          a canary secret written minutes before the destroy was still there, with credential fetches
-          working immediately afterwards. The honest scope: that is a single-node, crash-consistent
-          restore of a VM, not a high-availability failover, and I would not sell it as one. The
-          exercise also did what a good game day should, surfacing real defects that became tracked work
-          rather than a clean write-up.</p>
-        <div class="links">
-          <a href="/capabilities/vault">Vault &#8594;</a>
-          <a href="/capabilities/incident-postmortem">Incidents and postmortems &#8594;</a>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Code on GitHub</h2>
-        <p>The AutomationLab repository stays private because it contains live configuration and network
-          detail. Public pages cross a fail-closed scrub gate. The subsystem links above explain how the
-          platform works without exposing its private source.</p>
-        <div class="links">
-          <a href="https://github.com/billgernert" rel="me">Profile &#8594;</a>
-          <a href="https://github.com/billgernert/production-automation">production-automation &#8594;</a>
-        </div>
-        <p class="note"><b>production-automation</b> is de-identified professional work predating the
-          lab. Each script documents its story, failsafes, and setup.</p>
-      </section>
-
-      <div class="links">
-        <a href="/capabilities/">Explore the capabilities &#8594;</a>
-        <a href="/roadmap/">Read the roadmap &#8594;</a>
-      </div>
-    </div>
+<details class="lab-more">
+<summary>Repository counts and related pages</summary>
+<!-- BEGIN generated: platform-counts (generate-site-pages.py) -->
+      <p class="descriptor">Counted from the repository every time this page is built: <b>92</b> pipeline definitions, <b>64</b> of them wired into the seed script as code today, and <b>304</b> helper scripts the pipelines call. These three numbers are generated, never typed, so the page cannot quietly drift away from the tree it describes.</p>
+      <!-- END generated: platform-counts -->
+<!-- BEGIN generated: group-hub (generate-site-pages.py) -->
+      <p class="note">Also in <b>Platform</b>:</p>
+      <ol class="project-list">
+        <li><b>Engineering capabilities.</b> A short overview of the skills used across the projects. <a href="/capabilities/">Read more &#8594;</a></li>
+        <li><b>Roadmap.</b> What is already live, what is still being built, and where the next trade-offs sit. <a href="/roadmap/">Read more &#8594;</a></li>
+        <li><b>Vault.</b> The secrets system, its measured recovery, and the limits that are still named plainly. <a href="/vault/">Read more &#8594;</a></li>
+        <li><b>Windows identity.</b> Directory, certificate authority, MFA, and the identity failure that is still shown as an active investigation. <a href="/windows-identity/">Read more &#8594;</a></li>
+        <li><b>Mail.</b> Self-hosted mail with the delivery path, DNS records, and operational limits explained. <a href="/mail/">Read more &#8594;</a></li>
+        <li><b>Recovery test.</b> The restore check that destroys a VM on purpose and times the recovery path. <a href="/dr-restore-verify/">Read more &#8594;</a></li>
+      </ol>
+      <!-- END generated: group-hub -->
+</details>
     </main>
 
     <footer>
