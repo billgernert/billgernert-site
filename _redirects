@@ -55,3 +55,9 @@
 
 # The roadmap page embeds only the aggregate public roadmap dashboard.
 /roadmap/open/live https://status.billgernert.com/public-dashboards/10459ea138af4a3e86510f848f8be38b 302
+
+# Retired public previews lead back to the London and Paris project.
+/projects/trip-planners/nashville /projects/trip-planners/ 301
+/projects/trip-planners/nashville/* /projects/trip-planners/ 301
+/projects/trip-planners/dominican /projects/trip-planners/ 301
+/projects/trip-planners/dominican/* /projects/trip-planners/ 301
