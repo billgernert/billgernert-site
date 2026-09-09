@@ -5,9 +5,11 @@ Read-only, offline, standard library only. Walks the given root, parses every .h
 internal reference verifies the target resolves inside the repo:
   - relative href/src to a file (optionally with a #fragment): the file must exist, and if a
     fragment is given, an element with that id must exist in the target file;
-  - a same-page #fragment: an element with that id must exist in this file.
+  - a same-page #fragment: an element with that id must exist in this file;
+  - exact application routes declared by the target page are accepted as fragment destinations.
+    Route declarations are tested against the application router in source CI.
 External links (http, https, protocol-relative //, mailto:, tel:, data:) and empty/JS hrefs are
-skipped - deployment and external availability are not this check's job (Cloudflare Workers owns
+skipped - deployment and external availability are not this check's job (Cloudflare Pages owns
 deploy; no network is touched). Exits non-zero and prints one line per broken link if any fail.
 
 Usage: python3 check-internal-links.py [ROOT]   (ROOT defaults to the current directory)
@@ -35,6 +37,14 @@ class Extractor(html.parser.HTMLParser):
         self.ids = set()  # element ids present in this file (for fragment resolution)
 
     def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if "data-application-routes" in attributes:
+            if tag != "script" or attributes.get("type") != "module" or not attributes.get("src"):
+                raise ValueError("application routes require an external module script")
+            routes = (attributes["data-application-routes"] or "").split()
+            if not routes or any(not re.fullmatch(r"/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*", r) for r in routes):
+                raise ValueError("invalid application route declaration")
+            self.ids.update(routes)
         for name, value in attrs:
             if value is None:
                 continue
@@ -118,7 +128,7 @@ def _redirect_target_file(root, route):
     if route.endswith("/") or os.path.isdir(candidate):
         candidate = os.path.join(candidate, "index.html")
     elif not os.path.isfile(candidate) and os.path.isfile(candidate + ".html"):
-        # Cloudflare static-asset clean URLs serve /name from the committed name.html document.
+        # Cloudflare Pages clean URLs serve /name from the committed name.html document.
         candidate += ".html"
     root_real = os.path.realpath(root)
     candidate_real = os.path.realpath(candidate)
@@ -244,6 +254,8 @@ def load_redirects(root):
 
 def main():
     root = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
+    if not os.path.isdir(root):
+        raise ValueError("link-check root is not a directory")
     redirects, redirect_errors = load_redirects(root)
     if redirect_errors:
         sys.stderr.write("INVALID REDIRECTS:\n")
@@ -260,6 +272,9 @@ def main():
         for fn in files:
             if fn.lower().endswith(".html"):
                 html_files.append(os.path.join(dirpath, fn))
+
+    if not html_files:
+        raise ValueError("link-check root contains no HTML files")
 
     # ids per file, parsed once
     page = {}   # abspath -> (refs, ids)

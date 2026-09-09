@@ -166,3 +166,10 @@ past it, and it was **outside the mapping**, so the gate never walked it in the 
 
 The lesson this file exists to carry: **the gate protects what it can read, in the paths it walks.**
 Anything outside either bound is protected by a person, and a person needs a checklist.
+
+## Internal-link checker publication
+
+The sync publisher also stages and scrubs the reviewed internal-link helper before copying it to
+`.github/scripts/check-internal-links.py`. Source CI and publication use that same helper. The
+existing public `site-ci.yml` workflow stays under its current ownership. This exact helper mapping
+prevents separate source and public link rules from drifting.
