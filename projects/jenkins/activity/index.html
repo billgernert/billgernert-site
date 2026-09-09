@@ -35,9 +35,10 @@
 <body>
   <a class="skip-link" href="#main-panel">Skip to content</a>
   <header class="jenkins-header">
-    <a class="jenkins-brand" href="#/view/All"><img src="/assets/jenkins-logo.svg" alt="" width="226" height="312" loading="lazy"><span>Jenkins</span></a>
+    <a class="jenkins-brand" href="#/view/All" aria-label="Jenkins"><img src="/assets/jenkins-logo.svg" alt="" width="226" height="312" loading="lazy"><span>Jenkins</span></a>
+    <button id="mobile-breadcrumbs" type="button" aria-label="Show breadcrumb navigation" aria-controls="breadcrumbs" aria-expanded="false">/ ···</button>
     <nav id="breadcrumbs" aria-label="Breadcrumb"></nav>
-    <div class="header-controls"><input id="header-search" class="header-search" type="search" aria-label="Search jobs" placeholder="Search jobs" hidden><button id="search-toggle" aria-label="Search">⌕</button><button id="manage-control" aria-label="Manage Jenkins">⚙</button><button id="more-control" aria-label="More actions">☰</button><span class="read-only">Public / read-only</span></div>
+    <div class="header-controls"><input id="header-search" class="header-search" type="search" aria-label="Search jobs" placeholder="Search jobs" hidden><button id="search-toggle" aria-label="Search">⌕</button><button id="manage-control" aria-label="Manage Jenkins">⚙</button><button id="more-control" aria-label="More actions">☰</button><span class="read-only" title="Public / read-only">Public / read-only<svg class="mobile-public-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M5 19c1-6 13-6 14 0"/></svg></span></div>
   </header>
   <div class="jenkins-body">
     <aside class="side-panel">
@@ -49,6 +50,7 @@
     </aside>
     <main id="main-panel" tabindex="-1">
       <div id="view-intro" class="view-intro" hidden><p id="view-description"></p><button id="view-edit" type="button">Edit description</button></div>
+      <button id="mobile-view-edit" class="mobile-view-edit" type="button" hidden>✎ Add description</button>
       <p id="feed-notice" class="notice" hidden></p>
       <nav class="view-tabs" id="view-tabs" aria-label="Jenkins views"></nav>
       <div id="main-content"><p class="empty-state">No published job snapshot is available.</p></div>

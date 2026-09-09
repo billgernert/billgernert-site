@@ -1,7 +1,11 @@
 export const JOB_CATALOG = Object.freeze({
   "Backup digest": {
     "title": "[Ops] Backup Digest",
-    "description": "Collects backup results and sends the backup digest so I can check coverage and failures together."
+    "description": "Collects backup results and sends the backup digest so I can check coverage and failures together.",
+    "why": "I use one digest to see whether scheduled backups completed and where I need to investigate, without opening each backup system.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Build Windows templates": {
     "title": "[VM] Build Windows Templates",
@@ -23,15 +27,23 @@ export const JOB_CATALOG = Object.freeze({
         "Record result",
         "Jenkins records each build outcome."
       ]
+    ],
+    "why": "A maintained template gives new Windows VMs a repeatable starting point and avoids rebuilding the operating system by hand for each request.",
+    "workers": [
+      "packer"
     ]
   },
   "Certificate sync": {
     "title": "[PKI] Certificate Sync",
-    "description": "Distributes the renewed certificate to the services that need it and checks the certificates they serve afterward."
+    "description": "Distributes the renewed certificate to the services that need it and checks the certificates they serve afterward.",
+    "why": "Renewing a certificate is only part of the work. I also need the services that use it to receive the replacement and actually serve it.",
+    "workers": [
+      "tools"
+    ]
   },
   "Decommission Linux": {
     "title": "[VM] Decommission Linux",
-    "description": "Runs the Linux server retirement workflow, including the infrastructure and service records associated with the server.",
+    "description": "Validates the Linux retirement request and prepares a Terraform destroy plan. After approval it removes the VM and coordinates cleanup of the host manifest, address allocation, monitoring and DNS records.",
     "stages": [
       [
         "Validate input",
@@ -78,11 +90,16 @@ export const JOB_CATALOG = Object.freeze({
         ""
       ]
     ],
-    "schedule": "On demand through Build with Parameters."
+    "schedule": "On demand through Build with Parameters.",
+    "why": "Deleting a VM can leave stale addresses, DNS entries and monitoring records. This job puts the retirement steps behind a reviewed destroy plan and approval.",
+    "workers": [
+      "provisioner",
+      "windows"
+    ]
   },
   "Decommission Windows": {
     "title": "[VM] Decommission Windows",
-    "description": "Runs the Windows server retirement workflow and coordinates removal of its infrastructure and service records.",
+    "description": "Validates the Windows retirement request and prepares a Terraform destroy plan. After approval it removes the VM and coordinates cleanup of inventory, monitoring, per-host credentials, directory and DNS records.",
     "stages": [
       [
         "Validate input",
@@ -133,51 +150,101 @@ export const JOB_CATALOG = Object.freeze({
         ""
       ]
     ],
-    "schedule": "On demand through Build with Parameters."
+    "schedule": "On demand through Build with Parameters.",
+    "why": "Windows retirement also leaves directory and per-host credential records to clean up. I keep those steps with the VM destroy workflow so the removal can be traced.",
+    "workers": [
+      "provisioner",
+      "windows"
+    ]
   },
   "Backup heartbeat": {
     "title": "[Monitoring] Digest dead-man switch heartbeat",
-    "description": "Checks in for the backup digest so a missing report can be detected independently of the report itself."
+    "description": "Checks in for the backup digest so a missing report can be detected independently of the report itself.",
+    "why": "A missing backup email can mean the reporting job failed. An independent heartbeat lets monitoring detect silence as well as a reported backup failure.",
+    "workers": [
+      "jobsearch"
+    ]
   },
   "Restore verification": {
     "title": "[DR] Weekly Restore-Verify",
-    "description": "Restores a protected system into an isolated test environment, verifies the result, then removes the test copy."
+    "description": "Restores a protected system into an isolated test environment, verifies the result, then removes the test copy.",
+    "why": "A successful backup does not tell me whether I can recover the system. This job exercises the restore and records the checks against the recovered copy.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Configuration drift check": {
     "title": "[Assurance] Estate-wide Drift and Source Assurance",
-    "description": "Checks the estate for differences between declared configuration and observed state."
+    "description": "Reconciles inventory with observed sources, checks Ansible-managed configuration and plans Terraform workspaces. Publishes an assurance report showing differences that need review.",
+    "why": "Manual changes can leave running systems different from Git. This report helps me decide whether to correct the system or update the declared configuration.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Container image scan": {
     "title": "[Security] Estate image scan",
-    "description": "Scans container images used in the estate for vulnerability findings."
+    "description": "Scans container images used by the estate, triages critical findings and files actionable findings for review. The scan results feed the ongoing security work.",
+    "why": "Container images can acquire new vulnerability findings after deployment. I need a recurring check of what the estate is using, with findings I can review.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Windows update scan": {
     "title": "[Security] Estate Windows KB scan",
-    "description": "Checks Windows update coverage across the estate."
+    "description": "Checks Windows update coverage across the estate.",
+    "why": "I use this to find missing Windows updates and distinguish coverage gaps from a patch job that simply reported success.",
+    "workers": [
+      "provisioner",
+      "windows"
+    ]
   },
   "Publish public repositories": {
     "title": "[Publish] Export public repositories",
-    "description": "Prepares reviewed source for publication to the public repositories."
+    "description": "Prepares the selected source for the public repositories and applies the publication checks before pushing the accepted output.",
+    "why": "I want useful examples to be inspectable outside the lab without copying private configuration into the public repositories.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Monitoring reconciliation": {
     "title": "[Monitoring] NOC overview reconcile",
-    "description": "Reconciles the monitoring overview with the information that feeds it."
+    "description": "Reconciles the monitoring overview with the information that feeds it.",
+    "why": "Dashboard definitions and the monitoring overview can drift apart. This comparison catches missing or mismatched monitoring content before I rely on it.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "System patching": {
     "title": "[Operations] Rolling Estate Patch",
-    "description": "Coordinates rolling system patching across the estate."
+    "description": "Coordinates rolling patches across the estate, with the pipeline handling the maintenance sequence and checks around each part of the work.",
+    "why": "Updating the whole estate together can interrupt dependent services. I coordinate the sequence and verify progress through a single recorded workflow.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Backup metrics": {
     "title": "[Monitoring] PBS facts collector",
-    "description": "Collects backup facts for monitoring and reporting."
+    "description": "Collects backup facts for monitoring and reporting.",
+    "why": "Backup facts need to be available to monitoring and reporting, so I can track coverage and freshness without manually inspecting the backup interface.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Pull request checks": {
     "title": "[CI] Pull request merge preview",
-    "description": "Tests the proposed merge while keeping the proposed code separate from the credentials used to report its result."
+    "description": "Tests the proposed merge while keeping the proposed code separate from the credentials used to report its result.",
+    "why": "A branch can pass on its own and still break when merged. I test the proposed merge while keeping untrusted changes away from the credentials that publish the result.",
+    "workers": [
+      "python"
+    ]
   },
   "Dispatch pull request checks": {
     "title": "[CI] Pull request dispatcher",
-    "description": "Dispatches pull-request checks and limits duplicate or concurrent work."
+    "description": "Dispatches pull-request checks and limits duplicate or concurrent work.",
+    "why": "Frequent branch updates can otherwise queue duplicate tests. The dispatcher keeps checks tied to the requested commit and limits overlapping work.",
+    "workers": [
+      "python"
+    ]
   },
   "Provision Linux": {
     "title": "[VM] Provision Linux",
@@ -252,7 +319,11 @@ export const JOB_CATALOG = Object.freeze({
         ""
       ]
     ],
-    "schedule": "On demand through Build with Parameters."
+    "schedule": "On demand through Build with Parameters.",
+    "why": "I use the same reviewed path for repeatable Linux builds. The address reservation, VM definition and operating-system setup stay connected to the original request.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Provision Windows": {
     "title": "[VM] Provision Windows",
@@ -347,23 +418,43 @@ export const JOB_CATALOG = Object.freeze({
         ""
       ]
     ],
-    "schedule": "On demand through Build with Parameters."
+    "schedule": "On demand through Build with Parameters.",
+    "why": "The VM resources and Windows configuration should come from one request. This makes builds repeatable and leaves a record of the plan, approval and setup result.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Generate documentation indexes": {
     "title": "[Platform] Regenerate derived indexes",
-    "description": "Regenerates documentation indexes from their source files."
+    "description": "Runs the documentation generators, checks for changed output and commits regenerated indexes back to the source repository.",
+    "why": "Indexes should reflect their source records. Generating them avoids having to maintain the same list or count in several places.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Sync Jenkins job definitions": {
     "title": "[Platform] Seed jobs (jobs-as-code)",
-    "description": "Recreates Jenkins jobs from Job DSL in Git, including their descriptions, parameters, and schedules."
+    "description": "Recreates Jenkins jobs from Job DSL in Git, including their descriptions, parameters, and schedules.",
+    "why": "I need to recreate the job catalog after a controller recovery and review job changes in Git instead of relying on edits made only in Jenkins.",
+    "workers": [
+      "linux"
+    ]
   },
   "Sync work items": {
     "title": "[Ops] Sync Backlog Issues",
-    "description": "Synchronizes the work-item records used by the lab."
+    "description": "Synchronizes the backlog records with their issue-tracker representation so the work descriptions and tracking state can be kept together.",
+    "why": "The written backlog and issue tracker serve different views of the same work. Synchronizing them reduces duplicate updates and mismatched status.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "Sync Grafana dashboards": {
     "title": "[Platform] Sync Grafana dashboards",
-    "description": "Synchronizes the dashboard definitions committed in Git with Grafana."
+    "description": "Loads the dashboard definitions committed in Git and updates the Kubernetes ConfigMaps used to supply them to Grafana.",
+    "why": "Versioned dashboards make monitoring changes reviewable and repeatable. The sync job turns the committed definitions into the dashboards Grafana loads.",
+    "workers": [
+      "dashboard"
+    ]
   },
   "Publish website": {
     "title": "[Ops] Sync Public Site",
@@ -385,31 +476,59 @@ export const JOB_CATALOG = Object.freeze({
         "Publish",
         "Synchronize the accepted output to the public repository."
       ]
+    ],
+    "why": "The public site is published from a private operations repository. The publication checks are the boundary that keeps private details out of the public copy.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Upgrade Jenkins": {
     "title": "[Platform] Upgrade Jenkins",
-    "description": "Runs the Jenkins upgrade pipeline."
+    "description": "Checks that the controller values are present and runs the Helm re-apply for Jenkins using the declared release configuration.",
+    "why": "I keep the controller release tied to checked-in Helm values so an upgrade or recovery uses the declared configuration.",
+    "workers": [
+      "helm"
+    ]
   },
   "Upgrade Loki": {
     "title": "[Platform] Upgrade Loki",
-    "description": "Runs the Loki upgrade pipeline."
+    "description": "Validates the pinned chart version and values, previews the release change, pauses for upgrade approval and applies the Helm release. Checks the rollout afterward.",
+    "why": "Logging is part of incident investigation. I preview the release change, require approval for the upgrade and check the rollout before treating it as complete.",
+    "workers": [
+      "helm"
+    ]
   },
   "Upgrade Prometheus": {
     "title": "[Platform] Upgrade Prometheus",
-    "description": "Runs the Prometheus upgrade pipeline."
+    "description": "Validates the pinned chart version and values, previews the release change, pauses for upgrade approval and applies the Helm release. Updates the managed monitoring resources and checks the rollout afterward.",
+    "why": "Monitoring needs to survive its own maintenance. The job makes the chart change and approval visible, then checks the resulting rollout.",
+    "workers": [
+      "helm"
+    ]
   },
   "Clear expired maintenance": {
     "title": "[Ops] Zabbix Maintenance Cleanup",
-    "description": "Removes expired monitoring maintenance windows."
+    "description": "Removes expired monitoring maintenance windows.",
+    "why": "Expired maintenance objects accumulate after planned work. This job removes them so old windows do not obscure the current maintenance state.",
+    "workers": [
+      "zabbix"
+    ]
   },
   "Monitoring maintenance": {
     "title": "[Ops] Zabbix Maintenance Windows",
-    "description": "Creates monitoring maintenance windows for planned work."
+    "description": "Creates monitoring maintenance windows for planned work.",
+    "why": "Planned work can generate expected alerts. A bounded maintenance window gives monitoring that context without permanently disabling the checks.",
+    "workers": [
+      "zabbix"
+    ]
   },
   "Automated recovery": {
     "title": "[Ops] Self-heal",
-    "description": "Coordinates the self-heal workflow, including checks and approval where the operation requires it."
+    "description": "Coordinates the self-heal workflow, including checks and approval where the operation requires it.",
+    "why": "Some detected faults have known recovery steps. I coordinate detection, any required approval and the selected repair while preserving a record of the attempt.",
+    "workers": [
+      "provisioner"
+    ]
   },
   "AWS Access Key Rotation": {
     "title": "[IAM] AWS Access Key Rotation",
@@ -422,6 +541,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate AWS access key",
         ""
       ]
+    ],
+    "why": "AWS automation should not depend on an access key that never changes. This gives key replacement a scheduled policy and a recorded outcome.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Sweep Disabled Users": {
@@ -443,6 +566,11 @@ export const JOB_CATALOG = Object.freeze({
         "Notify (Linux)",
         ""
       ]
+    ],
+    "why": "Offboarding starts with reversible access removal. A later sweep enforces the retention period before deleting accounts that are eligible for cleanup.",
+    "workers": [
+      "provisioner",
+      "windows"
     ]
   },
   "Cloudflare Access Entra SSO Credential Rotation": {
@@ -456,6 +584,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Cloudflare Access Entra credential",
         ""
       ]
+    ],
+    "why": "The Cloudflare Access sign-in integration relies on an Entra application credential. I need to maintain that dependency before expiry interrupts sign-in.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Cloudflare Credential Rotation": {
@@ -469,6 +601,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate and inventory Cloudflare credentials",
         ""
       ]
+    ],
+    "why": "Cloudflare automation manages several kinds of credential and consumer. I keep their renewal and access audit in a controlled workflow instead of tracking replacements manually.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Deprovision User": {
@@ -510,6 +646,11 @@ export const JOB_CATALOG = Object.freeze({
         "Mail handoff (Linux)",
         ""
       ]
+    ],
+    "why": "Removing access touches the directory, cloud identity and mail. I require a separate approver and preserve the offboarding state so a sensitive change has an audit trail.",
+    "workers": [
+      "provisioner",
+      "windows"
     ]
   },
   "Entra Credential Exporter Rotation": {
@@ -523,6 +664,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Entra credential inventory identity",
         ""
       ]
+    ],
+    "why": "The credential exporter must keep authenticating to report credential health. Maintaining its own credential prevents the monitoring path from silently expiring.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Kubernetes Entra SSO Credential Rotation": {
@@ -536,6 +681,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Kubernetes Entra SSO credentials",
         ""
       ]
+    ],
+    "why": "The Kubernetes sign-in integration depends on its Entra credential. Scheduled evaluation helps avoid an expiry turning into an access outage.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Roundcube Entra Credential Rotation": {
@@ -549,6 +698,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Roundcube Entra credential",
         ""
       ]
+    ],
+    "why": "The mail sign-in integration needs a valid Entra credential. I maintain that credential through a job with a visible result rather than waiting for sign-in to fail.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Entra Service Credential Rotation": {
@@ -562,6 +715,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate per-run Entra service credential",
         ""
       ]
+    ],
+    "why": "Several automation consumers rely on Entra application credentials. A shared renewal workflow keeps their lifecycle policy consistent.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Group Policy Drift": {
@@ -575,6 +732,10 @@ export const JOB_CATALOG = Object.freeze({
         "Compare live GPO state with git",
         ""
       ]
+    ],
+    "why": "A policy edited directly in the directory can differ from its baseline in Git. I want to see that drift before making a decision about remediation.",
+    "workers": [
+      "windows"
     ]
   },
   "GPO Tools Prerequisite": {
@@ -583,7 +744,12 @@ export const JOB_CATALOG = Object.freeze({
     "schedule": "On demand. No timer is declared for this job.",
     "cron": null,
     "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
-    "stages": []
+    "stages": [],
+    "why": "Policy automation depends on Windows management tools being present. This job makes that prerequisite check explicit and separates checking from attended installation.",
+    "workers": [
+      "provisioner",
+      "windows"
+    ]
   },
   "Grafana Service Account Token Rotation": {
     "title": "[IAM] Grafana Service Account Token Rotation",
@@ -596,6 +762,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Grafana service-account tokens",
         ""
       ]
+    ],
+    "why": "Dashboard automation needs a working Grafana API token. This job makes token renewal visible and repeatable instead of leaving a long-lived token unmanaged.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Jenkins API Token Rotation": {
@@ -609,6 +779,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Jenkins API token",
         ""
       ]
+    ],
+    "why": "Automation callers need to authenticate to Jenkins. I maintain their registered API token through a recorded workflow so renewal does not depend on a manual reminder.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Jenkins notifyCommit Token Rotation": {
@@ -622,6 +796,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Jenkins notifyCommit token",
         ""
       ]
+    ],
+    "why": "Source-change notifications need their own valid Jenkins token. I track its lifecycle separately from ordinary API access because it is part of the build-trigger path.",
+    "workers": [
+      "provisioner"
     ]
   },
   "LiteLLM Virtual Key Rotation": {
@@ -635,6 +813,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate LiteLLM virtual keys",
         ""
       ]
+    ],
+    "why": "Applications use virtual keys to reach the model gateway. I maintain those consumer keys through policy so they do not remain unchanged indefinitely.",
+    "workers": [
+      "provisioner"
     ]
   },
   "NetBox API Token Rotation": {
@@ -648,6 +830,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate NetBox API token",
         ""
       ]
+    ],
+    "why": "Provisioning and inventory automation depend on NetBox API access. This job keeps the token lifecycle part of the operating workflow.",
+    "workers": [
+      "provisioner"
     ]
   },
   "NetBox Entra SSO Credential Rotation": {
@@ -661,6 +847,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate NetBox Entra credential",
         ""
       ]
+    ],
+    "why": "NetBox sign-in depends on an Entra application credential. I renew it through a recorded job to keep expiry from becoming a login incident.",
+    "workers": [
+      "provisioner"
     ]
   },
   "OPNsense API Key Rotation": {
@@ -674,6 +864,10 @@ export const JOB_CATALOG = Object.freeze({
         "Reconcile OPNsense API key pair",
         ""
       ]
+    ],
+    "why": "Firewall automation uses API credentials with a separate lifecycle from interactive sign-in. I maintain that dependency through an explicit credential workflow.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Provision User": {
@@ -707,6 +901,11 @@ export const JOB_CATALOG = Object.freeze({
         "Entra (Linux)",
         ""
       ]
+    ],
+    "why": "A new user needs consistent identity and access setup. The collision check prevents an existing account from being silently overwritten by a new request.",
+    "workers": [
+      "provisioner",
+      "windows"
     ]
   },
   "Proxmox Entra SSO Credential Rotation": {
@@ -720,6 +919,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Proxmox Entra credential",
         ""
       ]
+    ],
+    "why": "The virtualization platform uses an Entra credential for sign-in. Its renewal belongs in scheduled maintenance instead of an expiry-driven repair.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Proxmox and PBS API Token Rotation": {
@@ -733,6 +936,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Proxmox/PBS API tokens",
         ""
       ]
+    ],
+    "why": "VM and backup automation depend on API tokens. Their renewal needs a recorded outcome because a broken token can interrupt provisioning or backup operations.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Jenkins Vault AppRole SecretID Rotation": {
@@ -746,6 +953,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Jenkins Vault AppRole SecretID",
         ""
       ]
+    ],
+    "why": "Jenkins needs a working AppRole credential to obtain runtime secrets. I maintain that bootstrap dependency as part of the platform rather than leaving it unchanged indefinitely.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Zabbix API Token Rotation": {
@@ -759,6 +970,10 @@ export const JOB_CATALOG = Object.freeze({
         "Rotate Zabbix API token",
         ""
       ]
+    ],
+    "why": "Monitoring automation calls the Zabbix API. I keep its token renewal visible so a credential problem is distinguishable from a monitoring failure.",
+    "workers": [
+      "provisioner"
     ]
   },
   "Zabbix Agent PSK Rotation": {
@@ -772,6 +987,163 @@ export const JOB_CATALOG = Object.freeze({
         "Evaluate registered Linux PSKs",
         ""
       ]
+    ],
+    "why": "Agent connections use pre-shared keys for authentication. This job manages their lifecycle across registered Linux agents instead of leaving the original keys in place.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Morning triage": {
+    "title": "[AIOps] Morning Triage",
+    "description": "Collects operational signals, runs triage, and sends a morning digest. If a collector fails, the digest identifies the missing source.",
+    "schedule": "Daily during 06:00 to 06:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 6 * * *",
+    "why": "I want a morning view of operational issues and missing signals, so I can decide what needs attention without reading each collector independently.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Jobsearch application restore": {
+    "title": "[DR] Jobsearch Application Restore",
+    "description": "Restores the latest job-search database backup into a temporary PostgreSQL instance, checks its schema and data, and removes the temporary instance. This tests recovery without replacing the production database.",
+    "schedule": "Mondays during 05:00 to 05:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 5 * * 1",
+    "why": "Database backups need an application-level recovery check. Restoring into a temporary instance tests whether the data and schema can be used without replacing production.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "CIS compliance score": {
+    "title": "[Security] CIS Compliance Score",
+    "description": "Combines Wazuh configuration assessments for Linux and Windows with kube-bench checks for Kubernetes. Stores the compliance result and files regressions for human review.",
+    "schedule": "Sundays during 06:00 to 06:59 in America/Denver. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "TZ=America/Denver\nH 6 * * 0",
+    "why": "A score is useful only if I can see what regressed. This job tracks configuration checks over time and turns regressions into work for human review.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Internal website scan": {
+    "title": "[Security] Internal Website Scan",
+    "description": "Checks approved internal web pages for unintended anonymous access and produces a private report. The checks use anonymous GET requests within a defined scope.",
+    "schedule": "Saturdays during 07:00 to 07:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 7 * * 6",
+    "why": "Internal applications can accidentally expose content before sign-in. I check a defined set of anonymous entry points and keep the resulting report private.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Collect job postings": {
+    "title": "[Jobsearch] Collect",
+    "description": "Collects job postings from configured job boards and email alerts, retrieves posting details, and records new listings. Checks source activity and identifies reposts.",
+    "schedule": "Daily during 06:00 to 06:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 6 * * *",
+    "why": "Postings arrive through several boards and email sources. I collect them into one store so later scoring and review do not depend on manually copying each listing.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Back up application databases": {
+    "title": "[Jobsearch] DB Backup",
+    "description": "Dumps the job-search and automated-recovery databases, compresses the backups, and copies them to backup storage. Removes expired backups and reports failures.",
+    "schedule": "Daily during 02:00 to 02:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 2 * * *",
+    "why": "The application databases contain accumulated records and recovery history. Their backup needs its own retention and failure reporting, separate from whether the apps are running.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Jobsearch digest": {
+    "title": "[Jobsearch] Digest",
+    "description": "Emails a digest of matching job postings and mailbox items that need review. A preview option renders the digest without sending mail.",
+    "schedule": "Daily during 13:00 to 13:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 13 * * *",
+    "why": "I use a digest to review relevant postings together and notice mailbox items that still need filing. Preview mode lets me inspect the email before sending.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Enrich job postings": {
+    "title": "[Jobsearch] Enrich",
+    "description": "Extracts skills and relevance with Ollama, parses salary and deadline details, and uses quota-routed agents to score postings and research companies. Updates the stored records for later review.",
+    "schedule": "Daily during 07:00 to 07:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 7 * * *",
+    "why": "Collected listings need structure before they are useful for review. Extraction and scoring help me compare skills, pay, deadlines and relevance across sources.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Import Greenbone findings": {
+    "title": "[Security] Greenbone Findings Import",
+    "description": "Reconciles the approved Greenbone scan task and imports its latest completed vulnerability report into the security findings store. Starting a scan immediately requires an explicit operator option.",
+    "schedule": "Daily during 05:00 to 05:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 5 * * *",
+    "why": "The scanner and the security dashboard have different responsibilities. This job brings completed scan evidence into the store used for tracking findings.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Import IaC findings": {
+    "title": "[Security] IaC Findings Import",
+    "description": "Imports the latest retained Trivy infrastructure-as-code scan from the main branch into the security findings store. Reports a failure if the required scan artifact is unavailable.",
+    "schedule": "Daily during 05:00 to 05:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 5 * * *",
+    "why": "CI produces scan artifacts, but the security view needs findings tied to the main branch. This import connects those two without treating an unmerged proposal as current posture.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Enroll Windows Wazuh agents": {
+    "title": "[Security] Wazuh Windows Agent Enrollment",
+    "description": "Uses Ansible to install and enroll the Wazuh security agent on an approved Windows target. Any temporary remote-management access created for enrollment is removed afterward.",
+    "schedule": "On demand through Build with Parameters. No recurring timer is declared.",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "why": "Windows systems need to enroll with security monitoring before their coverage is meaningful. This job makes enrollment repeatable and cleans up temporary management access.",
+    "workers": [
+      "provisioner",
+      "windows"
+    ]
+  },
+  "Collect Wazuh coverage": {
+    "title": "[Security] Wazuh Agent Coverage",
+    "description": "Collects a daily snapshot of Wazuh agent coverage for monitoring. Continuous alert collection runs separately from this Jenkins job.",
+    "schedule": "Daily during 08:00 to 08:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 8 * * *",
+    "why": "An alert feed alone does not prove that agents are enrolled and reporting. I collect coverage separately so missing monitoring can be investigated.",
+    "workers": [
+      "provisioner"
+    ]
+  },
+  "Wazuh incident triage": {
+    "title": "[Security] Wazuh Headless Triage",
+    "description": "Uses headless agents to draft incident narratives from Wazuh findings for operator review. Jenkins runs this optional analysis on demand.",
+    "schedule": "On demand. No recurring timer is declared.",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "why": "Some incidents need an explanation beyond rule-based classification. I run this optional narrative step when I want an agent-assisted account to review.",
+    "workers": [
+      "jobsearch"
+    ]
+  },
+  "Public website scan": {
+    "title": "[Security] Public Website Scan",
+    "description": "Assesses the approved public website scope with deterministic checks and signed Nuclei templates, then produces a report. AI research provides context without executing changes.",
+    "schedule": "Saturdays during 06:00 to 06:59 in the Jenkins controller time zone. Jenkins chooses a stable minute (H).",
+    "scheduleSource": "Declared in the job definition. Exact live timer settings have not been independently verified.",
+    "cron": "H 6 * * 6",
+    "why": "The public site changes over time, as do scanner checks. I use a recurring scoped assessment to find issues and produce evidence for review without automatic remediation.",
+    "workers": [
+      "provisioner"
     ]
   }
 });

@@ -1,3 +1,4 @@
+import { WORKER_PROFILES } from './jenkins-activity-workers.mjs';
 import { CENSORED, PUBLIC_VIEWS } from './jenkins-activity-contract.mjs';
 import { JOB_CATALOG } from './jenkins-activity-catalog.mjs';
 export const TABS = ['status','description','code','workers','history','demo'];
@@ -32,4 +33,28 @@ export function resolveRoute(hash,snapshot) {
   const tab=parts[4]||'status';
   if(!job||!TABS.includes(tab)||(tab==='demo'&&!supportsDemo(job)))return {missing:true};
   return {view,job,tab};
+}
+
+// Jenkins mobile cards show elapsed build age and duration in words.
+export function mobileBuildSummary(job, capturedAt) {
+  if (job.last_finished_ms === null) return 'Not built';
+  const words = ms => {
+    let seconds = Math.max(0, Math.floor(ms / 1000));
+    const parts = [];
+    for (const [size, label] of [[2592000,'mo'],[86400,'days'],[3600,'hr'],[60,'min'],[1,'sec']]) {
+      const count = Math.floor(seconds / size);
+      if (count) {
+        parts.push(count + ' ' + (label === 'days' && count === 1 ? 'day' : label));
+        seconds %= size;
+        if (parts.length === 2) break;
+      }
+    }
+    return parts.join(' ') || '0 sec';
+  };
+  return 'Built ' + words(capturedAt - job.last_finished_ms) + ' ago, took ' + words(job.last_duration_ms);
+}
+
+export function workerProfiles(job) {
+  if (job.name === CENSORED) return [];
+  return (details(job)?.workers || []).map(key => WORKER_PROFILES[key]).filter(Boolean);
 }

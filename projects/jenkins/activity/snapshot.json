@@ -64,7 +64,7 @@
     },
     {
       "id": "job-0b2c38ee6b6943f8a095e61db5f0ba15",
-      "name": "SENSORED for security",
+      "name": "Back up application databases",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -75,16 +75,16 @@
       "last_success_ms": 1788855973751,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 56,
+      "last_success_number": 56,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Jobsearch"
       ]
     },
     {
       "id": "job-0d733b3c0e754aa7b5d1a38d3631797c",
-      "name": "SENSORED for security",
+      "name": "CIS compliance score",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -95,11 +95,11 @@
       "last_success_ms": 1788699888179,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 2,
+      "last_success_number": 2,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Security"
       ]
     },
     {
@@ -244,7 +244,7 @@
     },
     {
       "id": "job-38faf07d4a1a468193861ff73d21d2d6",
-      "name": "SENSORED for security",
+      "name": "Import IaC findings",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -255,11 +255,11 @@
       "last_success_ms": 1788867670579,
       "last_failure_ms": 1788235920081,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
-      "last_failure_number": null,
+      "last_completed_number": 10,
+      "last_success_number": 10,
+      "last_failure_number": 2,
       "views": [
-        "Private"
+        "Security"
       ]
     },
     {
@@ -304,7 +304,7 @@
     },
     {
       "id": "job-4d526ba81d28455c9cd5e2bbd06becb0",
-      "name": "SENSORED for security",
+      "name": "Enrich job postings",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -315,11 +315,11 @@
       "last_success_ms": 1788875000224,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 82,
+      "last_success_number": 82,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Jobsearch"
       ]
     },
     {
@@ -344,7 +344,7 @@
     },
     {
       "id": "job-4ff9e2a1d1fc469c9941828e2f4387b9",
-      "name": "SENSORED for security",
+      "name": "Import Greenbone findings",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -355,11 +355,11 @@
       "last_success_ms": 1788865566821,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 7,
+      "last_success_number": 7,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Security"
       ]
     },
     {
@@ -464,7 +464,7 @@
     },
     {
       "id": "job-5b561c9fd8d846ca8feaf8a08ec4d031",
-      "name": "SENSORED for security",
+      "name": "Jobsearch application restore",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -475,11 +475,11 @@
       "last_success_ms": 1788780195749,
       "last_failure_ms": 1787947579913,
       "health_score": 80,
-      "last_completed_number": null,
-      "last_success_number": null,
-      "last_failure_number": null,
+      "last_completed_number": 6,
+      "last_success_number": 6,
+      "last_failure_number": 3,
       "views": [
-        "Private"
+        "DR"
       ]
     },
     {
@@ -524,7 +524,7 @@
     },
     {
       "id": "job-6f3c94f866be4437b68374fd7cb0c092",
-      "name": "SENSORED for security",
+      "name": "Wazuh incident triage",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -535,16 +535,16 @@
       "last_success_ms": 1788192569259,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 1,
+      "last_success_number": 1,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Security"
       ]
     },
     {
       "id": "job-6fb3c1176594422688639ccf84de6a2e",
-      "name": "SENSORED for security",
+      "name": "Collect job postings",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -555,11 +555,11 @@
       "last_success_ms": 1788871835675,
       "last_failure_ms": 1788700586318,
       "health_score": 60,
-      "last_completed_number": null,
-      "last_success_number": null,
-      "last_failure_number": null,
+      "last_completed_number": 78,
+      "last_success_number": 78,
+      "last_failure_number": 75,
       "views": [
-        "Private"
+        "Jobsearch"
       ]
     },
     {
@@ -884,7 +884,7 @@
     },
     {
       "id": "job-af1465f69c8347b8b7ea2e1fbe4b49ca",
-      "name": "SENSORED for security",
+      "name": "Collect Wazuh coverage",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -895,12 +895,10 @@
       "last_success_ms": 1788878530886,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 10,
+      "last_success_number": 10,
       "last_failure_number": null,
-      "views": [
-        "Private"
-      ]
+      "views": []
     },
     {
       "id": "job-b0ebe9c7d9f94859932d47a48bb7f1d3",
@@ -924,7 +922,7 @@
     },
     {
       "id": "job-b6633b6500ca491ca44645032cc1f401",
-      "name": "SENSORED for security",
+      "name": "Internal website scan",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -935,12 +933,10 @@
       "last_success_ms": 1788768687682,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 1,
+      "last_success_number": 1,
       "last_failure_number": null,
-      "views": [
-        "Private"
-      ]
+      "views": []
     },
     {
       "id": "job-b900d4ab16b44449a116a21f49abec5b",
@@ -1044,7 +1040,7 @@
     },
     {
       "id": "job-cc7da366c2a64916a224d602f44ace4c",
-      "name": "SENSORED for security",
+      "name": "Enroll Windows Wazuh agents",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -1055,11 +1051,11 @@
       "last_success_ms": 1788225913871,
       "last_failure_ms": 1788224715068,
       "health_score": 40,
-      "last_completed_number": null,
-      "last_success_number": null,
-      "last_failure_number": null,
+      "last_completed_number": 16,
+      "last_success_number": 16,
+      "last_failure_number": 14,
       "views": [
-        "Private"
+        "Security"
       ]
     },
     {
@@ -1084,7 +1080,7 @@
     },
     {
       "id": "job-d594ad3220f543599d86aad56f06e66d",
-      "name": "SENSORED for security",
+      "name": "Morning triage",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -1095,11 +1091,11 @@
       "last_success_ms": 1788870328010,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 38,
+      "last_success_number": 38,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "AIOps"
       ]
     },
     {
@@ -1244,7 +1240,7 @@
     },
     {
       "id": "job-f6a090b9be144299bb8f551bcc807dcf",
-      "name": "SENSORED for security",
+      "name": "Jobsearch digest",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -1255,11 +1251,11 @@
       "last_success_ms": 1788895752601,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 61,
+      "last_success_number": 61,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Jobsearch"
       ]
     },
     {
@@ -1324,7 +1320,7 @@
     },
     {
       "id": "job-fe611e7bc6b54dd1a085a2fbbab57396",
-      "name": "SENSORED for security",
+      "name": "Public website scan",
       "running": 0,
       "queued": false,
       "disabled": false,
@@ -1335,11 +1331,11 @@
       "last_success_ms": 1788750143194,
       "last_failure_ms": null,
       "health_score": 100,
-      "last_completed_number": null,
-      "last_success_number": null,
+      "last_completed_number": 4,
+      "last_success_number": 4,
       "last_failure_number": null,
       "views": [
-        "Private"
+        "Security"
       ]
     }
   ]
