@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1140" role="img" aria-labelledby="title desc">
+<title id="title">Experimental AI fleet</title><desc id="desc">Public architecture view. Operator scope goes to a deterministic Python controller. Claude builders are reviewed by Codex, and Codex builders by Claude. CI and a current-commit review precede separate merge controls. Failed reviews return findings for bounded repair or operator attention.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10z" fill="#00d4ff"/></marker>
+<style>.heading{font:700 28px Arial;fill:#fff}.title{font:700 23px Arial;fill:#eef4fb}.text{font:20px Arial;fill:#aebbd0}.node{stroke-width:2}.cyan{fill:#101a28;stroke:#00d4ff}.green{fill:#10231d;stroke:#00ff96}.amber{fill:#271f0e;stroke:#ffd166}.purple{fill:#1d1730;stroke:#b69cff}.flow{fill:none;stroke:#00d4ff;stroke-width:3;marker-end:url(#arrow)}</style></defs>
+<rect x="1" y="1" width="998" height="1138" rx="14" fill="#090e18" stroke="#37516c" stroke-width="2"/>
+<text x="40" y="50" class="heading">Experimental AI fleet</text>
+<text x="40" y="83" class="text" text-anchor="start">Role map, without live workers, task details, or fixed fleet size.</text>
+<rect x="230" y="115" width="540" height="94" rx="12" class="node amber"/>
+<text x="500.0" y="150" class="title" text-anchor="middle">I set the scope</text>
+<text x="500.0" y="181" class="text" text-anchor="middle">Priorities, allowed work, and operating limits</text>
+<path d="M500 209V244" class="flow"/>
+<rect x="230" y="245" width="540" height="121" rx="12" class="node green"/>
+<text x="500.0" y="280" class="title" text-anchor="middle">Python controller</text>
+<text x="500.0" y="311" class="text" text-anchor="middle">Check queue and state; assign eligible work</text>
+<text x="500.0" y="338" class="text" text-anchor="middle">Bound concurrency, retries, and run budgets</text>
+<path d="M375 366V416H255V450" class="flow"/>
+<path d="M625 366V416H745V450" class="flow"/>
+<rect x="70" y="452" width="370" height="120" rx="12" class="node cyan"/>
+<text x="255.0" y="487" class="title" text-anchor="middle">Claude builder</text>
+<text x="255.0" y="518" class="text" text-anchor="middle">Isolated branch and scoped task</text>
+<text x="255.0" y="545" class="text" text-anchor="middle">Diff, checks, and pull request</text>
+<rect x="560" y="452" width="370" height="120" rx="12" class="node cyan"/>
+<text x="745.0" y="487" class="title" text-anchor="middle">Codex builder</text>
+<text x="745.0" y="518" class="text" text-anchor="middle">Isolated branch and scoped task</text>
+<text x="745.0" y="545" class="text" text-anchor="middle">Diff, checks, and pull request</text>
+<path d="M255 572V614" class="flow"/>
+<path d="M745 572V614" class="flow"/>
+<rect x="70" y="616" width="370" height="120" rx="12" class="node purple"/>
+<text x="255.0" y="651" class="title" text-anchor="middle">Codex reviewer</text>
+<text x="255.0" y="682" class="text" text-anchor="middle">Fresh context, read-only review</text>
+<text x="255.0" y="709" class="text" text-anchor="middle">Verdict names the commit</text>
+<rect x="560" y="616" width="370" height="120" rx="12" class="node purple"/>
+<text x="745.0" y="651" class="title" text-anchor="middle">Claude reviewer</text>
+<text x="745.0" y="682" class="text" text-anchor="middle">Fresh context, read-only review</text>
+<text x="745.0" y="709" class="text" text-anchor="middle">Verdict names the commit</text>
+<path d="M255 736V784H375V820" class="flow"/>
+<path d="M745 736V784H625V820" class="flow"/>
+<rect x="230" y="822" width="540" height="120" rx="12" class="node green"/>
+<text x="500.0" y="857" class="title" text-anchor="middle">Separate delivery controls</text>
+<text x="500.0" y="888" class="text" text-anchor="middle">Current-commit CI + review + mergeability</text>
+<text x="500.0" y="915" class="text" text-anchor="middle">Merge executor acts within operating policy</text>
+<rect x="45" y="966" width="17" height="17" class="amber"/>
+<text x="76" y="981" class="text" text-anchor="start">Amber. My scope and operating decisions.</text>
+<rect x="45" y="995" width="17" height="17" class="green"/>
+<text x="76" y="1010" class="text" text-anchor="start">Green. Deterministic control and delivery checks.</text>
+<rect x="45" y="1024" width="17" height="17" class="cyan"/>
+<text x="76" y="1039" class="text" text-anchor="start">Cyan. Model authoring work.</text>
+<rect x="45" y="1053" width="17" height="17" class="purple"/>
+<text x="76" y="1068" class="text" text-anchor="start">Purple. Review by the other provider.</text>
+<rect x="45" y="1081" width="18" height="18" rx="5" fill="none" stroke="#aebbd0"/>
+<text x="76" y="1097" class="text" text-anchor="start">Rounded box. A role, process, or result.</text>
+<path d="M45 1120H66" class="flow"/>
+<text x="76" y="1126" class="text" text-anchor="start">Arrow. Direction of work.</text>
+</svg>

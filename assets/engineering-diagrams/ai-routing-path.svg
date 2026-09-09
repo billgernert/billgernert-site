@@ -1,1 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 720" role="img" aria-label="Applied AI has a repository-agent path and an operational-inference path, both bounded by policy, evidence, and action gates"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10z" fill="#00d4ff"/></marker><style>.h{font:700 24px Arial;fill:#fff}.t{font:700 17px Arial;fill:#eef4fb}.s{font:14px Arial;fill:#aebbd0}.n{fill:#101a28;stroke:#00d4ff;stroke-width:2}.g{fill:#10231d;stroke:#00ff96;stroke-width:2}.w{fill:#271f0e;stroke:#ffd166;stroke-width:2}.l{stroke:#00d4ff;stroke-width:3;fill:none;marker-end:url(#a)}.d{stroke:#00ff96;stroke-width:2;fill:none;stroke-dasharray:7 6}</style></defs><rect width="1160" height="720" fill="#090e18"/><text x="50" y="52" class="h">Two model paths share policy, evidence and action boundaries</text><rect x="55" y="100" width="1050" height="220" rx="14" fill="none" stroke="#37516c" stroke-width="2"/><text x="80" y="132" class="t">Repository work</text><rect x="90" y="165" width="190" height="105" rx="12" class="w"/><text x="185" y="200" text-anchor="middle" class="t">Written tasking</text><text x="185" y="228" text-anchor="middle" class="s">Scope and stop rules</text><rect x="345" y="165" width="200" height="105" rx="12" class="n"/><text x="445" y="200" text-anchor="middle" class="t">CLI model worker</text><text x="445" y="228" text-anchor="middle" class="s">Isolated worktree</text><rect x="610" y="165" width="200" height="105" rx="12" class="g"/><text x="710" y="200" text-anchor="middle" class="t">Review + CI</text><text x="710" y="228" text-anchor="middle" class="s">Other vendor and gates</text><rect x="875" y="165" width="190" height="105" rx="12" class="g"/><text x="970" y="200" text-anchor="middle" class="t">Merge executor</text><text x="970" y="228" text-anchor="middle" class="s">Narrow action path</text><line x1="280" y1="218" x2="340" y2="218" class="l"/><line x1="545" y1="218" x2="605" y2="218" class="l"/><line x1="810" y1="218" x2="870" y2="218" class="l"/><rect x="55" y="370" width="1050" height="220" rx="14" fill="none" stroke="#37516c" stroke-width="2"/><text x="80" y="402" class="t">Operational inference</text><rect x="90" y="435" width="190" height="105" rx="12" class="n"/><text x="185" y="470" text-anchor="middle" class="t">Collectors + code</text><text x="185" y="498" text-anchor="middle" class="s">Current bounded evidence</text><rect x="345" y="435" width="200" height="105" rx="12" class="g"/><text x="445" y="470" text-anchor="middle" class="t">Policy gateway</text><text x="445" y="498" text-anchor="middle" class="s">Identity, privacy, budget</text><rect x="610" y="435" width="200" height="105" rx="12" class="n"/><text x="710" y="470" text-anchor="middle" class="t">Local or approved model</text><text x="710" y="498" text-anchor="middle" class="s">Constrained response</text><rect x="875" y="435" width="190" height="105" rx="12" class="g"/><text x="970" y="470" text-anchor="middle" class="t">Validated result</text><text x="970" y="498" text-anchor="middle" class="s">Store, report, or propose</text><line x1="280" y1="488" x2="340" y2="488" class="l"/><line x1="545" y1="488" x2="605" y2="488" class="l"/><line x1="810" y1="488" x2="870" y2="488" class="l"/><rect x="335" y="625" width="490" height="55" rx="10" class="w"/><text x="580" y="659" text-anchor="middle" class="t">A separate identity or operator gate owns any infrastructure action</text><path d="M970 540C930 610 830 615 785 625" class="d"/><g transform="translate(55 695)"><rect width="16" height="16" fill="#101a28" stroke="#00d4ff"/><text x="26" y="14" class="s">Cyan: model input or model work</text><rect x="310" width="16" height="16" fill="#10231d" stroke="#00ff96"/><text x="336" y="14" class="s">Green: policy, validation or action gate</text><rect x="675" width="16" height="16" fill="#271f0e" stroke="#ffd166"/><text x="701" y="14" class="s">Amber: durable instruction or operator boundary</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="title desc">
+<title id="title">Two ways I run model work</title><desc id="desc">Subscription-backed CLI jobs and gateway API calls use different credentials and budgets. Each path validates its result before a separate authorized action.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10z" fill="#00d4ff"/></marker>
+<style>.heading{font:700 28px Arial;fill:#fff}.title{font:700 23px Arial;fill:#eef4fb}.text{font:20px Arial;fill:#aebbd0}.node{stroke-width:2}.cyan{fill:#101a28;stroke:#00d4ff}.green{fill:#10231d;stroke:#00ff96}.amber{fill:#271f0e;stroke:#ffd166}.purple{fill:#1d1730;stroke:#b69cff}.flow{fill:none;stroke:#00d4ff;stroke-width:3;marker-end:url(#arrow)}</style></defs>
+<rect x="1" y="1" width="998" height="998" rx="14" fill="#090e18" stroke="#37516c" stroke-width="2"/>
+<text x="40" y="50" class="heading">Two ways I run model work</text>
+<text x="40" y="83" class="text" text-anchor="start">The calling process owns collection, validation, and the next action.</text>
+<text x="65" y="131" class="title" text-anchor="start">Subscription-backed CLI jobs</text>
+<text x="555" y="131" class="title" text-anchor="start">Gateway API requests</text>
+<rect x="65" y="157" width="380" height="118" rx="12" class="node amber"/>
+<text x="255.0" y="192" class="title" text-anchor="middle">Repository or pipeline task</text>
+<text x="255.0" y="223" class="text" text-anchor="middle">A scoped change or analysis bundle</text>
+<text x="255.0" y="250" class="text" text-anchor="middle">A launcher chooses the CLI path</text>
+<rect x="555" y="157" width="380" height="118" rx="12" class="node amber"/>
+<text x="745.0" y="192" class="title" text-anchor="middle">Application request</text>
+<text x="745.0" y="223" class="text" text-anchor="middle">A bounded input from a service</text>
+<text x="745.0" y="250" class="text" text-anchor="middle">Consumer identity accompanies it</text>
+<path d="M255 275V315" class="flow"/>
+<path d="M745 275V315" class="flow"/>
+<rect x="65" y="317" width="380" height="118" rx="12" class="node green"/>
+<text x="255.0" y="352" class="title" text-anchor="middle">Subscription selection</text>
+<text x="255.0" y="383" class="text" text-anchor="middle">Claude or Codex session</text>
+<text x="255.0" y="410" class="text" text-anchor="middle">Fleet and pipeline policies differ</text>
+<rect x="555" y="317" width="380" height="118" rx="12" class="node green"/>
+<text x="745.0" y="352" class="title" text-anchor="middle">LiteLLM gateway</text>
+<text x="745.0" y="383" class="text" text-anchor="middle">Consumer key, route, and budget</text>
+<text x="745.0" y="410" class="text" text-anchor="middle">API spend is measured separately</text>
+<path d="M255 435V475" class="flow"/>
+<path d="M745 435V475" class="flow"/>
+<rect x="65" y="477" width="380" height="118" rx="12" class="node cyan"/>
+<text x="255.0" y="512" class="title" text-anchor="middle">CLI model work</text>
+<text x="255.0" y="543" class="text" text-anchor="middle">Build, review, or analyze</text>
+<text x="255.0" y="570" class="text" text-anchor="middle">Return a diff or structured result</text>
+<rect x="555" y="477" width="380" height="118" rx="12" class="node cyan"/>
+<text x="745.0" y="512" class="title" text-anchor="middle">Local or external model</text>
+<text x="745.0" y="543" class="text" text-anchor="middle">Use the configured provider route</text>
+<text x="745.0" y="570" class="text" text-anchor="middle">Return a constrained response</text>
+<path d="M255 595V635" class="flow"/>
+<path d="M745 595V635" class="flow"/>
+<rect x="65" y="637" width="380" height="118" rx="12" class="node green"/>
+<text x="255.0" y="672" class="title" text-anchor="middle">Check the result</text>
+<text x="255.0" y="703" class="text" text-anchor="middle">Tests and review for code</text>
+<text x="255.0" y="730" class="text" text-anchor="middle">Schema validation for analysis</text>
+<rect x="555" y="637" width="380" height="118" rx="12" class="node green"/>
+<text x="745.0" y="672" class="title" text-anchor="middle">Validate and record</text>
+<text x="745.0" y="703" class="text" text-anchor="middle">Keep source evidence with output</text>
+<text x="745.0" y="730" class="text" text-anchor="middle">Store, report, or recommend</text>
+<text x="65" y="798" class="text" text-anchor="start">Any infrastructure action uses a separate authorized workflow.</text>
+<rect x="45" y="835" width="17" height="17" class="amber"/>
+<text x="76" y="850" class="text" text-anchor="start">Amber. Input and scope.</text>
+<rect x="45" y="864" width="17" height="17" class="green"/>
+<text x="76" y="879" class="text" text-anchor="start">Green. Selection, policy, or validation.</text>
+<rect x="45" y="893" width="17" height="17" class="cyan"/>
+<text x="76" y="908" class="text" text-anchor="start">Cyan. Model work.</text>
+<rect x="45" y="921" width="18" height="18" rx="5" fill="none" stroke="#aebbd0"/>
+<text x="76" y="937" class="text" text-anchor="start">Rounded box. A role, process, or result.</text>
+<path d="M45 960H66" class="flow"/>
+<text x="76" y="966" class="text" text-anchor="start">Arrow. Direction of work.</text>
+</svg>

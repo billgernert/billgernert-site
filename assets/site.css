@@ -84,7 +84,7 @@ a:hover { text-decoration: underline; }
 .crumbs .sep { color: rgba(95, 119, 153, 0.5); }
 .crumbs .here { color: var(--fg); }
 
-/* ---- on-page navigation: numbered cards shared by walkthrough and index pages ---- */
+/* ---- on-page navigation: Projects palette, numbered titles and section summaries ---- */
 nav[aria-label="On this page"] {
   display: block;
   margin: 0 0 4rem;
@@ -120,15 +120,17 @@ nav[aria-label="On this page"] {
   counter-reset: section-nav;
 }
 nav[aria-label="On this page"] .section-nav-card {
+  --section-accent: 0, 212, 255;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.7rem;
-  min-height: 92px;
-  align-items: center;
+  grid-template-areas: "number title arrow" ". detail detail";
+  gap: 0.3rem 0.7rem;
+  min-height: 112px;
+  align-content: center;
   padding: 1rem;
-  border: 1px solid rgba(0, 212, 255, 0.42);
+  border: 1px solid rgba(var(--section-accent), 0.44);
   border-radius: 10px;
-  background: rgba(0, 212, 255, 0.045);
+  background: rgba(var(--section-accent), 0.045);
   color: #eef4fb;
   font: inherit;
   letter-spacing: normal;
@@ -139,15 +141,22 @@ nav[aria-label="On this page"] .section-nav-card {
 }
 nav[aria-label="On this page"] .section-nav-card:hover,
 nav[aria-label="On this page"] .section-nav-card:focus-visible {
-  border-color: var(--cyan);
-  background: rgba(0, 212, 255, 0.09);
+  border-color: rgb(var(--section-accent));
+  background: rgba(var(--section-accent), 0.09);
   color: #eef4fb;
   text-decoration: none;
 }
+nav[aria-label="On this page"] .section-nav-card:nth-child(4n + 2) { --section-accent: 0, 255, 150; }
+nav[aria-label="On this page"] .section-nav-card:nth-child(4n + 3) { --section-accent: 255, 209, 102; }
+nav[aria-label="On this page"] .section-nav-card:nth-child(4n + 4) { --section-accent: 182, 156, 255; }
 .section-nav-number,
-.section-nav-arrow { color: var(--cyan); font: 0.7rem var(--mono); }
+.section-nav-arrow { color: rgb(var(--section-accent)); font: 0.7rem var(--mono); }
+.section-nav-number { grid-area: number; padding-top: 0.3rem; }
+.section-nav-arrow { grid-area: arrow; padding-top: 0.3rem; }
 .section-nav-number::before { content: counter(section-nav, decimal-leading-zero); }
-.section-nav-title { min-width: 0; color: #fff; font-weight: 600; line-height: 1.35; }
+.section-nav-title { grid-area: title; overflow-wrap: anywhere; min-width: 0; color: #fff; font-weight: 600; line-height: 1.35; }
+
+.section-nav-detail { grid-area: detail; color: var(--muted); font-size: 0.8rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 @media (max-width: 900px) {
   .section-nav-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
