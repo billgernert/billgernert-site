@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://topology-feed.billgernert.com; form-action 'none'; base-uri 'none'">
+  <meta name="description" content="Explore the public Jenkins job views and reviewed job descriptions in AutomationLab.">
+  <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AutomationLab">
+  <meta property="og:title" content="Jenkins public console - Bill Gernert">
+  <meta property="og:description" content="Explore the public Jenkins job views and reviewed job descriptions in AutomationLab.">
+  <meta property="og:url" content="https://billgernert.com/projects/jenkins/activity/">
+  <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AutomationLab platform engineering">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jenkins public console - Bill Gernert">
+  <meta name="twitter:description" content="Explore the public Jenkins job views and reviewed job descriptions in AutomationLab.">
+  <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
+  <meta name="twitter:image:alt" content="AutomationLab platform engineering">
+  <!-- END generated: share-metadata -->
+
+  <meta name="activity-feed" content="">
+  <meta name="activity-snapshot" content="/projects/jenkins/activity/snapshot.json">
+  <title>Jenkins public console - Bill Gernert</title>
+  <link rel="stylesheet" href="/assets/jenkins-activity.css">
+  <script type="module" src="/assets/jenkins-activity.mjs"></script>
+  <!-- BEGIN generated: canonical (generate-site-pages.py) -->
+  <link rel="canonical" href="https://billgernert.com/projects/jenkins/activity/">
+  <!-- END generated: canonical -->
+</head>
+<body>
+  <a class="skip-link" href="#main-panel">Skip to content</a>
+  <header class="jenkins-header">
+    <a class="jenkins-brand" href="#/view/All"><img src="/assets/jenkins-logo.svg" alt="" width="226" height="312" loading="lazy"><span>Jenkins</span></a>
+    <nav id="breadcrumbs" aria-label="Breadcrumb"></nav>
+    <div class="header-controls"><input id="header-search" class="header-search" type="search" aria-label="Search jobs" placeholder="Search jobs" hidden><button id="search-toggle" aria-label="Search">⌕</button><button id="manage-control" aria-label="Manage Jenkins">⚙</button><button id="more-control" aria-label="More actions">☰</button><span class="read-only">Public / read-only</span></div>
+  </header>
+  <div class="jenkins-body">
+    <aside class="side-panel">
+      <nav id="side-tasks" aria-label="Jenkins navigation"></nav>
+      <section class="side-box"><h2>Build Queue <span aria-hidden="true">⌄</span></h2><div id="queue-content">Waiting for data.</div></section>
+      <section class="side-box"><h2>Build Executor Status <span aria-hidden="true">⌄</span></h2><div id="executor-content">Waiting for data.</div></section>
+      <section class="side-box" id="history-box" hidden><h2>Builds</h2><div id="sidebar-history"></div></section>
+      <p class="sidebar-note">Build controls are blocked. VM and user demos run entirely in this page.</p>
+    </aside>
+    <main id="main-panel" tabindex="-1">
+      <div id="view-intro" class="view-intro" hidden><p id="view-description"></p><button id="view-edit" type="button">Edit description</button></div>
+      <p id="feed-notice" class="notice" hidden></p>
+      <nav class="view-tabs" id="view-tabs" aria-label="Jenkins views"></nav>
+      <div id="main-content"><p class="empty-state">No published job snapshot is available.</p></div>
+    </main>
+  </div>
+  <footer class="jenkins-footer"><div class="capture-status"><span id="feed-state">Feed unavailable</span><span id="feed-time">No captured data</span></div><span id="inventory-caption">Public job inventory</span><span>Logo: <a href="https://www.jenkins.io/" target="_blank" rel="noopener">Jenkins project</a> · <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a></span><p class="disclaimer">Personal portfolio operated by Bill Gernert. Views are my own. Product names and trademarks belong to their respective owners. Copyright 2026 Bill Gernert.</p></footer>
+  <dialog id="blocked-dialog" aria-labelledby="blocked-title"><h2 id="blocked-title">Build blocked</h2><p>Public visitors cannot start Jenkins jobs. No build was submitted.</p><p id="blocked-demo-note" hidden>A workflow demo is available for this job.</p><div class="dialog-actions"><button id="blocked-demo" hidden>Open demo</button><button id="blocked-close" autofocus>Close</button></div></dialog>
+  <noscript><p>Enable JavaScript to browse the public Jenkins views.</p></noscript>
+</body>
+</html>

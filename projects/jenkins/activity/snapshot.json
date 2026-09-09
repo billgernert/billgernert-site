@@ -1,0 +1,1346 @@
+{
+  "version": 3,
+  "generated_at_ms": 1788924102133,
+  "jobs": [
+    {
+      "id": "job-04d3153854114c83a9afa4d19581ddd2",
+      "name": "Clear expired maintenance",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788868807034,
+      "last_duration_ms": 6459,
+      "last_success_ms": 1788868807034,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 92,
+      "last_success_number": 92,
+      "last_failure_number": null,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-08004d8db2af44f8a519baaf9ff493dd",
+      "name": "OPNsense API Key Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788901931611,
+      "last_duration_ms": 11039,
+      "last_success_ms": 1788901931611,
+      "last_failure_ms": 1788383544056,
+      "health_score": 100,
+      "last_completed_number": 36,
+      "last_success_number": 36,
+      "last_failure_number": 27,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-0957ac352c9243f88ffa9fdb211413b4",
+      "name": "Configuration drift check",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "UNSTABLE",
+      "last_finished_ms": 1788733384599,
+      "last_duration_ms": 94047,
+      "last_success_ms": 1788733384599,
+      "last_failure_ms": 1788683078847,
+      "health_score": 80,
+      "last_completed_number": 10,
+      "last_success_number": 10,
+      "last_failure_number": 9,
+      "views": [
+        "Assurance"
+      ]
+    },
+    {
+      "id": "job-0b2c38ee6b6943f8a095e61db5f0ba15",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788855973751,
+      "last_duration_ms": 13180,
+      "last_success_ms": 1788855973751,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-0d733b3c0e754aa7b5d1a38d3631797c",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788699888179,
+      "last_duration_ms": 407607,
+      "last_success_ms": 1788699888179,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-1058192c49df4a688c24842f9740073d",
+      "name": "Provision User",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "ABORTED",
+      "last_finished_ms": 1788387265552,
+      "last_duration_ms": 53608,
+      "last_success_ms": 1783430297362,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 36,
+      "last_success_number": 35,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-20c415d18c5f449089cf4a4a5a7ae4a3",
+      "name": "Publish website",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923496019,
+      "last_duration_ms": 18337,
+      "last_success_ms": 1788923496019,
+      "last_failure_ms": 1788920456894,
+      "health_score": 100,
+      "last_completed_number": 3073,
+      "last_success_number": 3073,
+      "last_failure_number": 3065,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-22b9989e3afc4a73b7c629b1f59b2af6",
+      "name": "Windows update scan",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788781130102,
+      "last_duration_ms": 169531,
+      "last_success_ms": 1788781130102,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 5,
+      "last_success_number": 5,
+      "last_failure_number": null,
+      "views": [
+        "Security"
+      ]
+    },
+    {
+      "id": "job-22f30a5d3f1e451aa20c7f1506d31441",
+      "name": "Backup digest",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788874454660,
+      "last_duration_ms": 14088,
+      "last_success_ms": 1788874454660,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 73,
+      "last_success_number": 73,
+      "last_failure_number": null,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-2db3ee05089c41e29c20b4e16fabec86",
+      "name": "Upgrade Loki",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1785169989522,
+      "last_duration_ms": 21062,
+      "last_success_ms": 1785169989522,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 10,
+      "last_success_number": 10,
+      "last_failure_number": null,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-34dc1a3aebf34a3090bad77b77ab8a49",
+      "name": "Cloudflare Access Entra SSO Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788913692825,
+      "last_duration_ms": 12253,
+      "last_success_ms": 1788913692825,
+      "last_failure_ms": 1787685369341,
+      "health_score": 100,
+      "last_completed_number": 20,
+      "last_success_number": 20,
+      "last_failure_number": 4,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-366c6679006a40c1962ad4118525617c",
+      "name": "Certificate sync",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788439097435,
+      "last_duration_ms": 68353,
+      "last_success_ms": 1788439097435,
+      "last_failure_ms": 1788437695097,
+      "health_score": 80,
+      "last_completed_number": 46,
+      "last_success_number": 46,
+      "last_failure_number": 45,
+      "views": [
+        "PKI"
+      ]
+    },
+    {
+      "id": "job-38faf07d4a1a468193861ff73d21d2d6",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788867670579,
+      "last_duration_ms": 10003,
+      "last_success_ms": 1788867670579,
+      "last_failure_ms": 1788235920081,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-47f546d582b6433abf4adc140b805a14",
+      "name": "Decommission Linux",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1784065053546,
+      "last_duration_ms": 36473,
+      "last_success_ms": 1784065053546,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 24,
+      "last_success_number": 24,
+      "last_failure_number": null,
+      "views": [
+        "VM"
+      ]
+    },
+    {
+      "id": "job-4a0d2b1d48dc44fab22ee734dc6a91f6",
+      "name": "Sweep Disabled Users",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788868965483,
+      "last_duration_ms": 44911,
+      "last_success_ms": 1788868965483,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 65,
+      "last_success_number": 65,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-4d526ba81d28455c9cd5e2bbd06becb0",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788875000224,
+      "last_duration_ms": 79652,
+      "last_success_ms": 1788875000224,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-4d5a7a52266d487d9ee2e636ac1d4a17",
+      "name": "Kubernetes Entra SSO Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788877158975,
+      "last_duration_ms": 18399,
+      "last_success_ms": 1788877158975,
+      "last_failure_ms": 1787760759722,
+      "health_score": 100,
+      "last_completed_number": 19,
+      "last_success_number": 19,
+      "last_failure_number": 6,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-4ff9e2a1d1fc469c9941828e2f4387b9",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788865566821,
+      "last_duration_ms": 66243,
+      "last_success_ms": 1788865566821,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-527b935c6be24b0d8b83de9e1a74d99c",
+      "name": "Decommission Windows",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1787846504848,
+      "last_duration_ms": 101684,
+      "last_success_ms": 1787846504848,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 72,
+      "last_success_number": 72,
+      "last_failure_number": null,
+      "views": [
+        "VM"
+      ]
+    },
+    {
+      "id": "job-52dedb6edda84058ba510d2e958275ab",
+      "name": "Backup heartbeat",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923951885,
+      "last_duration_ms": 11308,
+      "last_success_ms": 1788923951885,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 4773,
+      "last_success_number": 4773,
+      "last_failure_number": null,
+      "views": [
+        "Monitoring"
+      ]
+    },
+    {
+      "id": "job-5490a43cc31746d8aeae7fca133b8a81",
+      "name": "System patching",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "FAILURE",
+      "last_finished_ms": 1788923393928,
+      "last_duration_ms": 123059,
+      "last_success_ms": 1788733644732,
+      "last_failure_ms": 1788923393928,
+      "health_score": 40,
+      "last_completed_number": 7,
+      "last_success_number": 6,
+      "last_failure_number": 7,
+      "views": [
+        "Operations"
+      ]
+    },
+    {
+      "id": "job-56d846ba30eb4151b16c5872b562c1c0",
+      "name": "Jenkins notifyCommit Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788891371133,
+      "last_duration_ms": 10561,
+      "last_success_ms": 1788891371133,
+      "last_failure_ms": 1787528435389,
+      "health_score": 100,
+      "last_completed_number": 18,
+      "last_success_number": 18,
+      "last_failure_number": 2,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-5aa53aaa984042d1bcdef5d59d59acf1",
+      "name": "Entra Credential Exporter Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788870852155,
+      "last_duration_ms": 11577,
+      "last_success_ms": 1788870852155,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 17,
+      "last_success_number": 17,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-5b561c9fd8d846ca8feaf8a08ec4d031",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788780195749,
+      "last_duration_ms": 15172,
+      "last_success_ms": 1788780195749,
+      "last_failure_ms": 1787947579913,
+      "health_score": 80,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-5fa806a63f064a58b2d842a61eda642f",
+      "name": "Pull request checks",
+      "running": 1,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": 1788924012680,
+      "last_result": "UNSTABLE",
+      "last_finished_ms": 1788924045930,
+      "last_duration_ms": 33941,
+      "last_success_ms": 1788924045930,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 1214,
+      "last_success_number": 1214,
+      "last_failure_number": null,
+      "views": [
+        "CI"
+      ]
+    },
+    {
+      "id": "job-6026a2a80fab499ea3c90b5d667b11e8",
+      "name": "Proxmox and PBS API Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788891131661,
+      "last_duration_ms": 11086,
+      "last_success_ms": 1788891131661,
+      "last_failure_ms": 1787535561912,
+      "health_score": 100,
+      "last_completed_number": 19,
+      "last_success_number": 19,
+      "last_failure_number": 3,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-6f3c94f866be4437b68374fd7cb0c092",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788192569259,
+      "last_duration_ms": 11002,
+      "last_success_ms": 1788192569259,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-6fb3c1176594422688639ccf84de6a2e",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788871835675,
+      "last_duration_ms": 515103,
+      "last_success_ms": 1788871835675,
+      "last_failure_ms": 1788700586318,
+      "health_score": 60,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-72fb519859c24f32b0ee484bcf6cf4c4",
+      "name": "NetBox Entra SSO Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788907150504,
+      "last_duration_ms": 9928,
+      "last_success_ms": 1788907150504,
+      "last_failure_ms": 1787783952928,
+      "health_score": 100,
+      "last_completed_number": 22,
+      "last_success_number": 22,
+      "last_failure_number": 8,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-764c562826384903a9aae0ea0a47c9cb",
+      "name": "Jenkins API Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788889630533,
+      "last_duration_ms": 9954,
+      "last_success_ms": 1788889630533,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 17,
+      "last_success_number": 17,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-77e2234dcced457396d0f1df9fd5905c",
+      "name": "Deprovision User",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1783430541849,
+      "last_duration_ms": 38336,
+      "last_success_ms": 1783430541849,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 15,
+      "last_success_number": 15,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-7aba6434f0eb437fbd36fcca9dfaa918",
+      "name": "Grafana Service Account Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788887763620,
+      "last_duration_ms": 10220,
+      "last_success_ms": 1788887763620,
+      "last_failure_ms": 1787516621233,
+      "health_score": 100,
+      "last_completed_number": 22,
+      "last_success_number": 22,
+      "last_failure_number": 3,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-7dd702a47ef54392bb23bad77a76ee19",
+      "name": "Sync Grafana dashboards",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923510571,
+      "last_duration_ms": 32875,
+      "last_success_ms": 1788923510571,
+      "last_failure_ms": 1788876216688,
+      "health_score": 100,
+      "last_completed_number": 2723,
+      "last_success_number": 2723,
+      "last_failure_number": 2699,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-7df484d5122645c5b4770988412c91c2",
+      "name": "Upgrade Jenkins",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788687487761,
+      "last_duration_ms": 207517,
+      "last_success_ms": 1788687487761,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 70,
+      "last_success_number": 70,
+      "last_failure_number": null,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-866e96a643ba4f23b4b096b05830e307",
+      "name": "Backup metrics",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788878952634,
+      "last_duration_ms": 12055,
+      "last_success_ms": 1788878952634,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 20,
+      "last_success_number": 20,
+      "last_failure_number": null,
+      "views": [
+        "Monitoring"
+      ]
+    },
+    {
+      "id": "job-897329f584bc442e9878e175771ada83",
+      "name": "Zabbix Agent PSK Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788899236580,
+      "last_duration_ms": 16002,
+      "last_success_ms": 1788899236580,
+      "last_failure_ms": 1788818136594,
+      "health_score": 60,
+      "last_completed_number": 51,
+      "last_success_number": 51,
+      "last_failure_number": 48,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-8e25dbb120364a359b8e4628a066d02f",
+      "name": "Generate documentation indexes",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923502325,
+      "last_duration_ms": 24634,
+      "last_success_ms": 1788923502325,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 120,
+      "last_success_number": 120,
+      "last_failure_number": null,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-99e5dda2b6ea44078dfa408bc6e5db6f",
+      "name": "Entra Service Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788867492881,
+      "last_duration_ms": 12310,
+      "last_success_ms": 1788867492881,
+      "last_failure_ms": 1787744289310,
+      "health_score": 100,
+      "last_completed_number": 18,
+      "last_success_number": 18,
+      "last_failure_number": 6,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-9b638de2b666474d9648729ca870c9e8",
+      "name": "Container image scan",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788798505883,
+      "last_duration_ms": 249964,
+      "last_success_ms": 1788798505883,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 19,
+      "last_success_number": 19,
+      "last_failure_number": null,
+      "views": [
+        "Security"
+      ]
+    },
+    {
+      "id": "job-a1759692aeb2429bb6f80dbfcc45616f",
+      "name": "Proxmox Entra SSO Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788908710050,
+      "last_duration_ms": 69466,
+      "last_success_ms": 1788908710050,
+      "last_failure_ms": 1787679768851,
+      "health_score": 100,
+      "last_completed_number": 18,
+      "last_success_number": 18,
+      "last_failure_number": 1,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-a52d0fa2cb1e4749bef2e725c213ee3a",
+      "name": "Dispatch pull request checks",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788924012836,
+      "last_duration_ms": 12264,
+      "last_success_ms": 1788924012836,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 5469,
+      "last_success_number": 5469,
+      "last_failure_number": null,
+      "views": [
+        "CI"
+      ]
+    },
+    {
+      "id": "job-aacc6146962740beb7d8742bb23a3db7",
+      "name": "Upgrade Prometheus",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1787924924844,
+      "last_duration_ms": 298073,
+      "last_success_ms": 1787924924844,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 9,
+      "last_success_number": 9,
+      "last_failure_number": null,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-ad68baf64fdf48378f4d58ab184e51c4",
+      "name": "GPO Tools Prerequisite",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788288109681,
+      "last_duration_ms": 89447,
+      "last_success_ms": 1788288109681,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 4,
+      "last_success_number": 4,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-ae27cf11fe934697a7ed2de507b73401",
+      "name": "Jenkins Vault AppRole SecretID Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788875832186,
+      "last_duration_ms": 11610,
+      "last_success_ms": 1788875832186,
+      "last_failure_ms": 1788236138366,
+      "health_score": 100,
+      "last_completed_number": 24,
+      "last_success_number": 24,
+      "last_failure_number": 15,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-af1465f69c8347b8b7ea2e1fbe4b49ca",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788878530886,
+      "last_duration_ms": 10314,
+      "last_success_ms": 1788878530886,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-b0ebe9c7d9f94859932d47a48bb7f1d3",
+      "name": "Publish public repositories",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923496563,
+      "last_duration_ms": 18875,
+      "last_success_ms": 1788923496563,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 208,
+      "last_success_number": 208,
+      "last_failure_number": null,
+      "views": [
+        "Publish"
+      ]
+    },
+    {
+      "id": "job-b6633b6500ca491ca44645032cc1f401",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788768687682,
+      "last_duration_ms": 20080,
+      "last_success_ms": 1788768687682,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-b900d4ab16b44449a116a21f49abec5b",
+      "name": "AWS Access Key Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788906491993,
+      "last_duration_ms": 11421,
+      "last_success_ms": 1788906491993,
+      "last_failure_ms": 1787676372730,
+      "health_score": 100,
+      "last_completed_number": 17,
+      "last_success_number": 17,
+      "last_failure_number": 1,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-be923e5d660540aa844cd46648003ff6",
+      "name": "Restore verification",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788697233644,
+      "last_duration_ms": 213069,
+      "last_success_ms": 1788697233644,
+      "last_failure_ms": 1788210143802,
+      "health_score": 100,
+      "last_completed_number": 42,
+      "last_success_number": 42,
+      "last_failure_number": 37,
+      "views": [
+        "DR"
+      ]
+    },
+    {
+      "id": "job-c6e005f7c2dd41cbb31a3e18880ab172",
+      "name": "Automated recovery",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788793047831,
+      "last_duration_ms": 1827255,
+      "last_success_ms": 1788793047831,
+      "last_failure_ms": 1787085528809,
+      "health_score": 80,
+      "last_completed_number": 50,
+      "last_success_number": 50,
+      "last_failure_number": 46,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-cbb185c208c54d98aaed902e818b725f",
+      "name": "Provision Linux",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788481866252,
+      "last_duration_ms": 325704,
+      "last_success_ms": 1788481866252,
+      "last_failure_ms": 1788481036513,
+      "health_score": 40,
+      "last_completed_number": 23,
+      "last_success_number": 23,
+      "last_failure_number": 22,
+      "views": [
+        "VM"
+      ]
+    },
+    {
+      "id": "job-cbb42b4b4fc142e5981c31424fa56293",
+      "name": "Monitoring maintenance",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1784654914078,
+      "last_duration_ms": 4755,
+      "last_success_ms": 1784654914078,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 16,
+      "last_success_number": 16,
+      "last_failure_number": null,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-cc7da366c2a64916a224d602f44ace4c",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788225913871,
+      "last_duration_ms": 92034,
+      "last_success_ms": 1788225913871,
+      "last_failure_ms": 1788224715068,
+      "health_score": 40,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-d4ad30c8f343473fb06d6eedadd4b2e0",
+      "name": "Cloudflare Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788894014700,
+      "last_duration_ms": 14128,
+      "last_success_ms": 1788894014700,
+      "last_failure_ms": 1788271924581,
+      "health_score": 100,
+      "last_completed_number": 31,
+      "last_success_number": 31,
+      "last_failure_number": 19,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-d594ad3220f543599d86aad56f06e66d",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788870328010,
+      "last_duration_ms": 147434,
+      "last_success_ms": 1788870328010,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-d7bc65ae14984d379f2003efa4276b8b",
+      "name": "Sync Jenkins job definitions",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788815453963,
+      "last_duration_ms": 43448,
+      "last_success_ms": 1788815453963,
+      "last_failure_ms": 1784572123717,
+      "health_score": 100,
+      "last_completed_number": 65,
+      "last_success_number": 65,
+      "last_failure_number": 10,
+      "views": [
+        "Platform"
+      ]
+    },
+    {
+      "id": "job-dcdd14ff9b2f42c89212355041af30e4",
+      "name": "Zabbix API Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788921456458,
+      "last_duration_ms": 11592,
+      "last_success_ms": 1788921456458,
+      "last_failure_ms": 1787441765051,
+      "health_score": 100,
+      "last_completed_number": 23,
+      "last_success_number": 23,
+      "last_failure_number": 1,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-e1a0e536189941acaa5460ab2213af15",
+      "name": "Group Policy Drift",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788873863236,
+      "last_duration_ms": 22658,
+      "last_success_ms": 1788873863236,
+      "last_failure_ms": 1788288652602,
+      "health_score": 100,
+      "last_completed_number": 11,
+      "last_success_number": 11,
+      "last_failure_number": 5,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-e2be9813dd5d4c8a844ad61deb44508b",
+      "name": "LiteLLM Virtual Key Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788908709622,
+      "last_duration_ms": 69045,
+      "last_success_ms": 1788908709622,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 19,
+      "last_success_number": 19,
+      "last_failure_number": null,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-e62595ba13834d6c8aa92707fbccb991",
+      "name": "Provision Windows",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788481506548,
+      "last_duration_ms": 619605,
+      "last_success_ms": 1788481506548,
+      "last_failure_ms": 1788479586247,
+      "health_score": 60,
+      "last_completed_number": 123,
+      "last_success_number": 123,
+      "last_failure_number": 121,
+      "views": [
+        "VM"
+      ]
+    },
+    {
+      "id": "job-e75dbaa06bfd4108b135283cc4b2fbce",
+      "name": "NetBox API Token Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788899296603,
+      "last_duration_ms": 16032,
+      "last_success_ms": 1788899296603,
+      "last_failure_ms": 1787536718543,
+      "health_score": 100,
+      "last_completed_number": 18,
+      "last_success_number": 18,
+      "last_failure_number": 2,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-ec786ef1e4194639a94bc32eab97ef2d",
+      "name": "Build Windows templates",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788899715775,
+      "last_duration_ms": 4275203,
+      "last_success_ms": 1788899715775,
+      "last_failure_ms": 1787008215708,
+      "health_score": 100,
+      "last_completed_number": 26,
+      "last_success_number": 26,
+      "last_failure_number": 16,
+      "views": [
+        "VM"
+      ]
+    },
+    {
+      "id": "job-f6a090b9be144299bb8f551bcc807dcf",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788895752601,
+      "last_duration_ms": 12025,
+      "last_success_ms": 1788895752601,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    },
+    {
+      "id": "job-f8782daeafb545c49e1f8efb18e08271",
+      "name": "Sync work items",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788923489607,
+      "last_duration_ms": 11914,
+      "last_success_ms": 1788923489607,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 3031,
+      "last_success_number": 3031,
+      "last_failure_number": null,
+      "views": [
+        "Ops"
+      ]
+    },
+    {
+      "id": "job-f8cd26538fbe4c749be50d1b890226a8",
+      "name": "Roundcube Entra Credential Rotation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788864492387,
+      "last_duration_ms": 11816,
+      "last_success_ms": 1788864492387,
+      "last_failure_ms": 1787758442254,
+      "health_score": 100,
+      "last_completed_number": 21,
+      "last_success_number": 21,
+      "last_failure_number": 9,
+      "views": [
+        "IAM"
+      ]
+    },
+    {
+      "id": "job-f920829d95704151abdbf7daf7796758",
+      "name": "Monitoring reconciliation",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788887832117,
+      "last_duration_ms": 13402,
+      "last_success_ms": 1788887832117,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": 40,
+      "last_success_number": 40,
+      "last_failure_number": null,
+      "views": [
+        "Monitoring"
+      ]
+    },
+    {
+      "id": "job-fe611e7bc6b54dd1a085a2fbbab57396",
+      "name": "SENSORED for security",
+      "running": 0,
+      "queued": false,
+      "disabled": false,
+      "running_since_ms": null,
+      "last_result": "SUCCESS",
+      "last_finished_ms": 1788750143194,
+      "last_duration_ms": 1309992,
+      "last_success_ms": 1788750143194,
+      "last_failure_ms": null,
+      "health_score": 100,
+      "last_completed_number": null,
+      "last_success_number": null,
+      "last_failure_number": null,
+      "views": [
+        "Private"
+      ]
+    }
+  ]
+}

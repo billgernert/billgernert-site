@@ -1,0 +1,13 @@
+.jenkins-project .page{width:min(1240px,calc(100% - 40px))}
+.jenkins-project main.page-narrow{max-width:none}
+.jenkins-project .skill-head,.jenkins-project .skill-body,.jenkins-project .anchors{max-width:1080px;margin-left:auto;margin-right:auto}
+.jenkins-console-section{margin:40px 0 58px}
+.console-intro{max-width:880px;margin-bottom:20px}
+.console-intro h2{font-size:25px;margin-bottom:8px}
+.console-intro p{font-size:16px;color:var(--muted);line-height:1.75}
+.console-shortcuts{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.console-shortcuts a{padding:7px 13px;border:1px solid var(--border-quiet);border-radius:5px;font-size:14px;color:var(--fg);background:var(--bg-raised)}
+.console-shortcuts a:hover{border-color:var(--cyan);color:var(--cyan);text-decoration:none}
+#jenkins-public-console{display:block;width:100%;height:clamp(420px,85vh,880px);border:1px solid #3a4251;border-radius:12px;background:#101116}
+.console-caption{font-size:13px!important;color:var(--muted);line-height:1.7;margin:13px 0 0;max-width:940px}
+@media(max-width:700px){.jenkins-project .page{width:calc(100% - 24px)}.console-intro h2{font-size:23px}}

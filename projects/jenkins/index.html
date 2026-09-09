@@ -165,6 +165,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
   <link rel="stylesheet" href="/assets/engineering-pages.css">
+  <link rel="stylesheet" href="/assets/jenkins-embed.css">
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/jenkins/">
   <!-- END generated: canonical -->
@@ -198,6 +199,12 @@
       <p class="descriptor lede">I use Jenkins to turn infrastructure requests and recurring maintenance into repeatable work. A job records the inputs, obtains approval where required, runs on the right worker, and keeps the result for the next person investigating it.</p>
       <p class="source-note">This story follows the pipelines and controller configuration I use in AutomationLab. Recovery measurements are dated results from September 2026.</p>
     </header>
+    <section class="jenkins-console-section" id="public-console" aria-labelledby="console-title">
+      <div class="console-intro"><h2 id="console-title">Explore the Jenkins jobs</h2><p>Select a view, then click a job to read its description. Build controls explain the public restriction. The IAM view includes job descriptions and schedules. Demos use the Jenkins parameter forms and pipeline stages with fictional data.</p></div>
+      <div class="console-shortcuts"><a href="/projects/jenkins/activity/#/view/All" target="jenkins-public-console">All jobs</a><a href="/projects/jenkins/activity/#/view/VM" target="jenkins-public-console">VM view</a><a href="/projects/jenkins/activity/#/view/Platform" target="jenkins-public-console">Jobs as code</a><a href="/projects/jenkins/activity/#/view/Demos" target="jenkins-public-console">Demos</a></div>
+      <iframe id="jenkins-public-console" name="jenkins-public-console" src="/projects/jenkins/activity/" title="Interactive public Jenkins console with views, job descriptions, and VM and user demos" referrerpolicy="no-referrer" loading="eager"></iframe>
+      <p class="console-caption">This public console displays a dated snapshot of job metadata; it does not update automatically. Sensitive names, descriptions, and view memberships are withheld. It has no connection to Jenkins build controls.</p>
+    </section>
     <nav class="anchors" aria-label="On this page">
       <div class="section-nav-head"><h2>Browse this page</h2><p>Jump directly to a section</p></div>
       <div class="section-nav-grid">
@@ -236,6 +243,10 @@
       </section>
       <section class="block" id="features">
         <h2>The Jenkins features I use, and why</h2>
+        <h3>Views make the inventory navigable</h3>
+        <p>I group jobs into Jenkins views such as VM, Platform, Monitoring, and CI. The tabs in the public console use the same view names for the jobs whose membership can be shown. Open the VM view to follow provisioning, or Platform to find the job that recreates the job definitions.</p>
+        <h3>Descriptions explain the operation before it runs</h3>
+        <p>A job description explains its purpose, stages, and operating limits beside its build history. I manage the descriptions in Git with the job definitions. The public console uses reviewed versions that leave out internal addresses, credential references, and operational links.</p>
         <h3>Jobs and controller settings in Git</h3>
         <p>Jenkins Configuration as Code defines controller settings. Job DSL creates jobs, descriptions, parameters, and schedules. Jenkinsfiles define execution. Together they let me review an operational change before it runs and recreate job definitions after replacing a controller.</p>
         <h3>Shared libraries for recurring behavior</h3>
