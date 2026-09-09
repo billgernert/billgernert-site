@@ -654,7 +654,8 @@ section.block li::marker { color: var(--cyan); }
   display: none;
 }
 
-figure.shot img {
+figure.shot img,
+figure.engineering-diagram img {
   display: block;
   width: 100%;
   height: auto;
@@ -1172,8 +1173,9 @@ footer a:hover { color: var(--cyan); text-decoration: none; }
 .capability-detail .skill-body > * { grid-column: 1 / -1; }
 /* Keep the long Jenkins recovery account in reading order without half-width gaps. */
 .jenkins-writeup.capability-detail .skill-body { grid-template-columns: 1fr; }
+/* Keep capability sections aligned with their full-width diagrams. */
 .capability-detail .skill-body > .block {
-  grid-column: auto;
+  grid-column: 1 / -1;
   min-width: 0;
   margin: 0;
   padding: 1.45rem;
