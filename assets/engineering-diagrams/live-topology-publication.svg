@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 870" role="img" aria-label="How the topology reaches your browser">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10z" fill="#00d4ff"/></marker></defs>
+<rect x="1" y="1" width="898" height="868" rx="12" fill="#090e18" stroke="#263d50"/>
+<text x="40" y="43" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#fff">How the topology reaches your browser</text>
+<rect x="40" y="90" width="820" height="130" rx="10" fill="#101d2b" stroke="#00d4ff" stroke-width="2"/>
+<text x="58" y="122" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#fff">Private topology container</text>
+<text x="58" y="149" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#c9d3e5">Python builds the graph and reconstructs the allowed public fields.</text>
+<path d="M450.0 222V250" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="255" width="820" height="130" rx="10" fill="#101d2b" stroke="#00d4ff" stroke-width="2"/>
+<text x="58" y="287" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#fff">Publisher container</text>
+<text x="58" y="314" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#c9d3e5">Validates the snapshot and sends it outbound with a publication credential.</text>
+<path d="M450.0 387V415" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="420" width="820" height="130" rx="10" fill="#101d2b" stroke="#00d4ff" stroke-width="2"/>
+<text x="58" y="452" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#fff">Cloudflare Worker + storage</text>
+<text x="58" y="479" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#c9d3e5">A Durable Object checks and stores the accepted public snapshot.</text>
+<path d="M450.0 552V580" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="585" width="820" height="130" rx="10" fill="#101d2b" stroke="#00d4ff" stroke-width="2"/>
+<text x="58" y="617" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#fff">Website and browser</text>
+<text x="58" y="644" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#c9d3e5">The renderer reads the public feed and labels a stored fallback when</text>
+<text x="58" y="672" font-family="Arial, sans-serif" font-size="21" font-weight="400" fill="#c9d3e5">unavailable.</text>
+<rect x="40" y="736" width="15" height="15" fill="#00d4ff"/>
+<text x="66" y="749" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#c9d3e5">Cyan. Data processing and delivery.</text>
+<rect x="40" y="766" width="19" height="14" rx="3" fill="none" stroke="#00d4ff"/>
+<text x="66" y="779" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#c9d3e5">Rounded box. Service or process.</text>
+<path d="M40 803h19" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="66" y="809" font-family="Arial, sans-serif" font-size="18" font-weight="400" fill="#c9d3e5">Arrow. Direction of data.</text>
+</svg>

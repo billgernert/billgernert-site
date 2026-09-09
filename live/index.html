@@ -140,12 +140,12 @@
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Live - Bill Gernert</title>
-  <meta name="description" content="The public live view of AutomationLab: platform topology, NOC measurements, and the experimental AI fleet.">
+  <meta name="description" content="Explore live topology, NOC measurements, the experimental AI fleet, and a Jenkins demo. See how the public data paths work and what their security checks cover.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
   <meta property="og:title" content="Live - Bill Gernert">
-  <meta property="og:description" content="The public live view of AutomationLab: platform topology, NOC measurements, and the experimental AI fleet.">
+  <meta property="og:description" content="Explore live topology, NOC measurements, the experimental AI fleet, and a Jenkins demo. See how the public data paths work and what their security checks cover.">
   <meta property="og:url" content="https://billgernert.com/live/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
@@ -153,7 +153,7 @@
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Live - Bill Gernert">
-  <meta name="twitter:description" content="The public live view of AutomationLab: platform topology, NOC measurements, and the experimental AI fleet.">
+  <meta name="twitter:description" content="Explore live topology, NOC measurements, the experimental AI fleet, and a Jenkins demo. See how the public data paths work and what their security checks cover.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -347,42 +347,31 @@
     .view-card:hover .arrow,
     .view-card:focus-visible .arrow { transform: translateX(4px); }
 
-    .boundary-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.75fr);
-      gap: 1rem;
-      margin: 0 0 3.5rem;
-    }
-
-    .boundary,
-    .postmortems {
-      border: 1px solid var(--live-line);
-      border-radius: 10px;
-      background: rgba(7, 17, 31, 0.7);
-      padding: 1.45rem;
-    }
-
-    .boundary h2,
-    .postmortems h2 { margin-top: 0; }
-    .boundary p,
-    .postmortems p { color: var(--live-copy); }
-
-    .boundary ul {
-      display: grid;
-      gap: 0.75rem;
-      margin: 1.2rem 0 0;
-      padding-left: 1.25rem;
-    }
-
-    .boundary li::marker { color: var(--live-cyan); }
-    .postmortems { display: flex; flex-direction: column; }
-    .postmortems .links { margin-top: auto; padding-top: 1rem; }
     .follow-block { margin-bottom: 1rem; }
+
+
+    .view-actions { display: grid; gap: 0.85rem; margin-top: auto; padding-top: 1.35rem; }
+    .view-actions .view-cta { margin: 0; padding: 0; line-height: 1.5; }
+    .view-actions > a:last-child { font-size: 0.9rem; line-height: 1.4; }
+    .view-actions a:focus-visible { outline: 2px solid var(--live-cyan); outline-offset: 5px; }
+    .view-card .demo-only { color: #ff5d67; font-weight: 700; }
+    .live-story { margin: 0 0 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--live-line); scroll-margin-top: 2rem; }
+    .live-story h2 { margin-top: 0; }
+    .live-story h3 { margin-top: 1.8rem; }
+    .live-story p { color: var(--live-copy); line-height: 1.7; }
+    .live-story figure { margin: 1.7rem 0; }
+    .live-story figure img { display: block; width: 100%; height: auto; border: 1px solid var(--live-line); border-radius: 10px; }
+    .live-story figcaption { margin-top: 0.6rem; color: #a9b8d0; font-size: 0.9rem; }
+    .live-story .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+    .live-story table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+    .live-story th, .live-story td { text-align: left; vertical-align: top; padding: 0.9rem; border-bottom: 1px solid var(--live-line); }
+    .live-story th { color: #fff; }
+    .live-story td { color: var(--live-copy); line-height: 1.6; }
+    .scope-note { padding: 1rem 1.2rem; border-left: 3px solid #ffd166; background: rgba(255, 209, 102, 0.04); }
 
     @media (max-width: 860px) {
       .view-grid { grid-template-columns: 1fr; }
       .view-card { min-height: 245px; }
-      .boundary-grid { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -428,7 +417,7 @@
     <header class="skill-head live-intro">
       <span class="badge">Live</span>
       <h1>Running evidence</h1>
-      <p class="descriptor">Start with current health in the Platform map, open the NOC for measurements, or follow the experimental AI fleet.</p>
+      <p class="descriptor">Explore the running lab through topology, monitoring, and agent activity. The Jenkins demo lets you walk through automation jobs and approval gates. Each view has a different path from private operations to your browser.</p>
     </header>
 
     <!-- BEGIN generated: group-hub (generate-site-pages.py) -->
@@ -442,53 +431,109 @@
     <section aria-labelledby="choose-view">
       <header class="view-heading">
         <h2 id="choose-view">Choose the view by the question</h2>
-        <p>Follow platform health, inspect measurements, or see whether the agent fleet is working, waiting, or missing a signal.</p>
+        <p>Drill into a component to understand its dependencies, open a NOC tile for the measurements behind its state, or follow work between builders and reviewers. The explanations below show how I publish each view.</p>
       </header>
 
       <div class="view-grid">
-        <a class="view-card" href="/map/">
+        <article class="view-card">
           <span class="view-type">Interactive topology</span>
           <h2>Platform map</h2>
           <p class="view-question">Where does this current state come from?</p>
-          <p>Follow health from the whole platform through operating areas, systems, workloads, and individual components. Public names and fields pass through a fail-closed projection before they leave the lab.</p>
-          <span class="view-cta">Open the Platform map <span class="arrow" aria-hidden="true">&#8594;</span></span>
-        </a>
-
-        <a class="view-card" href="/noc/">
+          <p>Follow health from the whole platform through systems, workloads, and individual components. The hierarchy gives you another way to understand how the environment fits together.</p>
+          <div class="view-actions"><a class="view-cta" href="/map/">Open the Platform map <span aria-hidden="true">&#8594;</span></a><a href="#platform-publication">How it runs and stays public</a></div>
+        </article>
+        <article class="view-card">
           <span class="view-type">Grafana dashboards</span>
           <h2>NOC</h2>
           <p class="view-question">What is being measured right now?</p>
-          <p>Start at the overview board, then move into curated drill-downs. Missing data stays visible as missing instead of being presented as healthy.</p>
-          <span class="view-cta">Open the NOC <span class="arrow" aria-hidden="true">&#8594;</span></span>
-        </a>
-        <a class="view-card" id="fleet" href="https://fleet.billgernert.com/">
+          <p>Open an operational domain, then inspect the time series and detail panels behind its state. The NOC connects the overview to evidence you can investigate.</p>
+          <div class="view-actions"><a class="view-cta" href="/noc/">Open the NOC <span aria-hidden="true">&#8594;</span></a><a href="#noc-publication">Data sources, containers, and security</a></div>
+        </article>
+        <article class="view-card" id="fleet">
           <span class="view-type">Experimental live view</span>
           <h2>AI fleet map</h2>
           <p class="view-question">What are the builders and reviewers doing?</p>
-          <p>The fleet is experimental and often stalls. I run it within a limited AI usage budget and shut it off when higher-priority projects need that budget. The public map shows activity, review handoffs, and available usage. Idle or unavailable periods are expected.</p>
-          <span class="view-cta">Open the fleet map <span class="arrow" aria-hidden="true">&#8594;</span></span>
-        </a>
+          <p>The fleet is experimental and often stalls. I run it within a limited AI usage budget and shut it off when higher-priority projects need that budget. The map shows activity, review handoffs, and available usage.</p>
+          <div class="view-actions"><a class="view-cta" href="https://fleet.billgernert.com/">Open the fleet map <span aria-hidden="true">&#8594;</span></a><a href="#fleet-publication">The isolated public gateway</a></div>
+        </article>
+        <article class="view-card demo-card">
+          <span class="view-type demo-only">DEMO ONLY</span>
+          <h2>Jenkins</h2>
+          <p class="view-question">How does an automation job run?</p>
+          <p>Browse jobs and descriptions in the Jenkins-style console. Walk through simulated provisioning, Ansible output, approval gates, and email notifications. This is a demo, not a live Jenkins controller.</p>
+          <div class="view-actions"><a class="view-cta" href="/projects/jenkins/activity/">Open demo <span aria-hidden="true">&#8594;</span></a><a href="/projects/jenkins/">Why Jenkins coordinates the lab</a></div>
+        </article>
       </div>
     </section>
 
-    <section class="boundary-grid">
-      <div class="boundary">
-        <h2>What crosses the public boundary</h2>
-        <p>The public views preserve enough context to explain the system without publishing its private wiring.</p>
-        <ul>
-          <li>The Platform map keeps reviewed functional names and drill-down relationships. It removes internal identifiers, addresses, domain suffixes, raw alerts, exact capacity, and administration links.</li>
-          <li>The NOC publishes curated measurements and makes missing data explicit.</li>
-          <li>The fleet map shows role aliases, activity states, and subscription capacity. Private tasks, repository links, and operator controls stay inside the lab.</li>
-          <li>A designed but undeployed subsystem stays labeled as designed. It does not become running evidence.</li>
-        </ul>
-      </div>
+    <section class="live-story" id="platform-publication" aria-labelledby="platform-story-title">
+      <span class="view-type">Platform map</span>
+      <h2 id="platform-story-title">A graph you can follow into the environment</h2>
+      <p>I built the map because a flat list of services does not explain what depends on what. Starting with the whole platform, you can open an operating area, then a system, workload, or component. The same renderer and hierarchy support the private operating map. The public version receives a separately constructed data set.</p>
+      <p>The drill-down is useful when a parent is degraded. It lets you follow the affected branch and see the component behind that summary. Functional names and relationships make that investigation understandable, so I retain reviewed names while removing addresses, administration links, and private identifiers.</p>
+      <figure><picture><source media="(max-width: 540px)" srcset="/assets/engineering-diagrams/live-topology-publication-mobile.svg"><img src="/assets/engineering-diagrams/live-topology-publication.svg" alt="A private Python topology service builds a public projection. A separate publisher validates it and sends it to a Cloudflare Worker and Durable Object, which serve the browser." width="900" height="870" loading="lazy"></picture><figcaption>The lab publishes an outbound snapshot. A reader's map request is answered at Cloudflare.</figcaption></figure>
+      <h3>Containers and the live update path</h3>
+      <p>A custom Python container collects the private graph from monitoring sources. A second container runs the publisher from the same custom image, built on <code>python:3.14-slim</code>. It reads the public projection, checks the complete document, and sends a snapshot every 15 seconds. The publisher carries a dedicated publication credential; the browser does not receive it.</p>
+      <p>A Cloudflare Worker handles the public feed, with a SQLite-backed Durable Object storing the accepted snapshot. These are Cloudflare services, separate from the Kubernetes containers. The website serves the HTML, CSS, and JavaScript renderer. Its requests do not open an inbound route to the private topology service.</p>
+      <h3>What the boundary enforces</h3>
+      <p>The projection rebuilds nodes from allowed fields and gives them opaque IDs. The Python publisher and Cloudflare contract check field names, types, text lengths, relationships, states, and timestamps. Unknown fields, broken references, and disallowed identifiers cause rejection. An authenticated publication request still has to pass those checks.</p>
+      <p>The storage layer refuses older snapshots and conflicting replacements with the same generation time. Identical retries are accepted. The publisher rejects snapshots more than two minutes old, and the browser stops labeling expired data live. If it has a last successful graph stored locally, it labels that fallback so an outage does not silently turn old data into current health.</p>
+      <p>The committed Kubernetes configuration runs both Python processes without root, drops Linux capabilities, disables privilege escalation and automatic API-token mounting, and uses read-only root filesystems. The publisher has a small writable temporary volume for its readiness marker.</p>
+      <p class="scope-note">The public graph deliberately exposes reviewed component names and operational relationships. That is a disclosure choice, not anonymization of the whole environment. The private collector still depends on its own network and access boundary; the public projection does not secure that private service.</p>
+      <div class="links"><a href="/map/">Explore the map</a><a href="/projects/platform-map/">Graph design and health rollup</a><a href="#security-testing">Security tests and limitations</a></div>
+    </section>
 
-      <aside class="postmortems">
-        <span class="view-type">Failure record</span>
-        <h2>Postmortems</h2>
-        <p>The live surfaces show current evidence. The postmortems explain the failures that changed the system and the follow-on work they produced.</p>
-        <div class="links"><a href="/postmortems-index/">Read the postmortems &#8594;</a></div>
-      </aside>
+    <section class="live-story" id="noc-publication" aria-labelledby="noc-story-title">
+      <span class="view-type">NOC</span>
+      <h2 id="noc-story-title">Move from a status tile to the measurements behind it</h2>
+      <p>The NOC gives me a place to start an investigation. A domain tile summarizes a set of measurements; opening it takes you to the dashboard that explains that state. The topology map helps you follow relationships, and the NOC lets you inspect measurements over time. Both drill-downs help explain the environment without requiring someone to know its inventory first.</p>
+      <figure><picture><source media="(max-width: 540px)" srcset="/assets/engineering-diagrams/noc-public-data-path-mobile.svg"><img src="/assets/engineering-diagrams/noc-public-data-path.svg" alt="Private monitoring sources feed approved recording rules and database views. Grafana serves fixed shared dashboards through a Cloudflare response filter to the public NOC." width="900" height="870" loading="lazy"></picture><figcaption>Public queries and response filtering restrict what crosses the boundary. Grafana and Prometheus also support private monitoring.</figcaption></figure>
+      <h3>What runs behind the panels</h3>
+      <p>Prometheus and Grafana run as containers in Kubernetes. Exporters collect operational measurements, and Prometheus evaluates recording rules that produce the approved public series. Grafana's sidecar containers load the provisioned dashboard and data-source configuration. Backup panels also use fixed queries against reviewed PostgreSQL views.</p>
+      <p>The public dashboards use Grafana's externally shared dashboard routes on the existing monitoring service. Their saved queries select the public recording rules or approved database views. This design does not require a second public Prometheus server. The restriction depends on the saved dashboard queries, data projections, and the public request boundary.</p>
+      <h3>Protecting the query and response paths</h3>
+      <p>The public hostname passes through Cloudflare to the existing ingress and Grafana. Access policies distinguish the public dashboard and asset paths from the remaining application. A Worker checks the allowed routes and methods, filters dashboard JSON, and removes private bootstrap metadata such as data-source connection settings and internal origins.</p>
+      <p>The Worker validates a complete document before releasing it, with a bounded response size. Unexpected content, private labels, or an invalid response produce an unavailable page. Annotation polls terminate at the Worker with an empty response. Readers can follow the curated dashboard links; the public surface does not offer Explore or arbitrary query editing.</p>
+      <p>Content Security Policy restricts dashboard embedding to this portfolio. The edge also has a rate limit for dashboard traffic, with static assets excluded after normal page loads hit the earlier limit. These controls complement the query restrictions. An embedding policy alone would not make a private query safe to publish.</p>
+      <h3>When the observer fails</h3>
+      <p>Missing measurements are represented as no signal. This matters because an empty query can otherwise become a zero that a threshold colors green. The dashboard generator checks no-data behavior and drill-down destinations. A nightly reconciliation job compares the served dashboard with the repository definition and emits its own monitored heartbeat.</p>
+      <p>A previous duplicate-key configuration error stopped the shared probe exporter and made multiple services appear down together. Strict YAML parsing was added, and the monitoring presentation distinguishes missing observer coverage from a measured application failure.</p>
+      <div class="links"><a href="/noc/">Open the NOC walkthrough</a><a href="/dead-man-monitoring/">Monitoring the observer</a><a href="#security-testing">Edge tests and remediation limits</a></div>
+    </section>
+
+    <section class="live-story" id="fleet-publication" aria-labelledby="fleet-story-title">
+      <span class="view-type">Experimental AI fleet</span>
+      <h2 id="fleet-story-title">Show work moving through the fleet</h2>
+      <p>A list of active agents leaves out the handoff. The map connects the Python controller to builders and their assigned reviewers, so I can see whether work is running, waiting for review, or missing a current signal. Selecting a node exposes its role and state. The public version keeps generic aliases and removes the private task description and repository link.</p>
+      <figure><picture><source media="(max-width: 540px)" srcset="/assets/engineering-diagrams/live-fleet-publication-mobile.svg"><img src="/assets/engineering-diagrams/live-fleet-publication.svg" alt="Private runtime and monitoring sources feed the internal fleet collector. A separate Python gateway rebuilds its public projection and serves it through ingress and Cloudflare to the browser." width="900" height="870" loading="lazy"></picture><figcaption>The public gateway serves the map and its projected API. The authenticated operator service runs separately.</figcaption></figure>
+      <h3>A separate Python gateway container</h3>
+      <p>The internal fleet collector combines runtime, work, monitoring, and usage signals. A dedicated public deployment uses the custom fleet image built on <code>python:3.14-slim</code>, with a different entry point that runs only the public gateway. It reads one fixed internal projection endpoint and rebuilds the response from permitted fields.</p>
+      <p>Cloudflare Tunnel routes the public hostname through the Kubernetes ingress to that gateway. The browser loads the map assets and refreshes the projected API. It receives role aliases, provider labels, activity, review handoffs, and supported subscription-usage windows. The public container has no runtime credentials for the work tracker, monitoring system, or operator service, and mounts no configuration volume or Kubernetes API token.</p>
+      <h3>Small request surface and explicit failure</h3>
+      <p>The gateway serves the public page, its JavaScript and stylesheet, health, and the projected API. Private API and operator paths return 404; mutating methods return 405. It accepts no caller-supplied upstream URL. Unknown source fields are discarded, so a newly added private field does not automatically become public.</p>
+      <p>Invalid snapshots or snapshots older than two minutes return a generic 503 without the source error. Old usage samples are omitted. After a failed refresh, the browser hides the previous map values and retries. That differs from the topology map's labeled historical fallback.</p>
+      <p>The deployment uses a read-only root filesystem, a non-root user, default seccomp filtering, dropped Linux capabilities, resource limits, and no privilege escalation. The image includes shared fleet code, but the gateway process has no mounted operator credentials. Those are specific process and credential controls, not a claim of complete network isolation.</p>
+      <p class="scope-note">I run the fleet within a limited AI usage budget and pause it when other work needs that budget. Idle or unavailable periods are expected. The map reports the available signals; it cannot establish why the fleet was stopped.</p>
+      <div class="links"><a href="https://fleet.billgernert.com/">Open the fleet map</a><a href="/fleet/">How the fleet assigns and reviews work</a></div>
+    </section>
+
+    <section class="live-story" id="security-testing" aria-labelledby="security-story-title">
+      <h2 id="security-story-title">Security testing, remediations, and remaining scope</h2>
+      <p>I test the publication boundary with deliberately invalid inputs as well as ordinary page loads. A page returning HTTP 200 is not enough: a test has to check the response body, the routes it can reach, and what happens when its source fails.</p>
+      <div class="table-wrap"><table><caption>Checks in the current source and the behavior they protect</caption><thead><tr><th>Surface</th><th>Failure exercised</th><th>Required result</th></tr></thead><tbody>
+        <tr><td>Topology feed</td><td>Unknown fields, duplicate IDs, missing relationships, future timestamps, oversized bodies, unauthorized publication, and conflicting snapshots.</td><td>Reject the input and preserve the accepted feed. A later valid snapshot can recover storage from invalid data.</td></tr>
+        <tr><td>NOC edge</td><td>Private bootstrap metadata, raw labels, unrelated API paths, invalid documents, and unexpected annotation requests.</td><td>Strip approved metadata or reject the complete response. Keep annotations at the edge and unrelated routes away from Grafana.</td></tr>
+        <tr><td>Fleet gateway</td><td>Private text planted in known and unknown fields, stale samples, path traversal, operator routes, write methods, and upstream exceptions.</td><td>Rebuild only allowed fields, refuse private routes and writes, and return generic failures without private error details.</td></tr>
+      </tbody></table></div>
+      <h3>Fixes that changed the public boundary</h3>
+      <p>The NOC response filter removes private bootstrap configuration as well as dashboard fields. Filtering only the visible panels would leave browser initialization data unchecked. The Worker also handles optional annotation requests locally, preserving the dashboard without opening a broader API route. Public SQL panels receive a synthetic browser database alias so they render without exposing connection details.</p>
+      <p>Topology publication now validates both in Python and at storage, including ordering and same-timestamp conflicts. Its tests cover recovery when an invalid future snapshot is already stored. The fleet adds a second field projection in the public gateway, which reconstructs the response independently of the internal collector.</p>
+      <h3>Penetration testing scope</h3>
+      <p>The evidence here consists of source-level security tests, browser checks, and bounded external scanning. I do not have a completed independent penetration-test report for these three live views. The checks here establish their specific refusal behavior; an independent assessment would need its own scope, findings, and retest record.</p>
+      <p>The weekly website assessment is report-only. It checks headers, redirects, CORS, exposed files, and public content, and runs signed Nuclei templates within a fixed target list and request limit. That list includes the site, NOC hostname, and topology feed. The newer fleet hostname is not in that configured external scan scope. Its gateway regression tests and browser verification are separate evidence.</p>
+      <p>Container scanning has limits too. The fleet image is included in the Trivy pull-request and scheduled fresh-build matrices, with findings reported at warning level. That is not a blocking vulnerability gate or proof that a particular deployed digest is free of findings.</p>
+      <p>The NOC's documented additional WAF denial rule still requires live application evidence before I count it as enforced. Access can answer a request before the Worker does, so a login redirect cannot prove that a Worker returned the intended denial. I keep that distinction visible rather than treating a committed rule as a deployed control.</p>
+      <div class="links"><a href="/security/">Security engineering</a><a href="/supply-chain-security/">Image scanning and supply-chain limits</a><a href="/postmortems-index/">Failures and remediations</a><a href="#choose-view">Back to the views</a></div>
     </section>
 
     <section class="block follow-block">
