@@ -205,9 +205,9 @@
     <header class="skill-head">
       <span class="badge">Applied AI in AutomationLab</span>
       <h1>How I run the lab with AI and automation</h1>
-      <p class="descriptor lede">I run AutomationLab by myself. Ansible handles operating-system configuration, and advanced automation carries the recurring work through Jenkins and the other delivery paths. Keeping a lab this size moving also requires AI. I use it to build and review changes, work through unfamiliar failures, and make the overnight evidence manageable enough to act on.</p>
+      <p class="descriptor lede">I run AutomationLab by myself. Ansible handles operating-system configuration, Kubernetes runs the container workloads, and advanced automation carries the recurring work through Jenkins and the other delivery paths. Keeping a lab this size moving also requires AI. I use it to build and review changes, work through unfamiliar failures, and make the overnight evidence manageable enough to act on.</p>
       <p class="descriptor lede">That still leaves me responsible for what runs. I choose the work and the operating boundaries, then use an experimental fleet of Claude and Codex agents to work through scoped repository changes. We use cross-vendor reviews in both directions: Codex reviews Claude's changes, and Claude reviews Codex's. Tests and a separate merge process check the result before it can reach the main branch.</p>
-      <p class="source-note">The fleet map below is a public architecture view of an experimental system. It shows responsibilities and handoffs, without live worker activity or private task details.</p>
+      <p class="source-note">The fleet is experimental and often stalls. I run it within a limited AI usage budget and shut it off when higher-priority projects need that budget. The map below explains the architecture; the <a href="/live/#fleet">Live section links to the public activity map</a>.</p>
     </header>
 <nav class="crumbs" aria-label="On this page">
   <div class="section-nav-head"><h2>Browse this page</h2><p>Jump directly to a section</p></div>
