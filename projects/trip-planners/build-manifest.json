@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "source": "8049052c14f987faf4e3946081eb5f7fbe093e0f03678e11dbed6bec1a7b6244",
+  "assets": {
+    "london/assets/index-2IUkn4LH.css": "6d2ace7bd8a217dd71883e7c3f87665d1e6e38b6f113c11da0115485a96720af",
+    "london/assets/index-BG-IsG2A.js": "82a85269ab8a210b15cb097ff387c6e0183dd31ccb128a91f0f49ad2403a8e35",
+    "london/assets/leaflet-src-CAG3zgd7.js": "45e1235f7ef429890dc95a05c15a3bfc92bccdc49799e253a7e848e1e58a093a",
+    "london/assets/static-main-B_bTXZfh.js": "b54fc002a3514faa6662bb5f21a4c95b9bde07c9f7c3a32f53846dbf5a372d08",
+    "london/assets/static-main-CLa4VxJJ.css": "cbd05ae797701b0c2c60d0f7fb6418697ee57802c56002ce316ff68fbdf59bf9",
+    "paris/assets/index-2IUkn4LH.css": "6d2ace7bd8a217dd71883e7c3f87665d1e6e38b6f113c11da0115485a96720af",
+    "paris/assets/index-EyB-09NJ.js": "956949d286ac3ffe09759b730a5444753c2a5ab144269e190b23f50d9317b315",
+    "paris/assets/leaflet-src-C7sIONn9.js": "5547057c86cca11d0853774a5bc28e4abff22067e76f12e46cf50cfa410d983e",
+    "paris/assets/static-main-CIqeRWGZ.js": "0362ecaa3e3c26b6cf7f058e4334368016df70f881728bcc7ef48e06707b7414",
+    "paris/assets/static-main-CLa4VxJJ.css": "cbd05ae797701b0c2c60d0f7fb6418697ee57802c56002ce316ff68fbdf59bf9"
+  }
+}
