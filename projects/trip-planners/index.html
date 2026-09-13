@@ -139,12 +139,12 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>London and Paris trip planners - Bill Gernert</title>
+  <title>City trip planners - Bill Gernert</title>
   <meta name="description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare. Make an itinerary in the public previews.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
-  <meta property="og:title" content="London and Paris trip planners - Bill Gernert">
+  <meta property="og:title" content="City trip planners - Bill Gernert">
   <meta property="og:description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare. Make an itinerary in the public previews.">
   <meta property="og:url" content="https://billgernert.com/projects/trip-planners/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
@@ -152,7 +152,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="London and Paris trip planners - Bill Gernert">
+  <meta name="twitter:title" content="City trip planners - Bill Gernert">
   <meta name="twitter:description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare. Make an itinerary in the public previews.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
@@ -197,12 +197,13 @@
     </header>
     <main id="main" class="page-narrow trip-story">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">billgernert.com</a><span class="sep">/</span><a href="/projects/">Projects</a><span class="sep">/</span><span class="here">Trip planners</span></nav>
-      <header class="skill-head"><span class="badge">Application delivery project</span><h1>Building and hosting the London and Paris planners</h1><p class="lead">I wanted a trip plan I could change one decision at a time, with meals, places to visit, and a map of each day. Building the planners gave me applications to run on AutomationLab, move to Cloudflare, and use to develop the platform's shared deployment path.</p><div class="links"><a href="#first-build">How I made them</a><a href="#paved-road">Where the paved road fits</a><a href="#previews">Use a public planner</a></div></header>
-      <section class="block" id="previews"><h2>Make your own itinerary</h2><p>These public previews use the London and Paris interfaces with their venue guides and daily maps. Choose your own dates and a hotel from Costco Travel's city listings. The original bookings, travel dates, and shared itineraries are excluded.</p>
-      <div class="preview-grid">
-        <a class="preview-card" href="/projects/trip-planners/london/"><h3>Plan London</h3><p>Choose neighborhoods, compare places and meals, and map a day around your hotel.</p><span>Open the London public preview &#8594;</span></a>
-        <a class="preview-card" href="/projects/trip-planners/paris/"><h3>Plan Paris</h3><p>Build days around museums, neighborhood walks, and meals between visits.</p><span>Open the Paris public preview &#8594;</span></a>
-      </div>
+      <header class="skill-head"><span class="badge">Application delivery project</span><h1>Building and hosting city planners</h1><p class="lead">I wanted a trip plan I could change one decision at a time, with meals, places to visit, and a map of each day. Building the planners gave me applications to run on AutomationLab, move to Cloudflare, and use to develop the platform's shared deployment path.</p><div class="links"><a href="#first-build">How I made them</a><a href="#paved-road">Where the paved road fits</a><a href="#previews">Use a public planner</a></div></header>
+      <section class="block" id="previews"><h2>Make your own itinerary</h2><p>These public planners share one interface with separate city packs for places, hotels, neighborhoods, and travel information. Choose your own dates and a hotel. The original bookings, travel dates, and shared itineraries are excluded.</p>
+      <div class="preview-grid"><!-- city-packs:start -->
+<a class="preview-card" href="/projects/trip-planners/london/"><h3>Plan London</h3><p>Choose neighborhoods, compare places and meals, and map each day around your hotel.</p><span>Open public planner &#8594;</span></a>
+<a class="preview-card" href="/projects/trip-planners/nashville/"><h3>Plan Nashville</h3><p>Choose neighborhoods, compare places and meals, and map each day around your hotel.</p><span>Open public planner &#8594;</span></a>
+<a class="preview-card" href="/projects/trip-planners/paris/"><h3>Plan Paris</h3><p>Choose neighborhoods, compare places and meals, and map each day around your hotel.</p><span>Open public planner &#8594;</span></a>
+<!-- city-packs:end --></div>
       <h3>How to use a planner</h3><ol class="planner-steps"><li>Set your first and last day, then choose a hotel. The map starts there.</li><li>Choose neighborhoods for a day, then select meals and activities. A selection collapses the other choices. Use Change to compare them again, or Use suggested day to start with a set of stops.</li><li>Open a full day to see its map below the choices and add places of your own. Direction links show the street route.</li><li>Copy or print the itinerary when you want to take it with you. Check venue hours and bookings before travelling.</li></ol><p class="project-note">There is no login or shared data. Each city's plan stays in this browser, and clearing site storage removes it. Choosing a hotel or activity here does not make a reservation.</p></section>
       <section class="block" id="first-build"><h2>They began with decisions for an actual trip</h2><p>I brought the places I was considering into a React and TypeScript interface so I could compare them within a day. London and Paris share the same application, with separate city data for venues, neighborhoods, and travel information. Vite builds the interface into files a web server can serve.</p><p>The planner's behavior follows that use: choose a meal or attraction, collapse the alternatives, then see the saved stops on the day's map. Neighborhood choices narrow the places offered nearby. I can reopen a choice without rebuilding the itinerary.</p><p>I ran the apps on AutomationLab in containers. Nginx serves the interface, and a small API stores the shared itinerary on persistent storage in Kubernetes. That lets a saved choice appear in another signed-in browser. Getting the apps running exposed the hosting work around the interface: building it, keeping its state, assigning a hostname, and protecting access.</p></section>
       <section class="block" id="cloudflare"><h2>Keeping the public and private interfaces together</h2>
