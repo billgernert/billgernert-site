@@ -59,3 +59,9 @@
 # Retired public previews lead back to the city planner directory.
 /projects/trip-planners/dominican /projects/trip-planners/ 301
 /projects/trip-planners/dominican/* /projects/trip-planners/ 301
+/projects/trip-planners/nashville /projects/trip-planners/ 301
+/projects/trip-planners/nashville/* /projects/trip-planners/ 301
+/projects/trip-planners/london /projects/trip-planners/ 301
+/projects/trip-planners/london/* /projects/trip-planners/ 301
+/projects/trip-planners/paris /projects/trip-planners/ 301
+/projects/trip-planners/paris/* /projects/trip-planners/ 301
