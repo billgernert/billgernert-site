@@ -56,12 +56,15 @@
 # The roadmap page embeds only the aggregate public roadmap dashboard.
 /roadmap/open/live https://status.billgernert.com/public-dashboards/10459ea138af4a3e86510f848f8be38b 302
 
-# Retired public previews lead back to the city planner directory.
-/projects/trip-planners/dominican /projects/trip-planners/ 301
-/projects/trip-planners/dominican/* /projects/trip-planners/ 301
-/projects/trip-planners/nashville /projects/trip-planners/ 301
-/projects/trip-planners/nashville/* /projects/trip-planners/ 301
-/projects/trip-planners/london /projects/trip-planners/ 301
-/projects/trip-planners/london/* /projects/trip-planners/ 301
-/projects/trip-planners/paris /projects/trip-planners/ 301
-/projects/trip-planners/paris/* /projects/trip-planners/ 301
+# The retired trip planners now live in CityAmble. Every old planner route goes there;
+# /projects/trip-planners/ itself stays as the CityAmble project page.
+/projects/trip-planners/dominican https://cityamble.com/ 301
+/projects/trip-planners/dominican/* https://cityamble.com/ 301
+/projects/trip-planners/nashville https://cityamble.com/ 301
+/projects/trip-planners/nashville/* https://cityamble.com/ 301
+/projects/trip-planners/london https://cityamble.com/ 301
+/projects/trip-planners/london/* https://cityamble.com/ 301
+/projects/trip-planners/paris https://cityamble.com/ 301
+/projects/trip-planners/paris/* https://cityamble.com/ 301
+/projects/trip-planners/austin https://cityamble.com/ 301
+/projects/trip-planners/austin/* https://cityamble.com/ 301

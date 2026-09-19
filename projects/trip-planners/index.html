@@ -139,21 +139,21 @@
   </style>
   <!-- END generated: motion -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>City trip planners - Bill Gernert</title>
-  <meta name="description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare.">
+  <title>CityAmble: one trip planner for every city - Bill Gernert</title>
+  <meta name="description" content="CityAmble plans a city trip day by day on a map. It started as my Nashville, London and Paris planners and now plans every city in one app at cityamble.com.">
   <!-- BEGIN generated: share-metadata (generate-site-pages.py) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="AutomationLab">
-  <meta property="og:title" content="City trip planners - Bill Gernert">
-  <meta property="og:description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare.">
+  <meta property="og:title" content="CityAmble: one trip planner for every city - Bill Gernert">
+  <meta property="og:description" content="CityAmble plans a city trip day by day on a map. It started as my Nashville, London and Paris planners and now plans every city in one app at cityamble.com.">
   <meta property="og:url" content="https://billgernert.com/projects/trip-planners/">
   <meta property="og:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="AutomationLab platform engineering">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="City trip planners - Bill Gernert">
-  <meta name="twitter:description" content="How I built the London and Paris planners, hosted them on AutomationLab, and moved the private apps to Cloudflare.">
+  <meta name="twitter:title" content="CityAmble: one trip planner for every city - Bill Gernert">
+  <meta name="twitter:description" content="CityAmble plans a city trip day by day on a map. It started as my Nashville, London and Paris planners and now plans every city in one app at cityamble.com.">
   <meta name="twitter:image" content="https://billgernert.com/assets/automationlab-share-card.png">
   <meta name="twitter:image:alt" content="AutomationLab platform engineering">
   <!-- END generated: share-metadata -->
@@ -168,7 +168,7 @@
   <link rel="stylesheet" href="/assets/site.css">
   
   <style>
-      .trip-story .lead{font-size:1.25rem;max-width:48rem}.trip-story .block{margin:2.5rem 0}.preview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.preview-card{display:block;border:1px solid #24445f;border-radius:10px;padding:1.3rem;background:#0b1728;text-decoration:none}.preview-card h3{margin:0 0 .65rem;color:#fff}.preview-card p{color:#b7c9d8;margin:0 0 1rem}.preview-card span{color:#00d4ff}.preview-card:hover,.preview-card:focus-visible{border-color:#00d4ff}.trip-story .project-note{border-left:3px solid #00ff96;padding-left:1rem}.trip-story .links{display:flex;gap:1rem;flex-wrap:wrap}@media(max-width:600px){.preview-grid{grid-template-columns:1fr}.trip-story h1{font-size:2.2rem}}
+      .trip-story .lead{font-size:1.25rem;max-width:48rem}.trip-story .block{margin:2.5rem 0}.trip-story .project-note{border-left:3px solid #00ff96;padding-left:1rem}.trip-story .links{display:flex;gap:1rem;flex-wrap:wrap}@media(max-width:600px){.trip-story h1{font-size:2.2rem}}
     </style>
   <!-- BEGIN generated: canonical (generate-site-pages.py) -->
   <link rel="canonical" href="https://billgernert.com/projects/trip-planners/">
@@ -196,14 +196,11 @@
       </nav>
     </header>
     <main id="main" class="page-narrow trip-story">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">billgernert.com</a><span class="sep">/</span><a href="/projects/">Projects</a><span class="sep">/</span><span class="here">Trip planners</span></nav>
-      <header class="skill-head"><span class="badge">Application delivery project</span><h1>Building and hosting city planners</h1><p class="lead">I wanted a trip plan I could change one decision at a time, with meals, places to visit, and a map of each day. Building the planners gave me applications to run on AutomationLab, move to Cloudflare, and use to develop the platform's shared deployment path.</p><div class="links"><a href="#first-build">How I made them</a><a href="#paved-road">Where the paved road fits</a></div></header>
-      <section class="block" id="first-build"><h2>They began with decisions for an actual trip</h2><p>I brought the places I was considering into a React and TypeScript interface so I could compare them within a day. London and Paris share the same application, with separate city data for venues, neighborhoods, and travel information. Vite builds the interface into files a web server can serve.</p><p>The planner's behavior follows that use: choose a meal or attraction, collapse the alternatives, then see the saved stops on the day's map. Neighborhood choices narrow the places offered nearby. I can reopen a choice without rebuilding the itinerary.</p><p>I ran the apps on AutomationLab in containers. Nginx serves the interface, and a small API stores the shared itinerary on persistent storage in Kubernetes. That lets a saved choice appear in another signed-in browser. Getting the apps running exposed the hosting work around the interface: building it, keeping its state, assigning a hostname, and protecting access.</p></section>
-      <section class="block" id="cloudflare"><h2>Keeping the public and private interfaces together</h2>
-<p>The public and private planners now use the same cards, maps and stop controls. A visitor can change a stop's time, lock a purchased activity, mark it completed or leave its slot available. Completed stops become compact rows and leave the day's route. Public plans still stay in the visitor's browser, with separate dates and hotel choices.</p>
-<p>A shared interface change runs checks for both versions. I rebuild the public bundles in the same pull request, and a source and asset check stops publication if those bundles are stale. The public build also rejects private application modules before the existing publication scrub runs.</p>
-<h2>Moving the private apps to Cloudflare</h2><p>I adapted the static builds for Cloudflare Pages and moved shared itinerary storage to D1, Cloudflare's managed database. A Worker handles the API requests between the browser and D1. Cloudflare Access uses Microsoft Entra sign-in to protect the private apps.</p><p>Development and production have separate hostnames and databases. I test changes in development before promoting them. The Kubernetes copies remain independent in the lab, which gives me an application to work with as I change the platform's deployment process.</p></section>
-      <section class="block" id="paved-road"><h2>What the planners contribute to the paved road</h2><p>Deploying another app should not require repeating the hosting decisions I made for these planners. I am using the lab copies to develop a shared deployment definition for a static interface with saved state, a hostname, and sign-in protection. That supported path is the paved road, also called a golden path.</p><p>The shared deployment project is still in progress. Access configuration through reviewed changes and a portal template that opens a pull request for a new web app are subsequent steps. The planners give that work a concrete application to support, including a browser interface and data that has to survive a deployment.</p><p>The Nashville, London and Paris planners now live in CityAmble, one app that plans every city. The public previews that used to run on this site and the private copies on their own hostnames are retired.</p><div class="links"><a href="/platform/#developer-platform">Application platform work</a></div></section>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="/">billgernert.com</a><span class="sep">/</span><a href="/projects/">Projects</a><span class="sep">/</span><span class="here">CityAmble</span></nav>
+      <header class="skill-head"><span class="badge">Application delivery project</span><h1>CityAmble: one trip planner for every city</h1><p class="lead">CityAmble is a web app for planning a city trip. You pick a city, your dates and your hotel, then build each day from places, meals and events on a map. It plans Austin, Nashville, London and Paris, and it is free during its beta at <a href="https://cityamble.com/">cityamble.com</a>.</p><div class="links"><a href="https://cityamble.com/">Open CityAmble</a><a href="#how-it-works">How it works</a><a href="#where-it-came-from">Where it came from</a><a href="#paved-road">What it gave the platform</a></div></header>
+      <section class="block" id="how-it-works"><h2>How it works</h2><p>You can start without an account. Choose a city, set your first and last day, and pick a hotel. The map starts at your hotel.</p><p>Each day has slots for meals and activities. When you choose a place for a slot, its card shows how far it is to walk from your hotel or from the stop before it. You can lock a stop you have already paid for, mark a stop done, or leave a slot open.</p><p>Sign in with Google to save the trip to an account. Then you can invite someone to view or edit it, and the same plan shows on every device.</p></section>
+      <section class="block" id="where-it-came-from"><h2>Where it came from</h2><p>I first built a separate planner for each trip: Nashville, London and Paris. I ran them on AutomationLab in Kubernetes, then moved them to Cloudflare Pages, with a small database behind a Worker to hold the shared plan. I also published public previews of them on this site.</p><p>Every change had to reach several copies of the same app. So I rebuilt the planner as one app. Each city is now a data file, called a city pack, that lists its places, hotels and neighborhoods. Adding a city means adding a pack, not building another site.</p><p>The old Nashville, London and Paris planners are retired. Their old links on this site now go to CityAmble.</p></section>
+      <section class="block" id="paved-road"><h2>What it gave the platform</h2><p>Deploying another app should not mean repeating every hosting decision. The planners gave me a real app to design a shared deployment path around: a web interface, saved state, a hostname and sign-in protection, set up the same way each time. That supported path is the paved road, and that work continues on the platform page.</p><p class="project-note">CityAmble is in beta. Check venue hours and bookings before you travel. Choosing a hotel or activity in the planner does not book it.</p><div class="links"><a href="https://cityamble.com/">Open CityAmble</a><a href="/platform/#developer-platform">Application platform work</a></div></section>
     </main>
 
     <footer>
