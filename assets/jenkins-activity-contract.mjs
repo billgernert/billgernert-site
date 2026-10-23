@@ -78,6 +78,7 @@ function exact(value, keys) {
 }
 const integer = v => Number.isSafeInteger(v) && v >= 0;
 export function validateSnapshot(value, now = Date.now()) {
+  if (value?.version === 4) return validateLiveSnapshot(value, now);
   if (!exact(value, ["version","generated_at_ms","jobs"]) || value.version !== 3 ||
       !integer(value.generated_at_ms) || value.generated_at_ms > now + 30000 ||
       !Array.isArray(value.jobs) || value.jobs.length > 5000) throw new Error("Invalid snapshot");
@@ -112,4 +113,54 @@ export function duration(ms) {
   const hours = Math.floor(minutes / 60);
   if (hours < 48) return hours + "h " + minutes % 60 + "m";
   return Math.floor(hours / 24) + "d " + hours % 24 + "h";
+}
+
+
+const liveFields = [...fields, 'display_name', 'catalog_name', 'description', 'builds'];
+const text = (v, max) => typeof v === 'string' && v.length <= max && !/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(v);
+export function snapshotViews(value) {
+  return value?.version === 4 ? ['All', ...new Set(value.jobs.flatMap(j => j.views))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b)) : PUBLIC_VIEWS;
+}
+function validateLiveSnapshot(value, now) {
+  const fail = () => { throw new Error('Invalid live snapshot'); };
+  if (!exact(value, ['version','generated_at_ms','jobs','agents']) || !integer(value.generated_at_ms) || value.generated_at_ms > now + 30000 ||
+      !Array.isArray(value.jobs) || value.jobs.length > 5000 || !Array.isArray(value.agents) || value.agents.length > 2000) fail();
+  const ids = new Set(), agentIds = new Set();
+  for (const j of value.jobs) {
+    if (!exact(j, liveFields) || !text(j.name,240) || !j.name || !text(j.display_name,240) || !j.display_name ||
+        !(j.catalog_name === null || PUBLIC_NAMES.includes(j.catalog_name)) || !text(j.description,24000) ||
+        !Array.isArray(j.views) || j.views.length > 100 || new Set(j.views).size !== j.views.length ||
+        j.views.some(v => !text(v,160) || !v || ['All','Demos','Agents'].includes(v)) ||
+        !Array.isArray(j.builds) || j.builds.length > 1020) fail();
+    // The established v3 validator owns shared status and timestamp invariants.
+    const legacy = Object.fromEntries(fields.map(k => [k,j[k]]));
+    legacy.name = 'Provision Linux'; legacy.views = [];
+    validateSnapshot({version:3,generated_at_ms:value.generated_at_ms,jobs:[legacy]},now);
+    if (ids.has(j.id)) fail(); ids.add(j.id);
+    const builds = new Set(); let running = 0, completed = 0;
+    for (const b of j.builds) {
+      if (!exact(b,['number','building','result','timestamp_ms','duration_ms','estimated_duration_ms']) ||
+          !integer(b.number) || !b.number || builds.has(b.number) || typeof b.building !== 'boolean' ||
+          (b.building ? b.result !== null : !results.has(b.result)) ||
+          ![b.timestamp_ms,b.duration_ms,b.estimated_duration_ms].every(integer) || b.timestamp_ms > value.generated_at_ms + 30000 ||
+          (!b.building && b.timestamp_ms + b.duration_ms > value.generated_at_ms + 30000)) fail();
+      builds.add(b.number); if(b.building) running++; else completed++;
+    }
+    if (running !== j.running || completed > 20 || (running && Math.min(...j.builds.filter(b=>b.building).map(b=>b.timestamp_ms)) !== j.running_since_ms)) fail();
+  }
+  for (const a of value.agents) {
+    if (!exact(a,['id','name','offline','temporarily_offline','executors','slots']) || !/^agent-[a-f0-9]{32}$/.test(a.id) ||
+        agentIds.has(a.id) || !text(a.name,240) || !a.name || typeof a.offline !== 'boolean' || typeof a.temporarily_offline !== 'boolean' ||
+        !integer(a.executors) || a.executors > 1000 || !Array.isArray(a.slots) || a.slots.length > 2000) fail();
+    agentIds.add(a.id); const slots = new Set();
+    for (const e of a.slots) {
+      const key = e.kind + ':' + e.slot;
+      if (!exact(e,['slot','kind','idle','job_id','build_number']) || !integer(e.slot) || !['executor','one-off'].includes(e.kind) ||
+          typeof e.idle !== 'boolean' || slots.has(key) || (e.job_id !== null && !ids.has(e.job_id)) ||
+          !(e.build_number === null || (integer(e.build_number) && e.build_number > 0)) ||
+          (e.job_id === null) !== (e.build_number === null) || (e.idle && e.job_id !== null)) fail();
+      slots.add(key);
+    }
+  }
+  return value;
 }

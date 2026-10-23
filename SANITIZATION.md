@@ -69,6 +69,17 @@ and a person is the entire reason they are safe.
 Everything in class B must be checked against "Never publish here" below **by reading it**, before it
 is committed. There is no second net.
 
+## Jenkins activity feed
+
+The Jenkins console publishes the actual job names, display names, view membership and registered
+agent names requested by the owner. Descriptions come from Jenkins as plain text, with private
+addresses, email addresses, credential assignments, secret paths and private tracker references
+removed. The feed contains numeric build identifiers, status, timing, queue membership and executor
+assignments. It excludes parameters, artifacts, logs, actions, user identities, node monitor data and
+controller URLs. The collector and authenticated edge publisher enforce a bounded versioned schema;
+the edge independently checks the description privacy rules. New jobs and ephemeral agents are
+included automatically. This exception is specific to the Jenkins activity inventory.
+
 ## Images
 
 Images are allowed **only** inside a sync-managed page directory that is in the publish mapping, so that

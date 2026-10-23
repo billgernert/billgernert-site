@@ -116,3 +116,5 @@ body{min-width:1000px}.jenkins-header{height:58px;min-height:58px;flex-wrap:nowr
 .worker-facts dt{font-weight:600;color:#a6afbd}
 .worker-facts dd{margin:0;overflow-wrap:anywhere}
 @media(max-width:900px){.worker-profile{padding:16px}.worker-facts div{grid-template-columns:1fr;gap:4px}}
+
+.live-description{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
