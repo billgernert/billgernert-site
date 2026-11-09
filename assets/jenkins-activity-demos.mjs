@@ -17,11 +17,20 @@ export function fieldChoices(field,values) {
   if(['DISK_GB','DATA_DISK_GB'].includes(field.name)&&field.kind==='cascade'&&values.STORAGE==='NVMe')return field.values.filter(v=>v==='None'||Number(v)<=400);
   return field.values;
 }
-export function defaultRequest(id){return Object.fromEntries(getDemo(id).fields.map(f=>[f.name,Array.isArray(f.default)?[...f.default]:f.default]));}
+export function windowsVmNameErrors(value){
+  const name=(value||'').trim(),errors=[];
+  if(!name)return ['VM_NAME is required.'];
+  if(name.length>15)errors.push('Use at most 15 characters (Windows limit); entered '+name.length+'.');
+  if(name!==name.toLowerCase())errors.push('Use lowercase letters only; capital letters are not allowed.');
+  if(!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(name))errors.push('Start with a letter and use only lowercase letters, digits and single hyphens between groups; no spaces, underscores, dots or trailing hyphen.');
+  return errors;
+}
+export function defaultRequest(id){return Object.fromEntries(getDemo(id).fields.filter(f=>f.kind!=='reference').map(f=>[f.name,Array.isArray(f.default)?[...f.default]:f.default]));}
 export function createDemoRun(id, values, key=id) {
   const d=getDemo(id);if(!d)throw new Error('Unknown demo.');
   const params={};
   for(const f of d.fields){
+    if(f.kind==='reference')continue;
     const v=values[f.name];
     if(f.kind==='boolean'){if(typeof v!=='boolean')throw new Error(f.name+' must be a checkbox value.');params[f.name]=v;}
     else if(f.kind==='checkboxes'){if(!Array.isArray(v)||v.some(x=>!f.values.includes(x))||new Set(v).size!==v.length)throw new Error('Choose valid '+f.name+' options.');params[f.name]=[...v];}
@@ -39,6 +48,7 @@ function failure(run,stage){
     if(!managers.includes(p.MANAGER))return 'Select a manager from the fictional directory.';
   }
   if(stage==='Validate input'){
+    if(run.id==='vm-provision-windows'){const errors=windowsVmNameErrors(p.VM_NAME);if(errors.length)return 'Invalid VM_NAME: '+errors.join(' ')+' Example: win-app-01.';}
     if(!p.VM_NAME)return 'VM_NAME is required';
     const pattern=run.id.startsWith('vm-deprovision')?/^[a-zA-Z0-9-]+$/:/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
     if(!pattern.test(p.VM_NAME))return 'VM_NAME contains invalid characters.';

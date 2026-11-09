@@ -119,7 +119,14 @@ export const DEMOS = [
       {
         "name": "VM_NAME",
         "kind": "string",
-        "help": "Hostname for the new Windows VM (no domain)",
+        "help": "Required: 1-15 characters, lowercase letters, digits and single hyphens between groups; start with a letter. Example: win-app-01. Leading/trailing whitespace is trimmed.",
+        "values": null,
+        "default": ""
+      },
+      {
+        "name": "VM_NAME_CHECK",
+        "kind": "reference",
+        "help": "Checks the name format. Availability is checked when the build runs.",
         "values": null,
         "default": ""
       },

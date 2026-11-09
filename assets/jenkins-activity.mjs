@@ -1,6 +1,6 @@
 import { CENSORED, PUBLIC_VIEWS, snapshotViews, validateSnapshot, isFresh, duration } from './jenkins-activity-contract.mjs';
 import { supportsDemo, details, viewJobs, jobRoute, resolveRoute, demoForJob, mobileBuildSummary, workerProfiles } from './jenkins-activity-model.mjs';
-import { DEMOS, getDemo, fieldChoices, defaultRequest, createDemoRun, advanceDemo, approval, stageMessage } from './jenkins-activity-demos.mjs';
+import { DEMOS, getDemo, fieldChoices, defaultRequest, createDemoRun, advanceDemo, approval, stageMessage, windowsVmNameErrors } from './jenkins-activity-demos.mjs';
 import { consoleEvents, demoEmails } from './jenkins-activity-demo-console.mjs';
 const $=id=>document.getElementById(id);
 let snapshot=null,preview=false,failed=false,pollTimer=null,sortDescending=false;
@@ -135,11 +135,12 @@ function demoForm(definition){
   const root=el('section',undefined,'parameter-page');root.append(el('h1','Pipeline '+definition.title,'job-heading'),el('p','This build requires parameters:'),el('p','Simulation. Parameter names and choices follow the job definition; directory results are fictional.','simulation-note'));
   if(definition.id==='user-provision')root.append(el('p','Try a new sample account, or use demo-existing to see the reconcile gate. Search for demo to select a fictional manager.','parameter-help'));
   const form=el('form',undefined,'jenkins-parameters');const controls=new Map();
-  const values=()=>Object.fromEntries(definition.fields.map(f=>[f.name,f.kind==='checkboxes'?[...controls.get(f.name).querySelectorAll('input:checked')].map(c=>c.value):f.kind==='boolean'?controls.get(f.name).checked:controls.get(f.name).value]));
-  const refresh=()=>{const current=values();for(const f of definition.fields.filter(f=>f.kind==='cascade')){const c=controls.get(f.name),old=c.value;c.replaceChildren();for(const value of fieldChoices(f,current)){const o=el('option',value);o.value=value;c.append(o);}if([...c.options].some(o=>o.value===old))c.value=old;}};
+  const values=()=>Object.fromEntries(definition.fields.filter(f=>f.kind!=='reference').map(f=>[f.name,f.kind==='checkboxes'?[...controls.get(f.name).querySelectorAll('input:checked')].map(c=>c.value):f.kind==='boolean'?controls.get(f.name).checked:controls.get(f.name).value]));
+  const refresh=()=>{const current=values();for(const f of definition.fields.filter(f=>f.kind==='cascade')){const c=controls.get(f.name),old=c.value;c.replaceChildren();for(const value of fieldChoices(f,current)){const o=el('option',value);o.value=value;c.append(o);}if([...c.options].some(o=>o.value===old))c.value=old;}const feedback=controls.get('VM_NAME_CHECK');if(feedback){const errors=windowsVmNameErrors(current.VM_NAME);feedback.textContent=errors.length?'ERROR: '+errors.join(' '):'VM_NAME format is valid.';}};
   for(const f of definition.fields){
     const group=el('div',undefined,'parameter-row'),label=el('label',f.name),help=el('p',f.help,'parameter-help');let control;
-    if(f.kind==='checkboxes'){control=el('div',undefined,'parameter-checkboxes');for(const value of f.values){const l=el('label'),input=el('input');input.type='checkbox';input.value=value;l.append(input,el('span',value));control.append(l);}}
+    if(f.kind==='reference'){control=el('output');control.setAttribute('aria-live','polite');}
+    else if(f.kind==='checkboxes'){control=el('div',undefined,'parameter-checkboxes');for(const value of f.values){const l=el('label'),input=el('input');input.type='checkbox';input.value=value;l.append(input,el('span',value));control.append(l);}}
     else if(f.values){control=el('select');for(const value of f.values){const option=el('option',value);option.value=value;control.append(option);}control.value=f.default;}
     else{control=el('input');control.type=f.kind==='boolean'?'checkbox':'text';if(f.kind==='boolean')control.checked=f.default;else{control.value=f.default;control.maxLength=100;control.autocomplete='off';}}
     control.id='parameter-'+f.name;control.name=f.name;label.htmlFor=control.id;help.id=control.id+'-help';control.setAttribute('aria-describedby',help.id);controls.set(f.name,control);
@@ -148,6 +149,9 @@ function demoForm(definition){
   for(const name of ['DEPARTMENT','STORAGE','MANAGER_SEARCH'])controls.get(name)?.addEventListener('change',refresh);
   controls.get('MANAGER_SEARCH')?.addEventListener('input',refresh);
   controls.get('MANAGER_SEARCH')?.addEventListener('blur',refresh);
+  controls.get('VM_NAME')?.addEventListener('input',refresh);
+  controls.get('VM_NAME')?.addEventListener('change',refresh);
+  refresh();
   const error=el('p');error.role='alert';
   const build=button('▷ Build',()=>{try{refresh();demo=createDemoRun(definition.id,values());consoleFollow=true;consoleScrollTop=0;location.hash='#/demo/'+definition.id+'/console';render();}catch(e){error.textContent=e.message;}},'primary-button');
   const actions=el('div',undefined,'parameter-actions');actions.append(build,link('Cancel','#/view/Demos','secondary-button'));form.append(error,actions);form.addEventListener('submit',e=>e.preventDefault());form.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type==='text'){e.preventDefault();build.click();}});root.append(form);return root;
