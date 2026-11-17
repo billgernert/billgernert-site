@@ -1,9 +1,9 @@
 {
   "aiops_last_actionable_count": 0,
-  "aiops_last_findings_count": 42,
-  "aiops_last_known_noise_count": 36,
-  "aiops_last_needs_info_count": 6,
-  "aiops_last_run_date": "2026-11-16",
+  "aiops_last_findings_count": 85,
+  "aiops_last_known_noise_count": 34,
+  "aiops_last_needs_info_count": 51,
+  "aiops_last_run_date": "2026-11-17",
   "backlog_completed_count": 315,
   "backlog_open_count": 262,
   "dashboard_count": 24,
